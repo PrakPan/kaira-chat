@@ -63,6 +63,12 @@ const CloneItinerary = ({
   // (poll + skeleton) instead of the default hard redirect.
   sourceItineraryId,
   showEndLocation = false,
+  // Whether to seed the start location and start date from the source
+  // itinerary. On a V1 archive or a /trips page the source is somebody else's
+  // completed trip, so its dates are in the past and its start city is theirs —
+  // pre-filling them asks the traveller to notice and correct two fields rather
+  // than fill two empty ones. The fields still render; they just open blank.
+  prefillStartDetails = true,
   onSuccess,
   onCancel,
 }) => {
@@ -89,7 +95,7 @@ const CloneItinerary = ({
   // change it via the picker below. End location is intentionally kept the same
   // as the start location.
   const [startingLocation, setStartingLocation] = useState(
-    itineraryStartLoc || false
+    (prefillStartDetails && itineraryStartLoc) || false
   );
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
@@ -154,10 +160,14 @@ const CloneItinerary = ({
   // Initialize dates
   const [date, setDate] = useState({
     type: "fixed",
-    start_date: itinerary?.start_date
-      ? parseDateString(itinerary.start_date)
-      : null,
-    end_date: itinerary?.end_date ? parseDateString(itinerary.end_date) : null,
+    start_date:
+      prefillStartDetails && itinerary?.start_date
+        ? parseDateString(itinerary.start_date)
+        : null,
+    end_date:
+      prefillStartDetails && itinerary?.end_date
+        ? parseDateString(itinerary.end_date)
+        : null,
     month: "",
     duration: "",
   });
@@ -169,10 +179,16 @@ const CloneItinerary = ({
       setAddHotels(true);
       setAddFlights(true);
       setAddActivityTransfers(true);
-      setStartingLocation(
-        cityToLocation(itinerary?.start_city || itinerary?.start_location) ||
-          false
-      );
+      // Guarded: this effect re-runs whenever the itinerary object changes, so
+      // without the check it would re-seed the start fields from the source —
+      // both undoing the blank open and overwriting whatever the traveller had
+      // already picked.
+      if (prefillStartDetails) {
+        setStartingLocation(
+          cityToLocation(itinerary?.start_city || itinerary?.start_location) ||
+            false
+        );
+      }
       setAddVisa(itinerary?.add_visa ?? false);
       setAddEsim(itinerary?.add_esim ?? false);
       setRoomConfiguration(deriveRoomConfiguration(itinerary));
@@ -180,7 +196,7 @@ const CloneItinerary = ({
       setNumberOfChildren(itinerary?.number_of_children || 0);
       setNumberOfInfants(itinerary?.number_of_infants || 0);
 
-      if (itinerary?.start_date && itinerary?.end_date) {
+      if (prefillStartDetails && itinerary?.start_date && itinerary?.end_date) {
         setDate({
           type: "fixed",
           start_date: parseDateString(itinerary.start_date),

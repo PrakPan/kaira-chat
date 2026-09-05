@@ -38,6 +38,10 @@ const CloneItineraryModal: React.FC<CloneItineraryModalProps> = ({
     <CloneItinerary
       sourceItineraryId={itineraryId}
       showEndLocation
+      // This modal is the V1-archive and /trips entry point, where the source
+      // is a completed trip belonging to someone else: its start date is in the
+      // past and its start city is theirs. Both fields open empty here.
+      prefillStartDetails={false}
       onCancel={onHide}
     />
   );

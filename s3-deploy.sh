@@ -6,6 +6,11 @@
 #
 #   --groups=a,b     page groups to build (see `node scripts/pageGroups.js list`)
 #   --all            build every group
+#
+# With no --groups flag the selection is taken from the GROUPS environment
+# variable, else from the tag name (prod-trips-v4.8.0 -> +trips,
+# prod-destinations-v4.8.0 -> +destinations, prod-all-v4.8.0 -> everything),
+# else DEFAULT_GROUPS.
 #   -trips           legacy alias for --groups=<defaults>,trips
 #   --build-only     build and write the manifest, do not touch S3 (CI build step)
 #   --deploy-only    upload/invalidate/prune an out/ that already exists (CI deploy step)
@@ -89,6 +94,61 @@ elif [ "$deploy_env" != "dev" ] && [ "$deploy_env" != "prod" ] && [ "$deploy_env
     exit 1
 fi
 
+# ---- where the group selection comes from ---------------------------------
+#
+# Precedence: an explicit --groups/--all flag, then a GROUPS environment
+# variable (the deploy-prod / deploy-dev custom pipelines set it), then the tag
+# name, then DEFAULT_GROUPS.
+#
+# The tag is in there because a Bitbucket tag push carries no pipeline
+# variables at all — so in a tag-only workflow the tag name is the only place a
+# selection can be expressed. `prod-trips-v4.8.0` publishes the trips pages;
+# `prod-v4.8.0` stays cheap. Tokens are matched as whole `-<token>-` segments,
+# so a `yourtrips-*` tag does not accidentally read as "trips".
+groups_from_tag() {
+  local tag="$1" picked=""
+
+  case "$tag" in
+    *-all-*|*-all) echo "all"; return ;;
+  esac
+
+  # Only the opt-in expensive groups are addressable this way. themes and
+  # events are in DEFAULT_GROUPS already, so naming them would be a no-op.
+  for group in trips destinations; do
+    case "$tag" in
+      *-$group-*|*-$group) picked="$picked,$group" ;;
+    esac
+  done
+
+  if [ -n "$picked" ]; then
+    echo "${DEFAULT_GROUPS}${picked}"
+  fi
+
+  # Explicit, and not `[ -n "$picked" ] && echo ...`: that form leaves the
+  # function returning 1 when the tag names no group, and `set -e` turns that
+  # into a dead build on every ordinary release tag.
+  return 0
+}
+
+# `printenv`, not "$GROUPS": GROUPS is a bash builtin holding the current user's
+# group IDs, and it is always set. Reading the shell variable therefore picks up
+# "0" (root, in CI) on any build that did NOT set a GROUPS pipeline variable,
+# and pageGroups.js rejects it with `unknown page group(s): 0` — every tag
+# deploy would fail. printenv sees only the real environment.
+groups_var="$(printenv GROUPS || true)"
+if [ -z "$groups" ] && [ -n "$groups_var" ]; then
+  groups="$groups_var"
+  echo "Page groups from GROUPS variable: $groups"
+fi
+
+if [ -z "$groups" ] && [ -n "$BITBUCKET_TAG" ]; then
+  from_tag=$(groups_from_tag "$BITBUCKET_TAG" || true)
+  if [ -n "$from_tag" ]; then
+    groups="$from_tag"
+    echo "Page groups from tag $BITBUCKET_TAG: $groups"
+  fi
+fi
+
 # `-trips` used to mean "this build includes the trips pages"; keep it working.
 if [ -z "$groups" ]; then
   groups="$DEFAULT_GROUPS"
@@ -145,6 +205,26 @@ if ! $deploy_only; then
 
   # Create index file for every path
   python3 index_path.py
+
+  # dev.thetarzanway.com is a byte-for-byte copy of the site on its own
+  # hostname, so left alone it competes with production for the same queries and
+  # gets indexed as duplicate content. public/robots.txt is production's, so the
+  # dev copy is written here rather than in the tree — the export is the only
+  # place the two environments can differ.
+  #
+  # Deliberately NOT `Disallow: /`. Deindexing is done by the noindex meta tag
+  # that _document.js emits from NEXT_PUBLIC_NOINDEX, and a crawler that is
+  # forbidden to fetch the page can never read that tag — blocking the crawl
+  # would freeze any already-indexed dev URL in place instead of removing it.
+  # Once Search Console reports the dev host at zero indexed pages, this can
+  # become a full disallow.
+  #
+  # The Sitemap line goes: it points at production's sitemap, which is an
+  # invitation to crawl 1,700+ URLs from the wrong hostname.
+  if [ "$deploy_env" == 'dev' ]; then
+    printf 'User-agent: *\nDisallow: /dashboard/\nDisallow: /itinerary/\nDisallow: /preview-travel-experience/\nDisallow: /test/\nDisallow: /500/\nDisallow: /404/\n' > out/robots.txt
+    echo "Wrote dev out/robots.txt (crawlable, no sitemap — noindex meta does the deindexing)"
+  fi
 
   # Attribute every exported file to the group that owns it. Local only, no AWS
   # credentials needed, so this runs in CI's build step and travels to the

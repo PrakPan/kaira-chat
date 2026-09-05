@@ -235,6 +235,19 @@ mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: false});`,
           <link rel="manifest" href="/site.webmanifest" />
           <meta name="theme-color" content="#0b1220" />
 
+          {/* ---------- Search indexing ----------
+              dev.thetarzanway.com serves the same pages as production on its
+              own hostname, so without this every dev deploy publishes a second
+              indexable copy of the whole site and competes with the real one.
+              Set per environment in .env.* (NEXT_PUBLIC_NOINDEX), so a
+              production build never emits it.
+
+              In _document rather than _app: it must be on every page including
+              the error pages, and nothing here should be able to override it. */}
+          {process.env.NEXT_PUBLIC_NOINDEX === "true" && (
+            <meta name="robots" content="noindex, nofollow" />
+          )}
+
           {this.props.styleTags}
         </Head>
 

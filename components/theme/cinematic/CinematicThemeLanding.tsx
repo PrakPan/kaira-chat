@@ -209,10 +209,7 @@ const primaryCtaStyle = (palette: ResolvedPalette): React.CSSProperties => ({
 });
 
 // ── Scoped styles ──────────────────────────────────────────────────────────
-// Exported so a page outside the cinematic landing can borrow a single card
-// from this design (the homepage's traveller-itinerary rail) and still get the
-// `ctl-*` classes those cards style themselves with. Render it once per page.
-export const CinematicStyles = () => (
+const CinematicStyles = () => (
   <style
     dangerouslySetInnerHTML={{
       __html: `
@@ -958,11 +955,7 @@ const splitPrice = (price: string) => ({
 // what's-included chips, a ruled price line and the CTA. Distinct from the
 // default row card (side thumbnail) because it is selling a fixed product
 // rather than offering a shape to start from.
-// Exported for the homepage's traveller-itineraries rail, which shows the same
-// thing this card was drawn for — a priced, already-built plan. `usePalette`
-// falls back to DEFAULT_PALETTE with no provider above it; pair it with
-// <CinematicStyles /> so the `ctl-*` classes resolve.
-export const StackedTripCard: React.FC<{
+const StackedTripCard: React.FC<{
   card: CinematicTripCard;
   onSelectPrompt: SelectPrompt;
   ctaLabel?: string;
@@ -1105,11 +1098,6 @@ export const StackedTripCard: React.FC<{
   );
 };
 
-// Reused outside this landing — see the homepage's traveller itineraries rail
-// (it is already named in the export block at the foot of this file).
-// `usePalette` reads a context whose default is DEFAULT_PALETTE, so the card
-// renders correctly with no provider above it; pair it with <CinematicStyles />
-// for the `ctl-*` classes.
 const TripCard: React.FC<{
   card: CinematicTripCard;
   onSelectPrompt: SelectPrompt;

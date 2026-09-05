@@ -11,7 +11,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-import ThemeItineraryRail from "./ThemeItineraryRail";
+import ItineraryRail from "./ItineraryRail";
 import Button from "../common/components/button";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -3666,7 +3666,7 @@ const TravelerMadeItinerariesSection = (props) => {
 
         {/* Itineraries Slider */}
         <div className="relative px-2 sm:px-0">
-          <ThemeItineraryRail
+          <ItineraryRail
             itineraries={props?.corporates ? corporateItineraries : itineraries}
           />
           {/* <Swiper

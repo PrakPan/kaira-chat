@@ -37,6 +37,7 @@ import { useDispatch } from "react-redux";
 
 import DaybyDay from "../../containers/itinerary/DaybyDay";
 import ArchiveChatPanel from "../bot-components/components/ArchiveChatPanel";
+import CloneItineraryModal from "../bot-components/components/CloneItineraryModal";
 import { BottomCTABar } from "../bot-components/BotApp";
 import setItinerary from "../../store/actions/itinerary";
 import setItineraryDaybyDay from "../../store/actions/itineraryDaybyDay";
@@ -49,11 +50,19 @@ const TripItineraryView = ({
   introMessage,
   /** Rendered at the foot of the itinerary column, under the day-by-day. */
   below = null,
-  /** Rendered above the day-by-day, inside the itinerary column. */
+  /** Rendered above the day-by-day — the itinerary's own trip strip. */
   header = null,
-  onGetThisTrip,
 }) => {
   const dispatch = useDispatch();
+  // The bar's CTA opens the clone popup. The state lives here rather than being
+  // passed in: the bar and the popup are both this component's, so a caller
+  // that forgets to wire a handler (which is what left "Get this trip!" doing
+  // nothing) can't happen.
+  const [showCloneModal, setShowCloneModal] = useState(false);
+  // Mobile only: the chat is closed until the floating Kaira button is tapped,
+  // as it is on a V1 itinerary. Desktop ignores this — the panel is simply the
+  // right half there.
+  const [chatOpen, setChatOpen] = useState(false);
 
   useState(() => {
     if (!itinerary) return null;
@@ -94,11 +103,16 @@ const TripItineraryView = ({
       {/* Scrolls inside the column, exactly as BotApp's itinerary panel does —
           the page itself never scrolls on desktop. The bottom padding clears
           the fixed price bar so the last section isn't sitting under it. */}
-      <div className="flex-1 min-h-0 lg:overflow-y-auto px-4 md:px-5 pb-[110px]">
+      <div className="flex-1 min-h-0 ph-up:overflow-y-auto px-4 md:px-5 pt-4 pb-[110px]">
         {header}
         <DaybyDay fromChat mercuryItinerary showPins={false} isDraft={false} />
         {below}
       </div>
+      {/* The bar is `position: fixed`, and its own class pins it to 48% of the
+          VIEWPORT — which is narrower than this column's 50%, so it stopped
+          short of the divider. `barStyle` is the prop BotApp uses for exactly
+          this (it feeds the measured panel box in), so the bar spans the column
+          and its right edge meets the chat divider. */}
       <BottomCTABar
         viewMode="itinerary"
         activeItineraryId={itinerary.id}
@@ -116,47 +130,94 @@ const TripItineraryView = ({
         popupStyle={{}}
         onConfirm={() => {}}
         onViewCart={() => {}}
-        onGetThisTrip={onGetThisTrip}
+        onGetThisTrip={() => setShowCloneModal(true)}
       />
     </>
   );
 
   return (
     <>
-      {/* ── Desktop: BotApp's shell ── */}
-      <main className="max-lg:hidden flex h-screen overflow-hidden bg-white">
-        {/* LEFT 50% */}
-        <div
-          className="flex flex-col overflow-hidden relative bg-white border-r border-[#e5e5e5]"
-          style={{ width: "50%", minWidth: 0 }}
-        >
+      {/* Same popup the chat panel's clone card opens. */}
+      <CloneItineraryModal
+        show={showCloneModal}
+        onHide={() => setShowCloneModal(false)}
+        itineraryId={itinerary.id}
+      />
+
+      {/* The bar is `position: fixed` and its own class pins it to 48% of the
+          VIEWPORT, narrower than this column's 50%, so it stopped short of the
+          divider. Overridden here rather than via the `barStyle` prop because
+          an inline style would apply at every width and override the bar's
+          `w-full` on a phone, where it should span the screen. */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `@media (min-width:768.02px){[data-bottom-cta-bar]{left:0!important;width:50%!important;}}`,
+        }}
+      />
+
+      {/* One tree, laid out per breakpoint — NOT a desktop copy and a mobile
+          copy. Rendering it twice put two <h1>s, two day-by-days and a repeated
+          `bot-itinerary-day-1` id into the HTML, which on a page that exists to
+          be crawled is duplicate content rather than a layout detail.
+          On a phone the itinerary is the page and the chat is a sheet over
+          it, so the column order is plain rather than reversed. */}
+      <div className="flex flex-col ph-up:flex-row ph-up:h-screen ph-up:overflow-hidden bg-white">
+        {/* Itinerary — 50% and internally scrolling on desktop, natural page
+            flow on a phone. */}
+        <div className="flex flex-col min-w-0 ph-up:w-1/2 ph-up:overflow-hidden ph-up:border-r ph-up:border-[#e5e5e5]">
           {itineraryColumn}
         </div>
 
-        {/* RIGHT 50% */}
-        <div
-          className="flex flex-col overflow-hidden min-h-0 h-full relative bg-white"
-          style={{ width: "50%", minWidth: 0 }}
-        >
-          <ArchiveChatPanel
-            itineraryId={itinerary.id}
-            introMessage={introMessage}
-          />
-        </div>
-      </main>
+        {/* Chat. Desktop: the right half, always open. Mobile: a full-screen
+            sheet the floating Kaira button opens.
 
-      {/* ── Mobile: the same two panes stacked, in the page's own scroll ──
-          A phone can't hold two columns, and pinning the shell to the viewport
-          here would trap the page. The chat leads because it introduces the
-          plan; the itinerary and its sections follow. */}
-      <div className="lg:hidden flex flex-col">
-        <div className="h-[540px] border-b border-[#e5e5e5]">
+            Toggled with a class, never unmounted — Kaira's opening bubble is
+            where the trip description lives, so unmounting it on a phone would
+            take that copy out of the DOM entirely. `hidden` keeps it there. */}
+        <div
+          className={`flex-col min-w-0 ph-up:w-1/2 ph-up:h-full ph-up:static ph-up:z-auto ph-up:flex
+            max-ph:fixed max-ph:inset-0 max-ph:z-[2000] max-ph:bg-white
+            ${chatOpen ? "max-ph:flex" : "max-ph:hidden"}`}
+        >
+          {/* Mobile-only dismiss. Desktop has nothing to close. */}
+          <button
+            type="button"
+            onClick={() => setChatOpen(false)}
+            aria-label="Close chat"
+            className="ph-up:hidden absolute top-[14px] right-[14px] z-10 w-9 h-9 rounded-full bg-white/95 border border-[#e5e5e5] flex items-center justify-center shadow-sm"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3b4149" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+
           <ArchiveChatPanel
             itineraryId={itinerary.id}
             introMessage={introMessage}
           />
         </div>
-        <div className="flex flex-col">{itineraryColumn}</div>
+
+        {/* Floating Kaira button — mobile only, and only while the chat is
+            closed. Sits clear of the fixed price bar rather than on top of it. */}
+        {!chatOpen && (
+          <button
+            type="button"
+            onClick={() => setChatOpen(true)}
+            aria-label="Chat with Kaira"
+            className="ph-up:hidden fixed right-4 bottom-[96px] z-[1500] w-[58px] h-[58px] rounded-full overflow-hidden border-2 border-white shadow-[0_6px_20px_rgba(11,18,32,0.28)] bg-[#a8d2f5]"
+          >
+            <img
+              src="/KairaInsta.png"
+              alt=""
+              aria-hidden="true"
+              width={58}
+              height={58}
+              className="w-full h-full object-cover"
+            />
+            <span className="absolute bottom-[3px] right-[3px] w-[12px] h-[12px] rounded-full bg-[#4ade80] border-2 border-white" />
+          </button>
+        )}
+
       </div>
     </>
   );

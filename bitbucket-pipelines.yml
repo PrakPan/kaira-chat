@@ -11,8 +11,20 @@ image: node:18
 #   destinations  2,306 continent/country/state/city pages — expensive, opt-in
 #   trips         1,865 SEO trips pages + a ~3 min crawl — expensive, opt-in
 #
-# A tag ships the cheap groups. To publish destinations or trips, run the
-# `deploy-prod` / `deploy-dev` custom pipeline and set GROUPS.
+# A plain tag ships the cheap groups. To publish destinations or trips, name
+# them IN THE TAG — a tag push carries no pipeline variables, so the tag itself
+# is the only lever a tag-driven deploy has:
+#
+#   prod-v4.8.0                  core,themes,events              (the default)
+#   prod-trips-v4.8.0            core,themes,events,trips
+#   prod-destinations-v4.8.0     core,themes,events,destinations
+#   prod-trips-destinations-v4.8.0   both
+#   prod-all-v4.8.0              every group
+#
+# Same tokens on dev-* tags. s3-deploy.sh does the parsing (groups_from_tag),
+# so the build and deploy steps stay in sync without repeating it. The
+# `deploy-prod` / `deploy-dev` custom pipelines still exist and their GROUPS
+# variable takes precedence over any tag token.
 
 definitions:
   caches:
@@ -46,7 +58,7 @@ pipelines:
             - apt-get update && apt-get install -y python3
             - export NODE_OPTIONS="--max-old-space-size=8192"
             - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
-            - ./s3-deploy.sh dev --groups="${GROUPS:-core,themes,events}" --build-only
+            - ./s3-deploy.sh dev --build-only
             - echo "✅ Build completed successfully"
           artifacts:
             - out/**
@@ -62,7 +74,7 @@ pipelines:
             - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
             - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
             - export AWS_DEFAULT_REGION=$AWS_REGION
-            - ./s3-deploy.sh dev --groups="${GROUPS:-core,themes,events}" --deploy-only
+            - ./s3-deploy.sh dev --deploy-only
             - echo "✅ Deployment to Development completed successfully!"
           after-script:
             - |
@@ -96,7 +108,7 @@ pipelines:
             - apt-get update && apt-get install -y python3
             - export NODE_OPTIONS="--max-old-space-size=8192"
             - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
-            - ./s3-deploy.sh prod --groups="${GROUPS:-core,themes,events}" --build-only
+            - ./s3-deploy.sh prod --build-only
             - echo "✅ Build completed successfully"
           artifacts:
             - out/**
@@ -111,7 +123,7 @@ pipelines:
             - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
             - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
             - export AWS_DEFAULT_REGION=$AWS_REGION
-            - ./s3-deploy.sh prod --groups="${GROUPS:-core,themes,events}" --deploy-only
+            - ./s3-deploy.sh prod --deploy-only
             - echo "✅ PRODUCTION DEPLOYMENT COMPLETED SUCCESSFULLY!"
             - echo "🌐 Production is now live with this version"
           after-script:

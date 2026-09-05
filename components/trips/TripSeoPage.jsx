@@ -12,6 +12,7 @@
 // customer's booking. lib/seo/tripsIndexed.js strips them; days arrive here
 // already numbered.
 
+import { Fragment } from "react";
 import Link from "next/link";
 import styled from "styled-components";
 
@@ -87,39 +88,8 @@ const SectionTitle = styled.h2`
 
 // ── Itinerary-column chrome ─────────────────────────────────────────────────
 
-// Sits above the day-by-day, inside the itinerary column. Deliberately compact:
-// the page opens on the itinerary itself, so this only has to name the trip and
-// state its shape.
-const ColumnHead = styled.header`
-  padding: 22px 4px 4px;
 
-  h1 {
-    font-family: "Geist", "Inter", system-ui, -apple-system, sans-serif;
-    font-size: clamp(23px, 2.6vw, 30px);
-    font-weight: 600;
-    letter-spacing: -0.025em;
-    line-height: 1.15;
-    color: #0b1220;
-    margin: 0 0 10px;
-  }
-`;
 
-const Facts = styled.ul`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-
-  li {
-    font-size: 12.5px;
-    color: #3d3d3d;
-    background: #f4f3f0;
-    border-radius: 999px;
-    padding: 4px 11px;
-  }
-`;
 
 // ── Sections under the day-by-day ───────────────────────────────────────────
 
@@ -139,41 +109,69 @@ const ListTitle = styled.h2`
   margin: 0 0 12px;
 `;
 
-// Same divided-list treatment the V1 transfers section uses, so these read as
-// part of the itinerary rather than as a separate marketing block.
-const TripList = styled.ul`
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid #ececec;
+// Heading row for the trips block: the title on the left, the way out to the
+// full index on the right. It replaces the old "Browse more" list, so the link
+// has to stay a real anchor — it is now this page's only crawlable route into
+// /trips.
+const SectionHead = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
 
-  li {
-    border-bottom: 1px solid #ececec;
+  h2 {
+    margin: 0;
   }
+`;
 
-  a {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    padding: 12px 2px;
-    text-decoration: none;
+const SeeAll = styled(Link)`
+  flex-shrink: 0;
+  font-family: "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0b1220;
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 1px solid #d7d7d7;
+  padding-bottom: 1px;
+
+  &:hover {
     color: #0b1220;
+    border-bottom-color: #0b1220;
   }
+`;
 
-  a:hover .name {
-    color: #1f6feb;
-  }
+// One card per row. The card is an image-left/body-right layout above 640px
+// and stacks itself below that, so it only needs a full-width column here.
+const TripCardStack = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+`;
 
-  .name {
-    font-size: 14.5px;
-    font-weight: 500;
-    line-height: 1.35;
-  }
 
-  .meta {
-    font-size: 12px;
-    color: #7a828d;
-  }
+// The hairline arrow BotApp puts between route stops. Copied rather than
+// imported: BotApp is the live chat shell, and pulling it in for a 22x8 svg
+// would drag its whole session bootstrap along.
+const RouteArrow = () => (
+  <svg width="22" height="8" viewBox="0 0 22 8" fill="none" aria-hidden className="shrink-0">
+    <path
+      d="M0 4h20M17 1l3.2 3-3.2 3"
+      stroke="#c3c7cc"
+      strokeWidth="1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Sits above the day-by-day, inside the itinerary column — the slot BotApp's
+// trip strip occupies on a V1 itinerary.
+const ColumnHead = styled.header`
+  padding: 4px 2px 14px;
+  border-bottom: 1px solid #ececec;
+  margin-bottom: 4px;
 `;
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -217,9 +215,16 @@ const TripSeoPage = ({
   } = page;
 
   const region = destinationLabel(destination);
-  const hubHref = `/trips/${destination}`;
   const perPerson = roundedPerPerson(page.price);
   const hero = heroImageRef(page);
+  // The header's second line: who it is for, how long, and the price.
+  const metaLine = [
+    groupType,
+    durationLabel(duration),
+    perPerson ? `from ${formatINR(perPerson)} per person` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     // No article chrome: no breadcrumb strip, hero figure, fact pills or price
@@ -231,18 +236,36 @@ const TripSeoPage = ({
       stays={itineraryStays}
       introMessage={intro}
       header={
+        // Matches BotApp's V1 trip strip: the name, a meta line, then the route
+        // in Instrument Serif italic with hairline arrows between stops. The
+        // classes are lifted from that header (routeStopEls / RouteArrow) so a
+        // /trips leaf and a /chat archive read identically.
         <ColumnHead>
-          {/* The page's only h1. The article chrome above it is gone, but a
-              trips leaf still has to name itself for search — and V1 shows the
-              itinerary's name at the top of its itinerary panel too, so this
-              matches rather than departs from it. */}
-          <h1>{name}</h1>
-          <Facts>
-            {durationLabel(duration) && <li>{durationLabel(duration)}</li>}
-            {region && <li>{region}</li>}
-            {groupType && <li>{groupType}</li>}
-            {perPerson && <li>From {formatINR(perPerson)} per person</li>}
-          </Facts>
+          <h1 className="font-inter font-bold md:font-extrabold text-[18px] md:text-[24px] leading-[1.2] tracking-[-0.4px] text-[#0b1220] m-0">
+            {name}
+          </h1>
+
+          {metaLine && (
+            <p className="text-[13px] max-ph:text-[12px] font-inter text-[#3b4149] m-0 mt-[6px]">
+              {metaLine}
+            </p>
+          )}
+
+          {cities.length > 0 && (
+            <div className="flex flex-wrap items-center gap-x-[10px] gap-y-[8px] min-w-0 mt-[11px]">
+              {cities.map((city, index) => (
+                <Fragment key={`${city.name}-${index}`}>
+                  {index > 0 && <RouteArrow />}
+                  {/* Instrument Serif ships a single 400 weight, so contrast
+                      comes from size and ink rather than a faux bold. */}
+                  <span className="font-serif italic text-[17px] max-ph:text-[15px] leading-[1.25] text-[#171A1F] whitespace-nowrap">
+                    {city.name}
+                    {city.nights > 0 && <> ({city.nights}N)</>}
+                  </span>
+                </Fragment>
+              ))}
+            </div>
+          )}
         </ColumnHead>
       }
       below={
@@ -264,39 +287,26 @@ const TripSeoPage = ({
 
           {siblings.length > 0 && (
             <section>
-              <ListTitle>More {region} trips</ListTitle>
-              <TripList>
-                {siblings.map((sibling) => (
-                  <li key={sibling.path || sibling.name}>
-                    <Link href={`/${sibling.path}`}>
-                      <span className="name">{sibling.name}</span>
-                      {sibling.includes?.length > 0 && (
-                        <span className="meta">
-                          {sibling.includes.join(" · ")}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                ))}
-              </TripList>
+              <SectionHead>
+                <ListTitle>More {region} trips</ListTitle>
+                <SeeAll href="/trips">See all trips →</SeeAll>
+              </SectionHead>
+              {/* The card reads its `--ttw-*` tokens off `.ttwRevamp` rather
+                  than :root, so without this scope it renders borderless and
+                  transparent — the same wrapper TripsHub needs. */}
+              <div className={revamp.ttwRevamp}>
+                <TripCardStack>
+                  {siblings.map((sibling) => (
+                    <ItineraryCardV2
+                      key={sibling.path || sibling.name}
+                      itinerary={sibling}
+                      currency={sibling.currency}
+                    />
+                  ))}
+                </TripCardStack>
+              </div>
             </section>
           )}
-
-          <section>
-            <ListTitle>Browse more</ListTitle>
-            <TripList>
-              <li>
-                <Link href={hubHref}>
-                  <span className="name">All {region} itineraries</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/trips">
-                  <span className="name">All trip itineraries</span>
-                </Link>
-              </li>
-            </TripList>
-          </section>
         </BelowSections>
       }
     />
