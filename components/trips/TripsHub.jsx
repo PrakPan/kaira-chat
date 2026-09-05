@@ -14,17 +14,25 @@ import ItineraryCardV2 from "../revamp/destination/ItineraryCardV2";
 // lays out but loses its border and background, because `var(--ttw-line)`
 // doesn't resolve and the shorthand falls back to `0px none`.
 import revamp from "../../styles/pages/revamp/home.module.scss";
+import TripsFilters from "./TripsFilters";
+// From the pure length module, NOT tripsCards: that one reads the .seo-cache
+// off disk, and importing it here pulls `fs` into the client bundle.
+import { LENGTH_BUCKETS } from "../../lib/seo/tripLength";
 
+// Geist for the page's own chrome — heading, intro, section titles, chips. It
+// is already fetched in _document.js alongside Inter, so this costs nothing.
+// The trip cards inside keep Inter: they render under `.ttwRevamp`, which sets
+// its own family, and they are shared with the homepage and theme pages.
 const Wrapper = styled.div`
-  width: 87%;
+  width: min(1240px, 100%);
   margin: 0 auto;
-  padding: 16px 20px 72px;
-  color: #1c1c1c;
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  padding: 30px 24px 80px;
+  color: #0b1220;
+  font-family: "Geist", "Inter", system-ui, -apple-system, sans-serif;
   line-height: 1.6;
 
   @media (max-width: 600px) {
-    padding: 12px 16px 56px;
+    padding: 20px 16px 56px;
   }
 `;
 
@@ -46,24 +54,29 @@ const Crumbs = styled.nav`
 `;
 
 const Title = styled.h1`
-  font-size: clamp(26px, 4.4vw, 38px);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.22;
-  margin: 0 0 14px;
+  font-size: clamp(30px, 4.6vw, 46px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin: 0 0 12px;
 `;
 
+// Narrower measure and a lighter ink than the heading, so the two read as a
+// pair rather than one block of dark text at two sizes.
 const Intro = styled.p`
-  font-size: 17px;
-  color: #2b2b2b;
-  margin: 0 0 30px;
-  max-width: 70ch;
+  font-size: clamp(15px, 1.3vw, 17px);
+  line-height: 1.6;
+  color: #5c6470;
+  margin: 0 0 8px;
+  max-width: 62ch;
 `;
 
 const SectionTitle = styled.h2`
-  font-size: clamp(19px, 2.4vw, 23px);
-  font-weight: 500;
-  margin: 34px 0 14px;
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 44px 0 18px;
 `;
 
 // Two-up on desktop, single column below — the same grid the homepage and the
@@ -79,31 +92,82 @@ const Cards = styled.div`
   }
 `;
 
-const Chips = styled.ul`
+// A filtered-out card stays in the DOM (and in the served HTML) and is hidden
+// with CSS — see the note in TripsFilters. `display: none` also takes it out of
+// the grid flow, so the remaining cards close up rather than leaving holes.
+const CardSlot = styled.div`
+  display: ${(p) => (p.$hidden ? "none" : "block")};
+`;
+
+const Empty = styled.p`
+  font-size: 15px;
+  color: #6b6b6b;
+  margin: 0 0 18px;
+`;
+
+// Ruled off from the trips above it: this is the "where else can I go" index at
+// the foot of the page, not another band of content.
+const DestinationsBlock = styled.section`
+  margin-top: 56px;
+  padding-top: 8px;
+  border-top: 1px solid #ececec;
+`;
+
+const DestinationsNote = styled.p`
+  font-size: 14px;
+  color: #7a828d;
+  margin: -6px 0 20px;
+`;
+
+// A columned index, not pills. 146 destinations laid out as wrapping pills made
+// an 800px wall of lozenges with no scanning order — the complaint that this
+// section looked "piled up". Columns give it an alphabet-like rhythm, put the
+// count where the eye can compare them, and cost less than half the height.
+// Every destination stays a real anchor, which is the point of the block.
+const DestinationList = styled.ul`
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  columns: 4;
+  column-gap: 32px;
+
+  @media (max-width: 1100px) {
+    columns: 3;
+  }
+  @media (max-width: 760px) {
+    columns: 2;
+  }
+  @media (max-width: 430px) {
+    columns: 1;
+  }
+
+  li {
+    break-inside: avoid;
+  }
 
   a {
-    display: inline-block;
-    border: 1px solid #e6e4df;
-    border-radius: 999px;
-    padding: 7px 14px;
-    color: #1c1c1c;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    color: #0b1220;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 14.5px;
+    line-height: 1.35;
+    border-bottom: 1px solid transparent;
   }
 
   a:hover {
-    border-color: #c9c7c0;
+    color: #1f6feb;
   }
 
   em {
     font-style: normal;
-    color: #8a8a8a;
+    color: #9aa1ab;
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
   }
 `;
 
@@ -123,41 +187,56 @@ const TripsHub = ({ crumbs = [], title, intro, sections = [], chips = null }) =>
     <Title>{title}</Title>
     {intro && <Intro>{intro}</Intro>}
 
-    {chips && (
-      <>
-        <SectionTitle>{chips.title}</SectionTitle>
-        <Chips>
-          {chips.items.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href}>
-                {item.label} {item.count != null && <em>({item.count})</em>}
-              </Link>
-            </li>
-          ))}
-        </Chips>
-      </>
-    )}
-
     {sections.map((section) => (
       <section key={section.title}>
         <SectionTitle>{section.title}</SectionTitle>
         {/* Built at build time (lib/seo/tripsCards), so each card is a real
             anchor in the served HTML — these hubs are the pages targeting the
             head terms, and a grid that only fills in after hydration would give
-            a crawler an empty div. */}
-        <div className={revamp.ttwRevamp}>
-          <Cards>
-            {section.items.map((item) => (
-              <ItineraryCardV2
-                key={item.path || item.name}
-                itinerary={item}
-                currency={item.currency}
-              />
-            ))}
-          </Cards>
-        </div>
+            a crawler an empty div. The filter hides non-matching cards rather
+            than unmounting them, for the same reason. */}
+        <TripsFilters cards={section.items} lengthBuckets={LENGTH_BUCKETS}>
+          {(isVisible, visibleCount) => (
+            <div className={revamp.ttwRevamp}>
+              {visibleCount === 0 && (
+                <Empty>No trips match those filters yet.</Empty>
+              )}
+              <Cards>
+                {section.items.map((item) => (
+                  <CardSlot
+                    key={item.path || item.name}
+                    $hidden={!isVisible(item)}
+                  >
+                    <ItineraryCardV2
+                      itinerary={item}
+                      currency={item.currency}
+                    />
+                  </CardSlot>
+                ))}
+              </Cards>
+            </div>
+          )}
+        </TripsFilters>
       </section>
     ))}
+    {/* Destinations last: they navigate away from this page, so they belong
+        after the trips rather than in front of them. */}
+    {chips && (
+      <DestinationsBlock>
+        <SectionTitle>{chips.title}</SectionTitle>
+        {chips.note && <DestinationsNote>{chips.note}</DestinationsNote>}
+        <DestinationList>
+          {chips.items.map((item) => (
+            <li key={item.href}>
+              <Link href={item.href}>
+                <span>{item.label}</span>
+                {item.count != null && <em>{item.count}</em>}
+              </Link>
+            </li>
+          ))}
+        </DestinationList>
+      </DestinationsBlock>
+    )}
   </Wrapper>
 );
 

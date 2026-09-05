@@ -114,13 +114,15 @@ const nextConfig = {
 // Bundle analyzer is a no-op unless ANALYZE=true, so it is safe to always wrap.
 // Run `ANALYZE=true npm run build` to inspect chunk composition (e.g. the 571 KB
 // shared vendor chunk) and confirm optimizePackageImports' effect.
+// The second argument is Sentry's webpack-plugin options, not Next's config.
+// An `experimental: { workerThreads: true, cpus: 3 }` block used to sit here
+// where Next never reads it — dead as written, and a trap had it worked: it
+// would have capped static export to 3 workers. Build concurrency belongs in
+// `nextConfig.experimental` above, and Next's default (one worker per core) is
+// what we want.
 module.exports = withSentryConfig(withBundleAnalyzer(nextConfig), {
   org: "the-tarzan-way",
   project: "front-end",
-  experimental:{
-    workerThreads: true,
-    cpus:3,
-  },
 
   // An auth token is required for uploading source maps.
   authToken: process.env.SENTRY_AUTH_TOKEN,

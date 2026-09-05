@@ -62,12 +62,15 @@ export async function getStaticProps() {
     "released by our travel team with stays, transfers and activities already planned. " +
     "Open any of them as a starting point and reshape it free before you book.";
 
-  // A handful of the newest trips, so the root has some real content of its own
-  // rather than only being a list of links to lists of links.
+  // The newest trips, so the root has real content of its own rather than only
+  // being a list of links to lists of links. 48 rather than a dozen because the
+  // filter bar now sits above them: a set small enough to read at a glance
+  // gives the filters nothing to do, and every one of these is a crawlable
+  // anchor either way.
   const recent = [...byDestination.values()]
     .flat()
     .sort((a, b) => String(b.modified_at).localeCompare(String(a.modified_at)))
-    .slice(0, 12);
+    .slice(0, 48);
 
   return {
     props: {
@@ -75,6 +78,7 @@ export async function getStaticProps() {
       description,
       chips: {
         title: "Browse by destination",
+        note: `All ${destinations.length} destinations we have released trips for, most trips first.`,
         items: destinations.map(({ href, label, count }) => ({ href, label, count })),
       },
       sections: [

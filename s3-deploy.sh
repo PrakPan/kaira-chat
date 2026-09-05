@@ -1,40 +1,83 @@
 #!/bin/bash
+#
+# Build and publish the static export.
+#
+# Usage: ./s3-deploy.sh <dev|prod|yourtrips> [options]
+#
+#   --groups=a,b     page groups to build (see `node scripts/pageGroups.js list`)
+#   --all            build every group
+#   -trips           legacy alias for --groups=<defaults>,trips
+#   --build-only     build and write the manifest, do not touch S3 (CI build step)
+#   --deploy-only    upload/invalidate/prune an out/ that already exists (CI deploy step)
+#   --reconcile      also sweep group-owned prefixes (clears the legacy /trips/* pages)
+#   --no-prune       upload only, leave stale objects alone
+#   --dry-run        build + report what would be deleted, change nothing on S3
+#
+# Two things differ from the version this replaces, both deliberate:
+#
+# 1. It no longer builds the whole site every time. `output: "export"` renders
+#    every route in pages/, and destinations (2,306 pages, each making mercury
+#    calls in getStaticProps) plus trips (1,865 pages and a ~3 min crawl) are
+#    most of the build. Both change on a slow cadence, so they are opt-in.
+#    DEFAULT_GROUPS below is what a plain release ships.
+#
+# 2. It never passes --delete to `aws s3 sync`. That flag deletes everything in
+#    the bucket absent from the local out/ — for a partial build that is most of
+#    the site — and it interleaves deletes with uploads in key order, so the
+#    origin loses assets while the CDN is still serving pages that need them.
+#    Stale objects are removed afterwards, from a record of what each group
+#    published: scripts/s3Manifest.js.
+#
+# Order matters and is: upload -> invalidate -> WAIT -> delete. Nothing
+# disappears from the origin until every edge is already serving the new build.
 
-# Enable printing executed commands
 set -x
-
-# Exit immediately if a command exits with a non-zero status.
 set -e
-
 trap "exit" INT
 
+# Groups a release ships when none are named. destinations and trips are the
+# expensive ones and must be asked for.
+DEFAULT_GROUPS="core,themes,events"
+
 deploy_env=""
+groups=""
 trips=false
+build_only=false
+deploy_only=false
+reconcile=false
+prune=true
+dry_run=false
 
 positional_args=()
 
 print_usage() {
   echo "Usage: $0 <deploy_env> [options]"
   echo "deploy_env > dev, prod, yourtrips"
-  echo "options > -trips"
+  echo "options    > --groups=a,b | --all | -trips | --build-only | --deploy-only"
+  echo "             --reconcile | --no-prune | --dry-run"
+  echo
+  echo "page groups:"
+  node scripts/pageGroups.js list
 }
 
 while [[ $# -gt 0 ]]; do
   case $1 in
-    -trips)
-    trips=true
-    shift ;;
-    *)
-    positional_args+=("$1")
-    shift ;;
+    -trips)      trips=true; shift ;;
+    --all)       groups="all"; shift ;;
+    --groups=*)  groups="${1#--groups=}"; shift ;;
+    --build-only)  build_only=true; shift ;;
+    --deploy-only) deploy_only=true; shift ;;
+    --reconcile) reconcile=true; shift ;;
+    --no-prune)  prune=false; shift ;;
+    --dry-run)   dry_run=true; shift ;;
+    -h|--help)   print_usage; exit 0 ;;
+    *)           positional_args+=("$1"); shift ;;
   esac
 done
 
-# Check if positional argument 'deploy_env' is set
 if [[ ${#positional_args[@]} -gt 0 ]]; then
   deploy_env=${positional_args[0]}
 fi
-
 
 if [ -z "$deploy_env" ]; then
     echo "Please provide deployment environment"
@@ -46,73 +89,137 @@ elif [ "$deploy_env" != "dev" ] && [ "$deploy_env" != "prod" ] && [ "$deploy_env
     exit 1
 fi
 
-# Get S3 Bucket and CloudFront Id from environment variables
+# `-trips` used to mean "this build includes the trips pages"; keep it working.
+if [ -z "$groups" ]; then
+  groups="$DEFAULT_GROUPS"
+fi
+if $trips && [ "$groups" != "all" ]; then
+  groups="$groups,trips"
+fi
+
 if [ "$deploy_env" == 'dev' ]; then
   s3_bucket="nextjs-dev-2"
   cf_id="E3T22L50EDEN1W"
-  cp .env.development .env.local
+  env_file=".env.development"
 elif [ "$deploy_env" == 'prod' ]; then
   s3_bucket="ttw-nextjs"
   cf_id="EW37HZUU6T8S9"
-  cp .env.production .env.local
+  env_file=".env.production"
 else
   s3_bucket="yourtrips-nextjs"
   cf_id="E28HVCR7LF1VH2"
-  cp .env.production .env.local
+  env_file=".env.production"
 fi
 
 echo S3_Bucket: $s3_bucket
 echo CloudFront_Distribution: $cf_id
+echo Page_Groups: $groups
 
-if [ -z "$s3_bucket" ]; then
-  echo S3_BUCKET not found
-  exit
+# ----------------------------------------------------------------- build
+
+if ! $deploy_only; then
+  cp "$env_file" .env.local
+
+  # Written before the build, not after: appended afterwards it only ever
+  # reached the *next* build, so every release was tagged with the previous
+  # one's number. .env.local is regenerated from $env_file above, so this also
+  # stops the committed env file collecting a duplicate line per deploy.
+  if [ ! -z "$BUILD_NUMBER" ]; then
+    echo "NEXT_PUBLIC_SENTRY_RELEASE=$BUILD_NUMBER" >> .env.local
+  fi
+
+  # Whatever happens next — a failed build, a Ctrl-C — pages/ goes back to how
+  # it was. Leaving a group parked outside the tree would silently drop those
+  # routes from the following build.
+  trap 'node scripts/pageGroups.js restore || true' EXIT
+
+  node scripts/pageGroups.js select "$groups"
+  npm run build
+  node scripts/pageGroups.js restore
+  trap - EXIT
+
+  if [ ! -d "out" ]; then
+      echo "Build folder not found"
+      exit 1
+  fi
+
+  # Create index file for every path
+  python3 index_path.py
+
+  # Attribute every exported file to the group that owns it. Local only, no AWS
+  # credentials needed, so this runs in CI's build step and travels to the
+  # deploy step as an artifact.
+  node scripts/s3Manifest.js build --groups="$groups"
 fi
 
-if [ -z "$cf_id" ]; then
-  echo CF_ID not found
-  exit
+if $build_only; then
+  echo "Build complete (--build-only); nothing was uploaded."
+  exit 0
 fi
 
-# Create build
-if ! $trips; then
-    node scripts/removeTripsPage.js prebuild || exit
-fi
-
-npm run build || exit
-
-if ! $trips; then
-    node scripts/removeTripsPage.js postbuild || exit
-fi
-
-# Add build number to env file
-if [ "$deploy_env" == 'dev' ]; then
-  echo "NEXT_PUBLIC_SENTRY_RELEASE=$BUILD_NUMBER" >> .env.development
-else
-  echo "NEXT_PUBLIC_SENTRY_RELEASE=$BUILD_NUMBER" >> .env.production
-fi
-
-# Check if build folder is present
 if [ ! -d "out" ]; then
     echo "Build folder not found"
     exit 1
 fi
 
-# Create index file for every path
-python3 index_path.py || exit
+# ---------------------------------------------------------------- upload
 
-# Upload build folder to S3
-echo Synching Build Folder: $s3_bucket...
-if $trips; then
-    aws s3 sync out/ s3://$s3_bucket --delete --cache-control max-age=31536000,public
+if $dry_run; then
+  echo "[dry-run] skipping upload and invalidation"
 else
-    aws s3 sync out/ s3://$s3_bucket --cache-control max-age=31536000,public
+  echo Synching Build Folder: $s3_bucket...
+
+  # Content-hashed and buildId-scoped, so it can be cached forever and never
+  # needs invalidating.
+  #
+  # Source maps are excluded: @sentry/nextjs turns them on to upload them, but
+  # SENTRY_AUTH_TOKEN is unset so nothing ever collects them — they were just
+  # sitting in the bucket, publicly fetchable, reconstructing the original
+  # source for anyone who asked. 177 files, 79 MB, 37% of the _next payload and
+  # the only uploads that were failing on a long-haul link. They are still
+  # written to out/ if you need to read one locally. To publish them again,
+  # drop this --exclude (and keep scripts/s3Manifest.js in step).
+  aws s3 sync out/ s3://$s3_bucket \
+    --exclude "*" --include "_next/*" --exclude "*.map" \
+    --cache-control "public,max-age=31536000,immutable" \
+    --only-show-errors
+
+  # Everything else — HTML, sitemaps, robots.txt, public assets — is served at
+  # a stable URL, so a year-long TTL made every deploy depend on a full
+  # invalidation landing before anyone saw the new build. Five minutes at the
+  # edge costs a rounding error in origin requests and removes that cliff.
+  aws s3 sync out/ s3://$s3_bucket \
+    --exclude "_next/*" --exclude "*.DS_Store" \
+    --cache-control "public,max-age=300,must-revalidate" \
+    --only-show-errors
+
+  # ------------------------------------------------------------ invalidate
+
+  if [ ! -z "$cf_id" ]; then
+      echo Invalidating cloudfront cache
+      invalidation_id=$(aws cloudfront create-invalidation \
+        --distribution-id $cf_id --paths "/*" \
+        --query Invalidation.Id --output text)
+
+      # Waiting is the point: the prune below removes objects the old HTML
+      # references, and the old HTML is gone from the edges only once this
+      # returns.
+      aws cloudfront wait invalidation-completed \
+        --distribution-id $cf_id --id "$invalidation_id"
+  fi
 fi
 
-# Create cache invalidation on cloudfront distribution
-if [ ! -z "$cf_id" ]; then
-    echo Invalidating cloudfront cache
-    aws cloudfront create-invalidation --distribution-id $cf_id --paths "/*"
+# ----------------------------------------------------------------- prune
+
+if $prune; then
+  # `if` rather than `cmd && append`: under `set -e` a false left-hand side is a
+  # failing command at the end of the script and would abort the deploy.
+  prune_args=(prune "--bucket=$s3_bucket")
+  if $reconcile; then prune_args+=(--reconcile); fi
+  if $dry_run; then prune_args+=(--dry-run); fi
+  node scripts/s3Manifest.js "${prune_args[@]}"
+else
+  echo "Skipping prune (--no-prune); stale objects left in place."
 fi
 
 echo "Deployment completed successfully!"

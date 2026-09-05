@@ -1,8 +1,30 @@
 image: node:18
 
+# Every pipeline delegates to ./s3-deploy.sh so CI and a laptop run the same
+# code path. The script owns which page groups get built, the upload, the
+# invalidation and the removal of stale objects — see its header.
+#
+# Page groups (node scripts/pageGroups.js list):
+#   core          always built — root pages, chat, dashboard, itinerary, assets
+#   themes        theme landing pages + /asia/thailand
+#   events        event landing pages
+#   destinations  2,306 continent/country/state/city pages — expensive, opt-in
+#   trips         1,865 SEO trips pages + a ~3 min crawl — expensive, opt-in
+#
+# A tag ships the cheap groups. To publish destinations or trips, run the
+# `deploy-prod` / `deploy-dev` custom pipeline and set GROUPS.
+
 definitions:
   caches:
     npm: ~/.npm
+    # Webpack's incremental cache. Without it every CI build recompiles the
+    # whole app from cold, which is most of the wall clock on a small release.
+    nextcache: .next/cache
+    # The trips prebuild snapshot. Restoring it turns the ~3 minute crawl of
+    # 1,718 itineraries into a fetch of only the ones whose modified_at moved;
+    # scripts/tripsSeoCache.js validates every entry, so a stale or missing
+    # cache costs time, never correctness.
+    seocache: .seo-cache
 
 pipelines:
   # Tag-based deployments (FULLY AUTOMATIC)
@@ -15,46 +37,42 @@ pipelines:
           caches:
             - node
             - npm
+            - nextcache
+            - seocache
           script:
             - echo "🚀 Tag-based deployment triggered"
             - echo "📌 Tag $BITBUCKET_TAG"
-            - echo "🔧 Building for Development environment..."
             - npm ci
             - apt-get update && apt-get install -y python3
             - export NODE_OPTIONS="--max-old-space-size=8192"
             - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
-            - cp .env.development .env.local
-            - npm run build
-            - python3 index_path.py
+            - ./s3-deploy.sh dev --groups="${GROUPS:-core,themes,events}" --build-only
             - echo "✅ Build completed successfully"
           artifacts:
             - out/**
-      
+            # What the deploy step prunes with. Without it the deploy step has
+            # no idea which files belong to which group and skips deletion.
+            - .deploy-work/**
+
       - step:
           name: Deploy to Development
           script:
             - echo "📦 Deploying to Development (S3 + CloudFront)..."
-            - echo "📌 Tag $BITBUCKET_TAG"
             - apt-get update && apt-get install -y awscli
             - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
             - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
             - export AWS_DEFAULT_REGION=$AWS_REGION
-            - echo "⬆️  Uploading to S3 bucket nextjs-dev-2"
-            - aws s3 sync out/ s3://nextjs-dev-2 --cache-control max-age=31536000,public
-            - echo "🔄 Invalidating CloudFront cache..."
-            - aws cloudfront create-invalidation --distribution-id E3T22L50EDEN1W --paths "/*"
+            - ./s3-deploy.sh dev --groups="${GROUPS:-core,themes,events}" --deploy-only
             - echo "✅ Deployment to Development completed successfully!"
-            - echo "📌 Deployed Tag $BITBUCKET_TAG"
           after-script:
             - |
               if [ $BITBUCKET_EXIT_CODE -ne 0 ]; then
                 echo "❌ DEPLOYMENT FAILED!"
                 echo "📌 Failed Tag $BITBUCKET_TAG"
                 echo "⚠️  Previous version still running on server"
-                echo "💡 Check logs above for error details"
               fi
-    
-    # Production deployment: tags starting with 'prod-' (FULLY AUTOMATIC - NO MANUAL APPROVAL)
+
+    # Production deployment: tags starting with 'prod-' (FULLY AUTOMATIC)
     prod-*:
       - step:
           name: Build for Production
@@ -62,58 +80,49 @@ pipelines:
           caches:
             - node
             - npm
+            - nextcache
+            - seocache
           script:
             - echo "🚀 Production deployment triggered"
             - echo "📌 Tag $BITBUCKET_TAG"
-            - echo "🔧 Building for Production environment..."
             - |
               BRANCH=$(git rev-parse --abbrev-ref HEAD)
               if [ "$BRANCH" != "main" ] && [ "$BRANCH" != "HEAD" ]; then
                 echo "❌ ERROR: Production tags MUST be pushed from 'main' branch"
                 echo "Current branch detected: $BRANCH"
-                echo "Please checkout main branch and push tag from there"
                 exit 1
               fi
             - npm ci
             - apt-get update && apt-get install -y python3
             - export NODE_OPTIONS="--max-old-space-size=8192"
             - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
-            - cp .env.production .env.local
-            - node scripts/removeTripsPage.js prebuild || exit 0
-            - npm run build
-            - node scripts/removeTripsPage.js postbuild || exit 0
-            - python3 index_path.py
+            - ./s3-deploy.sh prod --groups="${GROUPS:-core,themes,events}" --build-only
             - echo "✅ Build completed successfully"
           artifacts:
             - out/**
-      
+            - .deploy-work/**
+
       - step:
           name: Deploy to Production
           script:
             - echo "📦 Deploying to Production (S3 + CloudFront)..."
-            - echo "📌 Tag $BITBUCKET_TAG"
             - echo "⚠️  PRODUCTION DEPLOYMENT IN PROGRESS"
             - apt-get update && apt-get install -y awscli
             - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
             - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
             - export AWS_DEFAULT_REGION=$AWS_REGION
-            - echo "⬆️  Uploading to S3 bucket ttw-nextjs"
-            - aws s3 sync out/ s3://ttw-nextjs --cache-control max-age=31536000,public
-            - echo "🔄 Invalidating CloudFront cache..."
-            - aws cloudfront create-invalidation --distribution-id EW37HZUU6T8S9 --paths "/*"
+            - ./s3-deploy.sh prod --groups="${GROUPS:-core,themes,events}" --deploy-only
             - echo "✅ PRODUCTION DEPLOYMENT COMPLETED SUCCESSFULLY!"
-            - echo "📌 Deployed Tag $BITBUCKET_TAG"
             - echo "🌐 Production is now live with this version"
           after-script:
             - |
               if [ $BITBUCKET_EXIT_CODE -ne 0 ]; then
                 echo "❌ PRODUCTION DEPLOYMENT FAILED!"
                 echo "📌 Failed Tag $BITBUCKET_TAG"
-                echo "⚠️  CRITICAL: Check production status immediately"
-                echo "💡 Previous version may still be running"
-                echo "🔙 Consider rollback to previous tag if needed"
+                echo "💡 Nothing is deleted before the CDN invalidation completes,"
+                echo "   so a failure here leaves the previous build serving."
               fi
-    
+
     # YourTrips deployment: tags starting with 'yourtrips-'
     yourtrips-*:
       - step:
@@ -122,41 +131,114 @@ pipelines:
           caches:
             - node
             - npm
+            - nextcache
+            - seocache
           script:
-            - echo "🚀 YourTrips deployment triggered"
-            - echo "📌 Tag $BITBUCKET_TAG"
-            - echo "🔧 Building for YourTrips environment..."
             - npm ci
             - apt-get update && apt-get install -y python3
             - export NODE_OPTIONS="--max-old-space-size=8192"
             - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
-            - cp .env.production .env.local
-            - npm run build
-            - python3 index_path.py
-            - echo "✅ Build completed successfully"
+            - ./s3-deploy.sh yourtrips --all --build-only
           artifacts:
             - out/**
-      
+            - .deploy-work/**
+
       - step:
           name: Deploy to YourTrips
           script:
-            - echo "📦 Deploying to YourTrips (S3 + CloudFront)..."
-            - echo "📌 Tag $BITBUCKET_TAG"
             - apt-get update && apt-get install -y awscli
             - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
             - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
             - export AWS_DEFAULT_REGION=$AWS_REGION
-            - echo "⬆️  Uploading to S3 bucket yourtrips-nextjs"
-            - aws s3 sync out/ s3://yourtrips-nextjs --delete --cache-control max-age=31536000,public
-            - echo "🔄 Invalidating CloudFront cache..."
-            - aws cloudfront create-invalidation --distribution-id E28HVCR7LF1VH2 --paths "/*"
-            - echo "✅ Deployment to YourTrips completed successfully!"
-            - echo "📌 Deployed Tag $BITBUCKET_TAG"
-          after-script:
+            - ./s3-deploy.sh yourtrips --all --deploy-only
+
+  # Manually triggered deployments, for when a release has to include one of the
+  # expensive groups (or to re-publish a single group on its own).
+  custom:
+    deploy-prod:
+      - variables:
+          - name: GROUPS
+            default: "core,themes,events"
+            description: "Page groups to build. 'all' builds everything. destinations ≈ +2,306 pages, trips ≈ +1,865 pages and a ~3 min crawl."
+          - name: RECONCILE
+            default: "false"
+            allowed-values: ["false", "true"]
+            description: "Also sweep group-owned prefixes — clears the 658 legacy /trips/<group_type>/ pages on a trips deploy."
+          - name: DRY_RUN
+            default: "false"
+            allowed-values: ["false", "true"]
+            description: "Build and report what would be deleted, change nothing on S3."
+      - step:
+          name: Build for Production (custom groups)
+          size: 4x
+          caches:
+            - node
+            - npm
+            - nextcache
+            - seocache
+          script:
             - |
-              if [ $BITBUCKET_EXIT_CODE -ne 0 ]; then
-                echo "❌ YOURTRIPS DEPLOYMENT FAILED!"
-                echo "📌 Failed Tag $BITBUCKET_TAG"
-                echo "⚠️  Previous version still running"
-                echo "💡 Check logs for error details"
+              BRANCH=$(git rev-parse --abbrev-ref HEAD)
+              if [ "$BRANCH" != "main" ] && [ "$BRANCH" != "HEAD" ]; then
+                echo "❌ ERROR: production deploys must run from 'main'"
+                exit 1
               fi
+            - npm ci
+            - apt-get update && apt-get install -y python3
+            - export NODE_OPTIONS="--max-old-space-size=8192"
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - ./s3-deploy.sh prod --groups="$GROUPS" --build-only
+          artifacts:
+            - out/**
+            - .deploy-work/**
+
+      - step:
+          name: Deploy to Production (custom groups)
+          script:
+            - apt-get update && apt-get install -y awscli
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=$AWS_REGION
+            - |
+              FLAGS=""
+              if [ "$RECONCILE" = "true" ]; then FLAGS="$FLAGS --reconcile"; fi
+              if [ "$DRY_RUN" = "true" ]; then FLAGS="$FLAGS --dry-run"; fi
+              ./s3-deploy.sh prod --groups="$GROUPS" --deploy-only $FLAGS
+
+    deploy-dev:
+      - variables:
+          - name: GROUPS
+            default: "core,themes,events"
+            description: "Page groups to build. 'all' builds everything."
+          - name: RECONCILE
+            default: "false"
+            allowed-values: ["false", "true"]
+      - step:
+          name: Build for Development (custom groups)
+          size: 4x
+          caches:
+            - node
+            - npm
+            - nextcache
+            - seocache
+          script:
+            - npm ci
+            - apt-get update && apt-get install -y python3
+            - export NODE_OPTIONS="--max-old-space-size=8192"
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - ./s3-deploy.sh dev --groups="$GROUPS" --build-only
+          artifacts:
+            - out/**
+            - .deploy-work/**
+
+      - step:
+          name: Deploy to Development (custom groups)
+          script:
+            - apt-get update && apt-get install -y awscli
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=$AWS_REGION
+            - |
+              FLAGS=""
+              if [ "$RECONCILE" = "true" ]; then FLAGS="$FLAGS --reconcile"; fi
+              ./s3-deploy.sh dev --groups="$GROUPS" --deploy-only $FLAGS

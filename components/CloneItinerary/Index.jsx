@@ -37,7 +37,14 @@ const cityToLocation = (c) => {
   if (!c) return null;
   const place_id = c.gmaps_place_id || c.place_id || null;
   const name = c.city_name || c.name || c.text || null;
-  if (!place_id && !name) return null;
+  // A place_id is required, not merely preferred: handleUpdate submits
+  // `start_location: startingLocation.place_id` and refuses without one. The
+  // V1 archive's start_city carries only a name — Mercury's carries a
+  // gmaps_place_id — so accepting a name-only value pre-filled the picker with
+  // "Raipur" and then failed with "Please select a start location" on submit.
+  // Returning null leaves the picker genuinely empty, so what the form shows
+  // and what it will accept agree.
+  if (!place_id) return null;
   return {
     name,
     place_id,

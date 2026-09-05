@@ -13,9 +13,9 @@
 // panels are visually identical — same avatar, header, message bubble and
 // composer. Only the content differs: one clone message, and nothing to send.
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { ItineraryCloneCta } from "./MessageBubble";
+import { ItineraryCloneCta, MessageBubble } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
 import CloneItineraryModal from "./CloneItineraryModal";
 import BotLoginModal from "./BotLoginModal";
@@ -23,6 +23,13 @@ import BotLoginModal from "./BotLoginModal";
 interface ArchiveChatPanelProps {
   /** Source itinerary for the clone — the archived itinerary being viewed. */
   itineraryId?: string;
+  /**
+   * Optional opening line from Kaira, shown as a real message bubble above the
+   * clone card. The /trips leaf pages pass their trip description here so the
+   * panel reads as an introduction to the plan rather than a bare CTA; an
+   * archived itinerary has no such text and passes nothing.
+   */
+  introMessage?: string;
 }
 
 // Trimmed from ChatKitPanel's stylesheet: only the header and bubble rules this
@@ -77,10 +84,33 @@ const ARCHIVE_PANEL_CSS = `
   }
 `;
 
-const ArchiveChatPanel: React.FC<ArchiveChatPanelProps> = ({ itineraryId }) => {
+const ArchiveChatPanel: React.FC<ArchiveChatPanelProps> = ({
+  itineraryId,
+  introMessage,
+}) => {
   const [showCloneModal, setShowCloneModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const token = useSelector((state: any) => state?.auth?.token);
+
+  // A synthetic assistant turn so the intro renders through the real
+  // <MessageBubble> — same avatar, bubble and type treatment the live chat
+  // uses — rather than a lookalike that would drift from it. The timestamp is
+  // fixed rather than `new Date()`: this page is statically exported, so a live
+  // clock would differ between the pre-rendered HTML and the client render and
+  // trip a hydration mismatch.
+  const introBubble = useMemo(
+    () =>
+      introMessage?.trim()
+        ? {
+            id: "trip-intro",
+            role: "assistant" as const,
+            content: introMessage.trim(),
+            timestamp: new Date(0),
+            type: "text" as const,
+          }
+        : null,
+    [introMessage],
+  );
 
   return (
     <div className="kp-root flex flex-col h-full min-h-0 bg-white max-h-[100dvh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden">
@@ -111,6 +141,7 @@ const ArchiveChatPanel: React.FC<ArchiveChatPanelProps> = ({ itineraryId }) => {
           It hides itself when the itinerary has no owner, which is why the
           adapter fills `customer_name` in from the archive's title. */}
       <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
+        {introBubble && <MessageBubble message={introBubble} />}
         <ItineraryCloneCta
           onRequestLogin={() => setShowLoginModal(true)}
           onCreateVersion={() => setShowCloneModal(true)}

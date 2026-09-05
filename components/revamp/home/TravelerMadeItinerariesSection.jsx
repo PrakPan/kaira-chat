@@ -11,7 +11,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-import Itinerary1Carousel from "../../theme/Itinerary1Carousel";
+import ThemeItineraryRail from "./ThemeItineraryRail";
 import Button from "../common/components/button";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -3666,7 +3666,9 @@ const TravelerMadeItinerariesSection = (props) => {
 
         {/* Itineraries Slider */}
         <div className="relative px-2 sm:px-0">
-          <Itinerary1Carousel itineraries={props?.corporates ? corporateItineraries : itineraries} />
+          <ThemeItineraryRail
+            itineraries={props?.corporates ? corporateItineraries : itineraries}
+          />
           {/* <Swiper
             style={{ height: "677px" }}
             modules={[Navigation]}

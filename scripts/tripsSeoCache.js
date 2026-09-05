@@ -28,15 +28,24 @@ const CACHE_DIR = path.join(process.cwd(), ".seo-cache");
 const PAGES_DIR = path.join(CACHE_DIR, "trips");
 const INDEX_FILE = path.join(CACHE_DIR, "trips-index.json");
 
-// s3-deploy.sh moves pages/trips out of the tree unless the deploy was invoked
-// with -trips, so a normal release does not rebuild the leaf pages. Fetching
-// 1,718 bodies for pages this build will not emit would add ~10 minutes to
-// every deploy for nothing. The index is still fetched either way: the sitemap
-// must keep listing the trips URLs that are already live on S3.
+// scripts/pageGroups.js moves pages/trips out of the tree unless the deploy
+// selected the trips group, so a normal release does not rebuild the leaf
+// pages. Fetching 1,718 bodies for pages this build will not emit would add
+// ~10 minutes to every deploy for nothing. The index is still fetched either
+// way: the sitemap must keep listing the trips URLs that are already live on
+// S3, which a partial deploy leaves untouched.
 const TRIPS_IN_BUILD = fs.existsSync(path.join(process.cwd(), "pages", "trips"));
 
-const CONCURRENCY = 10;
+// Mercury is the constraint, not us: 10 in flight is what it was tuned to.
+// Raise it with TRIPS_CACHE_CONCURRENCY when you know the backend can take it.
+const CONCURRENCY = Number(process.env.TRIPS_CACHE_CONCURRENCY || 10);
 const ATTEMPTS = 3;
+
+// A full crawl is 1,718 x 2 upstream calls, ~2m45s of a -trips build spent
+// re-fetching itineraries that have not changed. The index row carries the
+// trip's own modified_at, so a cached page whose stamp still matches is reused
+// and never refetched. TRIPS_CACHE_FORCE=1 crawls everything regardless.
+const FORCE = process.env.TRIPS_CACHE_FORCE === "1";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -89,11 +98,34 @@ const buildPage = async (row) => {
 
   fs.writeFileSync(
     path.join(PAGES_DIR, `${row.slug}.json`),
-    JSON.stringify({ ...detail, days: content?.days || [], stays: content?.stays || [] }),
+    JSON.stringify({
+      ...detail,
+      days: content?.days || [],
+      stays: content?.stays || [],
+      // Stamped so the next crawl can tell whether this file is still current.
+      // Prefixed because everything else in here is the API's own shape and
+      // reaches the page as props.
+      _cached_modified_at: row.modified_at || null,
+    }),
     "utf8"
   );
 
   return { slug: row.slug, ok: true, hasBody: Boolean(content?.days?.length) };
+};
+
+/** The cached page for a row, if it was written for this exact modified_at. */
+const reusable = (row) => {
+  if (FORCE || !row.modified_at) return null;
+
+  const file = path.join(PAGES_DIR, `${row.slug}.json`);
+  if (!fs.existsSync(file)) return null;
+
+  try {
+    const cached = JSON.parse(fs.readFileSync(file, "utf8"));
+    return cached._cached_modified_at === row.modified_at ? cached : null;
+  } catch (err) {
+    return null;
+  }
 };
 
 const run = async () => {
@@ -119,13 +151,33 @@ const run = async () => {
   const results = [];
   const started = Date.now();
 
-  await mapPool(rows, async (row) => {
+  // Split before crawling so the log says up front how much work there is.
+  const stale = [];
+  for (const row of rows) {
+    const cached = reusable(row);
+    if (cached) results.push({ slug: row.slug, ok: true, hasBody: Boolean(cached.days?.length) });
+    else stale.push(row);
+  }
+
+  console.log(
+    `[trips-seo] ${results.length} unchanged since the last crawl, ${stale.length} to fetch`
+  );
+
+  await mapPool(stale, async (row) => {
     results.push(await buildPage(row));
 
     if (results.length % 250 === 0) {
       console.log(`[trips-seo] ${results.length}/${rows.length} pages cached`);
     }
   });
+
+  // Slugs the backend has dropped keep a file here forever otherwise. Nothing
+  // reads them — pages and sitemap both iterate the index — but the cache is a
+  // CI artifact now, so it may as well not grow without bound.
+  const known = new Set(rows.map((row) => `${row.slug}.json`));
+  for (const file of fs.readdirSync(PAGES_DIR)) {
+    if (!known.has(file)) fs.rmSync(path.join(PAGES_DIR, file), { force: true });
+  }
 
   const ok = results.filter((r) => r.ok);
   const withBody = ok.filter((r) => r.hasBody);

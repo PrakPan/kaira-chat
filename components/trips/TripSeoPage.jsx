@@ -17,6 +17,7 @@ import styled from "styled-components";
 
 import ItineraryCardV2 from "../revamp/destination/ItineraryCardV2";
 import FaqSection from "../revamp/home/FaqSection";
+import TripItineraryView from "./TripItineraryView";
 // See TripsHub: the card's `--ttw-*` tokens live on `.ttwRevamp`, not :root.
 import revamp from "../../styles/pages/revamp/home.module.scss";
 import { optimizedImageUrl, resolveImageUrl } from "../../helper/imageUrl";
@@ -45,22 +46,6 @@ const Article = styled.article`
   }
 `;
 
-const Crumbs = styled.nav`
-  font-size: 13px;
-  color: #6b6b6b;
-  margin-bottom: 18px;
-
-  a {
-    color: #6b6b6b;
-    text-decoration: none;
-  }
-  a:hover {
-    text-decoration: underline;
-  }
-  span[aria-hidden] {
-    padding: 0 6px;
-  }
-`;
 
 // The editorial headings across the itinerary views are Inter Medium, not bold.
 const Title = styled.h1`
@@ -71,47 +56,9 @@ const Title = styled.h1`
   margin: 0 0 14px;
 `;
 
-const Hero = styled.figure`
-  margin: 0 0 22px;
-  border-radius: 14px;
-  overflow: hidden;
-  background: #f0efec;
 
-  img {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-  }
-`;
 
-const Facts = styled.ul`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  list-style: none;
-  margin: 0 0 22px;
-  padding: 0;
 
-  li {
-    font-size: 13px;
-    color: #3d3d3d;
-    background: #f4f3f0;
-    border-radius: 999px;
-    padding: 5px 12px;
-  }
-`;
-
-const Intro = styled.p`
-  font-size: 17px;
-  color: #2b2b2b;
-  margin: 0 0 28px;
-`;
-
-const Section = styled.section`
-  margin: 0 0 38px;
-`;
 
 const SectionTitle = styled.h2`
   font-size: clamp(20px, 2.6vw, 25px);
@@ -122,215 +69,110 @@ const SectionTitle = styled.h2`
 
 // ── Route strip ─────────────────────────────────────────────────────────────
 
-const Route = styled.ol`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-
-  li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 15px;
-  }
-
-  li + li::before {
-    content: "→";
-    color: #a5a5a5;
-  }
-
-  strong {
-    font-weight: 500;
-  }
-
-  em {
-    font-style: normal;
-    color: #6b6b6b;
-    font-size: 13px;
-  }
-`;
 
 // ── Price ───────────────────────────────────────────────────────────────────
 
-const Price = styled.div`
-  border: 1px solid #e6e4df;
-  border-radius: 14px;
-  padding: 18px 20px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
 
-  .amount {
-    font-size: 26px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-
-  .caption {
-    font-size: 13px;
-    color: #6b6b6b;
-    margin-top: 2px;
-  }
-`;
-
-const Cta = styled.a`
-  display: inline-block;
-  background: #1c1c1c;
-  color: #fff;
-  border-radius: 999px;
-  padding: 12px 24px;
-  font-size: 15px;
-  font-weight: 500;
-  text-decoration: none;
-
-  &:hover {
-    background: #333;
-    color: #fff;
-  }
-`;
 
 // ── Day by day ──────────────────────────────────────────────────────────────
 
-const Days = styled.ol`
-  list-style: none;
-  margin: 0;
-  padding: 0;
-`;
 
-const Day = styled.li`
-  border-left: 2px solid #ecebe7;
-  padding: 0 0 26px 20px;
-  position: relative;
 
-  &:last-child {
-    padding-bottom: 0;
-    border-left-color: transparent;
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    left: -5px;
-    top: 7px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #c9c7c0;
-  }
-
-  h3 {
-    font-size: 15px;
-    font-weight: 500;
-    margin: 0 0 4px;
-  }
-
-  .where {
-    font-size: 13px;
-    color: #6b6b6b;
-    margin: 0 0 10px;
-  }
-
-  .summary {
-    font-size: 15px;
-    color: #2b2b2b;
-    margin: 0 0 10px;
-  }
-`;
-
-const Elements = styled.ul`
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 10px;
-
-  li {
-    background: #faf9f7;
-    border-radius: 10px;
-    padding: 12px 14px;
-  }
-
-  .band {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: #8a8a8a;
-  }
-
-  .heading {
-    font-size: 15px;
-    font-weight: 500;
-    margin: 2px 0 0;
-  }
-
-  .one-liner {
-    font-size: 14px;
-    color: #5a5a5a;
-    margin: 4px 0 0;
-  }
-`;
 
 // ── Stays / FAQs / links ────────────────────────────────────────────────────
 
-const Stays = styled.ul`
+
+
+
+
+// ── Itinerary-column chrome ─────────────────────────────────────────────────
+
+// Sits above the day-by-day, inside the itinerary column. Deliberately compact:
+// the page opens on the itinerary itself, so this only has to name the trip and
+// state its shape.
+const ColumnHead = styled.header`
+  padding: 22px 4px 4px;
+
+  h1 {
+    font-family: "Geist", "Inter", system-ui, -apple-system, sans-serif;
+    font-size: clamp(23px, 2.6vw, 30px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    color: #0b1220;
+    margin: 0 0 10px;
+  }
+`;
+
+const Facts = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 8px;
 
   li {
-    font-size: 15px;
-  }
-
-  em {
-    font-style: normal;
-    color: #6b6b6b;
-    font-size: 13px;
+    font-size: 12.5px;
+    color: #3d3d3d;
+    background: #f4f3f0;
+    border-radius: 999px;
+    padding: 4px 11px;
   }
 `;
 
-// Same two-up grid the hubs use, so a card keeps the proportions it was drawn
-// at (its image column is a fixed 240px).
-const SiblingCards = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 22px;
+// ── Sections under the day-by-day ───────────────────────────────────────────
 
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-  }
+const BelowSections = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  padding: 8px 4px 56px;
 `;
 
-const Related = styled.nav`
-  font-size: 15px;
+const ListTitle = styled.h2`
+  font-family: "Geist", "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #0b1220;
+  margin: 0 0 12px;
+`;
 
-  ul {
-    list-style: none;
-    margin: 10px 0 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+// Same divided-list treatment the V1 transfers section uses, so these read as
+// part of the itinerary rather than as a separate marketing block.
+const TripList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #ececec;
+
+  li {
+    border-bottom: 1px solid #ececec;
   }
 
   a {
-    display: inline-block;
-    border: 1px solid #e6e4df;
-    border-radius: 999px;
-    padding: 7px 14px;
-    color: #1c1c1c;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 2px;
     text-decoration: none;
-    font-size: 14px;
+    color: #0b1220;
   }
 
-  a:hover {
-    border-color: #c9c7c0;
+  a:hover .name {
+    color: #1f6feb;
+  }
+
+  .name {
+    font-size: 14.5px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .meta {
+    font-size: 12px;
+    color: #7a828d;
   }
 `;
 
@@ -354,7 +196,14 @@ export const heroImageUrl = (page) => resolveImageUrl(heroImageRef(page)) || DEF
 
 // ── Component ───────────────────────────────────────────────────────────────
 
-const TripSeoPage = ({ page, siblings = [] }) => {
+const TripSeoPage = ({
+  page,
+  siblings = [],
+  // Build-time itinerary state for the V1 view. `stays` is renamed on the way
+  // in because the raw snapshot also has a `stays` key with a different shape.
+  itinerary = null,
+  stays: itineraryStays = [],
+}) => {
   const {
     id,
     name,
@@ -365,8 +214,6 @@ const TripSeoPage = ({ page, siblings = [] }) => {
     intro,
     cities = [],
     faqs = [],
-    days = [],
-    stays = [],
   } = page;
 
   const region = destinationLabel(destination);
@@ -375,177 +222,84 @@ const TripSeoPage = ({ page, siblings = [] }) => {
   const hero = heroImageRef(page);
 
   return (
-    <Article>
-      <Crumbs aria-label="Breadcrumb">
-        <Link href="/trips">Trips</Link>
-        <span aria-hidden="true">/</span>
-        <Link href={hubHref}>{region}</Link>
-        <span aria-hidden="true">/</span>
-        <span>{durationLabel(duration) || name}</span>
-      </Crumbs>
+    // No article chrome: no breadcrumb strip, hero figure, fact pills or price
+    // box. This page is the itinerary, laid out exactly as V1 — 50/50
+    // itinerary/chat — and everything the old header carried is either in the
+    // itinerary column's own head or in Kaira's opening message.
+    <TripItineraryView
+      itinerary={itinerary}
+      stays={itineraryStays}
+      introMessage={intro}
+      header={
+        <ColumnHead>
+          {/* The page's only h1. The article chrome above it is gone, but a
+              trips leaf still has to name itself for search — and V1 shows the
+              itinerary's name at the top of its itinerary panel too, so this
+              matches rather than departs from it. */}
+          <h1>{name}</h1>
+          <Facts>
+            {durationLabel(duration) && <li>{durationLabel(duration)}</li>}
+            {region && <li>{region}</li>}
+            {groupType && <li>{groupType}</li>}
+            {perPerson && <li>From {formatINR(perPerson)} per person</li>}
+          </Facts>
+        </ColumnHead>
+      }
+      below={
+        // Stacked under the day-by-day in the itinerary column, the same place
+        // and the same list treatment the V1 transfers section uses — so the
+        // page reads as one document and every one of these stays a real,
+        // crawlable item rather than something a script reveals later.
+        <BelowSections>
+          {faqs.length > 0 && (
+            <FaqSection
+              heading="Questions people ask"
+              lede={`About this ${region} trip.`}
+              Faqs={faqs.map((faq) => ({
+                question: faq.q,
+                answer: faq.a,
+              }))}
+            />
+          )}
 
-      <Title>{name}</Title>
-
-      {hero && (
-        <Hero>
-          {/* Explicit dimensions + high priority: this is the LCP element, and
-              a plain <img> keeps it in the HTML for crawlers that never run the
-              image component's client code. */}
-          <img
-            src={optimizedImageUrl(hero, { width: 1200 })}
-            alt={name}
-            width={1200}
-            height={675}
-            fetchpriority="high"
-            decoding="async"
-          />
-        </Hero>
-      )}
-
-      <Facts>
-        {durationLabel(duration) && <li>{durationLabel(duration)}</li>}
-        {region && <li>{region}</li>}
-        {groupType && <li>{groupType} trip</li>}
-        {cities.length > 0 && (
-          <li>
-            {cities.length} {cities.length === 1 ? "stop" : "stops"}
-          </li>
-        )}
-      </Facts>
-
-      {intro && <Intro>{intro}</Intro>}
-
-      {cities.length > 0 && (
-        <Section>
-          <SectionTitle>Where you go</SectionTitle>
-          <Route>
-            {cities.map((city, index) => (
-              <li key={`${city.name}-${index}`}>
-                <span>
-                  <strong>{city.name}</strong>{" "}
-                  {nightsLabel(city.nights) && <em>{nightsLabel(city.nights)}</em>}
-                </span>
-              </li>
-            ))}
-          </Route>
-        </Section>
-      )}
-
-      {perPerson && (
-        <Section>
-          <Price>
-            <div>
-              <div className="amount">From {formatINR(perPerson)}</div>
-              <div className="caption">
-                per person, twin sharing — stays, transfers and listed activities
-                included
-              </div>
-            </div>
-            <Cta href={`/itinerary/${id}`}>Customise this trip</Cta>
-          </Price>
-        </Section>
-      )}
-
-      {days.length > 0 && (
-        <Section>
-          <SectionTitle>Day by day</SectionTitle>
-          <Days>
-            {days.map((day) => (
-              <Day key={day.day}>
-                <h3>Day {day.day}</h3>
-                {day.cities?.length > 0 && (
-                  <p className="where">{day.cities.join(" → ")}</p>
-                )}
-                {day.summaries?.map((summary, index) => (
-                  <p className="summary" key={index}>
-                    {summary}
-                  </p>
+          {siblings.length > 0 && (
+            <section>
+              <ListTitle>More {region} trips</ListTitle>
+              <TripList>
+                {siblings.map((sibling) => (
+                  <li key={sibling.path || sibling.name}>
+                    <Link href={`/${sibling.path}`}>
+                      <span className="name">{sibling.name}</span>
+                      {sibling.includes?.length > 0 && (
+                        <span className="meta">
+                          {sibling.includes.join(" · ")}
+                        </span>
+                      )}
+                    </Link>
+                  </li>
                 ))}
-                {day.elements?.length > 0 && (
-                  <Elements>
-                    {day.elements.map((element, index) => (
-                      <li key={index}>
-                        {element.band && <span className="band">{element.band}</span>}
-                        <p className="heading">{element.heading}</p>
-                        {element.oneLiner && (
-                          <p className="one-liner">{element.oneLiner}</p>
-                        )}
-                      </li>
-                    ))}
-                  </Elements>
-                )}
-              </Day>
-            ))}
-          </Days>
-        </Section>
-      )}
+              </TripList>
+            </section>
+          )}
 
-      {stays.length > 0 && (
-        <Section>
-          <SectionTitle>Where you stay</SectionTitle>
-          <Stays>
-            {stays.map((stay, index) => (
-              <li key={`${stay.name}-${index}`}>
-                {stay.name}{" "}
-                <em>
-                  {[stay.city, stay.stars ? `${stay.stars}-star` : null]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </em>
+          <section>
+            <ListTitle>Browse more</ListTitle>
+            <TripList>
+              <li>
+                <Link href={hubHref}>
+                  <span className="name">All {region} itineraries</span>
+                </Link>
               </li>
-            ))}
-          </Stays>
-        </Section>
-      )}
-
-    
-
-      {siblings.length > 0 && (
-        <Section>
-          <SectionTitle>More {region} trips</SectionTitle>
-          <div className={revamp.ttwRevamp}>
-            <SiblingCards>
-              {siblings.map((sibling) => (
-                <ItineraryCardV2
-                  key={sibling.path || sibling.name}
-                  itinerary={sibling}
-                  currency={sibling.currency}
-                />
-              ))}
-            </SiblingCards>
-          </div>
-        </Section>
-      )}
-
-      <Section>
-        <Related aria-label={`All ${region} trips`}>
-          <ul>
-            <li>
-              <Link href={hubHref}>All {region} itineraries</Link>
-            </li>
-          </ul>
-        </Related>
-      </Section>
-
-        {faqs.length > 0 && (
-        <Section>
-          {/* Built from the same objects the FAQPage JSON-LD is — Google flags
-              markup whose answers aren't on the page. The accordion collapses
-              with max-height rather than unmounting, so every answer is still
-              in the served HTML. */}
-          <FaqSection
-            heading="Questions people ask"
-            lede={`About this ${region} trip.`}
-            Faqs={faqs.map((faq) => ({
-              question: faq.q,
-              answer: faq.a,
-            }))}
-          />
-        </Section>
-      )}
-    </Article>
-
-
+              <li>
+                <Link href="/trips">
+                  <span className="name">All trip itineraries</span>
+                </Link>
+              </li>
+            </TripList>
+          </section>
+        </BelowSections>
+      }
+    />
   );
 };
 

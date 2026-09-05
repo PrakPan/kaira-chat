@@ -20,6 +20,7 @@ import TripSeoPage, { heroImageUrl } from "../../../components/trips/TripSeoPage
 import { SITE_ORIGIN } from "../../../lib/seo/tripsIndexed";
 import { readTripPage, readTripsIndex } from "../../../lib/seo/tripsCache";
 import { tripCard } from "../../../lib/seo/tripsCards";
+import { tripItinerary } from "../../../lib/seo/tripItinerary";
 import {
   breadcrumbSchema,
   faqSchema,
@@ -35,7 +36,7 @@ const jsonLd = (schema) =>
     />
   ) : null;
 
-const IndexedTrip = ({ page, siblings, schemas }) => {
+const IndexedTrip = ({ page, itinerary, stays, siblings, schemas }) => {
   const canonical = `${SITE_ORIGIN}${page.url}`;
   const ogImage = heroImageUrl(page);
 
@@ -69,7 +70,12 @@ const IndexedTrip = ({ page, siblings, schemas }) => {
         {jsonLd(schemas.breadcrumb)}
       </Head>
 
-      <TripSeoPage page={page} siblings={siblings} />
+      <TripSeoPage
+        page={page}
+        itinerary={itinerary}
+        stays={stays}
+        siblings={siblings}
+      />
     </Layout>
   );
 };
@@ -129,9 +135,16 @@ export async function getStaticProps({ params }) {
 
   const rows = readTripsIndex();
 
+  // The day-by-day is rendered by the V1 itinerary view, which reads Redux —
+  // so the state it needs is built here, at build time, and seeded during the
+  // first render. See components/trips/TripItineraryView.
+  const view = tripItinerary(page) || { itinerary: null, stays: [] };
+
   return {
     props: {
       page,
+      itinerary: view.itinerary,
+      stays: view.stays,
       siblings: pickSiblings(rows, page),
       schemas: {
         trip: touristTripSchema(page),

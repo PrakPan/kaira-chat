@@ -438,7 +438,16 @@ const CityItem = ({
   const [airportBookingId, setAirportBookingId] = useState(null);
 
 
-  let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  // Guarded because this component is now server-rendered: the /trips leaf
+  // pages render the itinerary tree during the static export, and an unguarded
+  // `window` here threw "window is not defined" and 500'd the page. Everywhere
+  // else this tree is client-only, so the branch is unchanged in practice — and
+  // on the trips pages CityItem returns null anyway (read-only archive view),
+  // so the server-side default is never what gets painted.
+  let isPageWide =
+    typeof window !== "undefined"
+      ? window.matchMedia("(min-width: 768px)")?.matches
+      : true;
   const auth = useSelector(state=>state.auth);
   const {customer} = useSelector(state=>state.Itinerary)
 
