@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { FaPassport, FaSimCard } from "react-icons/fa";
 import { MdOutlineHotel, MdOutlineLocalActivity } from "react-icons/md";
 import { RiWhatsappFill } from "react-icons/ri";
@@ -19,6 +19,7 @@ import {
   addAncillaryBooking,
   removeAncillaryBooking,
 } from "../../../../store/actions/ancillaryBookings";
+import AddTravellerDetails from "../../../modals/passenger-details/AddTravellerDetails";
 import VisaSearchDrawer from "../../../drawers/visaDetails/VisaSearchDrawer";
 import EsimPackagesDrawer from "../../../drawers/esimDetails/EsimPackagesDrawer";
 import DetailSheet from "./DetailSheet";
@@ -126,10 +127,62 @@ const BOOKING_TYPE_FOR_CATEGORY = {
 //  cart the traveller was checking out is about to change, so leaving it up
 //  behind the answer would be showing them a total that is already stale.
 
+// "11h 29m 42s" — the desktop drawer's Hours / Mins / Secs timer, as one line
+// small enough for the sheet's header. The units are spelled out rather than
+// colon-separated: "11:29:42" beside a price reads as a duration only once you
+// have worked out that it is one, and on a checkout header it can just as
+// easily be mistaken for a time of day. Fields are zero-padded once a larger
+// one is present, so the line doesn't reflow as the digits tick down, and an
+// empty leading field is dropped entirely — "00h" is noise.
+const clock = (seconds) => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  const pad = (n) => String(n).padStart(2, "0");
+  if (h > 0) return `${h}h ${pad(m)}m ${pad(s)}s`;
+  if (m > 0) return `${m}m ${pad(s)}s`;
+  return `${s}s`;
+};
+
 const cartDate = (value) => {
   if (!value) return null;
   const d = new Date(value);
   return Number.isNaN(d.getTime()) ? null : format(d, "MMM dd");
+};
+
+// ─── Who is travelling ───────────────────────────────────────────────────────
+//
+//  The desktop cart opens on a header naming the lead traveller, the pax, the
+//  dates and the trip, with "Add traveller details" beside it. On the phone
+//  that header was the first thing in the drawer too — and this sheet replaced
+//  the drawer without it, so the one link to the traveller-details form
+//  disappeared from checkout. The traveller only met the form when "Pay now"
+//  refused to open the gateway (NewBookingSlide gates on an empty `travellers`
+//  array), which is a gate discovered at the worst moment.
+//
+//  So the header comes back, as this sheet's first card, and the form it opens
+//  is the SAME AddTravellerDetails the drawer uses — in a sheet on top of this
+//  one rather than a right-anchored drawer.
+
+/** "3 Adults, 1 Child" — the itinerary's pax, zero groups left out. */
+const paxLabel = (itinerary) => {
+  const adults = Number(itinerary?.number_of_adults) || 0;
+  const children = Number(itinerary?.number_of_children) || 0;
+  const infants = Number(itinerary?.number_of_infants) || 0;
+  const parts = [];
+  if (adults) parts.push(`${adults} Adult${adults === 1 ? "" : "s"}`);
+  if (children)
+    parts.push(`${children} ${children === 1 ? "Child" : "Children"}`);
+  if (infants) parts.push(`${infants} Infant${infants === 1 ? "" : "s"}`);
+  return parts.join(", ");
+};
+
+// parseISO, not `new Date`: the itinerary's dates are date-only ("2026-11-27"),
+// which `new Date` reads as UTC midnight — a day early anywhere west of GMT.
+const tripDate = (value) => {
+  if (!value) return null;
+  const d = parseISO(String(value));
+  return Number.isNaN(d.getTime()) ? null : format(d, "MMM dd, yyyy");
 };
 
 const cartTravellers = (pax) => {
@@ -258,6 +311,10 @@ export default function CartSheet({
   onPay,
   onReprice,
   onCouponApplied,
+  // Traveller details were just saved. The cart carries
+  // `traveler_details_verified`, so the card's state only flips once the cart
+  // has been refetched — same refresh the coupon flow asks for.
+  onTravellersSaved,
   token,
   itineraryId,
   askKaira,
@@ -281,15 +338,22 @@ export default function CartSheet({
   const [detailBooking, setDetailBooking] = React.useState(null);
   const [showVisaDrawer, setShowVisaDrawer] = React.useState(false);
   const [showEsimDrawer, setShowEsimDrawer] = React.useState(false);
+  const [travellersOpen, setTravellersOpen] = React.useState(false);
+  // The traveller form's save button lives in its sheet's fixed footer, so the
+  // form hands its action out through this ref and reports its pending state.
+  const travellerSubmit = React.useRef(null);
+  const [travellerSaving, setTravellerSaving] = React.useState(false);
   const dispatch = useDispatch();
-  const { cart, currency } = useSelector(
-    (s) => ({ cart: s.Cart, currency: s.currency }),
+  const { cart, currency, itinerary } = useSelector(
+    (s) => ({ cart: s.Cart, currency: s.currency, itinerary: s.Itinerary }),
     shallowEqual,
   );
 
   // The drawer computes expiry from Date.now() during render, so it only flips
   // when something else re-renders it — the countdown can hit zero and the pay
-  // button stay live. A second-resolution tick here makes it flip on time.
+  // button stay live. A second-resolution tick here makes it flip on time, and
+  // is what drives the header's price-hold clock. It runs only while the sheet
+  // is open, so a closed cart isn't re-rendering once a second.
   const [now, setNow] = React.useState(() => Date.now());
   React.useEffect(() => {
     if (!open) return undefined;
@@ -333,12 +397,23 @@ export default function CartSheet({
     // Mercury sends "YYYY-MM-DD HH:MM:SS" — Safari will not parse that without
     // the T. A missing value counts as expired, exactly as the cart does.
     const validUntil = C?.price_valid_until;
-    const expired =
-      !validUntil ||
-      new Date(String(validUntil).replace(" ", "T")).getTime() <= now;
+    const validUntilMs = validUntil
+      ? new Date(String(validUntil).replace(" ", "T")).getTime()
+      : null;
+    const expired = !validUntilMs || validUntilMs <= now;
+    // How long the quote is actually held for, counted down live rather than
+    // asserted as "today" — the same number the desktop drawer's LivePriceTimer
+    // shows, in the header this sheet already has instead of a second banner.
+    const secondsLeft = expired
+      ? 0
+      : Math.max(0, Math.floor((validUntilMs - now) / 1000));
 
     return {
       expired,
+      holdClock: clock(secondsLeft),
+      // Under five minutes the countdown goes red, the threshold the shared
+      // CountdownTimer already uses.
+      holdUrgent: secondsLeft <= 300,
       bookings,
       hidden: !!C?.are_prices_hidden,
       payableLabel: Number.isFinite(payable) ? money(payable) : null,
@@ -355,6 +430,32 @@ export default function CartSheet({
         : { applied: false, text: "Have a coupon?", cta: "Apply" },
     };
   }, [cart, currency, now]);
+
+  // The traveller card's contents. `verified` is the cart's own flag first —
+  // it accounts for pax changes the itinerary's `travellers` array can't
+  // reflect — with the array as the fallback, because that array is what the
+  // drawer's pay gate actually tests.
+  const traveller = useMemo(() => {
+    const start = tripDate(itinerary?.start_date);
+    const end = tripDate(itinerary?.end_date);
+    return {
+      leadName: itinerary?.customer_name || "",
+      countLabel: paxLabel(itinerary),
+      dates: start && end ? `${start} - ${end}` : start || end || null,
+      tripName: itinerary?.name || "",
+      verified:
+        !!cart?.traveler_details_verified ||
+        (Array.isArray(itinerary?.travellers) && itinerary.travellers.length > 0),
+    };
+  }, [itinerary, cart?.traveler_details_verified]);
+
+  // What AddTravellerDetails resolves its itinerary id from. The prop wins over
+  // anything on the redux object for the same reason the cart PATCH takes it:
+  // on /chat/<id> the router param is the chat session, not the itinerary.
+  const travellerItinerary = useMemo(
+    () => ({ ...(itinerary || {}), id: itineraryId || itinerary?.id }),
+    [itinerary, itineraryId],
+  );
 
   // Including or excluding one booking, the way the drawer does it: optimistic
   // flip, PATCH the cart, and let the cart that comes back repaint everything
@@ -429,6 +530,24 @@ export default function CartSheet({
     }
   };
 
+  // "Pay now" with no traveller details is the desktop drawer's gate, applied
+  // here instead of behind the sheet. The drawer still refuses to open the
+  // gateway on an empty `travellers` array — but on an auto-started payment it
+  // paints nothing except its own right-anchored traveller drawer, which slides
+  // in over this sheet from a screen the traveller never saw. Catching it on
+  // this side puts up THIS surface's form, and the drawer's gate never fires
+  // because by then the names are saved.
+  //
+  // Nothing resumes the payment afterwards, matching desktop: saving refetches
+  // the cart, the card flips to ADDED, and the traveller taps Pay now again.
+  const handlePayNow = () => {
+    if (!traveller.verified) {
+      setTravellersOpen(true);
+      return;
+    }
+    onPay?.();
+  };
+
   const handleWhatsappChat = () => {
     const here =
       typeof window !== "undefined" ? window.location.href : "https://www.thetarzanway.com";
@@ -473,12 +592,24 @@ export default function CartSheet({
               </div>
               <div className="mt-[4px] font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
                 {model.bookings} BOOKING{model.bookings === 1 ? "" : "S"} ·{" "}
-                {/* Saying "PRICE HELD TODAY" while the hold has lapsed is a
-                    claim the cart can no longer honour. */}
+                {/* The hold is a deadline, so the header states the deadline.
+                    "PRICE HELD TODAY" was both vaguer than the cart knows and a
+                    claim it could not honour once the quote had lapsed. */}
                 {model.expired ? (
                   <span className="text-[#b84034]">PRICES EXPIRED</span>
                 ) : (
-                  "PRICE HELD TODAY"
+                  <>
+                    PRICE HELD{" "}
+                    <span
+                      className={
+                        model.holdUrgent
+                          ? "font-[700] text-[#b84034]"
+                          : "font-[700] text-[#0b1220]"
+                      }
+                    >
+                      {model.holdClock}
+                    </span>
+                  </>
                 )}
               </div>
             </div>
@@ -506,6 +637,102 @@ export default function CartSheet({
               </div>
             </div>
           ) : null}
+
+          {/* Who is travelling, and the way into the traveller-details form —
+              the desktop cart's header, as the first card on the phone. It
+              sits UNDER the expired notice: an expired price is the one thing
+              on this screen more urgent than filling in names. */}
+          <div
+            style={{
+              border: "1px solid #e6e8ec",
+              borderRadius: 11,
+              background: "#ffffff",
+              boxShadow: "none",
+            }}
+            className="mb-[12px] p-[12px]"
+          >
+            {/* Two rows, each with its own right-hand item: the state tag sits
+                with the label, and the link sits ON the name's row — the
+                desktop cart's header, which puts the same link beside the
+                traveller it belongs to.
+
+                A link rather than a button: this is a detour out of checkout,
+                not one of its steps, and the sheet's buttons all commit to
+                something. It takes the blue the desktop cart already uses for
+                exactly this link (tailwind `text-blue`, #3A85FC), stated
+                inline because three stylesheets load after Tailwind and were
+                repainting link colour and underline. */}
+            <div className="flex items-center gap-[10px]">
+              {/* The pax rides on the label rather than a line of its own —
+                  "who" is one fact, and the micro-label is where this sheet
+                  states that kind of fact (see the header's own line). */}
+              <div className="min-w-0 flex-1 truncate font-mono text-[9.5px] tracking-[0.07em] text-[#8a93a6]">
+                TRAVELLERS
+                {traveller.countLabel
+                  ? `: ${traveller.countLabel.toUpperCase()}`
+                  : ""}
+              </div>
+              {traveller.verified ? (
+                <span
+                  style={{
+                    border: "1px solid #cdebd6",
+                    background: "#f2fbf5",
+                    borderRadius: 999,
+                    boxShadow: "none",
+                  }}
+                  className="flex-none whitespace-nowrap px-[9px] py-[4px] font-mono text-[9px] tracking-[0.07em] text-[#1c7a44]"
+                >
+                  ADDED
+                </span>
+              ) : null}
+            </div>
+
+            <div className="mt-[4px] flex items-baseline gap-[10px]">
+              <div className="min-w-0 flex-1 truncate text-[14px] font-[700] tracking-[-0.01em] text-[#0b1220]">
+                {traveller.leadName}
+              </div>
+              <button
+                type="button"
+                onClick={() => setTravellersOpen(true)}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  boxShadow: "none",
+                  padding: 0,
+                  color: "#3A85FC",
+                  textDecoration: "underline",
+                  textUnderlineOffset: 2,
+                }}
+                className="flex-none whitespace-nowrap text-[12px] font-[400]"
+              >
+                {traveller.verified
+                  ? "Edit traveller details"
+                  : "Add traveller details"}
+              </button>
+            </div>
+
+            {/* Trip above dates, on lines of their own. Side by side they were
+                one wrapping row, so on any real trip name the separator was
+                left stranded at the end of the dates with nothing after it. */}
+            {traveller.dates || traveller.tripName ? (
+              <div className="mt-[9px] border-t border-[#f1f2f4] pt-[9px]">
+                {traveller.tripName ? (
+                  <div className="text-[12.5px] leading-[1.4] text-[#0b1220]">
+                    {traveller.tripName}
+                  </div>
+                ) : null}
+                {traveller.dates ? (
+                  <div
+                    className={`text-[12px] leading-[1.4] text-[#6b7280] ${
+                      traveller.tripName ? "mt-[2px]" : ""
+                    }`}
+                  >
+                    {traveller.dates}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
 
           {/* The drawer's own breakdown, imported rather than rebuilt. */}
           <ItineraryInclusions
@@ -706,7 +933,7 @@ export default function CartSheet({
             </div>
             <button
               type="button"
-              onClick={model.expired ? onReprice : onPay}
+              onClick={model.expired ? onReprice : handlePayNow}
               disabled={isRepricing || isPaying}
               style={{
                 border: "none",
@@ -722,7 +949,7 @@ export default function CartSheet({
                   ? "Reprice itinerary"
                   : isPaying
                     ? "Opening payment…"
-                    : "Pay now"}
+                    : "Proceed to Pay"}
             </button>
           </div>
         </div>
@@ -736,6 +963,57 @@ export default function CartSheet({
         token={token}
         onApplied={onCouponApplied}
       />
+
+      {/* The traveller-details form, in a sheet rather than the desktop
+          drawer. Same component, so the two surfaces submit the same payload
+          to the same endpoint and can't drift. 1640 clears the coupon and
+          detail sheets (1630) this one can be opened alongside. */}
+      <Sheet
+        open={travellersOpen}
+        onClose={() => setTravellersOpen(false)}
+        title="Traveller details"
+        subtitle="EVERYONE TRAVELLING ON THIS TRIP"
+        height="95dvh"
+        zIndex={1640}
+        contentClassName="px-[14px] py-[14px]"
+        footer={
+          <button
+            type="button"
+            onClick={() => travellerSubmit.current?.()}
+            disabled={travellerSaving}
+            style={{
+              border: "none",
+              background: "#f7e700",
+              borderRadius: 10,
+              boxShadow: "0 8px 20px -10px rgba(247,231,0,0.55)",
+            }}
+            className="w-full px-[20px] py-[12px] text-[14.5px] font-[800] text-[#0b1220] disabled:opacity-60"
+          >
+            {travellerSaving ? "Saving…" : "Save Traveller Details"}
+          </button>
+        }
+      >
+        {/* Keyed on the pax: the form builds one slot per traveller in its
+            state INITIALISERS, so a pax change made through Kaira while this
+            sheet is open would otherwise leave it showing the old slots. */}
+        <AddTravellerDetails
+          key={`${travellerItinerary.number_of_adults || 0}-${
+            travellerItinerary.number_of_children || 0
+          }-${travellerItinerary.number_of_infants || 0}-${
+            travellerItinerary.travellers?.length || 0
+          }`}
+          itinerary={travellerItinerary}
+          hideSubmit
+          submitRef={travellerSubmit}
+          onSubmittingChange={setTravellerSaving}
+          onSuccess={() => {
+            setTravellersOpen(false);
+            // The card above reads `traveler_details_verified` off the cart, so
+            // the save only shows here once the cart has come back.
+            onTravellersSaved?.();
+          }}
+        />
+      </Sheet>
 
       {/* The visa and eSIM pickers. Shared with desktop, where they are
           right-anchored drawers; `variant="sheet"` renders the same views as

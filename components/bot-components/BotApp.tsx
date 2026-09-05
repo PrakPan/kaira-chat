@@ -4257,6 +4257,12 @@ Start Location: ${details.startLocation}`;
         onCouponApplied={() =>
           activeItineraryId && fetchPaymentData(activeItineraryId)
         }
+        // Saving traveller details flips `traveler_details_verified` on the
+        // cart — refetch it so the sheet's traveller card, and the drawer's pay
+        // gate behind it, both see the names that were just added.
+        onTravellersSaved={() =>
+          activeItineraryId && fetchPaymentData(activeItineraryId)
+        }
         token={authToken}
         // The cart PATCH behind the sheet's include/exclude checkboxes is
         // addressed by ITINERARY id. `router.query.id` on /chat/<id> is the
