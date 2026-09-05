@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { replaceUrl, pushUrlDetached } from "../../../helper/historyUrl";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
 import { connect, useDispatch, useSelector } from "react-redux";
@@ -57,7 +57,7 @@ import {
   removeCoupon,
   repriceBookings,
 } from "../../../services/sales/itinerary/Purchase";
-import { LuClock4 } from "react-icons/lu";
+import { LuCheckCircle2, LuClock4 } from "react-icons/lu";
 import { openNotification } from "../../../store/actions/notification";
 import setCart from "../../../store/actions/Cart";
 import ReactDOM from "react-dom";
@@ -79,6 +79,75 @@ import {
   addAncillaryBooking,
   removeAncillaryBooking,
 } from "../../../store/actions/ancillaryBookings";
+
+// The cart's primary CTA. Its own styled button rather than one more
+// `!bg-[...]` override on `ttw-btn-secondary-fill`: that class is shared with
+// the reprice and get-in-touch buttons, which should stay flat.
+//
+// No shadow, in any state. Saturated yellow has nowhere good to cast one — a
+// tint of its own colour goes olive and smudges, and neutral ink reads as grey
+// dirt sitting under the fill. Against a white column it does not need the
+// separation anyway. What carries it instead is size, a confident radius, and
+// a hover that brightens rather than darkens, because there is no darker yellow
+// that still looks like this brand.
+const PayCta = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 24px;
+  border: 0;
+  border-radius: 14px;
+  background: #f7e700;
+  color: #01202b;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.01em;
+  transition:
+    background 0.18s ease,
+    transform 0.12s ease;
+
+  &:hover:not(:disabled) {
+    background: #ffee1a;
+  }
+
+  &:active:not(:disabled) {
+    background: #efdf00;
+    transform: scale(0.99);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #01202b;
+    outline-offset: 3px;
+  }
+
+  /* A washed-out fill rather than opacity, so the button stays crisp against
+     the page instead of going translucent over it. */
+  &:disabled {
+    background: #f6f1c4;
+    color: rgba(1, 32, 43, 0.45);
+    cursor: not-allowed;
+  }
+`;
+
+const payCtaSpin = keyframes`
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+// Sized to the cap height of the label beside it so the two sit on one optical
+// line — a glyph that rides high is the tell of a cheap-looking button.
+const PayCtaSpinner = styled.span`
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(1, 32, 43, 0.2);
+  border-top-color: rgba(1, 32, 43, 0.55);
+  animation: ${payCtaSpin} 0.7s linear infinite;
+`;
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -844,6 +913,7 @@ const PriceDetails = ({
   totalPayable,
   surchargesTaxes,
   selectedPaymentOption,
+  lockInPaidAmount = 0,
 }) => {
   const Cart = useSelector((state) => state.Cart);
   const { currency } = useSelector((state) => state.currency);
@@ -856,6 +926,19 @@ const PriceDetails = ({
     typeof totalPayable === "string"
       ? parseFloat(totalPayable.replace(/,/g, ""))
       : totalPayable;
+
+  const numericLockInPaid = Number(lockInPaidAmount) || 0;
+  // Everything collected on this cart minus the part that was the lock-in, so
+  // the breakdown can name the two separately and still add up to the amount
+  // payable. Only a part payment made on top of a lock-in makes this non-zero.
+  const otherAmountPaid = Math.max(
+    0,
+    (Number(Cart?.amount_paid) || 0) - numericLockInPaid,
+  );
+  // Once anything has been collected the bottom line stops being the trip's
+  // price and becomes what is still owed.
+  const hasOutstandingBalance =
+    numericTotalPayable > 0 && (numericLockInPaid > 0 || otherAmountPaid > 0);
 
   // if (numericTotalPayable === 0) {
   //   return (
@@ -943,6 +1026,33 @@ const PriceDetails = ({
           </div>
         ) : null}
 
+        {/* Lock-in already collected. It is deducted here only while a
+            balance remains — on a settled cart the "Amount Paid" row below
+            covers everything collected, and showing both would count the
+            lock-in twice. */}
+        {hasOutstandingBalance && numericLockInPaid > 0 && (
+          <div className="flex justify-between text-green-600 text-sm font-400 leading-md mb-sm">
+            <span>Lock-in Amount Paid</span>
+            <span>
+              {"-"}
+              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+              {formatCurrencyValue(numericLockInPaid, currency)}
+            </span>
+          </div>
+        )}
+
+        {/* Anything paid on top of the lock-in, so the column still adds up. */}
+        {hasOutstandingBalance && otherAmountPaid > 0 && (
+          <div className="flex justify-between text-green-600 text-sm font-400 leading-md mb-sm">
+            <span>Amount Paid</span>
+            <span>
+              {"-"}
+              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+              {formatCurrencyValue(otherAmountPaid, currency)}
+            </span>
+          </div>
+        )}
+
         {/* Nothing left to pay: without this the summary reads
             "cost − coupon … Total ₹0", which doesn't add up. Show what was
             actually collected so the arithmetic closes. */}
@@ -960,7 +1070,11 @@ const PriceDetails = ({
           <div className="flex justify-between font-semibold text-md font-500 leading-xl">
             <div className="flex flex-col">
               <span>
-                {numericTotalPayable === 0 ? "Total Payable" : "Total Amount"}
+                {numericTotalPayable === 0
+                  ? "Total Payable"
+                  : hasOutstandingBalance
+                    ? "Amount Payable"
+                    : "Total Amount"}
               </span>
               <span className="text-xs font-400 leading-sm text-text-spacegrey">
                 Inclusive of all taxes
@@ -987,29 +1101,88 @@ const PaymentButton = ({
   onClick,
   paymentType = "full",
 }) => {
+  const { currency } = useSelector((state) => state.currency);
+  const symbol = currencySymbols?.[currency]
+    ? currencySymbols?.[currency]
+    : "₹";
+
   return (
-    <button
-      className="ttw-btn-secondary-fill w-full !bg-[#f8e000] !text-black border-black"
-      onClick={onClick}
-      disabled={isLoading}
-    >
+    <PayCta type="button" onClick={onClick} disabled={isLoading}>
       {isLoading ? (
-        <div className="flex items-center justify-center">
-          {/* <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-text-white mr-2"></div> */}
+        <>
+          <PayCtaSpinner aria-hidden="true" />
           Processing...
-        </div>
+        </>
       ) : paymentType === "lockin" ? (
-        `Proceed to Pay`
+        // This arm names both the amount and what it buys. The lock-in charges
+        // far less than the total on screen, so a bare "Proceed to Pay" under a
+        // ₹2,58,729 breakdown reads as if it is about to take the whole thing —
+        // and an amount on its own still leaves it looking like an underpayment
+        // rather than a hold. The padlock carries that meaning at a glance and
+        // echoes the one on the notice directly above.
+        <>
+          <span className="text-md leading-lg" aria-hidden="true">
+            &#128274;
+          </span>
+          {`Pay ${symbol}${formatCurrencyValue(amount, currency)} to Hold These Prices`}
+        </>
       ) : (
         `Proceed to Pay`
       )}
+    </PayCta>
+  );
+};
 
-      {/* ) : paymentType === "lockin" ? (
-        `Proceed to Pay₹${getIndianPrice(Math.round(Math.round(amount)))} Now`
-      ) : (
-        `Procced to pay ₹${getIndianPrice(Math.round(Math.round(amount)))} Now`
-      )} */}
-    </button>
+// Lock-in: the small amount that has to be paid first to hold today's prices,
+// before the balance can be settled. Both the amount and whether it has already
+// been collected come off the cart (`lock_in_fee` / `lock_in_fee_paid`) — the
+// fee is set per itinerary, so nothing here assumes the usual ₹2,000.
+const LockInNotice = ({ lockInFee, lockInPaid, lockInPaidAmount }) => {
+  const { currency } = useSelector((state) => state.currency);
+  const symbol = currencySymbols?.[currency]
+    ? currencySymbols?.[currency]
+    : "₹";
+  const feeLabel = `${symbol}${formatCurrencyValue(lockInFee, currency)}`;
+
+  if (lockInPaid) {
+    return (
+      <div className="rounded-md-lg border-sm border-[#B7E4C7] bg-[#F2FBF5] p-sm mb-md">
+        <div className="flex items-center gap-xs mb-xxs">
+          <LuCheckCircle2 size={17} className="text-[#2E7D32] flex-shrink-0" />
+          <div className="text-sm-md font-500 leading-lg text-[#01202B]">
+            Prices locked for this trip
+          </div>
+        </div>
+        {/* Full card width rather than indented into the icon's column — the
+            body is the long line here, and hanging it off the icon cost it a
+            whole extra wrap for no gain. */}
+        <div className="text-sm font-400 leading-md text-text-spacegrey">
+          {`${symbol}${formatCurrencyValue(lockInPaidAmount, currency)}`} paid
+          as lock-in and already adjusted in the amount payable above.
+        </div>
+      </div>
+    );
+  }
+
+  // Nothing to choose here — the hold is the first step, not an alternative to
+  // paying. This only explains what the one Proceed-to-Pay button is about to
+  // charge, which is why it carries no CTA of its own.
+  return (
+    <div className="rounded-md-lg border-sm border-primary-yellow bg-primary-jasmineWhite p-sm mb-md">
+      <div className="flex items-center gap-xs mb-xxs">
+        <span className="text-md-lg leading-lg flex-shrink-0">&#128274;</span>
+        <div className="text-sm-md font-500 leading-lg text-[#01202B]">
+          Hold these prices for {feeLabel}
+        </div>
+      </div>
+      {/* Full card width rather than indented into the icon's column — the body
+          is the long line here, and hanging it off the icon cost it a whole
+          extra wrap for no gain. */}
+      <div className="text-sm font-400 leading-md text-text-spacegrey">
+        Pay {feeLabel} now to freeze today&apos;s price for this itinerary. You
+        pay the balance later, and this amount is adjusted against it.
+      </div>
+    </div>
   );
 };
 
@@ -2564,6 +2737,22 @@ const Details = (props) => {
       sale.payment_type === "full_payment" && sale.status === "Completed",
   );
 
+  // Lock-in. The fee is per-cart (`lock_in_fee`), so it is read rather than
+  // assumed. `lock_in_fee_paid` is the cart's own flag; the completed
+  // lock_payment sale is the record of what was actually collected, so that is
+  // preferred for the amount and the flag is the fallback. `lockInCompleted`
+  // covers the gap between Razorpay returning and the cart refetch landing.
+  const lockInFee = Number(Cart?.lock_in_fee) || 0;
+  const completedLockInSale = Cart?.sales?.find(
+    (sale) =>
+      sale.payment_type === "lock_payment" && sale.status === "Completed",
+  );
+  const hasLockInPaid =
+    !!Cart?.lock_in_fee_paid || !!completedLockInSale || lockInCompleted;
+  const lockInPaidAmount = hasLockInPaid
+    ? Number(completedLockInSale?.amount_paid) || lockInFee
+    : 0;
+
   // `Cart` starts as null in Redux, so the `!price_valid_until` arm used to
   // report "expired" for the whole window before the cart API resolved. Gate on
   // the cart actually being present first.
@@ -2609,6 +2798,32 @@ const Details = (props) => {
   // on phones in that case so the two don't double up.
   const showMobileGetInTouch =
     showRepriceExpired && calculateFilteredTotal() === 0;
+
+  // Whether a pay CTA is on screen at all. Past dates, expired prices and a
+  // cart with nothing left to pay each replace it with something else.
+  const canPayNow =
+    !showUpdateDates && !showRepriceExpired && calculateFilteredTotal() !== 0;
+  // Lock-in is a required first step, not an option: until the hold is paid it
+  // is the only payment this cart will take, and the single pay CTA charges it.
+  // Skipped where a hold cannot apply — a fee that is not smaller than the trip
+  // itself, or a cart that has already collected money (adding an item to a
+  // part-paid trip must not send the customer back through a hold).
+  const requiresLockIn =
+    lockInFee > 0 &&
+    !hasLockInPaid &&
+    !hasFullPaymentCompleted &&
+    !(Number(Cart?.amount_paid) > 0) &&
+    lockInFee < calculateFilteredTotal();
+
+  const payNowType = requiresLockIn ? "lockin" : "full";
+  const payNowAmount = requiresLockIn ? lockInFee : calculateFilteredTotal();
+
+  // The card explains what the pay CTA is about to charge, so it is on screen
+  // in exactly the states that CTA is — the notice while the hold is owed, the
+  // confirmation once it has been paid. It deliberately has no conditions of
+  // its own: a "Proceed to Pay ₹999" button under a ₹46,429 breakdown with
+  // nothing next to it explaining why would just look broken.
+  const showLockInBlock = canPayNow && (requiresLockIn || hasLockInPaid);
 
   // Any expired/past state — used to suppress the expired price banners at the
   // top of the cart on phones (kept on desktop).
@@ -3068,6 +3283,7 @@ const Details = (props) => {
                       couponDiscount={-(couponSavedAmount || 0)}
                       surchargesTaxes={Cart?.surcharges_and_taxes || 0}
                       totalPayable={calculateFilteredTotal()}
+                      lockInPaidAmount={lockInPaidAmount}
                       selectedPaymentOption={selectedPaymentOption}
                       selectedInclusions={selectedInclusions}
                       totalBookingsCost={Cart?.total_bookings_cost}
@@ -3091,6 +3307,17 @@ const Details = (props) => {
                           }`}
                         </span>
                       </div>
+                    )}
+
+                    {/* Lock-in, directly above the Proceed-to-Pay CTA. On
+                        phones that CTA lives in the fixed bottom bar, so this
+                        card stays in the flow immediately above it. */}
+                    {showLockInBlock && (
+                      <LockInNotice
+                        lockInFee={lockInFee}
+                        lockInPaid={hasLockInPaid}
+                        lockInPaidAmount={lockInPaidAmount}
+                      />
                     )}
 
                     {/* Payment Buttons */}
@@ -3171,10 +3398,10 @@ const Details = (props) => {
                       // desktop briefly rendered no Proceed-to-Pay button at all.
                       <div className="ttw-desktop-only">
                         <PaymentButton
-                          amount={calculateFilteredTotal()}
+                          amount={payNowAmount}
                           isLoading={paymentLoading}
-                          paymentType={"full"}
-                          onClick={() => handlePayNow("full")}
+                          paymentType={payNowType}
+                          onClick={() => handlePayNow(payNowType)}
                         />
                       </div>
                     )}
@@ -3450,10 +3677,10 @@ const Details = (props) => {
                     </>
                   ) : (
                     <PaymentButton
-                      amount={calculateFilteredTotal()}
+                      amount={payNowAmount}
                       isLoading={paymentLoading}
-                      paymentType={"full"}
-                      onClick={() => handlePayNow("full")}
+                      paymentType={payNowType}
+                      onClick={() => handlePayNow(payNowType)}
                     />
                   )}
                 </div>,
