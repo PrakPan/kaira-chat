@@ -40,6 +40,7 @@ import ReactDOM from "react-dom";
 import { useGenericAPIModal } from "../warning/Index";
 import { PiAirplaneLanding, PiAirplaneTakeoff } from "react-icons/pi";
 import FlightFilters from "./new-flight-searched/FlightFilters";
+import PriceSourceNote from "../../revamp/common/components/PriceSourceNote";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import OfflineQuoteEmptyState from "../../ui/OfflineQuoteEmptyState";
 
@@ -1448,6 +1449,11 @@ const ComboFlight = (props) => {
               View More
             </button>
           )}
+
+          {/* Staff-only: who quoted the fares listed above. */}
+          {flights.length > 0 ? (
+            <PriceSourceNote source={flightProvider} />
+          ) : null}
         </div>
       </OptionsContainer>
     );

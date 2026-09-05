@@ -26,6 +26,7 @@ import ComboFlight from "./ComboFlight";
 import BackArrow from "../../ui/BackArrow";
 import { useRouter } from "next/router";
 import OfflineQuoteEmptyState from "../../ui/OfflineQuoteEmptyState";
+import PriceSourceNote from "../../revamp/common/components/PriceSourceNote";
 
 const GridContainer = styled.div`
   min-height: 65vh;
@@ -99,6 +100,10 @@ const Booking = (props) => {
   const [noResults, setNoResults] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
   const [flightCount, setFlightsCount] = useState(0);
+  // Which supplier answered the search — shown to staff under the results.
+  // Named for the supplier rather than plain `provider` because the search
+  // callback and the booking handler both bind a local `provider` of their own.
+  const [flightProvider, setFlightProvider] = useState(null);
   const [pax, setPax] = useState({
     adults: props.selectedBooking?.pax?.number_of_adults
       ? props.selectedBooking.pax.number_of_adults
@@ -168,6 +173,7 @@ const Booking = (props) => {
         )
         .then((res) => {
           const provider = res.data.provider;
+          setFlightProvider(provider || null);
           localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
 
           if (res.data?.results.length) {
@@ -513,6 +519,11 @@ const Booking = (props) => {
                       >
                         View More
                       </button>
+                    ) : null}
+
+                    {/* Staff-only: who quoted the fares listed above. */}
+                    {!loading && optionsJSX.length ? (
+                      <PriceSourceNote source={flightProvider} />
                     ) : null}
                   </OptionsContainer>
                 ) : null}
