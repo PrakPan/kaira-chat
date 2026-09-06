@@ -4245,6 +4245,16 @@ Start Location: ${details.startLocation}`;
           // This sheet STAYS OPEN behind it. It is the screen the gateway opens
           // over and the one the traveller lands on when they dismiss it;
           // closing it left a blank itinerary under the Razorpay modal.
+          //
+          // Not logged in: `onViewCart` puts up the login prompt and never
+          // opens the drawer, so nothing would exist to report the attempt
+          // ended — the sheet's button would sit on "Opening payment…" for
+          // good. Latch the flag only on the path that actually mounts the
+          // payment engine.
+          if (!authToken) {
+            ctaBarProps.onViewCart();
+            return;
+          }
           setAutoStartPayment(true);
           ctaBarProps.onViewCart();
         }}

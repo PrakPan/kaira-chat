@@ -80,6 +80,76 @@ import {
   removeAncillaryBooking,
 } from "../../../store/actions/ancillaryBookings";
 
+const RAZORPAY_SRC = "https://checkout.razorpay.com/v1/checkout.js";
+
+// One shared promise for checkout.js, resolved only once `window.Razorpay`
+// actually exists.
+//
+// This drawer used to append the tag from a mount effect and hope: fine on
+// desktop, where the traveller mounts the cart, reads it, and only then presses
+// Pay. On the phone's "Review & pay" sheet the drawer mounts and auto-fires the
+// payment in the same breath, so `new window.Razorpay(...)` ran while the tag
+// was still in flight, threw "Razorpay is not a constructor", and the throw was
+// swallowed by an empty catch — no gateway, no error, and `paymentLoading` left
+// true forever, which is what pinned the sheet's button on "Opening payment…".
+//
+// Reusing a tag someone else appended is not enough on its own: it may still be
+// loading, so we wait for ITS load event (and poll as a backstop, because a tag
+// that finished before we attached the listener fires nothing).
+let razorpayLoadPromise = null;
+export const ensureRazorpayLoaded = () => {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("Razorpay: no window"));
+  }
+  if (window.Razorpay) return Promise.resolve(true);
+  if (razorpayLoadPromise) return razorpayLoadPromise;
+
+  razorpayLoadPromise = new Promise((resolve, reject) => {
+    const settle = () => {
+      if (window.Razorpay) {
+        resolve(true);
+        return true;
+      }
+      return false;
+    };
+
+    let script = document.querySelector(`script[src="${RAZORPAY_SRC}"]`);
+    if (!script) {
+      script = document.createElement("script");
+      script.src = RAZORPAY_SRC;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    script.addEventListener("load", () => {
+      if (!settle()) {
+        razorpayLoadPromise = null;
+        reject(
+          new Error("Razorpay: script loaded but window.Razorpay missing"),
+        );
+      }
+    });
+    script.addEventListener("error", () => {
+      razorpayLoadPromise = null;
+      reject(new Error("Razorpay: script failed to load"));
+    });
+
+    // Backstop for a tag that was already done before we listened, and for a
+    // network that never answers.
+    const startedAt = Date.now();
+    const poll = setInterval(() => {
+      if (settle()) {
+        clearInterval(poll);
+      } else if (Date.now() - startedAt > 15000) {
+        clearInterval(poll);
+        razorpayLoadPromise = null;
+        reject(new Error("Razorpay: timed out loading checkout.js"));
+      }
+    }, 100);
+  });
+
+  return razorpayLoadPromise;
+};
+
 const GetInTouchContainer = styled.div`
   &:hover img {
     filter: invert(100%);
@@ -1770,11 +1840,12 @@ const Details = (props) => {
     if (adults) setPax(adults);
   }, [props?.itinerary?.number_of_adults, Itinerary?.number_of_adults]);
 
+  // Warm the gateway up on mount. The payment path awaits the same promise, so
+  // this is only a head start — not something it depends on having finished.
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
+    ensureRazorpayLoaded().catch((e) =>
+      console.error("[ERROR]: razorpay preload:", e?.message),
+    );
   }, []);
   useEffect(() => {
     // console.log("loading is:", props.loadpricing);
@@ -2174,15 +2245,49 @@ const Details = (props) => {
     "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
     getURL();
 
-  const _startRazorpayHandler = (data, paymentType) => {
+  // The gateway could not be opened. There is no modal to dismiss, so nothing
+  // else will ever clear `paymentLoading` — this is the only exit, and an
+  // auto-started payment needs it to hand back to the sheet that started it.
+  const _failRazorpay = (context, error) => {
+    console.error(`[ERROR]: razorpay ${context}:`, error?.message || error);
+    setPaymentLoading(false);
+    dispatch(
+      openNotification({
+        text: "We couldn't open the payment window. Please try again.",
+        heading: "Error!",
+        type: "error",
+      }),
+    );
+  };
+
+  const _startRazorpayHandler = async (data, paymentType) => {
+    // Razorpay rejects a non-integer paise amount, and every total here is a
+    // float (₹44,078.31): 44078.31 * 100 is 4407830.999999999, not 4407831.
+    const paise = Math.round(
+      (Number(data?.amount) || Number(data?.discounted_cost) || 0) * 100,
+    );
+    const orderId = data?.sales?.[0]?.orders?.[0]?.order_id;
+
+    if (!orderId) {
+      _failRazorpay("no order id on the initiated sale");
+      return;
+    }
+
+    try {
+      await ensureRazorpayLoaded();
+    } catch (error) {
+      _failRazorpay("checkout.js", error);
+      return;
+    }
+
     let razorpayOptions = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-      amount: data.amount * 100 || data?.discounted_cost * 100,
+      amount: paise,
       name: "The Tarzan Way Payment Portal",
       description: "Payment for your itinerary",
       image:
         "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
-      order_id: data?.sales[0]?.orders[0]?.order_id,
+      order_id: orderId,
       modal: {
         ondismiss: function () {
           setPaymentLoading(false);
@@ -2230,8 +2335,25 @@ const Details = (props) => {
 
     try {
       var rzp1 = new window.Razorpay(razorpayOptions);
+      // Razorpay reports a rejected order (expired, already paid, bad amount)
+      // through this event rather than by throwing — without it the modal
+      // closes itself and the caller is left thinking it is still open.
+      rzp1.on?.("payment.failed", (response) => {
+        setPaymentLoading(false);
+        dispatch(
+          openNotification({
+            text:
+              response?.error?.description ||
+              "Your payment could not be completed. Please try again.",
+            heading: "Payment failed",
+            type: "error",
+          }),
+        );
+      });
       rzp1.open();
-    } catch (error) {}
+    } catch (error) {
+      _failRazorpay("open", error);
+    }
   };
 
   // Refetch the itinerary detail (which carries the `travellers` array) and
