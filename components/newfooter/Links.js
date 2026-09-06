@@ -31,6 +31,12 @@ const linksArr = [
   {
     heading: "Travel Styles",
     data: [
+      // The only site-wide link into /trips. Without it the whole section —
+      // 1,865 pages — is orphaned: nothing on the site links to it, so a
+      // crawler's only route in is the sitemap, and Google had not discovered
+      // a single one of those URLs. /trips itself links out to all 194
+      // destination hubs, so one entry point here is enough to reach them.
+      { title: "Trip Itineraries", link: "/trips" },
       { title: "Personalise", link: "" },
       { title: "La Tomatina", link: urls.travel_planner.LATOMATINA },
       { title: "Summer Holidays", link: urls.travel_planner.SUMMER },
