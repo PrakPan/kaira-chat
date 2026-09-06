@@ -26,7 +26,9 @@ import DetailSheet from "./DetailSheet";
 import getModeAccent from "../../common/components/bookingDetail/modeAccent";
 import prompts from "../kairaPrompts";
 import {
+  deriveLockIn,
   ItineraryInclusions,
+  LockInNotice,
   PriceDetails,
 } from "../../../../containers/itinerary/booking1/NewBookingSlide";
 
@@ -37,14 +39,19 @@ import {
 //  grouped total lines — "Stays · 3 bookings · ₹1,14,135" — which named what
 //  was being bought but not WHICH hotel, gave no way to drop a booking from
 //  the order, and printed one number where the drawer prints a breakdown. So
-//  the two components that draw that breakdown are imported from the drawer
-//  itself (NewBookingSlide) rather than reimplemented here:
+//  the components that draw that breakdown are imported from the drawer itself
+//  (NewBookingSlide) rather than reimplemented here:
 //
 //    • ItineraryInclusions — the per-category accordions, every booking in
 //      them, and the checkbox that includes or excludes one.
 //    • PriceDetails        — itinerary cost, GST/TCS, coupon, total.
+//    • LockInNotice        — what the pay CTA is about to charge when today's
+//      prices still have to be held, and the confirmation once they are.
 //
-//  Both are pure and prop-driven, so this sheet and the drawer cannot drift.
+//  All three are pure and prop-driven, so this sheet and the drawer cannot
+//  drift. The RULES behind the last one are shared for the same reason
+//  (deriveLockIn): this sheet must not offer a hold the drawer would not, or
+//  name a different amount for it than the one it is about to charge.
 //  What is written out here is only what the drawer renders inline: the
 //  WhatsApp CTA, the Visa/eSIM upsells, the trust list and the terms link.
 //
@@ -408,6 +415,19 @@ export default function CartSheet({
       ? 0
       : Math.max(0, Math.floor((validUntilMs - now) / 1000));
 
+    // The hold, on the drawer's rules rather than this sheet's. `lockInCompleted`
+    // is the drawer's own post-gateway flag and belongs to the surface that runs
+    // Razorpay; here the cart refetch that follows a payment is what flips this.
+    const lock = deriveLockIn(C);
+    // What the pay bar actually charges. With a hold owed that is the fee, not
+    // the balance — the same swap the desktop CTA makes.
+    const payNow = lock.requiresLockIn ? lock.payNowAmount : payable;
+    // The card is on screen in exactly the states the CTA it explains is: while
+    // the hold is owed, and once it has been paid. Not while prices have
+    // expired, where the bar offers a reprice instead of a payment.
+    const showLockIn =
+      !expired && (lock.requiresLockIn || lock.hasLockInPaid) && payable > 0;
+
     return {
       expired,
       holdClock: clock(secondsLeft),
@@ -416,7 +436,12 @@ export default function CartSheet({
       holdUrgent: secondsLeft <= 300,
       bookings,
       hidden: !!C?.are_prices_hidden,
-      payableLabel: Number.isFinite(payable) ? money(payable) : null,
+      payableLabel: Number.isFinite(payNow) ? money(payNow) : null,
+      lockInFee: lock.lockInFee,
+      lockInPaid: lock.hasLockInPaid,
+      lockInPaidAmount: lock.lockInPaidAmount,
+      requiresLockIn: lock.requiresLockIn,
+      showLockIn,
       coupon: applied
         ? {
             applied: true,
@@ -800,7 +825,23 @@ export default function CartSheet({
             couponDiscount={-(cart?.coupon_usage?.discount || 0)}
             surchargesTaxes={cart?.surcharges_and_taxes || 0}
             totalPayable={Math.round(cart?.total_payable_amount || 0)}
+            // Without this the breakdown omits the "Lock-in Amount Paid" line
+            // the drawer prints, so a held cart showed the full trip cost with
+            // no sign of the money already collected against it.
+            lockInPaidAmount={model.lockInPaidAmount}
           />
+
+          {/* The hold, directly under the breakdown it changes — same position
+              in the reading order as the drawer's, which puts this card between
+              PRICE DETAILS and the Proceed-to-Pay CTA. Here that CTA is in the
+              fixed bar at the foot of the sheet. */}
+          {model.showLockIn && (
+            <LockInNotice
+              lockInFee={model.lockInFee}
+              lockInPaid={model.lockInPaid}
+              lockInPaidAmount={model.lockInPaidAmount}
+            />
+          )}
 
           {/* Help */}
           <hr className="text-text-placeholder" />
@@ -925,7 +966,11 @@ export default function CartSheet({
           <div className="flex items-center justify-between gap-[13px]">
             <div className="min-w-0">
               <div className="font-mono text-[9.5px] tracking-[0.07em] text-[#8a93a6]">
-                {model.expired ? "PRICES EXPIRED" : "PAYABLE NOW"}
+                {model.expired
+                  ? "PRICES EXPIRED"
+                  : model.requiresLockIn
+                    ? "PAY NOW TO HOLD"
+                    : "PAYABLE NOW"}
               </div>
               <div className="mt-[2px] whitespace-nowrap text-[17px] font-[800] tracking-[-0.02em] text-[#0b1220]">
                 {model.hidden ? "—" : model.payableLabel || "—"}
@@ -949,7 +994,20 @@ export default function CartSheet({
                   ? "Reprice itinerary"
                   : isPaying
                     ? "Opening payment…"
-                    : "Proceed to Pay"}
+                    : // The amount is already printed beside this button, so
+                      // the label only has to say what paying it BUYS — which
+                      // is the part a bare "Proceed to Pay" under a fee far
+                      // smaller than the total gets wrong. The padlock echoes
+                      // the notice above, as it does on desktop, and is hidden
+                      // from screen readers because the words carry it.
+                      model.requiresLockIn ? (
+                        <>
+                          <span aria-hidden="true">&#128274;</span> Hold These
+                          Prices
+                        </>
+                      ) : (
+                        "Proceed to Pay"
+                      )}
             </button>
           </div>
         </div>
