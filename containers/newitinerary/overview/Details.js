@@ -186,7 +186,13 @@ const Details = (props) => {
                 )
               </span>
             ) : null}{" "}
-            <FaPen size={12} className="text-gray-500"/>
+            {/* The pen advertises that this row opens the settings drawer, and
+                the onClick above is itself gated on `setShowSettings`. Read-only
+                pages (the V1 archive and /trips) don't pass it, so showing the
+                icon there promised an edit that could never happen. */}
+            {props?.setShowSettings ? (
+              <FaPen size={12} className="text-gray-500" />
+            ) : null}
           </Text>
         </div>
       ) : null}

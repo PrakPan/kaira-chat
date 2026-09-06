@@ -165,7 +165,7 @@ const NavigationMenu = (props) => {
     <>
     <div className="w-100 bg-text-white"> 
       <nav className={styles.navigationMenu + " " + props.className + " max-ph:!p-md max-ph:shadow-soft"} role="navigation">
-        <Link href="/" className={"hover-pointer " + styles.logo} aria-label="The Tarzan Way — home">
+        <Link href="/" className={"hover-pointer " + styles.logo} aria-label="The Tarzan Way - home">
           {/* Desktop shows the full lockup (mark + wordmark + tagline); mobile
               shows only the mark, so the wordmark can't overflow the row and
               force a horizontal scroll. Exactly one is ever visible.

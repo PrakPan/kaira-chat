@@ -115,10 +115,10 @@ const PROMPTS = {
   // finished itinerary at /chat/{id} instead of seeding a fresh session.
   // Evenings
   privateDinner:
-    "We are 2 travellers on our 7-night honeymoon in November. Set up a private candlelit dinner for us — beach or cliffside — and tell me which destination does it best, what it costs, and how far ahead it has to be booked.",
+    "We are 2 travellers on our 7-night honeymoon in November. Set up a private candlelit dinner for us - beach or cliffside - and tell me which destination does it best, what it costs, and how far ahead it has to be booked.",
   // Ask Kaira
   askBar:
-    "Which honeymoon should we do in November, just the two of us — the Maldives overwater villa, Bali and Santorini together, or Santorini and Athens? Compare privacy, cost, flying time and the best months for each, then build the ideal itinerary for the one you recommend.",
+    "Which honeymoon should we do in November, just the two of us - the Maldives overwater villa, Bali and Santorini together, or Santorini and Athens? Compare privacy, cost, flying time and the best months for each, then build the ideal itinerary for the one you recommend.",
 };
 
 // What each prompt above states about the trip, sent as `intake` keys (month /
@@ -160,7 +160,7 @@ const honeymoonConfig: CinematicThemeConfig = {
     eyebrow: "PRIVACY · OVERWATER VILLAS · SUNSETS · SLOW MORNINGS",
     heading: { lead: "The first trip", accent: "as us." },
     lede:
-      "Somewhere between the wedding and real life there is one trip where nothing is scheduled. Tell me the shape you want and I'll build the rest — the villa, the transfers, the one dinner you'll still talk about.",
+      "Somewhere between the wedding and real life there is one trip where nothing is scheduled. Tell me the shape you want and I'll build the rest - the villa, the transfers, the one dinner you'll still talk about.",
     placeholder: "Try: Maldives overwater villa, six nights, no itinerary",
     prompt: PROMPTS.hero,
     chips: [
@@ -221,14 +221,14 @@ const honeymoonConfig: CinematicThemeConfig = {
         {
           image: CAT.santoriniVolcano,
           name: "Volcano, hot springs and Oia sunset boat trip",
-          line: "One boat, one day — the caldera, a hot-spring swim, and the sunset everyone comes for.",
+          line: "One boat, one day - the caldera, a hot-spring swim, and the sunset everyone comes for.",
           tag: "Santorini",
           activityId: ACTIVITY.santoriniVolcano,
         },
         {
           image: CAT.santoriniScuba,
           name: "Scuba diving in the volcanic caldera",
-          line: "A dive inside an active volcano's crater — one of the few places on earth you can.",
+          line: "A dive inside an active volcano's crater - one of the few places on earth you can.",
           tag: "Santorini",
           activityId: ACTIVITY.santoriniScuba,
         },
@@ -242,21 +242,21 @@ const honeymoonConfig: CinematicThemeConfig = {
         {
           image: CAT.baliCooking,
           name: "Balinese cooking class and market tour",
-          line: "A market walk, then a hands-on class — the one thing you can actually take home.",
+          line: "A market walk, then a hands-on class - the one thing you can actually take home.",
           tag: "Bali",
           activityId: ACTIVITY.baliCooking,
         },
         {
           image: CAT.nusaPenida,
           name: "Nusa Penida full-day island tour",
-          line: "Cliffs, hidden beaches and the view every Bali feed is built from — transfers done for you.",
+          line: "Cliffs, hidden beaches and the view every Bali feed is built from - transfers done for you.",
           tag: "Bali",
           activityId: ACTIVITY.nusaPenida,
         },
         {
           image: CAT.exploreMale,
           name: "Explore Male, the capital",
-          line: "A slow walk through the smallest, densest capital in the world — an easy half-day off the resort.",
+          line: "A slow walk through the smallest, densest capital in the world - an easy half-day off the resort.",
           tag: "Maldives",
           activityId: ACTIVITY.exploreMale,
         },
@@ -267,7 +267,7 @@ const honeymoonConfig: CinematicThemeConfig = {
       type: "feature",
       heading: { lead: "Two kinds of", accent: "evening" },
       intro:
-        "Every honeymoon needs both — the night nobody else is there, and the night you want people around. Get the ratio right and the trip has a rhythm instead of a schedule.",
+        "Every honeymoon needs both - the night nobody else is there, and the night you want people around. Get the ratio right and the trip has a rhythm instead of a schedule.",
       rows: [
         {
           stat: "PRIVATE",
@@ -277,7 +277,7 @@ const honeymoonConfig: CinematicThemeConfig = {
         {
           stat: "SOCIAL",
           name: "Beach clubs at sunset",
-          line: "Potato Head or Atlas in Bali, a wine bar in Fira — people around without losing the mood.",
+          line: "Potato Head or Atlas in Bali, a wine bar in Fira - people around without losing the mood.",
         },
       ],
       stats: [
@@ -447,7 +447,7 @@ const honeymoonConfig: CinematicThemeConfig = {
         {
           range: "Nov – Mar",
           name: "Peak everywhere",
-          line: "Dry in the Maldives, mild in Bali, cool in Santorini. Also the priciest — book villas six months out.",
+          line: "Dry in the Maldives, mild in Bali, cool in Santorini. Also the priciest - book villas six months out.",
         },
         {
           range: "Apr – Jun",
@@ -457,7 +457,7 @@ const honeymoonConfig: CinematicThemeConfig = {
         {
           range: "Jul – Aug",
           name: "European peak",
-          line: "Santorini is packed and pricey. The Maldives and Bali stay calm — worth splitting the trip around this.",
+          line: "Santorini is packed and pricey. The Maldives and Bali stay calm - worth splitting the trip around this.",
         },
         {
           range: "Sep – Oct",
@@ -466,14 +466,14 @@ const honeymoonConfig: CinematicThemeConfig = {
         },
       ],
       note:
-        "If manta rays matter to you, the Maldives season runs May to November on the western atolls — that date has to bend around the fish, not the other way round.",
+        "If manta rays matter to you, the Maldives season runs May to November on the western atolls - that date has to bend around the fish, not the other way round.",
     },
     // ── Visa (dark) ──
     {
       type: "visa",
       heading: { lead: "Your visas,", accent: "handled" },
       intro:
-        "The Maldives waives the visa entirely for Indian passports — 30 days on arrival, no paperwork. Bali and Greece are where the actual filing happens, and we do both for you before you fly.",
+        "The Maldives waives the visa entirely for Indian passports - 30 days on arrival, no paperwork. Bali and Greece are where the actual filing happens, and we do both for you before you fly.",
       // The four islands this page actually sends people to. Italy and
       // Switzerland used to sit here too — lovely honeymoons, but not the ones
       // on this page.
@@ -509,7 +509,7 @@ const honeymoonConfig: CinematicThemeConfig = {
         { label: "Embassy queue", value: "None for you" },
       ],
       note:
-        "Greece is a Schengen sticker — file it at least twenty days out. The Bali e-Visa lands in a few days. Nothing here needs an embassy queue on your side.",
+        "Greece is a Schengen sticker - file it at least twenty days out. The Bali e-Visa lands in a few days. Nothing here needs an embassy queue on your side.",
     },
     // ── Read this first ──
     // {
@@ -744,7 +744,7 @@ const HoneymoonThemePage = ({
         </title>
         <meta
           name="description"
-          content="Plan your honeymoon with The Tarzan Way's AI itinerary — Maldives overwater villas, Bali pool villas, Santorini caldera suites and Seychelles beaches, with private dinners, visas and transfers handled for Indian couples."
+          content="Plan your honeymoon with The Tarzan Way's AI itinerary - Maldives overwater villas, Bali pool villas, Santorini caldera suites and Seychelles beaches, with private dinners, visas and transfers handled for Indian couples."
         />
         <meta
           property="og:title"
@@ -752,7 +752,7 @@ const HoneymoonThemePage = ({
         />
         <meta
           property="og:description"
-          content="Plan your honeymoon with The Tarzan Way's AI itinerary — Maldives overwater villas, Bali pool villas, Santorini caldera suites and Seychelles beaches, with private dinners, visas and transfers handled for Indian couples."
+          content="Plan your honeymoon with The Tarzan Way's AI itinerary - Maldives overwater villas, Bali pool villas, Santorini caldera suites and Seychelles beaches, with private dinners, visas and transfers handled for Indian couples."
         />
         <link rel="canonical" href="https://thetarzanway.com/theme/honeymoon" />
         <meta
@@ -773,9 +773,9 @@ const HoneymoonThemePage = ({
               "@graph": [
                 {
                   "@type": "TouristTrip",
-                  name: "Honeymoon — Trip Planner & Itineraries",
+                  name: "Honeymoon - Trip Planner & Itineraries",
                   description:
-                    "Plan your honeymoon with The Tarzan Way's AI itinerary — Maldives overwater villas, Bali pool villas, Santorini caldera suites and Seychelles beaches, with private dinners, visas and transfers handled for Indian couples.",
+                    "Plan your honeymoon with The Tarzan Way's AI itinerary - Maldives overwater villas, Bali pool villas, Santorini caldera suites and Seychelles beaches, with private dinners, visas and transfers handled for Indian couples.",
                   url: "https://thetarzanway.com/theme/honeymoon",
                   image: "https://thetarzanway.com/og-image.png",
                   provider: {

@@ -71,9 +71,13 @@ const TravelVibeCard = ({
       {/* Arrow Icon */}
       <div className="absolute top-3 sm:top-4 right-3 sm:right-4">
         <div className="w-8 sm:w-10 h-8 sm:h-10 bg-white backdrop-blur-sm border border-white/30 group-hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:group-hover:scale-110">
+          {/* This app never imports @fortawesome/fontawesome-svg-core/styles.css,
+              so the emitted <svg> has a viewBox and no intrinsic size and would
+              stretch to the circle's width (38×43 in a 40px circle). Pin the
+              height and let the width follow the icon's aspect ratio. */}
           <FontAwesomeIcon
             icon={faArrowUp}
-            className="text-black group-hover:text-black text-xs sm:text-sm transition-colors duration-300 transform rotate-45"
+            className="w-auto h-[14px] sm:h-4 text-black group-hover:text-black transition-colors duration-300 transform rotate-45"
           />
         </div>
       </div>

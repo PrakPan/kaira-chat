@@ -22,7 +22,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         icon: "✈️",
         label: "Best international honeymoon under Rs 1.5 lakh each",
         prompt:
-          "We have a honeymoon budget of Rs 1.5 lakh per person including flights from India. Tell us which destinations — Thailand, Bali, Vietnam, or Malaysia — genuinely work at this budget, what the experience actually feels like, and whether it is worth going international or staying domestic.",
+          "We have a honeymoon budget of Rs 1.5 lakh per person including flights from India. Tell us which destinations - Thailand, Bali, Vietnam, or Malaysia - genuinely work at this budget, what the experience actually feels like, and whether it is worth going international or staying domestic.",
       },
       {
         icon: "✨",
@@ -34,7 +34,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         icon: "🌅",
         label: "What is the most breathtaking honeymoon destination right now?",
         prompt:
-          "We want the most visually breathtaking honeymoon possible — somewhere that genuinely feels magical in person. Help us choose between places like Santorini, Kyoto, Amalfi Coast, and the Maldives based on season, beauty, and the experiences that create unforgettable memories beyond just photos.",
+          "We want the most visually breathtaking honeymoon possible - somewhere that genuinely feels magical in person. Help us choose between places like Santorini, Kyoto, Amalfi Coast, and the Maldives based on season, beauty, and the experiences that create unforgettable memories beyond just photos.",
       },
     ],
   },
@@ -46,7 +46,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Paris, France — The City That Invented Romance.jpg ",
-          label: "Paris, France — The City That Invented Romance",
+          label: "Paris, France - The City That Invented Romance",
           tags: "Art and Culture · Iconic",
           description: "Every corner is a love letter.",
           prompt:
@@ -55,7 +55,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Santorini, Greece — Caldera, Caves & Champagne.jpg ",
-          label: "Santorini, Greece — Caldera, Caves & Champagne",
+          label: "Santorini, Greece - Caldera, Caves & Champagne",
           tags: "Scenic · Very Popular",
           description: "The sunset nobody stops talking about.",
           prompt:
@@ -64,7 +64,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Amalfi Coast, Italy — Clifftop Villages and Sea Drives.jpg ",
-          label: "Amalfi Coast, Italy — Clifftop Villages and Sea Drives",
+          label: "Amalfi Coast, Italy - Clifftop Villages and Sea Drives",
           tags: "Romantic · Heritage",
           description: "The drive alone will change you.",
           prompt:
@@ -73,7 +73,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Kyoto & Tokyo — Autumn Romance.jpg ",
-          label: "Japan — Kyoto and Tokyo in Autumn",
+          label: "Japan - Kyoto and Tokyo in Autumn",
           tags: "Heritage · Art and Culture",
           description: "Romance under crimson leaves.",
           prompt:
@@ -82,7 +82,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Maldives — The Overwater Villa Fantasy.jpg ",
-          label: "Maldives — Beyond the Instagram Honeymoon",
+          label: "Maldives - Beyond the Instagram Honeymoon",
           tags: "Luxury · Beach",
           description: "A private island, just for two.",
           prompt:
@@ -97,7 +97,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Rajasthan — Palaces, Deserts and Royal Nights.jpg ",
-          label: "Rajasthan — Palaces, Deserts and Royal Nights",
+          label: "Rajasthan - Palaces, Deserts and Royal Nights",
           tags: "Heritage · Luxury",
           description: "Sleep where the maharajas slept.",
           prompt:
@@ -106,7 +106,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Kerala — Backwaters, Tea Hills and a Private Houseboat.jpg ",
-          label: "Kerala — Backwaters, and a Private Houseboat",
+          label: "Kerala - Backwaters, and a Private Houseboat",
           tags: "Nature · Romantic",
           description: "Your own boat. Your own pace.",
           prompt:
@@ -115,7 +115,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Andaman Islands — Private Beaches and Still Blue Water.jpg ",
-          label: "Andaman Islands — Private Beaches and Still Blue Water",
+          label: "Andaman Islands - Private Beaches and Still Blue Water",
           tags: "Beach · Tropical",
           description: "The kind of blue you don't believe is real.",
           prompt:
@@ -124,7 +124,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Kashmir — Dal Lake, Meadows and a Shikara at Dawn.jpg ",
-          label: "Kashmir — Dal Lake, Meadows and a Shikara at Dawn",
+          label: "Kashmir - Dal Lake, Meadows and a Shikara at Dawn",
           tags: "Scenic · Romantic",
           description: "The most beautiful place in India.",
           prompt:
@@ -133,7 +133,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Pondicherry — French Quarters and Quiet Beaches.jpg ",
-          label: "Pondicherry — French Quarters and Quiet Beaches",
+          label: "Pondicherry - French Quarters and Quiet Beaches",
           tags: "Heritage · Coastal · Romantic · Domestic",
           description: "Europe-in-India and the sea right after.",
           prompt:
@@ -148,7 +148,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Bali — Beyond the Honeymoon Clichés.jpg ",
-          label: "Bali — Beyond the Honeymoon Clichés",
+          label: "Bali - Beyond the Honeymoon Clichés",
           tags: "Romance · Luxury",
           description: "Amazing stays and unforgettable evenings.",
           prompt:
@@ -166,7 +166,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Budapest, Vienna and Prague — Central Europe.jpg ",
-          label: "Budapest, Vienna and Prague — Central Europe",
+          label: "Budapest, Vienna and Prague - Central Europe",
           tags: "Romantic · Budget-Friendly",
           description: "Candlelit cities where history is still alive.",
           prompt:
@@ -175,7 +175,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Kenya — Great Migration Safari Honeymoon.jpg ",
-          label: "Kenya — Great Migration Safari Honeymoon",
+          label: "Kenya - Great Migration Safari Honeymoon",
           tags: "Adventure · Wildlife",
           description: "The most romantic wilderness on earth.",
           prompt:
@@ -184,7 +184,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Vietnam — Ha Long Bay and Hoi An.jpg ",
-          label: "Vietnam — Ha Long Bay and Hoi An",
+          label: "Vietnam - Ha Long Bay and Hoi An",
           tags: "Scenic · Off-Beat",
           description: "The kind of beauty that doesn't feel real.",
           prompt:
@@ -199,7 +199,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Greece — Santorini and Mykonos.jpg ",
-          label: "Greece — Santorini and Mykonos",
+          label: "Greece - Santorini and Mykonos",
           tags: "Romantic · Island Hopping",
           description: "Two islands. Two kinds of perfect.",
           prompt:
@@ -208,7 +208,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Thailand — Phuket, Krabi and the Islands.jpg ",
-          label: "Thailand — Phuket, Krabi and the Islands",
+          label: "Thailand - Phuket, Krabi and the Islands",
           tags: "Budget-Friendly · Romantic",
           description: "Island sunsets and longtail boat mornings.",
           prompt:
@@ -217,7 +217,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Malaysia — Langkawi and Kuala Lumpur.jpg ",
-          label: "Malaysia — Langkawi and Kuala Lumpur",
+          label: "Malaysia - Langkawi and Kuala Lumpur",
           tags: "Beach · Southeast Asia",
           description: "Rainforest, beach, and city lights in one trip.",
           prompt:
@@ -226,7 +226,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Spain — Barcelona and Andalusia.jpg ",
-          label: "Spain — Barcelona and Andalusia",
+          label: "Spain - Barcelona and Andalusia",
           tags: "Culture · Beach",
           description: "Flamenco nights and golden Spanish streets.",
           prompt:
@@ -235,7 +235,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Australia — Sydney and the South.jpg ",
-          label: "Australia — Sydney and the South",
+          label: "Australia - Sydney and the South",
           tags: "Luxury · Adventure",
           description: "Harbour sunsets and wine country escapes.",
           prompt:
@@ -244,13 +244,13 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
       ],
     },
     {
-      heading: "Only on Your Honeymoon — Experiences Worth Flying For",
+      heading: "Only on Your Honeymoon - Experiences Worth Flying For",
       icon: "✨",
       cards: [
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Sunset Dinner at the Eiffel Tower — Paris.png ",
-          label: "Sunset Dinner at the Eiffel Tower — Paris",
+          label: "Sunset Dinner at the Eiffel Tower - Paris",
           tags: "Iconic · Paris",
           description: "One evening. Every cliche earns it.",
           prompt:
@@ -259,7 +259,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Ryokan Stay in Kyoto — The Full Experience.jpg ",
-          label: "Ryokan Stay in Kyoto — The Full Experience",
+          label: "Ryokan Stay in Kyoto - The Full Experience",
           tags: "Cultural · Japan",
           description: "An inn that turns sleep into ceremony.",
           prompt:
@@ -268,7 +268,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Bioluminescent Plankton Night — Maldives.png ",
-          label: "Bioluminescent Plankton Night — Maldives",
+          label: "Bioluminescent Plankton Night - Maldives",
           tags: "Maldives · Night",
           description: "The ocean glows under your feet at midnight.",
           prompt:
@@ -277,7 +277,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Private Desert Dinner Under the Stars — Rajasthan.png ",
-          label: "Private Desert Dinner Under the Stars — Rajasthan",
+          label: "Private Desert Dinner Under the Stars - Rajasthan",
           tags: "India · Heritage",
           description: "A royal table in the middle of nowhere.",
           prompt:
@@ -286,7 +286,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Catamaran Sunset Cruise — Santorini Caldera.png ",
-          label: "Catamaran Sunset Cruise — Santorini Caldera",
+          label: "Catamaran Sunset Cruise - Santorini Caldera",
           tags: "Romantic · Scenic",
           description: "The water reflects gold. So does everything else.",
           prompt:
@@ -311,10 +311,10 @@ const KairaHoneymoonThemePage = ({
     <>
       <Head>
         <title>{"Honeymoon Packages & Destinations for Indian Couples | The Tarzan Way"}</title>
-        <meta name="description" content={"Plan the perfect honeymoon with The Tarzan Way's AI itinerary — from Bali and the Maldives to Switzerland and Europe. Romantic stays, budgets in ₹, and a custom day-by-day plan for Indian couples."} />
+        <meta name="description" content={"Plan the perfect honeymoon with The Tarzan Way's AI itinerary - from Bali and the Maldives to Switzerland and Europe. Romantic stays, budgets in ₹, and a custom day-by-day plan for Indian couples."} />
         <link rel="canonical" href="https://thetarzanway.com/theme/honeymoon-2026" />
         <meta property="og:title" content={"Honeymoon Packages & Destinations for Indian Couples | The Tarzan Way"} />
-        <meta property="og:description" content={"Plan the perfect honeymoon with The Tarzan Way's AI itinerary — from Bali and the Maldives to Switzerland and Europe. Romantic stays, budgets in ₹, and a custom day-by-day plan for Indian couples."} />
+        <meta property="og:description" content={"Plan the perfect honeymoon with The Tarzan Way's AI itinerary - from Bali and the Maldives to Switzerland and Europe. Romantic stays, budgets in ₹, and a custom day-by-day plan for Indian couples."} />
         <meta property="og:url" content="https://thetarzanway.com/theme/honeymoon-2026" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://thetarzanway.com/og-image.png" />

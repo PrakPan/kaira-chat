@@ -378,6 +378,11 @@ const CityItem = ({
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
+  // Archived V1 itineraries have no per-leg transfer data — no gmaps place ids,
+  // no coordinates, no booking records — so these between-city connectors have
+  // nothing to render or price. The archive instead carries one flat trip-level
+  // list, shown as a vertical section under the day-by-day (V1TransfersList).
+  const isV1Archive = useSelector((state) => state.Itinerary?.is_v1_archive);
   const { transfers_status,pricing_status } = useSelector((state) => state.ItineraryStatus);
   const isDesktop = useMediaQuery("(min-width:767px)");
   const reduxItineraryId = useSelector((state) => state.ItineraryId);
@@ -433,7 +438,16 @@ const CityItem = ({
   const [airportBookingId, setAirportBookingId] = useState(null);
 
 
-  let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  // Guarded because this component is now server-rendered: the /trips leaf
+  // pages render the itinerary tree during the static export, and an unguarded
+  // `window` here threw "window is not defined" and 500'd the page. Everywhere
+  // else this tree is client-only, so the branch is unchanged in practice — and
+  // on the trips pages CityItem returns null anyway (read-only archive view),
+  // so the server-side default is never what gets painted.
+  let isPageWide =
+    typeof window !== "undefined"
+      ? window.matchMedia("(min-width: 768px)")?.matches
+      : true;
   const auth = useSelector(state=>state.auth);
   const {customer} = useSelector(state=>state.Itinerary)
 
@@ -1241,6 +1255,8 @@ useEffect(() => {
   };
   const transferChipCursor = isP1Draft ? "" : "cursor-pointer";
 
+  // Placed after every hook so the hook order stays stable across renders.
+  if (isV1Archive) return null;
 
   return (
     <Container

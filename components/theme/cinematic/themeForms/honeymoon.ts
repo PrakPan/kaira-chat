@@ -17,12 +17,12 @@ const honeymoonForm: ThemeForm = {
   slug: "honeymoon",
   display: "Honeymoon",
   tagline:
-    "The first trip as us. Tell me the shape you want — overwater and nowhere to be, or two islands and two moods — and I'll build the rest.",
+    "The first trip as us. Tell me the shape you want - overwater and nowhere to be, or two islands and two moods - and I'll build the rest.",
   voice:
     "Warm and unhurried. Talks overwater villas, floating breakfasts, caldera sunsets, slow mornings.",
   copy: {
     datesTitle: "When are you going?",
-    datesSub: "Pick the month the wedding leaves you — I'll show what's good then.",
+    datesSub: "Pick the month the wedding leaves you - I'll show what's good then.",
     footer: "That's the whole form. The page already told me it's a honeymoon.",
     cta: "Draft our honeymoon →",
   },
@@ -37,7 +37,7 @@ const honeymoonForm: ThemeForm = {
       month: 2,
       label: "Peak Indian Ocean",
       tag: "CLEAREST",
-      line: "Best Maldives weather of the year — and a Valentine's premium on villas.",
+      line: "Best Maldives weather of the year - and a Valentine's premium on villas.",
     },
     {
       month: 3,
@@ -97,7 +97,7 @@ const honeymoonForm: ThemeForm = {
       month: 12,
       label: "Peak season",
       tag: "PRICIEST",
-      line: "Peak Maldives and peak Bali — the most-booked month, and the dearest.",
+      line: "Peak Maldives and peak Bali - the most-booked month, and the dearest.",
     },
   ],
   routes: [
@@ -141,7 +141,7 @@ const honeymoonForm: ThemeForm = {
       nights: 8,
       skeleton: "santorini_athens",
       months: [5, 6, 7, 8, 9, 10],
-      fareNote: "JTR in / ATH out. Schengen only — file 20+ days ahead.",
+      fareNote: "JTR in / ATH out. Schengen only - file 20+ days ahead.",
     },
   ],
   // Panel hero on /chat — the overwater villa shot from the honeymoon-2026 set.
@@ -157,7 +157,7 @@ const honeymoonForm: ThemeForm = {
     "Make it more private",
     "Add a private candlelit dinner",
     "Keep it to one island",
-    "What does this cost, honestly?",
+    "Break down the real cost, no surprises",
   ],
 };
 

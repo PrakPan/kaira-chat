@@ -37,7 +37,14 @@ const cityToLocation = (c) => {
   if (!c) return null;
   const place_id = c.gmaps_place_id || c.place_id || null;
   const name = c.city_name || c.name || c.text || null;
-  if (!place_id && !name) return null;
+  // A place_id is required, not merely preferred: handleUpdate submits
+  // `start_location: startingLocation.place_id` and refuses without one. The
+  // V1 archive's start_city carries only a name — Mercury's carries a
+  // gmaps_place_id — so accepting a name-only value pre-filled the picker with
+  // "Raipur" and then failed with "Please select a start location" on submit.
+  // Returning null leaves the picker genuinely empty, so what the form shows
+  // and what it will accept agree.
+  if (!place_id) return null;
   return {
     name,
     place_id,
@@ -56,6 +63,12 @@ const CloneItinerary = ({
   // (poll + skeleton) instead of the default hard redirect.
   sourceItineraryId,
   showEndLocation = false,
+  // Whether to seed the start location and start date from the source
+  // itinerary. On a V1 archive or a /trips page the source is somebody else's
+  // completed trip, so its dates are in the past and its start city is theirs —
+  // pre-filling them asks the traveller to notice and correct two fields rather
+  // than fill two empty ones. The fields still render; they just open blank.
+  prefillStartDetails = true,
   onSuccess,
   onCancel,
 }) => {
@@ -82,7 +95,7 @@ const CloneItinerary = ({
   // change it via the picker below. End location is intentionally kept the same
   // as the start location.
   const [startingLocation, setStartingLocation] = useState(
-    itineraryStartLoc || false
+    (prefillStartDetails && itineraryStartLoc) || false
   );
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
@@ -147,10 +160,14 @@ const CloneItinerary = ({
   // Initialize dates
   const [date, setDate] = useState({
     type: "fixed",
-    start_date: itinerary?.start_date
-      ? parseDateString(itinerary.start_date)
-      : null,
-    end_date: itinerary?.end_date ? parseDateString(itinerary.end_date) : null,
+    start_date:
+      prefillStartDetails && itinerary?.start_date
+        ? parseDateString(itinerary.start_date)
+        : null,
+    end_date:
+      prefillStartDetails && itinerary?.end_date
+        ? parseDateString(itinerary.end_date)
+        : null,
     month: "",
     duration: "",
   });
@@ -162,10 +179,16 @@ const CloneItinerary = ({
       setAddHotels(true);
       setAddFlights(true);
       setAddActivityTransfers(true);
-      setStartingLocation(
-        cityToLocation(itinerary?.start_city || itinerary?.start_location) ||
-          false
-      );
+      // Guarded: this effect re-runs whenever the itinerary object changes, so
+      // without the check it would re-seed the start fields from the source —
+      // both undoing the blank open and overwriting whatever the traveller had
+      // already picked.
+      if (prefillStartDetails) {
+        setStartingLocation(
+          cityToLocation(itinerary?.start_city || itinerary?.start_location) ||
+            false
+        );
+      }
       setAddVisa(itinerary?.add_visa ?? false);
       setAddEsim(itinerary?.add_esim ?? false);
       setRoomConfiguration(deriveRoomConfiguration(itinerary));
@@ -173,7 +196,7 @@ const CloneItinerary = ({
       setNumberOfChildren(itinerary?.number_of_children || 0);
       setNumberOfInfants(itinerary?.number_of_infants || 0);
 
-      if (itinerary?.start_date && itinerary?.end_date) {
+      if (prefillStartDetails && itinerary?.start_date && itinerary?.end_date) {
         setDate({
           type: "fixed",
           start_date: parseDateString(itinerary.start_date),
@@ -440,7 +463,7 @@ const CloneItinerary = ({
               color: "#0B1220",
             }}
           >
-            Craft a{" "}
+            Make this trip{" "}
             <em
               style={{
                 fontFamily: "'Instrument Serif', 'Times New Roman', serif",
@@ -449,12 +472,11 @@ const CloneItinerary = ({
                 letterSpacing: "-0.015em",
               }}
             >
-              similar
-            </em>{" "}
-            trip
+              your own
+            </em>
           </div>
           <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
-            Tweak the dates and travellers — I'll build your own editable copy.
+            Tweak the dates and travellers - I'll build your own editable copy.
           </p>
         </div>
 
@@ -604,7 +626,7 @@ const CloneItinerary = ({
           handleUpdate={handleUpdate}
           isLoading={isLoading}
           isEdit={true}
-          updateLabel="Clone Itinerary"
+          updateLabel="Build Itinerary →"
         />
       </div>
 

@@ -48,7 +48,7 @@ export default function BannerCards(props) {
         url={"media/new-year/bannercard2.png"}
         heading={"Once-in-a-Year Exclusive Trip to Kasol!"}
         description={
-          "Escape to the serene beauty of Kasol this New Year—majestic mountains, cozy vibes, and unforgettable adventures await!"
+          "Escape to the serene beauty of Kasol this New Year-majestic mountains, cozy vibes, and unforgettable adventures await!"
         }
         nights={4}
         days={5}

@@ -235,9 +235,11 @@ const PlacesBragSection = (props) => {
               className="w-10 h-10 bg-[#01202B] backdrop-blur-sm rounded-full flex
                   items-center justify-center hover:scale-110 transition-all duration-300"
             >
+              {/* Sized explicitly — with no fontawesome-svg-core stylesheet the
+                  <svg> has no intrinsic size and fills the 40px circle. */}
               <FontAwesomeIcon
                 icon={faChevronLeft}
-                className="text-white text-md"
+                className="w-auto h-4 text-white"
               />
             </div>
           </div>
@@ -250,7 +252,7 @@ const PlacesBragSection = (props) => {
             >
               <FontAwesomeIcon
                 icon={faChevronRight}
-                className="text-white text-md"
+                className="w-auto h-4 text-white"
               />
             </div>
           </div>

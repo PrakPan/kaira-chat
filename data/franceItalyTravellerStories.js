@@ -2,7 +2,7 @@ const franceItalyTravellerStories = [
   {
     id: 1,
     name: "Sanyukta Ballal",
-    tripName: "9N Romantic Heritage Tour — Rome, Florence, Venice, Paris",
+    tripName: "9N Romantic Heritage Tour - Rome, Florence, Venice, Paris",
     duration: "9 Nights",
     groupType: "Family",
     destinations: ["Rome", "Florence", "Venice", "Paris"],
@@ -19,12 +19,12 @@ const franceItalyTravellerStories = [
     viewItineraryLink: "https://thetarzanway.com/chat/379d8a95-c014-4abe-b636-8fb29974c7c1",
     rating: 4.8,
     prompt:
-      "Plan a 9-night romantic heritage trip for a family of 3 (2 adults, 1 child aged 10) from New Delhi — Rome 2 nights, Florence 2 nights, Venice 2 nights, Paris 3 nights. In Rome: Spanish Steps, Pantheon, Trevi Fountain, Piazza Navona with a guided Pantheon tour. In Florence: Accademia Gallery, Michelangelo's David, Duomo, Giotto's Bell Tower, and Uffizi & Accademia small-group tour. In Venice: Piazza San Marco, Doge's Palace, Rialto Bridge, Teatro La Fenice, and a Grand Canal gondola experience. In Paris: Palais Garnier, Galeries Lafayette, Eiffel Tower, Notre-Dame, Sainte-Chapelle, Musée d'Orsay, and a romantic Seine lunch cruise. 3–5 star hotels, include flights and transfers.",
+      "Plan a 9-night romantic heritage trip for a family of 3 (2 adults, 1 child aged 10) from New Delhi - Rome 2 nights, Florence 2 nights, Venice 2 nights, Paris 3 nights. In Rome: Spanish Steps, Pantheon, Trevi Fountain, Piazza Navona with a guided Pantheon tour. In Florence: Accademia Gallery, Michelangelo's David, Duomo, Giotto's Bell Tower, and Uffizi & Accademia small-group tour. In Venice: Piazza San Marco, Doge's Palace, Rialto Bridge, Teatro La Fenice, and a Grand Canal gondola experience. In Paris: Palais Garnier, Galeries Lafayette, Eiffel Tower, Notre-Dame, Sainte-Chapelle, Musée d'Orsay, and a romantic Seine lunch cruise. 3–5 star hotels, include flights and transfers.",
   },
   {
     id: 2,
     name: "Ariyan Saha",
-    tripName: "10N Romantic Adventure — Paris, Milan, Rome",
+    tripName: "10N Romantic Adventure - Paris, Milan, Rome",
     duration: "10 Nights",
     groupType: "Solo",
     destinations: ["Paris", "Milan", "Rome"],
@@ -41,12 +41,12 @@ const franceItalyTravellerStories = [
     viewItineraryLink: "https://thetarzanway.com/chat/2d2cbdaf-c806-4cc9-8afc-f9b7b47a26e2",
     rating: 4.7,
     prompt:
-      "Plan a 10-night solo romantic adventure trip from Agartala — Paris 3 nights, Milan 3 nights, Rome 4 nights. In Paris: Eiffel Tower, Notre-Dame, Palais Garnier, Musée d'Orsay & Orangerie combo tour with Seine cruise, Versailles Palace day trip, Seine sunset cruise, Sainte-Chapelle, and Centre Pompidou. In Milan: Il Duomo, Galleria Vittorio Emanuele II, Peck, hop-on hop-off bus tour, Brera district, and a Lake Como, Swiss Alps & Lugano small-group day tour. In Rome: Pantheon, Vatican Museums skip-the-line tour, Trevi Fountain underground tour, Spanish Steps, Colosseum & Roman Forum guided tour, and Piazza della Repubblica. 3–4 star hotels, include flights and transfers.",
+      "Plan a 10-night solo romantic adventure trip from Agartala - Paris 3 nights, Milan 3 nights, Rome 4 nights. In Paris: Eiffel Tower, Notre-Dame, Palais Garnier, Musée d'Orsay & Orangerie combo tour with Seine cruise, Versailles Palace day trip, Seine sunset cruise, Sainte-Chapelle, and Centre Pompidou. In Milan: Il Duomo, Galleria Vittorio Emanuele II, Peck, hop-on hop-off bus tour, Brera district, and a Lake Como, Swiss Alps & Lugano small-group day tour. In Rome: Pantheon, Vatican Museums skip-the-line tour, Trevi Fountain underground tour, Spanish Steps, Colosseum & Roman Forum guided tour, and Piazza della Repubblica. 3–4 star hotels, include flights and transfers.",
   },
   {
     id: 3,
     name: "Edwin",
-    tripName: "11N Romantic Tour — Paris, Venice, Rome",
+    tripName: "11N Romantic Tour - Paris, Venice, Rome",
     duration: "11 Nights",
     groupType: "Family",
     destinations: ["Paris", "Venice", "Rome"],
@@ -63,12 +63,12 @@ const franceItalyTravellerStories = [
     viewItineraryLink: "https://thetarzanway.com/chat/11c98a86-1ea8-4f2a-9191-84f5bd163156",
     rating: 4.8,
     prompt:
-      "Plan an 11-night romantic Italy and France trip for 4 adults from Delhi — Paris 5 nights, Venice 1 night, Rome 5 nights. In Paris: Eiffel Tower, Arc de Triomphe, Notre-Dame, Jardin du Luxembourg, Musée d'Orsay, Louis Vuitton Foundation, Catacombs, Panthéon, a cityscape bike tour, Montmartre cheese & wine tasting, Disneyland Paris, Palace of Versailles, Tuileries Garden, and Galeries Lafayette. In Venice: Rialto Bridge, Doge's Palace, Ponte di Rialto, and Bridge of Sighs. In Rome: Pantheon, Roman Forum, Castel Sant'Angelo, Colosseum, Palatine Hill, Galleria Borghese, Victor Emmanuel II Monument, Hadrian's Villa, Spanish Steps, Trevi Fountain, Villa d'Este, Sistine Chapel, and Baths of Caracalla. 3–4 star hotels, include flights and transfers.",
+      "Plan an 11-night romantic Italy and France trip for 4 adults from Delhi - Paris 5 nights, Venice 1 night, Rome 5 nights. In Paris: Eiffel Tower, Arc de Triomphe, Notre-Dame, Jardin du Luxembourg, Musée d'Orsay, Louis Vuitton Foundation, Catacombs, Panthéon, a cityscape bike tour, Montmartre cheese & wine tasting, Disneyland Paris, Palace of Versailles, Tuileries Garden, and Galeries Lafayette. In Venice: Rialto Bridge, Doge's Palace, Ponte di Rialto, and Bridge of Sighs. In Rome: Pantheon, Roman Forum, Castel Sant'Angelo, Colosseum, Palatine Hill, Galleria Borghese, Victor Emmanuel II Monument, Hadrian's Villa, Spanish Steps, Trevi Fountain, Villa d'Este, Sistine Chapel, and Baths of Caracalla. 3–4 star hotels, include flights and transfers.",
   },
   {
     id: 4,
     name: "Vibhuti",
-    tripName: "9N Cultural Escapade — Paris, Milan, Florence",
+    tripName: "9N Cultural Escapade - Paris, Milan, Florence",
     duration: "9 Nights",
     groupType: "Friends",
     destinations: ["Paris", "Milan", "Florence"],
@@ -85,7 +85,7 @@ const franceItalyTravellerStories = [
     viewItineraryLink: "https://thetarzanway.com/chat/bc44dc6f-c538-46f5-a152-fa436fbe6c2b",
     rating: 4.7,
     prompt:
-      "Plan a 9-night solo cultural trip from New Delhi — Paris 3 nights, Milan 3 nights, Florence 3 nights. In Paris: Musée du Louvre, Montmartre, Palais Garnier, Panthéon, Galeries Lafayette, Artazart, Champs-Élysées, a Saint Germain gourmet food walk, and an evening Moulin Rouge sightseeing tour. In Milan: Il Duomo, Galleria Vittorio Emanuele II, Pinacoteca di Brera, Rinascente, a street food walking tour, The Last Supper, CityLife Shopping District, Bosco Verticale, and Fidenza Village outlet. In Florence: Santa Maria Novella, Piazza della Signoria, Museo Galileo, Basilica Santa Croce, San Lorenzo Market, cooking classes, Palazzo Pitti, and an Arno River sunset cruise with aperitivo. 3–5 star hotels, include flights and transfers.",
+      "Plan a 9-night solo cultural trip from New Delhi - Paris 3 nights, Milan 3 nights, Florence 3 nights. In Paris: Musée du Louvre, Montmartre, Palais Garnier, Panthéon, Galeries Lafayette, Artazart, Champs-Élysées, a Saint Germain gourmet food walk, and an evening Moulin Rouge sightseeing tour. In Milan: Il Duomo, Galleria Vittorio Emanuele II, Pinacoteca di Brera, Rinascente, a street food walking tour, The Last Supper, CityLife Shopping District, Bosco Verticale, and Fidenza Village outlet. In Florence: Santa Maria Novella, Piazza della Signoria, Museo Galileo, Basilica Santa Croce, San Lorenzo Market, cooking classes, Palazzo Pitti, and an Arno River sunset cruise with aperitivo. 3–5 star hotels, include flights and transfers.",
   },
 ];
 

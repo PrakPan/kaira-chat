@@ -165,10 +165,19 @@ const THEME_IMG = {
 };
 
 // ── Prompts ─────────────────────────────────────────────────────────────────
-// Every prompt below is the brief's own copy, verbatim. They all open "We are 2
-// travellers, and our travel dates are flexible" except the three Yi Peng ones,
-// which pin 24–25 November 2026 because that is when the festival is — a
-// flexible-dates lantern trip is a contradiction.
+// Every prompt below is the brief's own copy. The hero chips keep its opening
+// verbatim — "We are 2 travellers, and our travel dates are flexible" — because
+// a chip is a browse, not a decision: the reader is still asking what Thailand
+// is, and pinning a month for them would answer a question they haven't asked.
+//
+// The five "Pick a vibe" prompts are the opposite. Each one is a whole route,
+// and a route only works in some months — so they each name a month inside the
+// Nov–Feb dry window and say so in the sentence: "our dates are flexible, but we
+// want to travel in <Month>". The sentence has to carry it because the matching
+// `month` in PROMPT_FACTS below is sent as structured intake, and a prompt whose
+// words say "flexible" while its intake says February is a contradiction the
+// backend has no way to resolve. Sentence and fact are edited together or not
+// at all. Which month each route gets is reasoned at PROMPT_FACTS.
 const PROMPTS = {
   // Hero + chips
   yiPengChip:
@@ -192,16 +201,16 @@ const PROMPTS = {
   lanternsNorth:
     "We are 2 travellers, and our dates are flexible, but we want to travel in November. Plan a 6-night Thailand trip around the Yi Peng Lantern Festival, combining Chiang Mai, Chiang Rai and Bangkok. Include the lantern festival, temples, night markets, local food and cultural experiences, with enough time to enjoy each place without rushing.",
   islandsSlowly:
-    "We are 2 travellers, and our travel dates are flexible. Plan a 9-night Thailand island trip through Krabi, Koh Lanta and Koh Jum. Focus on quiet beaches, longtail boats, snorkeling, local food, sunsets and slow island days. Avoid overly crowded tourist spots and keep the itinerary relaxed with minimal rushing between islands.",
+    "We are 2 travellers, and our dates are flexible, but we want to travel in February. Plan a 9-night Thailand island trip through Krabi, Koh Lanta and Koh Jum. Focus on quiet beaches, longtail boats, snorkeling, local food, sunsets and slow island days. Avoid overly crowded tourist spots and keep the itinerary relaxed with minimal rushing between islands.",
   cityAndBeach:
-    "We are 2 travellers, and our travel dates are flexible. Plan a 5-night first-time Thailand trip combining Bangkok and Phuket. Include Bangkok's temples, street food and markets, followed by Phuket's best beaches and island experiences. Keep it simple, practical and relaxed for a first visit.",
+    "We are 2 travellers, and our dates are flexible, but we want to travel in November. Plan a 5-night first-time Thailand trip combining Bangkok and Phuket. Include Bangkok's temples, street food and markets, followed by Phuket's best beaches and island experiences. Keep it simple, practical and relaxed for a first visit.",
   loudWeek:
-    "We are a group of 6 friends, and our travel dates are flexible. Plan a 7-night Thailand trip through Bangkok, Pattaya and Phuket. Focus on nightlife, beach clubs, street food, fun group activities, island trips and memorable experiences. Keep the itinerary energetic but leave enough downtime between nights out.",
+    "We are a group of 6 friends, and our dates are flexible, but we want to travel in December. Plan a 7-night Thailand trip through Bangkok, Pattaya and Phuket. Focus on nightlife, beach clubs, street food, fun group activities, island trips and memorable experiences. Keep the itinerary energetic but leave enough downtime between nights out.",
   kayaksCavesCooking:
-    "We are 2 travellers, and our travel dates are flexible. Plan an 8-night Thailand trip combining Krabi and Chiang Mai, focused on active and hands-on experiences. Include kayaking, caves, hiking, snorkeling, Thai cooking classes, temples, local food and outdoor adventures. Keep the itinerary active but balanced with relaxed evenings.",
+    "We are 2 travellers, and our dates are flexible, but we want to travel in January. Plan an 8-night Thailand trip combining Krabi and Chiang Mai, focused on active and hands-on experiences. Include kayaking, caves, hiking, snorkeling, Thai cooking classes, temples, local food and outdoor adventures. Keep the itinerary active but balanced with relaxed evenings.",
   // Ask Kaira
   askBar:
-    "Which Thailand trip should we do first, for two of us with flexible dates — Krabi and the Andaman islands, Chiang Mai and the north around the Yi Peng lanterns, or a first-timer's Bangkok and one beach? Compare the pace, the cost and which months each one actually works in, given the two coasts have opposite monsoons, then build the ideal itinerary for the one you recommend.",
+    "Which Thailand trip should we do first, for two of us with flexible dates - Krabi and the Andaman islands, Chiang Mai and the north around the Yi Peng lanterns, or a first-timer's Bangkok and one beach? Compare the pace, the cost and which months each one actually works in, given the two coasts have opposite monsoons, then build the ideal itinerary for the one you recommend.",
 };
 
 // What each prompt states about the trip, sent as `intake` keys (month / day /
@@ -211,10 +220,30 @@ const PROMPTS = {
 // so they carry `who` only — inventing a month for them would contradict the
 // sentence the reader just sent.
 //
-// The five vibes carry the nights their own card prints. The lantern one also
-// carries `month: 11` with `day: 22`: Yi Peng is two fixed nights and a
-// mid-month departure would miss them, so the trip starts two days ahead and
-// the 24th and 25th land inside it.
+// The five vibes carry the nights their own card prints AND a month inside the
+// Nov–Feb dry window, matching the sentence each prompt now states and the four
+// months the theme form's season strip offers (themeForms/thailand.ts). Each
+// month resolves forward on its own, so these never point at a February that has
+// been and gone. Why each one:
+//
+//   • lanternsNorth  — November, `day: 22`. Not a preference: Yi Peng is two
+//     fixed nights on the Lanna full moon, so the trip starts two days ahead and
+//     the 24th and 25th land inside it.
+//   • cityAndBeach   — November. Bangkok and Phuket are both near their peak in
+//     it (775 and 659 itineraries since 2023) and it is the cheapest way into
+//     the season, before December's New Year spike. No Chiang Mai in this route,
+//     so it doesn't compete with the lantern trip for the same beds.
+//   • loudWeek       — December. The clearest signal in the data: friends-groups
+//     peak at 354 trips in December against 188 in February, and Pattaya peaks
+//     with them at 265. A six-friend week is a December product.
+//   • kayaksCavesCooking — January. Wants dry ground at both ends. Chiang Mai is
+//     at its coolest and driest for the ridge trek and the caves, and crucially
+//     it is before the late-February burning season puts smoke over the north.
+//   • islandsSlowly  — February. Pure Andaman and entirely boat-dependent, so it
+//     wants the month the form's own season row calls "flat Andaman seas — the
+//     safest month for a boat day you can't reschedule". The data agrees: Koh
+//     Lanta's own peak, couples holding strongest at 331 trips, and the longest
+//     average stay of the four months at 7.4 nights.
 const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   yiPengChip: { who: "Couple", month: 11 },
   krabiIslands: { who: "Couple" },
@@ -233,12 +262,14 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   islandsSlowly: {
     who: "Couple",
     nights: 9,
+    month: 2,
     window: "islands_slowly",
     skeleton: "krabi_lanta_kohjum",
   },
   cityAndBeach: {
     who: "Couple",
     nights: 5,
+    month: 11,
     window: "city_and_beach",
     skeleton: "bangkok_phuket",
   },
@@ -246,12 +277,14 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
     who: "Friends",
     adults: 6,
     nights: 7,
+    month: 12,
     window: "loud_week",
     skeleton: "bangkok_pattaya_phuket",
   },
   kayaksCavesCooking: {
     who: "Couple",
     nights: 8,
+    month: 1,
     window: "active_krabi_north",
     skeleton: "krabi_chiangmai",
   },
@@ -315,17 +348,17 @@ const thailandConfig: CinematicThemeConfig = {
         accent: "fills up",
       },
       intro:
-        "One night a year, on the Lanna full moon. The release everyone photographs is ticketed and 30–45 minutes outside the city — not the free one in town, which runs the same nights and is worth doing as well.",
+        "One night a year, on the Lanna full moon. The release everyone photographs is ticketed and 30–45 minutes outside the city - not the free one in town, which runs the same nights and is worth doing as well.",
       cards: [
         {
           image: IMG.heritageLanterns,
           name: "Heritage Sky Lanterns",
-          line: "The traditional Lanna ceremony — monks chanting, then the release. The one people photograph.",
+          line: "The traditional Lanna ceremony - monks chanting, then the release. The one people photograph.",
           tag: "Most booked",
           item: {
             kind: "activity",
             label:
-              "Yi Peng — Heritage Sky Lanterns, Chiang Mai (24–25 Nov 2026)",
+              "Yi Peng - Heritage Sky Lanterns, Chiang Mai (24–25 Nov 2026)",
             short: "Heritage Sky Lanterns",
           },
         },
@@ -337,14 +370,14 @@ const thailandConfig: CinematicThemeConfig = {
           item: {
             kind: "activity",
             label:
-              "Yi Peng — Heaven Lantern Festival with Khantoke dinner, Chiang Mai (24–25 Nov 2026)",
+              "Yi Peng - Heaven Lantern Festival with Khantoke dinner, Chiang Mai (24–25 Nov 2026)",
             short: "Heaven Lantern Festival",
           },
         },
         {
           image: IMG.skyFestival,
           name: "Chiang Mai Sky Festival",
-          line: "A separate ticketed release earlier in the month — the fallback when Yi Peng night is sold out.",
+          line: "A separate ticketed release earlier in the month - the fallback when Yi Peng night is sold out.",
           tag: "Early November",
           item: {
             kind: "activity",
@@ -372,36 +405,36 @@ const thailandConfig: CinematicThemeConfig = {
         {
           image: PickAVibe.chiangMai,
           name: "Lanterns and the north",
-          line: "Chiang Mai · Chiang Rai · Bangkok — the festival, the temples, the markets.",
+          line: "Chiang Mai · Chiang Rai · Bangkok - the festival, the temples, the markets.",
           tag: "6 nights · November",
           prompt: PROMPTS.lanternsNorth,
         },
         {
           image: PickAVibe.kohJum,
           name: "Islands, slowly",
-          line: "Krabi · Koh Lanta · Koh Jum — longtails, snorkelling, and days with nothing in them.",
-          tag: "9 nights",
+          line: "Krabi · Koh Lanta · Koh Jum - longtails, snorkelling, and days with nothing in them.",
+          tag: "9 nights · February",
           prompt: PROMPTS.islandsSlowly,
         },
         {
           image: PickAVibe.phuket,
           name: "One city, one beach",
-          line: "Bangkok · Phuket — the simplest first trip. Two bases, one internal flight.",
-          tag: "5 nights · first time",
+          line: "Bangkok · Phuket - the simplest first trip. Two bases, one internal flight.",
+          tag: "5 nights · November",
           prompt: PROMPTS.cityAndBeach,
         },
         {
           image: PickAVibe.pattaya,
           name: "Loud week with friends",
-          line: "Bangkok · Pattaya · Phuket — nightlife, beach clubs and island days, six of you.",
-          tag: "7 nights · friends",
+          line: "Bangkok · Pattaya · Phuket - nightlife, beach clubs and island days, six of you.",
+          tag: "7 nights · December",
           prompt: PROMPTS.loudWeek,
         },
         {
           image: PickAVibe.trek,
           name: "Kayaks, caves and cooking",
-          line: "Krabi · Chiang Mai — half sea, half hills, hands-on the whole way.",
-          tag: "8 nights · active",
+          line: "Krabi · Chiang Mai - half sea, half hills, hands-on the whole way.",
+          tag: "8 nights · January",
           prompt: PROMPTS.kayaksCavesCooking,
         },
       ],
@@ -450,7 +483,7 @@ const thailandConfig: CinematicThemeConfig = {
         {
           image: IMG.cook,
           name: "Thai Charm cooking class with meal",
-          line: "Market first, wok second — four dishes you'll cook again at home.",
+          line: "Market first, wok second - four dishes you'll cook again at home.",
           tag: "Krabi",
           activityId: ACTIVITY.cookingClass,
         },
@@ -471,7 +504,7 @@ const thailandConfig: CinematicThemeConfig = {
         {
           image: IMG.cityTour,
           name: "Customise your own city tour",
-          line: "Build the day yourself — temples, markets, and the lantern-release spots in November.",
+          line: "Build the day yourself - temples, markets, and the lantern-release spots in November.",
           tag: "Chiang Mai",
           activityId: ACTIVITY.cityTour,
         },
@@ -591,7 +624,7 @@ const thailandConfig: CinematicThemeConfig = {
           image: IMG.karaweik,
           name: "Karaweik",
           city: "Koh Tao",
-          line: "Burmese kitchen on a Thai island — rich curries, fish soup, mohinga. Nothing like the beach menus.",
+          line: "Burmese kitchen on a Thai island - rich curries, fish soup, mohinga. Nothing like the beach menus.",
           rating: "5.0",
           reviews: "2,118",
           href: `${PAGE}?restaurant_id=${RESTAURANT.karaweik}`,
@@ -664,14 +697,14 @@ const thailandConfig: CinematicThemeConfig = {
         accent: "handled",
       },
       intro:
-        "Thailand waives the visa fee for Indian passports on stays under 60 days — you land, you get stamped. We still check your return ticket, funds proof and hotel confirmations before you fly, because those are what get people turned around at immigration.",
+        "Thailand waives the visa fee for Indian passports on stays under 60 days - you land, you get stamped. We still check your return ticket, funds proof and hotel confirmations before you fly, because those are what get people turned around at immigration.",
       cards: [
         {
           country: "Thailand",
           cities: "Visa-free · 60 days · stamped on arrival",
           fee: "Free",
           line:
-            "Extendable once at an immigration office inside the country, which is worth knowing before you book a return you can't move. The free digital arrival card is separate and due within 72 hours of landing — we send that link with your documents.",
+            "Extendable once at an immigration office inside the country, which is worth knowing before you book a return you can't move. The free digital arrival card is separate and due within 72 hours of landing - we send that link with your documents.",
           href: VISA_URL,
         },
       ],
@@ -682,7 +715,7 @@ const thailandConfig: CinematicThemeConfig = {
         { label: "Carry", value: "4 papers" },
       ],
       note:
-        "Return ticket, funds proof, hotel confirmations and insurance are the four papers immigration asks for. Nothing is filed in advance — the work is making sure you land with the right file.",
+        "Return ticket, funds proof, hotel confirmations and insurance are the four papers immigration asks for. Nothing is filed in advance - the work is making sure you land with the right file.",
     },
     // ── When to actually go ──
     // The two coasts are on opposite monsoons, which is the whole planning
@@ -761,7 +794,7 @@ const thailandConfig: CinematicThemeConfig = {
           image: CITY.krabi,
           tag: "Family · ★ 4.8",
           name: "Thai'd Together",
-          line: "Krabi and Phuket with the four-island tour in the middle — the easiest version with kids along.",
+          line: "Krabi and Phuket with the four-island tour in the middle - the easiest version with kids along.",
           price: "₹96,000 / person",
           nights: "6 nights",
           includes: ["Flights", "2 stays", "4-island tour"],
@@ -954,7 +987,7 @@ const ThailandCountryPage = ({
         </title>
         <meta
           name="description"
-          content="Plan a Thailand trip with The Tarzan Way's AI itinerary — Krabi and the Andaman islands, Chiang Mai and the Yi Peng lantern festival, Bangkok, Phuket and the Gulf. Experiences, stays, visa and flights, priced live."
+          content="Plan a Thailand trip with The Tarzan Way's AI itinerary - Krabi and the Andaman islands, Chiang Mai and the Yi Peng lantern festival, Bangkok, Phuket and the Gulf. Experiences, stays, visa and flights, priced live."
         />
         <meta
           property="og:title"
@@ -962,7 +995,7 @@ const ThailandCountryPage = ({
         />
         <meta
           property="og:description"
-          content="Plan a Thailand trip with The Tarzan Way's AI itinerary — Krabi and the Andaman islands, Chiang Mai and the Yi Peng lantern festival, Bangkok, Phuket and the Gulf. Experiences, stays, visa and flights, priced live."
+          content="Plan a Thailand trip with The Tarzan Way's AI itinerary - Krabi and the Andaman islands, Chiang Mai and the Yi Peng lantern festival, Bangkok, Phuket and the Gulf. Experiences, stays, visa and flights, priced live."
         />
         <link rel="canonical" href={`${SITE}/asia/thailand`} />
         <meta property="og:url" content={`${SITE}/asia/thailand`} />
@@ -979,7 +1012,7 @@ const ThailandCountryPage = ({
                   "@type": "TouristDestination",
                   name: "Thailand",
                   description:
-                    "Plan a Thailand trip with The Tarzan Way's AI itinerary — Krabi and the Andaman islands, Chiang Mai and the Yi Peng lantern festival, Bangkok, Phuket and the Gulf.",
+                    "Plan a Thailand trip with The Tarzan Way's AI itinerary - Krabi and the Andaman islands, Chiang Mai and the Yi Peng lantern festival, Bangkok, Phuket and the Gulf.",
                   url: `${SITE}/asia/thailand`,
                   image: `${SITE}/og-image.png`,
                 },

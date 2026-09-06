@@ -745,7 +745,7 @@ const TransferDrawer = ({
   const sectionLabel = (base, group, groups) => {
     if (groups.length === 1) return base;
     const named = group.titles.filter(Boolean);
-    return named.length ? `${base} — ${named.join(", ")}` : base;
+    return named.length ? `${base} - ${named.join(", ")}` : base;
   };
 
   const content = (

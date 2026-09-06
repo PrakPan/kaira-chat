@@ -592,6 +592,11 @@ const ItineraryCity = (props) => {
   // activity is NOT here — it moved onto each day row in the day-by-day below,
   // so the picker can open on that day's exact date (see CityDay.jsx).
   const isDraftStatus = itineraryDaybyDay.status == "Draft";
+  // Archived V1 itineraries are read-only: there is no supplier or booking
+  // backend behind them, so every "add"/"change" affordance is suppressed the
+  // same way a Draft suppresses them.
+  const isReadOnlyArchive = !!itineraryDaybyDay?.is_v1_archive;
+  const hideEditActions = isDraftStatus || isReadOnlyArchive;
 
   const openTaxiDrawer = () => {
     trackTaxiCardClicked?.(currentItineraryId, "", "city_header_add_taxi");
@@ -717,7 +722,7 @@ const ItineraryCity = (props) => {
           {!props?.fromChat ? (
             <div className="flex items-center gap-2 shrink-0">
               {hotels_status !== "PENDING" &&
-                (hotelExists ? (
+                (hotelExists && !isReadOnlyArchive ? (
                   <button
                     onClick={handleChangeHotel}
                     className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black text-[13px] whitespace-nowrap"
@@ -725,7 +730,7 @@ const ItineraryCity = (props) => {
                     <EditIcon />
                     Change Hotel
                   </button>
-                ) : !isDraftStatus ? (
+                ) : !hideEditActions ? (
                   <button
                     onClick={handleAddStay}
                     className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black text-[13px] whitespace-nowrap"
@@ -734,7 +739,7 @@ const ItineraryCity = (props) => {
                     Add Stay
                   </button>
                 ) : null)}
-              {!isDraftStatus && (
+              {!hideEditActions && (
                 <button
                   onClick={openTaxiDrawer}
                   className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black text-[13px] whitespace-nowrap"
@@ -746,7 +751,11 @@ const ItineraryCity = (props) => {
             </div>
           ) : (
             <>
-              {/* Mobile: Edit toggle reveals the per-stop actions row below. */}
+              {/* Mobile: Edit toggle reveals the per-stop actions row below.
+                  Hidden on an archive, where every action in that row is
+                  suppressed and the toggle would open an empty row. Draft keeps
+                  it — Change hotel / Change transfer still live there. */}
+              {!isReadOnlyArchive && (
               <button
                 type="button"
                 onClick={() => setEditMode((v) => !v)}
@@ -761,12 +770,13 @@ const ItineraryCity = (props) => {
                   <RiArrowDropDownLine size={16} />
                 )}
               </button>
+              )}
 
               {/* Desktop: hotel + taxi actions live in the header row where the
                   Edit toggle was (no toggle on desktop). */}
               <div className="flex max-ph:hidden items-center gap-[9px] shrink-0">
                 {hotels_status !== "PENDING" &&
-                  (hotelExists ? (
+                  (hotelExists && !isReadOnlyArchive ? (
                     <button
                       onClick={handleChangeHotel}
                       className="flex items-center justify-center gap-[5px] px-3.5 py-2 rounded-full border-[1px] border-[#E3E2DD] bg-white text-[12.5px] font-semibold text-[#2c2f34] whitespace-nowrap"
@@ -774,7 +784,7 @@ const ItineraryCity = (props) => {
                       <EditIcon />
                       Change hotel
                     </button>
-                  ) : !isDraftStatus ? (
+                  ) : !hideEditActions ? (
                     <button
                       onClick={handleAddStay}
                       className="flex items-center justify-center gap-1 px-3.5 py-2 rounded-full border-[1px] border-[#E3E2DD] bg-white text-[12.5px] font-semibold text-[#2c2f34] whitespace-nowrap"
@@ -783,7 +793,7 @@ const ItineraryCity = (props) => {
                       Add stay
                     </button>
                   ) : null)}
-                {!isDraftStatus && (
+                {!hideEditActions && (
                   <button
                     onClick={openTaxiDrawer}
                     className="flex items-center justify-center gap-1 px-3.5 py-2 rounded-full border-[1px] border-[#E3E2DD] bg-white text-[12.5px] font-semibold text-[#2c2f34] whitespace-nowrap"
@@ -839,17 +849,22 @@ const ItineraryCity = (props) => {
                     {/* Chat: hotel icon before the stay name */}
                     {props?.fromChat && <HotelIcon />}
                     {/* Hotel name — truncated in p2, full text in p1 (Draft) */}
+                    {/* Archived stays are plain text: the detail drawer loads
+                        from the live accommodation endpoints, which have
+                        nothing for a V1 snapshot's hotel id, so the underline
+                        would advertise a drawer that only ever errors. */}
                     <span
                       className={`${
                         isDraftStage
-                          ? "underline cursor-pointer break-words"
-                          : `underline cursor-pointer truncate shrink min-w-0 ${props?.fromChat ? "" : "max-w-[130px]"} md:max-w-none md:overflow-visible md:whitespace-normal md:break-words`
+                          ? `${isReadOnlyArchive ? "" : "underline cursor-pointer"} break-words`
+                          : `${isReadOnlyArchive ? "" : "underline cursor-pointer"} truncate shrink min-w-0 ${props?.fromChat ? "" : "max-w-[130px]"} md:max-w-none md:overflow-visible md:whitespace-normal md:break-words`
                       } ${props?.fromChat ? "text-[#1f6feb] font-semibold" : ""} ${
                         p1HotelLoadingId === hotel.id
                           ? "opacity-60 cursor-wait pointer-events-none"
                           : ""
                       }`}
                       onClick={() => {
+                        if (isReadOnlyArchive) return;
                         trackHotelCardClicked?.(
                           currentItineraryId,
                           hotel.id,
@@ -915,10 +930,10 @@ const ItineraryCity = (props) => {
               rows below rather than here. */}
           {props?.fromChat &&
             hotels_status !== "PENDING" &&
-            ((!hotelExists && !isDraftStatus) || editMode) && (
+            ((!hotelExists && !hideEditActions) || editMode) && (
             <div className="flex md:hidden flex-wrap items-center gap-[8px] mt-2">
               {hotelExists
-                ? editMode && (
+                ? editMode && !isReadOnlyArchive && (
                     <button
                       onClick={handleChangeHotel}
                       className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap text-[10px]"
@@ -927,7 +942,7 @@ const ItineraryCity = (props) => {
                       Change hotel
                     </button>
                   )
-                : !isDraftStatus && (
+                : !hideEditActions && (
                     <button
                       onClick={handleAddStay}
                       className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white text-[10px] font-semibold text-[#2c2f34] whitespace-nowrap"
@@ -945,7 +960,7 @@ const ItineraryCity = (props) => {
                   Change transfer
                 </button>
               )}
-              {editMode && !isDraftStatus && (
+              {editMode && !hideEditActions && (
                 <button
                   onClick={openTaxiDrawer}
                   className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white text-[10px] font-semibold text-[#2c2f34] whitespace-nowrap"

@@ -57,7 +57,7 @@ const kairaPerfectProposalTravellerStories = [
       "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/176180557308500790596008300781.jpg",
     ],
     shortDescription:
-      "Burj Khalifa views, a desert dune dinner, Ubud's rice terraces, a candlelight dinner in Nusa Penida — Bali via Dubai.",
+      "Burj Khalifa views, a desert dune dinner, Ubud's rice terraces, a candlelight dinner in Nusa Penida - Bali via Dubai.",
     viewItineraryLink: "https://thetarzanway.com/chat/6f589740-15d8-4c80-9d72-5a3587c0098f",
     rating: 4.9,
     prompt:

@@ -24,6 +24,7 @@ import Skeleton from "./Skeleton";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 import OfflineQuoteEmptyState from "../../ui/OfflineQuoteEmptyState";
+import PriceSourceNote from "../../revamp/common/components/PriceSourceNote";
 import { useRouter } from "next/router";
 import { PulseLoader } from "react-spinners";
 
@@ -405,7 +406,7 @@ const Booking = (props) => {
                       steppers and SelectedTaxisBar below commits them as one booking. */}
                   {taxiSelection.enabled ? (
                     <div className="rounded-2xl border-sm border-solid border-[#f2e6a8] bg-[#fffdf0] px-3 py-2 mt-md ttw-type-small text-[#6b5600]">
-                      No single taxi seats {fleet?.pax} — add as many as you need
+                      No single taxi seats {fleet?.pax} - add as many as you need
                       and we will book them together.
                     </div>
                   ) : null}
@@ -444,6 +445,11 @@ const Booking = (props) => {
                         )}
                       </button>
                     </div>
+                  ) : null}
+
+                  {/* Staff-only: who quoted the fares listed above. */}
+                  {!loading && (optionsJSX.length || moreOptionsJSX.length) ? (
+                    <PriceSourceNote source={fleetSource} />
                   ) : null}
                 </OptionsContainer>
               ) : null}

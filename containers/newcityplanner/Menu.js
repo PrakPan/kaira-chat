@@ -366,7 +366,7 @@ const Menu = (props) => {
             </h2>
             <p className={styles.lede}>
               Easy to combine with your{" "}
-              <span className={styles.serif}>{props.data.name} trip</span> —
+              <span className={styles.serif}>{props.data.name} trip</span> -
               add them with one tap.
             </p>
           </div>

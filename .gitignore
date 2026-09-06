@@ -111,3 +111,13 @@ pm2-deploy.sh
 package-lock.json
 vercel.json
 tsconfig.tsbuildinfo
+
+# Prebuild snapshot for the SEO trips pages (scripts/tripsSeoCache.js).
+.seo-cache/
+
+# Where scripts/pageGroups.js parks the page groups a build was not asked for.
+.page-groups-backup/
+
+# Per-group key lists written by scripts/s3Manifest.js and consumed by its
+# prune step (CI passes this between the build and deploy steps as an artifact).
+.deploy-work/

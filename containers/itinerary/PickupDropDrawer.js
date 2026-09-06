@@ -32,6 +32,7 @@ import {
 import { currencySymbols } from "../../data/currencySymbols";
 import Skeleton from "../../components/modals/taxis/Skeleton";
 import OfflineQuoteEmptyState from "../../components/ui/OfflineQuoteEmptyState";
+import PriceSourceNote from "../../components/revamp/common/components/PriceSourceNote";
 import { useRouter } from "next/router";
 
 // Long enough that the passenger stepper, a typed date and the time list can all
@@ -1585,7 +1586,7 @@ const getTitle = () => {
 
           {taxiSelection.enabled ? (
             <div className="rounded-2xl border-sm border-solid border-[#f2e6a8] bg-[#fffdf0] px-3 py-2 mb-3 ttw-type-small text-[#6b5600]">
-              No single taxi seats {fleet?.pax} — add as many as you need and we
+              No single taxi seats {fleet?.pax} - add as many as you need and we
               will book them together.
             </div>
           ) : null}
@@ -1639,6 +1640,11 @@ const getTitle = () => {
                 "Search for more options"
               )}
             </button>
+          ) : null}
+
+          {/* Staff-only: who quoted the fares listed above. */}
+          {!isLoadingQuotes && transferQuotes.length > 0 ? (
+            <PriceSourceNote source={source} />
           ) : null}
         </div>
 

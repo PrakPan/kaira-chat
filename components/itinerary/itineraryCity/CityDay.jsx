@@ -373,6 +373,15 @@ const TAG_STYLE_BY_KEY = {
   suggest:     { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
   // "on your own" → green-soft (the activity-self / explore signal)
   on_your_own: { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },
+  // Same green-soft family: the archive's fallback when an element has no
+  // recognised type, and the standing label on every POI.
+  self_exploration: { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },
+  // Archive element-type chips — see ARCHIVE_TYPE_TAG. Restaurant and
+  // recommendation reuse the fills their cards already carry, so the chip and
+  // the row it sits on agree.
+  activity:       { background: "#E6F0FF", color: "#1D6FE0", border: "1px solid rgba(29,111,224,0.25)" },
+  restaurant:     { background: "#FFE5D1", color: "#0B1220" },
+  recommendation: { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
   // .act-tag.food-tag — ink fill, peach text
   table_held:  { background: "#0B1220", color: "#FFE5D1" },
   window_seat: { background: "#0B1220", color: "#FFE5D1" },
@@ -440,13 +449,14 @@ const resolveTagLabel = (raw) => {
 // note, so the per-label meanings live here, on the badge itself. Unknown tags
 // simply get no tooltip (resolveTagDesc → null).
 const TAG_DESC_BY_KEY = {
-  on_your_own: "Not pre-booked — go at your own pace. No ticket needed.",
+  on_your_own: "Not pre-booked - go at your own pace. No ticket needed.",
+  self_exploration: "Not pre-booked - go at your own pace. No ticket needed.",
   self_guided: "Explore at your own pace with directions provided.",
   semi_guided: "Part guided, part free time to explore on your own.",
   included: "Already included in your trip package.",
   guided: "Led by a local guide.",
-  suggested: "A spot we recommend — visit if it appeals to you.",
-  suggest: "A spot we recommend — visit if it appeals to you.",
+  suggested: "A spot we recommend - visit if it appeals to you.",
+  suggest: "A spot we recommend - visit if it appeals to you.",
   kaira_pick: "A standout Kaira specially recommends for this trip.",
   kairas_pick: "A standout Kaira specially recommends for this trip.",
   must_do: "A trip highlight worth prioritising.",
@@ -464,6 +474,26 @@ const TAG_DESC_BY_KEY = {
 };
 
 const resolveTagDesc = (raw) => TAG_DESC_BY_KEY[normalizeTagKey(raw)] || null;
+
+// ─── Archive: chip derived from the element's own type ────────────────────────
+// The V1 export's day elements are a flat {element_type, icon, index, name,
+// tags} shape whose `tags` array is empty on every record — the export carries
+// no curation signals at all. Reading `tags` therefore put every row on the
+// fallback chip, so the type itself is what the chip is built from.
+//
+// In practice the export only ever emits "activity"; the other three are here
+// because the element_type field is free-form and a later re-export could widen
+// it. Anything unrecognised — or missing — reads as self-exploration, which is
+// what an un-booked archived row is.
+const ARCHIVE_TYPE_TAG = {
+  activity: "activity",
+  restaurant: "restaurant",
+  recommendation: "recommendation",
+  poi: "self_exploration",
+};
+
+const archiveTypeTag = (resolvedType) =>
+  ARCHIVE_TYPE_TAG[resolvedType] || "self_exploration";
 
 // Pick a style for a tag. Known keys → mapped style; unknown → deterministic
 // fallback color. Caller renders the raw API string as the chip text.
@@ -570,6 +600,11 @@ const CityDay = (props) => {
   const dispatch = useDispatch();
   const { id } = useSelector((state) => state.auth);
   const { customer } = useSelector((state) => state.Itinerary);
+  // Archived V1 itineraries are read-only and carry no bookings. Declared with
+  // the other selectors so every use below (tags, add-activity) is past the TDZ.
+  const isV1Archive = useSelector(
+    (state) => !!state.Itinerary?.is_v1_archive,
+  );
   const cart = useSelector((state) => state.Cart);
 
   // An activity reads as "Confirmed" only when its booking is in the cart and
@@ -802,8 +837,17 @@ useEffect(() => {
       typeof item?.guide === "string" && item.guide.trim()
         ? item.guide.trim()
         : null;
-    const renderTags =
-      resolvedType === "activity"
+    // "Tickets held" asserts a confirmed booking. Archived V1 itineraries have
+    // no bookings at all — the export carries none — so the chip would be a
+    // false claim on every activity.
+    //
+    // On an archive the chip states what the element is, taken from its own
+    // element_type (see ARCHIVE_TYPE_TAG) — the export's `tags` array is empty
+    // on every record, so reading it left every row on the self-exploration
+    // fallback. Any `tags` a future export does carry ride along behind it.
+    const renderTags = isV1Archive
+      ? [archiveTypeTag(resolvedType), ...dataTags].slice(0, 2)
+      : resolvedType === "activity"
         ? [...(guideTag ? [guideTag] : []), "tickets_held"]
         : resolvedType === "poi"
         ? ["on_your_own", ...dataTags].slice(0, 2)
@@ -975,7 +1019,8 @@ useEffect(() => {
 
   // Booking actions only exist once the itinerary is out of Draft (p1) and its
   // pricing has settled — same gate the city header applies to its own actions.
-  const canAddActivity = !isDraft && finalized_status !== "PENDING";
+  const canAddActivity =
+    !isDraft && !isV1Archive && finalized_status !== "PENDING";
 
   // This day's sightseeing chips, rendered on their own row under the day
   // summary — see the call site for why they no longer share the heading's line.
@@ -1078,7 +1123,11 @@ useEffect(() => {
             <span className="ttw-type-day-num !text-[26px] sm:!text-[36px] text-[#0B1220] m-0 whitespace-nowrap">
               {String(props.index + 1).padStart(2, "0")}
             </span>
-            {dayDate && (
+            {/* Archives don't show a date. These are the dates the trip was
+                originally travelled — years past for most of the export — so
+                next to a live "Get this trip!" they read as an offer for a date
+                that has already gone. The day number carries the sequence. */}
+            {dayDate && !isV1Archive && (
               <span className="ttw-type-day-date text-[#8892A6] m-0 whitespace-nowrap">
                 {/* Weekday is dropped below 640px — see formatDayHeaderDate. */}
                 <span className="max-sm:hidden">{`${dayDate.weekday} `}</span>

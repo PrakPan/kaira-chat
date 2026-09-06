@@ -11,6 +11,7 @@ import LoadingLottie from "../../ui/LoadingLottie";
 import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import TaxiSearched from "./taxi-searched/Index";
 import SelectedTaxisBar from "./fleet/SelectedTaxisBar";
+import PriceSourceNote from "../../revamp/common/components/PriceSourceNote";
 import {
   TaxiSelectionProvider,
   useTaxiSelectionState,
@@ -653,7 +654,7 @@ const ComboTaxi = (props) => {
                 <OptionsContainer id="options">
                   {taxiSelection.enabled ? (
                     <div className="rounded-2xl border-sm border-solid border-[#f2e6a8] bg-[#fffdf0] px-3 py-2 mt-md ttw-type-small text-[#6b5600]">
-                      No single taxi seats {fleet?.pax} — add as many as you need
+                      No single taxi seats {fleet?.pax} - add as many as you need
                       and we will book them together.
                     </div>
                   ) : null}
@@ -720,6 +721,11 @@ const ComboTaxi = (props) => {
                         margin="1rem auto"
                       />
                     </div>
+                  ) : null}
+
+                  {/* Staff-only: who quoted the fares listed above. */}
+                  {!loading && quotes.length ? (
+                    <PriceSourceNote source={fleetSource} />
                   ) : null}
                 </OptionsContainer>
               ) : null}

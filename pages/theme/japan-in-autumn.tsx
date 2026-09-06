@@ -13,27 +13,27 @@ const japanThemeConfig: ThemeConfig = {
     promptChips: [
       {
         icon: "🍁",
-        label: "Plan a 10-day Japan trip — temples, bullet trains, ryokans",
+        label: "Plan a 10-day Japan trip - temples, bullet trains, ryokans",
         prompt:
           "Plan a 10-day Japan Autumn trip for 2 people. Cover Tokyo, Kyoto, and Osaka. Include shinkansen travel between cities, at least one ryokan stay, key temples, and the best food experiences. Suggest a day-by-day itinerary and full budget breakdown for Indian travellers.",
       },
       {
         icon: "⛩️",
-        label: "Kyoto temples and ryokans — build me an itinerary",
+        label: "Kyoto temples and ryokans - build me an itinerary",
         prompt:
           "Plan a 4 to 5 day Kyoto itinerary for Autumn. I want to visit the key temples and shrines, stay in a ryokan for at least one night, experience a traditional kaiseki meal, and understand what to avoid in peak tourist season. Suggest the best way to get around.",
       },
       {
         icon: "💴",
-        label: "Japan on Rs 1.5L per person — is it doable?",
+        label: "Japan on Rs 1.5L per person - is it doable?",
         prompt:
           "I want to do a Japan trip in Autumn with a budget of Rs 1.5 lakh per person including flights. Is it realistic? What would I need to compromise on and what can I still experience? Suggest the best way to plan this as an Indian traveller.",
       },
       {
         icon: "🍂",
-        label: "First time in Japan — where do I actually start?",
+        label: "First time in Japan - where do I actually start?",
         prompt:
-          "This will be my first trip to Japan. I am going in Autumn and have about 10 days. I do not know where to start — Tokyo, Kyoto, Osaka, Hiroshima. Help me figure out the best first-timer route, what I must not miss, and what to expect as an Indian traveller.",
+          "This will be my first trip to Japan. I am going in Autumn and have about 10 days. I do not know where to start - Tokyo, Kyoto, Osaka, Hiroshima. Help me figure out the best first-timer route, what I must not miss, and what to expect as an Indian traveller.",
       },
     ],
   },
@@ -44,15 +44,15 @@ const japanThemeConfig: ThemeConfig = {
       cards: [
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/TokyoR1.jpg",
-          label: "Tokyo — City of Everything",
+          label: "Tokyo - City of Everything",
           tags: "Urban · First Timer",
           description: "Neon nights. Golden autumn days.",
           prompt:
-            "Plan 4 days in Tokyo in Autumn. I want to cover the highlights — Shibuya, Shinjuku, Asakusa — but also find the less obvious spots. Include food, transport, and one day trip suggestions.",
+            "Plan 4 days in Tokyo in Autumn. I want to cover the highlights - Shibuya, Shinjuku, Asakusa - but also find the less obvious spots. Include food, transport, and one day trip suggestions.",
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/KyotoR1.jpg",
-          label: "Kyoto — Temples and Tatami",
+          label: "Kyoto - Temples and Tatami",
           tags: "Culture · Ryokan",
           description: "Ancient Japan, perfectly preserved.",
           prompt:
@@ -60,7 +60,7 @@ const japanThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/HakoneR1.jpg",
-          label: "Hakone — Fuji and Autumn Views",
+          label: "Hakone - Fuji and Autumn Views",
           tags: "Scenic · Onsen",
           description: "Hot springs under red leaves.",
           prompt:
@@ -68,11 +68,11 @@ const japanThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/OsakaR1.jpg",
-          label: "Osaka — Eat Everything",
+          label: "Osaka - Eat Everything",
           tags: "Food · Nightlife",
           description: "Japan's most delicious city. Obviously.",
           prompt:
-            "Plan 2 to 3 days in Osaka focused on food and culture. Give me the must-eat list — takoyaki, okonomiyaki, ramen — the best neighbourhoods, and how to combine it with a Kyoto trip.",
+            "Plan 2 to 3 days in Osaka focused on food and culture. Give me the must-eat list - takoyaki, okonomiyaki, ramen - the best neighbourhoods, and how to combine it with a Kyoto trip.",
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/HiroshimaR1.jpg",
@@ -90,15 +90,15 @@ const japanThemeConfig: ThemeConfig = {
       cards: [
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/GionR2.jpg",
-          label: "Gion Matsuri — Kyoto's Greatest Festival",
-          sublabel: "Book by May — hotels fill 3 months out",
+          label: "Gion Matsuri - Kyoto's Greatest Festival",
+          sublabel: "Book by May - hotels fill 3 months out",
           description: "Kyoto's wildest July night.",
           prompt:
-            "I want to attend the Gion Matsuri festival in Kyoto in July. Plan a trip around it — best days to be there, where to stay, what the festival involves, and how to combine it with a broader Kyoto and Japan itinerary.",
+            "I want to attend the Gion Matsuri festival in Kyoto in July. Plan a trip around it - best days to be there, where to stay, what the festival involves, and how to combine it with a broader Kyoto and Japan itinerary.",
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/ObonR2.jpg",
-          label: "Obon Week — Ancestral Fire and Dance",
+          label: "Obon Week - Ancestral Fire and Dance",
           sublabel: "Mid-August",
           description: "Fire, dance, and ancestors.",
           prompt:
@@ -114,7 +114,7 @@ const japanThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/HokkaidoR2.jpg",
-          label: "Hokkaido — Japan's Cool North",
+          label: "Hokkaido - Japan's Cool North",
           sublabel: "While everyone melts in Tokyo",
           description: "Cool air. Lavender fields.",
           prompt:
@@ -140,7 +140,7 @@ const japanThemeConfig: ThemeConfig = {
           sublabel: "Less Rush. More Ritual.",
           description: "Slow down. Feel every moment.",
           prompt:
-            "I want to do Japan slowly. No rushed itinerary — I want ryokans, onsens, morning temple walks, and quiet towns. Suggest a 10-day Japan trip that prioritises the unhurried side of the country. Kyoto and smaller towns over Tokyo crowds.",
+            "I want to do Japan slowly. No rushed itinerary - I want ryokans, onsens, morning temple walks, and quiet towns. Suggest a 10-day Japan trip that prioritises the unhurried side of the country. Kyoto and smaller towns over Tokyo crowds.",
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/JapankidsR3.jpg",
@@ -148,7 +148,7 @@ const japanThemeConfig: ThemeConfig = {
           sublabel: "Family Autumn Trips",
           description: "Fun for the whole family.",
           prompt:
-            "Plan a Japan Autumn trip for a family with young children. I want it to be fun and manageable — not overwhelming. What are the best cities, kid-friendly attractions, food that children will eat, and how to handle transport with kids? 8 to 10 days.",
+            "Plan a Japan Autumn trip for a family with young children. I want it to be fun and manageable - not overwhelming. What are the best cities, kid-friendly attractions, food that children will eat, and how to handle transport with kids? 8 to 10 days.",
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/HoneymoonR3.jpg",
@@ -156,7 +156,7 @@ const japanThemeConfig: ThemeConfig = {
           sublabel: "Romantic and Refined",
           description: "Private onsens. Perfect dinners.",
           prompt:
-            "Plan a honeymoon trip to Japan. We want the romantic side — a ryokan with a private onsen, beautiful scenery, good food, and a mix of Kyoto culture and Tokyo energy. 10 days, suggest a full itinerary and what to splurge on.",
+            "Plan a honeymoon trip to Japan. We want the romantic side - a ryokan with a private onsen, beautiful scenery, good food, and a mix of Kyoto culture and Tokyo energy. 10 days, suggest a full itinerary and what to splurge on.",
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/JapanR3.jpg",
@@ -164,36 +164,36 @@ const japanThemeConfig: ThemeConfig = {
           sublabel: "Premium Feel, Honest Budget",
           description: "Premium feel. Honest price.",
           prompt:
-            "Plan a Japan trip for under Rs 1.5 lakh per person including flights. I want it to feel premium — not budget-backpacker. What does this budget actually get me, where do I stay, and what should I prioritise and skip to make the numbers work?",
+            "Plan a Japan trip for under Rs 1.5 lakh per person including flights. I want it to feel premium - not budget-backpacker. What does this budget actually get me, where do I stay, and what should I prioritise and skip to make the numbers work?",
         },
       ],
     },
     {
-      heading: "Only in Japan — Experiences Worth Flying For",
+      heading: "Only in Japan - Experiences Worth Flying For",
       icon: "✨",
       cards: [
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/ChaR5.jpg",
-          label: "Cha-no-yu — Private Tea Ceremony, Kyoto",
+          label: "Cha-no-yu - Private Tea Ceremony, Kyoto",
           tags: "Cultural · Intimate · Premium",
           description: "Not a tourist show. The real thing.",
           prompt:
-            "I want to experience a genuine Japanese tea ceremony in Kyoto — not the rushed tourist version. Tell me what a proper cha-no-yu feels like, how long it lasts, where to do a private session in a traditional tea house, what it costs, and how to prepare. Then ask me how many days I have in Kyoto so we can build the rest of the trip around it.",
+            "I want to experience a genuine Japanese tea ceremony in Kyoto - not the rushed tourist version. Tell me what a proper cha-no-yu feels like, how long it lasts, where to do a private session in a traditional tea house, what it costs, and how to prepare. Then ask me how many days I have in Kyoto so we can build the rest of the trip around it.",
         },
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/ShukuboR5.jpg",
-          label: "Shukubo — Sleeping in a Buddhist Temple, Koyasan",
+          label: "Shukubo - Sleeping in a Buddhist Temple, Koyasan",
           tags: "Offbeat · Spiritual · Bucket List",
           description: "Monk breakfast included. Seriously.",
           prompt:
-            "Tell me everything about staying in a shukubo — Buddhist temple lodging — on Mount Koya. What is the experience actually like, how do I get there from Kyoto or Osaka, what does it cost, and how is it different from a ryokan? Then ask me whether I want to add this as a 1 or 2 night detour in my Japan trip.",
+            "Tell me everything about staying in a shukubo - Buddhist temple lodging - on Mount Koya. What is the experience actually like, how do I get there from Kyoto or Osaka, what does it cost, and how is it different from a ryokan? Then ask me whether I want to add this as a 1 or 2 night detour in my Japan trip.",
         },
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/KaisekiR5.jpg",
-          label: "Kaiseki Dinner — Michelin Gastronomy, Kyoto",
+          label: "Kaiseki Dinner - Michelin Gastronomy, Kyoto",
           tags: "Luxury · Gastronomy · Once-in-a-lifetime",
           description: "Seven courses. Zero regrets.",
           prompt:
@@ -202,16 +202,16 @@ const japanThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/TsukujiR5.jpg",
-          label: "Tsukiji Market — Sunrise Tuna Auction, Tokyo",
+          label: "Tsukiji Market - Sunrise Tuna Auction, Tokyo",
           tags: "Food · Immersive · 4am Start",
           description: "4am. Tuna. Worth every minute.",
           prompt:
-            "Tell me about the Tsukiji outer market experience in Tokyo — the early morning energy, sushi breakfast, best stalls, and whether tourists can still watch the tuna auction. Walk me through the full morning, how early I should arrive, and what is actually worth doing. Then ask me what else I have planned in Tokyo so we can fit this in properly.",
+            "Tell me about the Tsukiji outer market experience in Tokyo - the early morning energy, sushi breakfast, best stalls, and whether tourists can still watch the tuna auction. Walk me through the full morning, how early I should arrive, and what is actually worth doing. Then ask me what else I have planned in Tokyo so we can fit this in properly.",
         },
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/ZazenR5.jpg",
-          label: "Zazen Meditation with a Zen Master — Kyoto or Kamakura",
+          label: "Zazen Meditation with a Zen Master - Kyoto or Kamakura",
           tags: "Wellness · Spiritual · Premium",
           description: "Silence so good it's uncomfortable.",
           prompt:
@@ -239,7 +239,7 @@ const JapanInAutumnThemePage = ({
         </title>
         <meta
           name="description"
-          content="Plan your Japan autumn trip with The Tarzan Way's AI itinerary. Tokyo, Kyoto, Osaka, Hakone, Hiroshima — ryokans, temples, bullet trains, and the best autumn food experiences for Indian travellers."
+          content="Plan your Japan autumn trip with The Tarzan Way's AI itinerary. Tokyo, Kyoto, Osaka, Hakone, Hiroshima - ryokans, temples, bullet trains, and the best autumn food experiences for Indian travellers."
         />
         <meta
           property="og:title"
@@ -247,7 +247,7 @@ const JapanInAutumnThemePage = ({
         />
         <meta
           property="og:description"
-          content="Plan your Japan autumn trip with The Tarzan Way's AI itinerary. Tokyo, Kyoto, Osaka, Hakone, Hiroshima — ryokans, temples, bullet trains, and the best autumn food experiences for Indian travellers."
+          content="Plan your Japan autumn trip with The Tarzan Way's AI itinerary. Tokyo, Kyoto, Osaka, Hakone, Hiroshima - ryokans, temples, bullet trains, and the best autumn food experiences for Indian travellers."
         />
       </Head>
       <BotApp themeConfig={japanThemeConfig} />

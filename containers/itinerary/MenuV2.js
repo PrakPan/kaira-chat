@@ -352,11 +352,19 @@ const setActiveTab = (tab) => {
     setLoginModalMessage("Please login to view details");
   };
 
-  const items = [
-    { id: 1, label: "Route", link: "Route" },
-    { id: 2, label: "Itinerary", link: "Itenary" },
-    { id: 3, label: "Bookings", link: "Booking" },
-  ];
+  // Archived V1 itineraries have no coordinates, no city ids and no bookings —
+  // the Route tab is an editor over data the archive doesn't carry, and the
+  // Bookings tab has nothing to list. Both are dropped so the archive opens on
+  // the itinerary itself.
+  const isV1Archive = !!props?.itinerary?.is_v1_archive;
+
+  const items = isV1Archive
+    ? [{ id: 2, label: "Itinerary", link: "Itenary" }]
+    : [
+        { id: 1, label: "Route", link: "Route" },
+        { id: 2, label: "Itinerary", link: "Itenary" },
+        { id: 3, label: "Bookings", link: "Booking" },
+      ];
 
   const hasActivities =
     Array.isArray(props?.itinerary?.cities) &&
@@ -686,7 +694,7 @@ Start Location: ${details.startLocation}`;
 )}
 
 {/* ── Route tab for fromChat mode ── */}
-{props?.fromChat && props?.mercuryItinerary && citydatadone && (
+{props?.fromChat && props?.mercuryItinerary && citydatadone && !isV1Archive && (
   <div className={activeTab === "Route" ? "block" : "hidden"}>
     <Breif
       mercuryItinerary={props?.mercuryItinerary}

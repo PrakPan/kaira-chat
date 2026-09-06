@@ -3,7 +3,7 @@ const content = [
     subheading: "General Terms & Conditions",
     content: [
       {
-        text: "Prices Mentioned In The Itineraries Are Inclusive Of Selected Bookings — Transportation, Accommodations & Stays as mentioned in the respective sections. Anything not specifically mentioned is excluded.",
+        text: "Prices Mentioned In The Itineraries Are Inclusive Of Selected Bookings - Transportation, Accommodations & Stays as mentioned in the respective sections. Anything not specifically mentioned is excluded.",
       },
       {
         text: "In-case of unavailability due to any reason, The Tarzan Way will offer alternate Similar Activities/Transfers.",

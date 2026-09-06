@@ -14,7 +14,7 @@ const spainThemeConfig: ThemeConfig = {
     promptChips: [
       {
         icon: "🏛️",
-        label: "Barcelona or Madrid — which city do I actually start with?",
+        label: "Barcelona or Madrid - which city do I actually start with?",
         prompt:
           "Help me choose between Barcelona and Madrid. Compare the vibe, food, culture, attractions, and nightlife, then recommend the best route for a 12-day Spain trip.",
       },
@@ -46,7 +46,7 @@ const spainThemeConfig: ThemeConfig = {
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Barcelona — Gaudí and the Good Life.jpg ",
           
-          label: "Barcelona — Gaudí and the Good Life",
+          label: "Barcelona - Gaudí and the Good Life",
           tags: "City · First Timer",
           description: "Dinner starts at 10pm. Always.",
           prompt:
@@ -54,7 +54,7 @@ const spainThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Seville — Spain's Most Passionate City.jpg ",
-          label: "Seville — Spain's Most Passionate City",
+          label: "Seville - Spain's Most Passionate City",
           tags: "Culture · Flamenco",
           description: "Feel where flamenco began.",
           prompt:
@@ -62,7 +62,7 @@ const spainThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Granada — Home of the Alhambra.jpg ",
-          label: "Granada — Home of the Alhambra",
+          label: "Granada - Home of the Alhambra",
           tags: "History · UNESCO",
           description: "One palace. Worth the wait.",
           prompt:
@@ -70,7 +70,7 @@ const spainThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/San Sebastián — World's Best Food City.jpg ",
-          label: "San Sebastián — World's Best Food City",
+          label: "San Sebastián - World's Best Food City",
           tags: "Food · Basque Country",
           description: "More Michelin stars per block.",
           prompt:
@@ -78,7 +78,7 @@ const spainThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Camino de Santiago — Walk It.jpg ",
-          label: "Camino de Santiago — Walk It",
+          label: "Camino de Santiago - Walk It",
           tags: "Adventure · Pilgrimage",
           description: "500km. Most do the last 100.",
           prompt:
@@ -92,7 +92,7 @@ const spainThemeConfig: ThemeConfig = {
       cards: [
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/La Tomatina — Buñol, August.png ",
-          label: "La Tomatina — Buñol, August",
+          label: "La Tomatina - Buñol, August",
           sublabel: "Hotels near Buñol: book by April",
           description: "Spain's wildest 90 minutes.",
           prompt:
@@ -100,7 +100,7 @@ const spainThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Running of the Bulls — Pamplona, July.png ",
-          label: "Running of the Bulls — Pamplona, July",
+          label: "Running of the Bulls - Pamplona, July",
           sublabel: "You don't have to run. Watching works.",
           description: "Eight mornings. One legendary city.",
           prompt:
@@ -108,7 +108,7 @@ const spainThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Semana Santa — Seville, Holy Week.png ",
-          label: "Semana Santa — Seville, Holy Week",
+          label: "Semana Santa - Seville, Holy Week",
           sublabel: "March–April · Nothing prepares you",
           description: "Processions through the night.",
           prompt:
@@ -116,7 +116,7 @@ const spainThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Feria de Abril — Seville Dances Again.png ",
-          label: "Feria de Abril — Seville Dances Again",
+          label: "Feria de Abril - Seville Dances Again",
           sublabel: "April–May · Sherry at noon",
           description: "A week the city dresses up.",
           prompt:
@@ -124,7 +124,7 @@ const spainThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Primavera Sound — Barcelona, June.png ",
-          label: "Primavera Sound — Barcelona, June",
+          label: "Primavera Sound - Barcelona, June",
           sublabel: "The reason Europe flies to Barcelona",
           description: "Barcelona's biggest music week.",
           prompt:
@@ -179,12 +179,12 @@ const spainThemeConfig: ThemeConfig = {
       ],
     },
     {
-      heading: "Only in Spain — Experiences Worth Flying For",
+      heading: "Only in Spain - Experiences Worth Flying For",
       icon: "✨",
       cards: [
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Alhambra — Before the Crowds Arrive.jpg ",
-          label: "Alhambra — Before the Crowds Arrive",
+          label: "Alhambra - Before the Crowds Arrive",
           tags: "History · Granada",
           description: "Book 3 months out. No exceptions.",
           prompt:
@@ -192,7 +192,7 @@ const spainThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Pintxos Crawl — San Sebastián After Dark.png ",
-          label: "Pintxos Crawl — San Sebastián After Dark",
+          label: "Pintxos Crawl - San Sebastián After Dark",
           tags: "Food · Basque",
           description: "Different bar every 20 minutes.",
           prompt:
@@ -200,7 +200,7 @@ const spainThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Real Flamenco — Andalusia’s True Show.png ",
-          label: "Real Flamenco — Andalusia's True Show",
+          label: "Real Flamenco - Andalusia's True Show",
           tags: "Culture · Andalusia",
           description: "Where flamenco was born.",
           prompt:
@@ -208,7 +208,7 @@ const spainThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Rioja — Spain’s Famous Wine Region.jpg ",
-          label: "Rioja — Spain's Famous Wine Region",
+          label: "Rioja - Spain's Famous Wine Region",
           tags: "Wine · Northern Spain",
           description: "Spain's best-known wine country.",
           prompt:
@@ -216,7 +216,7 @@ const spainThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Sleep in a Parador — A Castle Bedroom.png ",
-          label: "Sleep in a Parador — A Castle Bedroom",
+          label: "Sleep in a Parador - A Castle Bedroom",
           tags: "Heritage · Unique Stay",
           description: "15th-century castle. Your room tonight.",
           prompt:
@@ -241,10 +241,10 @@ const SpainSunStoneSangriaThemePage = ({
     <>
       <Head>
         <title>{"Spain Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"}</title>
-        <meta name="description" content={"Plan your Spain trip with The Tarzan Way's AI itinerary — Barcelona, Madrid, Seville, Granada and the Costa del Sol. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
+        <meta name="description" content={"Plan your Spain trip with The Tarzan Way's AI itinerary - Barcelona, Madrid, Seville, Granada and the Costa del Sol. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
         <link rel="canonical" href="https://thetarzanway.com/theme/spain-sun-stone-sangria" />
         <meta property="og:title" content={"Spain Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"} />
-        <meta property="og:description" content={"Plan your Spain trip with The Tarzan Way's AI itinerary — Barcelona, Madrid, Seville, Granada and the Costa del Sol. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
+        <meta property="og:description" content={"Plan your Spain trip with The Tarzan Way's AI itinerary - Barcelona, Madrid, Seville, Granada and the Costa del Sol. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
         <meta property="og:url" content="https://thetarzanway.com/theme/spain-sun-stone-sangria" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://thetarzanway.com/og-image.png" />

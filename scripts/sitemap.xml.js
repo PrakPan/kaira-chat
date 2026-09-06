@@ -21,13 +21,17 @@ const CHILD_SITEMAPS = {
   themesStatic: "sitemap-themes-static.xml", // static site pages + theme landing pages
 };
 
+// `lastmod` falls back to the build timestamp because most of these APIs return
+// only a path or slug, with no per-entity updated_at to report. Where a real
+// one *is* available it must be used: 663 identical lastmods is a signal Google
+// ignores outright, so an entry may carry its own `lastmod`.
 const buildUrlset = (paths) => `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${paths
   .map(
     (el) => `  <url>
     <loc>${el.link}</loc>
-    <lastmod>${NOW}</lastmod>
+    <lastmod>${el.lastmod || NOW}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>${el.priority || "0.8"}</priority>
   </url>`
@@ -153,26 +157,50 @@ const generateSitemap = async () => {
     };
   });
 
-  // Fetch trips list
-  const response = await axios.get(
-    "https://suppliers.tarzanway.com/sales/itinerary/indexed/"
-  );
-  const trips = response.data.map((trip) => {
-    let group_type = trip?.group_type
-      ? trip.group_type.replaceAll(" ", "_").toLowerCase()
-      : "family";
-    return {
-      path: group_type + "/" + trip.slug,
-    };
-  });
+  // Trips list. This used to read suppliers.tarzanway.com/sales/itinerary/indexed/
+  // unguarded, which mattered more than it looks: this script is the `prebuild`
+  // hook, so it runs before *every* build, and a throw here exits non-zero and
+  // takes the whole deploy down — not just the trips sitemap. Now it reads the
+  // same manifest the trips pages build from, and a failure degrades to a
+  // trips-less sitemap instead of a failed release.
+  //
+  // The source moved again in the SEO rebuild: the V1 archive manifest listed
+  // 644 legacy trips keyed by group_type, which the backend has since
+  // de-indexed. The indexed set is now the 1,718 Released itineraries served by
+  // mercury, and scripts/tripsSeoCache.js has already fetched them into
+  // .seo-cache/ by the time this runs — so this reads the same snapshot the
+  // pages are generated from, rather than crawling the API a second time and
+  // risking a sitemap that disagrees with what was actually built.
+  //
+  // `url` is used verbatim, never rebuilt from destination + slug: the API owns
+  // the path, and a locally-derived one would drift the moment it changed.
+  let tripsPaths = [];
+  let hubPaths = [];
+  try {
+    const { readTripsIndex, readDestinations } = require("../lib/seo/tripsCache");
+    const rows = readTripsIndex();
 
-  let tripsPaths = trips.map((trip) => {
-    return {
+    tripsPaths = rows.map((trip) => ({
       title: "Trip",
-      link: PROD_BASE_URL + "/trips/" + trip.path,
+      link: `${PROD_BASE_URL}${trip.url}`,
+      // Date-only W3C form. `modified_at` is the trip's own timestamp, which is
+      // the point: 214 distinct dates across the set instead of one repeated
+      // build time.
+      lastmod: String(trip.modified_at || "").slice(0, 10) || undefined,
       priority: "0.6",
-    };
-  });
+    }));
+
+    hubPaths = [
+      { title: "Trips Index", link: `${PROD_BASE_URL}/trips`, priority: "0.8" },
+      ...[...readDestinations().keys()].map((destination) => ({
+        title: "Trips Hub",
+        link: `${PROD_BASE_URL}/trips/${destination}`,
+        priority: "0.7",
+      })),
+    ];
+  } catch (err) {
+    console.error("[sitemap] failed to read trips cache:", err.message);
+  }
 
   // Theme landing pages: union of statically-authored pages/theme/*.tsx files
   // and CMS-driven themes served by pages/theme/[slug].js. Deduped by slug
@@ -219,7 +247,7 @@ const generateSitemap = async () => {
     ...subRegionsPaths,
   ];
   const citiesGroup = [...statesPaths, ...cityPaths];
-  const tripsGroup = [...tripsPaths];
+  const tripsGroup = [...hubPaths, ...tripsPaths];
   const themesStaticGroup = [...StaticPaths, ...themePaths];
 
   writeSitemap(CHILD_SITEMAPS.countries, buildUrlset(countriesGroup));
@@ -252,7 +280,9 @@ const generateSitemap = async () => {
   console.log(
     `  ${CHILD_SITEMAPS.cities}: ${citiesGroup.length} urls (states + cities)`
   );
-  console.log(`  ${CHILD_SITEMAPS.trips}: ${tripsGroup.length} urls (trips)`);
+  console.log(
+    `  ${CHILD_SITEMAPS.trips}: ${tripsGroup.length} urls (${hubPaths.length} hubs + ${tripsPaths.length} trips)`
+  );
   console.log(
     `  ${CHILD_SITEMAPS.themesStatic}: ${themesStaticGroup.length} urls (${StaticPaths.length} static + ${themePaths.length} themes)`
   );

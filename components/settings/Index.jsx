@@ -270,7 +270,7 @@ const handleUpdate = () => {
             </div>
             <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
               {subheading ??
-                "Adjust dates, travellers and inclusions — I'll reprice it for you."}
+                "Adjust dates, travellers and inclusions - I'll reprice it for you."}
             </p>
           </div>
 

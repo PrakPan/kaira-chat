@@ -7,6 +7,9 @@ import { getIndianPrice } from "../../../services/getIndianPrice";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import VisaDetailDrawer from "./VisaDetailDrawer";
+import PriceSourceNote, {
+  readSearchSources,
+} from "../../revamp/common/components/PriceSourceNote";
 import SearchLoaderOverlay from "../../ui/SearchLoaderOverlay";
 
 const BADGE_LABELS = {
@@ -99,6 +102,9 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
   const currency = useSelector((state) => state.currency);
 
   const [visas, setVisas] = useState([]);
+  // Suppliers behind the fees on screen — staff-only footnote, and empty
+  // whenever the search answers from our own catalogue.
+  const [sources, setSources] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
@@ -145,6 +151,7 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
       // Response: { success, data: [...], results, next, previous }
       const items = res.data?.data;
       setVisas(Array.isArray(items) ? items : []);
+      setSources(readSearchSources(res.data, items));
       trackVisaSearchList?.(itineraryId);
 
       // Build filter options from the returned results
@@ -290,6 +297,9 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
                 currency={currency}
               />
             ))}
+
+            {/* Staff-only: who priced the visas listed above. */}
+            <PriceSourceNote source={sources} />
           </div>
         )}
       </AncillaryShell>

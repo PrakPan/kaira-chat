@@ -106,7 +106,7 @@ const CorporatePlanning = () => {
       icon: <ShieldIcon />,
       title: "On-Ground Execution",
       description:
-        "We take care of it all — smooth coordination, real-time support, and lasting memories.",
+        "We take care of it all - smooth coordination, real-time support, and lasting memories.",
       iconBgColor: "#F8F4FE",
     },
   ];

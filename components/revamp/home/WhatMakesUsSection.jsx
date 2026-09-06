@@ -103,7 +103,7 @@ const featuresLeft = [
     icon: <HeartIcon />,
     iconBgColor: "#FAEBEA",
     title: "Smarter Than Any Search Engine.",
-    desc: "AI pulls the best flights, stays & activities from 1100+ platforms — so you don’t waste hours comparing.",
+    desc: "AI pulls the best flights, stays & activities from 1100+ platforms - so you don’t waste hours comparing.",
   },
   {
     icon: <LocationIcon />,
@@ -115,7 +115,7 @@ const featuresLeft = [
     icon: <MagicIcon />,
     iconBgColor: "#FFF9DC",
     title: "Plans That Actually Flow.",
-    desc: "No awkward gaps or wasted days — from airport pickups to late-night food tours, your itinerary just works.",
+    desc: "No awkward gaps or wasted days - from airport pickups to late-night food tours, your itinerary just works.",
   },
 ];
 
@@ -130,7 +130,7 @@ const featuresRight = [
     icon: <HeadsetIcon />,
     iconBgColor: "#E3F2FD",
     title: "Zero Guesswork, All Trust.",
-    desc: "Backed by 1000+ reviews, global partners, and verified local hosts — you only get tried & trusted experiences.",
+    desc: "Backed by 1000+ reviews, global partners, and verified local hosts - you only get tried & trusted experiences.",
   },
   {
     icon: <TaskIcon />,

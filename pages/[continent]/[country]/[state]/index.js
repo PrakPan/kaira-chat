@@ -28,7 +28,7 @@ const TravelPlanner = (props) => {
   const faq = [
     {
       "question": "What makes The Tarzan Way's 2025 proposal services unique?",
-      "answer": "The Tarzan Way’s Proposal 2025 services are designed for unforgettable, hyper-personalized proposals. We curate dreamy locations, unique themes, and exclusive experiences, all tailored to your love story—ensuring a magical “Yes!” moment like no other!"
+      "answer": "The Tarzan Way’s Proposal 2025 services are designed for unforgettable, hyper-personalized proposals. We curate dreamy locations, unique themes, and exclusive experiences, all tailored to your love story-ensuring a magical “Yes!” moment like no other!"
     },
     {
       "question": "Can I customize my itinerary?",

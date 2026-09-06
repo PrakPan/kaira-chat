@@ -3,6 +3,7 @@ import { connect, useSelector } from "react-redux";
 
 import ItineraryCity from "../../components/itinerary/itineraryCity";
 import DownloadShareBanners from "../../components/itinerary/DownloadShareBanners";
+import V1TransfersList from "../../components/itinerary/V1TransfersList";
 import CityItem from "./VerticalLayout";
 import media from "../../components/media";
 import BookingModal from "../../components/modals/bookingupdated/Index";
@@ -304,7 +305,9 @@ const DaybyDay = ({
             desktop-only), and its padding is set in arbitrary values rather than
             `px-3` — bootstrap.min.css loads after Tailwind and its `.px-3` is
             `1rem !important`, which silently inflates the pill. */}
-        {props?.fromChat && props?.onViewMap && (
+        {/* Archives are excluded: the export carries no coordinates for its
+            cities, so the map it opens has nothing to plot. */}
+        {props?.fromChat && props?.onViewMap && !Itinerary?.is_v1_archive && (
           <button
             type="button"
             onClick={props.onViewMap}
@@ -773,12 +776,24 @@ const DaybyDay = ({
             Hidden in the P1 chat state while the itinerary is still building —
             only surfaced once creation completes. Standalone (non-chat) itinerary
             views always render them. */}
-        {(!props.fromChat || itineraryIsComplete) && (
-          <DownloadShareBanners
-            itineraryId={router.query?.id}
-            itineraryName={Itinerary?.name}
-          />
+        {/* Archived V1 itineraries carry one flat transfers list instead of
+            per-leg data, so the between-city connectors are suppressed (see
+            VerticalLayout) and the whole set is listed here instead. Stays are
+            not listed here — they render in the per-city hotel row like V2
+            (see lib/v1Itinerary -> v1_stays). */}
+        {Itinerary?.is_v1_archive && (
+          <V1TransfersList transfers={Itinerary?.v1_transfers} />
         )}
+
+        {/* Archives are read-only snapshots: the PDF and share links both build
+            against live itinerary endpoints that no longer answer for them. */}
+        {(!props.fromChat || itineraryIsComplete) &&
+          !Itinerary?.is_v1_archive && (
+            <DownloadShareBanners
+              itineraryId={router.query?.id}
+              itineraryName={Itinerary?.name}
+            />
+          )}
       </div>
     </>
   );

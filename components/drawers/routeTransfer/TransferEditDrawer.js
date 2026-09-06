@@ -97,6 +97,7 @@ import OfflineQuoteCTA from "../../ui/OfflineQuoteCTA";
 import SuggestionQuoteCard, {
   SuggestionHeader,
 } from "./SuggestionQuoteCard";
+import PriceSourceNote from "../../revamp/common/components/PriceSourceNote";
 
 const FONT_SANS = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
 const FONT_SERIF = "'Instrument Serif', 'Times New Roman', serif";
@@ -181,6 +182,20 @@ const EMPTY_LIST = [];
 const suggestionNeedsFleet = (data) =>
   Boolean(data?.fleet?.multi_vehicle_needed) &&
   (!data?.source || data.source === "Self");
+
+/**
+ * The suppliers behind a tab's taxi suggestions, for the staff-only price
+ * source note. Each tab holds its own search, and a search may come back as one
+ * suggestion or a list of them, so normalise both shapes before reading.
+ */
+const collectSuggestionSources = (suggestions) => {
+  const list = Array.isArray(suggestions)
+    ? suggestions
+    : suggestions
+      ? [suggestions]
+      : [];
+  return list.map((sugg) => sugg?.data?.source).filter(Boolean);
+};
 
 /**
  * Whether this quote is the one the drawer has just booked. A suggestion is
@@ -610,7 +625,7 @@ const TransferEditDrawer = (props) => {
     }
     if (!props?.initialEdgeId && !props?.initialMode) {
       console.log(
-        "[TransferEditDrawer][auto-skip] no initialMode/initialEdgeId — staying on step 0",
+        "[TransferEditDrawer][auto-skip] no initialMode/initialEdgeId - staying on step 0",
       );
       return;
     }
@@ -2525,6 +2540,17 @@ const TransferEditDrawer = (props) => {
                       </div>
                     </div>
                   )}
+
+                {/* Staff-only: who quoted the fares in this tab. */}
+                <PriceSourceNote
+                  source={collectSuggestionSources(
+                    multicityTab === "multicity"
+                      ? multiCitySuggestions
+                      : multicityTab === "airport"
+                        ? airportSuggestions
+                        : roundTripSuggestions,
+                  )}
+                />
               </div>
             ) : null}
           </div>
@@ -5387,6 +5413,11 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                           </button>
                         </div>
                       )}
+
+                      {/* Staff-only: who quoted the fares listed above. */}
+                      <PriceSourceNote
+                        source={currentTransferData?.booking_source}
+                      />
                       </div>
                     );
                   } else {
@@ -6414,7 +6445,7 @@ const AirportPickupDropCard = ({ suggestion, isPickup, onSearch }) => {
 
         <MultiVehicleCallout show={isMultiVehicle}>
           No single taxi seats your whole group, so these options use multiple
-          taxis. Prices shown cover every taxi in the trip — the fare for one
+          taxis. Prices shown cover every taxi in the trip - the fare for one
           taxi is shown alongside.
         </MultiVehicleCallout>
 
@@ -8951,6 +8982,16 @@ const toggleTransferDetails = (priceOptionId) => {
             );
           });
         })()}
+
+      {/* Staff-only: who quoted the fares listed above. */}
+      {otherTransfer &&
+        !isCurrentTransferLoading() &&
+        !loadingRequestKey &&
+        !error &&
+        selectedResult?.transfer?.id === otherTransfer.id && (
+          <PriceSourceNote source={otherTransfer?.booking_source} />
+        )}
+
       {showLoginModal && (
         <LoginModal
           show={showLoginModal}

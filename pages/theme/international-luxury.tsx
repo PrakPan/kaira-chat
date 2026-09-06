@@ -26,13 +26,13 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
       },
       {
         icon: "✨",
-        label: "I want something rare — not the usual bucket-list trip",
+        label: "I want something rare - not the usual bucket-list trip",
         prompt:
           "Compare unique trips like Lapland aurora cabins, Croatia sailing, and Kyoto ryokans. Tell me which is most special, what it costs, and when to book.",
       },
       {
         icon: "🥂",
-        label: "Build me a dream trip for two — ₹5 lakh per person",
+        label: "Build me a dream trip for two - ₹5 lakh per person",
         prompt:
           "Compare destinations like Japan, Greece, Bali, and Vietnam for my budget. Then build the best possible premium itinerary for two.",
       },
@@ -64,7 +64,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/international-luxury-theme-2026/French Riviera -- Nice, Antibes, Monaco.jpg",
-          label: "French Riviera — Nice, Antibes, Monaco",
+          label: "French Riviera - Nice, Antibes, Monaco",
           tags: "France · Glamour",
           description: "The Riviera that money built.",
           prompt:
@@ -82,7 +82,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/international-luxury-theme-2026/KohS.jpg ",
-          label: "Koh Samui — Private Villa Escape",
+          label: "Koh Samui - Private Villa Escape",
           tags: "Thailand · Beach",
           description: "Your villa. Your beach. Your day.",
           prompt:
@@ -91,7 +91,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/international-luxury-theme-2026/Lapland -- Northern Lights, Glass Cabin.jpg",
-          label: "Lapland — Northern Lights, Glass Cabin",
+          label: "Lapland - Northern Lights, Glass Cabin",
           tags: "Finland · Arctic",
           description: "Aurora above. Warm inside.",
           prompt:
@@ -106,7 +106,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/international-luxury-theme-2026/Santorini -- September Over August.jpg ",
-          label: "Santorini — September Over August",
+          label: "Santorini - September Over August",
           sublabel: "Greece · Timing",
           description: "Same view. Half the crowd.",
           prompt:
@@ -115,7 +115,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/international-luxury-theme-2026/Amalfi Coast -- May or October.jpg ",
-          label: "Amalfi Coast — May or October",
+          label: "Amalfi Coast - May or October",
           sublabel: "Italy · Timing",
           description: "The coast at its best pace.",
           prompt:
@@ -235,7 +235,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/international-luxury-theme-2026/Yacht Dinner -- French Riviera Sunset.jpg ",
-          label: "Yacht Dinner — French Riviera Sunset",
+          label: "Yacht Dinner - French Riviera Sunset",
           tags: "France · Luxury",
           description: "Champagne evenings on open water.",
           prompt:
@@ -244,7 +244,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/international-luxury-theme-2026/Private Villa -- Hvar Island, Croatia.jpg ",
-          label: "Private Villa — Hvar Island, Croatia",
+          label: "Private Villa - Hvar Island, Croatia",
           tags: "Croatia · Exclusive",
           description: "A private island stay with staff.",
           prompt:
@@ -269,10 +269,10 @@ const InternationalLuxuryThemePage = ({
     <>
       <Head>
         <title>{"Luxury Trip Packages & Destinations for Indian Travellers | The Tarzan Way"}</title>
-        <meta name="description" content={"Plan a luxury holiday with The Tarzan Way's AI itinerary — private villas, five-star resorts and curated experiences worldwide. Budgets in ₹ and a bespoke day-by-day plan for Indian travellers."} />
+        <meta name="description" content={"Plan a luxury holiday with The Tarzan Way's AI itinerary - private villas, five-star resorts and curated experiences worldwide. Budgets in ₹ and a bespoke day-by-day plan for Indian travellers."} />
         <link rel="canonical" href="https://thetarzanway.com/theme/international-luxury" />
         <meta property="og:title" content={"Luxury Trip Packages & Destinations for Indian Travellers | The Tarzan Way"} />
-        <meta property="og:description" content={"Plan a luxury holiday with The Tarzan Way's AI itinerary — private villas, five-star resorts and curated experiences worldwide. Budgets in ₹ and a bespoke day-by-day plan for Indian travellers."} />
+        <meta property="og:description" content={"Plan a luxury holiday with The Tarzan Way's AI itinerary - private villas, five-star resorts and curated experiences worldwide. Budgets in ₹ and a bespoke day-by-day plan for Indian travellers."} />
         <meta property="og:url" content="https://thetarzanway.com/theme/international-luxury" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://thetarzanway.com/og-image.png" />

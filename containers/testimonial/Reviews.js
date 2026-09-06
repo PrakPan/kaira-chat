@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import media from "../../components/media";
 import SwiperCarousel from "../../components/SwiperCarousel";
+import travellerReviews from "../../data/travellerReviews";
 
 const Heading = styled.p`
     font-size: 1.5rem
@@ -68,14 +69,14 @@ const TestimonialReviews = () => {
     {
       name: "Riya & Karan, Delhi",
       location: "An unforgettable honeymoon in Bali!",
-      review: "TarzanWay made our Bali trip so personal — from a private villa setup to a surprise candlelight dinner by the beach. Everything felt curated just for us. Couldn’t have asked for a better start to our marriage!",
+      review: "TarzanWay made our Bali trip so personal - from a private villa setup to a surprise candlelight dinner by the beach. Everything felt curated just for us. Couldn’t have asked for a better start to our marriage!",
       sourceImage: "/01R.jpg",
-      summary: "TarzanWay made our Bali trip so personal — from a private villa setup to a surprise candlelight dinner by the beach..."
+      summary: "TarzanWay made our Bali trip so personal - from a private villa setup to a surprise candlelight dinner by the beach..."
     },
     {
       name: "Tanya, Bangalore",
       location: "Perfect winter escape to Europe",
-      review: "I was worried about the visa process, but their team handled it so smoothly! We explored Germany and Austria during Christmas — it truly felt like a fairytale with all the markets and lights.",
+      review: "I was worried about the visa process, but their team handled it so smoothly! We explored Germany and Austria during Christmas - it truly felt like a fairytale with all the markets and lights.",
       sourceImage: "/winterr.jpg",
       summary: "I was worried about the visa process, but their team handled it so smoothly! We explored Germany and Austria during Christmas..."
     },
@@ -89,34 +90,34 @@ const TestimonialReviews = () => {
     {
       name: "Isha, Madhya Pradesh",
       location: "Solo trip turned life-changing!",
-      review: "I booked a solo trip to Japan — the AI itinerary suggested such offbeat places I’d never have found myself. Met amazing people, had local food tours, and even joined a pottery workshop!",
+      review: "I booked a solo trip to Japan - the AI itinerary suggested such offbeat places I’d never have found myself. Met amazing people, had local food tours, and even joined a pottery workshop!",
       sourceImage: "/04R.jpg",
-      summary: "I booked a solo trip to Japan — the AI itinerary suggested such offbeat places I’d never have found myself..."
+      summary: "I booked a solo trip to Japan - the AI itinerary suggested such offbeat places I’d never have found myself..."
     },
     {
       name: "The Shah Family, Delhi",
       location: "Best family vacation ever",
-      review: "We did a 10-day trip to Dubai and Singapore with our kids. Every detail — from hotel selection to kid-friendly activities — was spot-on. It felt like traveling with a planner who knows your family personally.",
+      review: "We did a 10-day trip to Dubai and Singapore with our kids. Every detail - from hotel selection to kid-friendly activities - was spot-on. It felt like traveling with a planner who knows your family personally.",
       sourceImage: "/05R.jpg",
-      summary: "We did a 10-day trip to Dubai and Singapore with our kids. Every detail — from hotel selection to kid-friendly activities — was spot-on..."
+      summary: "We did a 10-day trip to Dubai and Singapore with our kids. Every detail - from hotel selection to kid-friendly activities - was spot-on..."
     },
     {
       name: "Oliver & Grace, Manchester",
       location: "Truly personalized experience",
-      review: "I’ve used a few travel platforms before, but TarzanWay’s customisation tool is next-level. They really get your travel style — ours was food + culture, and the itinerary delivered exactly that.",
+      review: "I’ve used a few travel platforms before, but TarzanWay’s customisation tool is next-level. They really get your travel style - ours was food + culture, and the itinerary delivered exactly that.",
       sourceImage: "/truly.jpg",
       summary: "I’ve used a few travel platforms before, but TarzanWay’s customisation tool is next-level. They really get your travel style..."
     },
     {
       name: "Priya Menon, Bangalore",
       location: "Kerala was a dream!",
-      review: "The houseboat experience was straight out of a movie. The local guide they arranged was so warm and knowledgeable — it felt like exploring with a friend rather than a tour.",
+      review: "The houseboat experience was straight out of a movie. The local guide they arranged was so warm and knowledgeable - it felt like exploring with a friend rather than a tour.",
       sourceImage: "/kerala.jpg",
       summary: "The houseboat experience was straight out of a movie. The local guide they arranged was so warm and knowledgeable..."
     },
     {
       name: "Daniel C, Goa",
-      location: "Exceeded expectations — and then some!",
+      location: "Exceeded expectations - and then some!",
       review: "I planned a last-minute New Year trip through them. The itinerary came together in hours, and everything went perfectly. This is my third trip with TarzanWay, and they keep raising the bar.",
       sourceImage: "/08R.jpg",
       summary: "I planned a last-minute New Year trip through them. The itinerary came together in hours, and everything went perfectly..."
@@ -132,7 +133,7 @@ const TestimonialReviews = () => {
       name: "Megha and Friends, Ahmedabad",
       image: "media/review/175705445291637659072875976562.png",
       heading: "Amazing Kerala Experience",
-      review: "The pottery workshop turned out to be such a fun bonding activity! Our instructor was patient, and within minutes we were all laughing, covered in clay, and making surprisingly good pots. It felt both creative and therapeutic — a unique Kerala experience beyond the usual sightseeing.",
+      review: "The pottery workshop turned out to be such a fun bonding activity! Our instructor was patient, and within minutes we were all laughing, covered in clay, and making surprisingly good pots. It felt both creative and therapeutic - a unique Kerala experience beyond the usual sightseeing.",
       summary: "The pottery workshop turned out to be such a fun bonding activity! Our instructor was patient, and within minutes we were all laughing..."
     },
     {

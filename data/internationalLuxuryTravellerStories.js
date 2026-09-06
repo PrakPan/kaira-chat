@@ -2,7 +2,7 @@ const internationalLuxuryTravellerStories = [
   {
     id: 4,
     name: "Aakansha and Partner",
-    tripName: "9N Luxury Bali Honeymoon — Seminyak, Nusa Penida, Gili and Ubud",
+    tripName: "9N Luxury Bali Honeymoon - Seminyak, Nusa Penida, Gili and Ubud",
     duration: "9 Nights",
     groupType: "Couple",
     destinations: ["Seminyak", "Nusa Penida", "Gili Trawangan", "Ubud"],
@@ -42,7 +42,7 @@ const internationalLuxuryTravellerStories = [
   {
     id: 1,
     name: "Somya and Family",
-    tripName: "10N Timeless Japan Luxury — Tokyo, Kyoto and Osaka",
+    tripName: "10N Timeless Japan Luxury - Tokyo, Kyoto and Osaka",
     duration: "10 Nights",
     groupType: "Family",
     destinations: ["Tokyo", "Kyoto", "Osaka"],
@@ -64,7 +64,7 @@ const internationalLuxuryTravellerStories = [
   {
     id: 2,
     name: "Shubham and Family",
-    tripName: "8N Luxury Spa Ocean Retreat — Phuket, Krabi and Koh Samui",
+    tripName: "8N Luxury Spa Ocean Retreat - Phuket, Krabi and Koh Samui",
     duration: "8 Nights",
     groupType: "Family",
     destinations: ["Phuket", "Krabi", "Koh Samui"],

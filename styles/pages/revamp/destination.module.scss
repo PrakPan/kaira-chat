@@ -1470,8 +1470,10 @@
   z-index: 2;
 }
 .countryCardArrow svg {
-  width: 14px;
+  /* Height is pinned and width follows the icon's aspect ratio — forcing both
+     to 14px squashed the 448×512 arrow. */
   height: 14px;
+  width: auto;
   color: var(--ttw-ink);
   display: block;
 }

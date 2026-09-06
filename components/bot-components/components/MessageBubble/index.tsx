@@ -610,7 +610,7 @@ const FeedbackPopup: React.FC<{
               Tell us more
             </div>
             <div style={{ fontSize: 13, color: "#6b7280", lineHeight: "18px" }}>
-              Pick the closest reason — it helps us improve faster than free
+              Pick the closest reason - it helps us improve faster than free
               text alone.
             </div>
           </div>
@@ -1267,7 +1267,7 @@ const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
   if (!allDone) {
     return (
       <ThinkingActive
-        lead="Great — locking it in. Give me ~30 seconds."
+        lead="Great - locking it in. Give me ~30 seconds."
         steps={steps}
       />
     );
@@ -1326,7 +1326,7 @@ const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
 // ─── ThinkingBlock ────────────────────────────────────────────────────────────
 // Matches ChatKit design:
 // • While thinking: rounded border card, lightbulb icon, "Thinking >" header,
-//   shows only the LATEST (current) task below in bold — single message at a time
+//   shows only the LATEST (current) task below in bold - single message at a time
 // • When done: no card border, "Thought for Xs ∨" header (toggleable),
 //   full task list with circle icons + vertical connector lines, "Done" at bottom
 
@@ -1357,7 +1357,7 @@ const ThinkingBlock: React.FC<{
   if (isThinking) {
     return (
       <ThinkingActive
-        lead="Great — locking it in. Give me ~30 seconds."
+        lead="Great - locking it in. Give me ~30 seconds."
         steps={tasks.map((t) => ({
           text: cleanContent(t.content),
           done: t.done,
@@ -1430,7 +1430,7 @@ const ThinkingBlock: React.FC<{
 // ─── ThoughtSummary ───────────────────────────────────────────────────────────
 // Static "Thought for Xs" label restored from a persisted reasoning workflow's
 // summary.duration on page reload. Unlike ThinkingBlock (which is driven by the
-// live SSE thought stream), the per-step thoughts aren't persisted — so there's
+// live SSE thought stream), the per-step thoughts aren't persisted - so there's
 // nothing to expand and we render the collapsed label only. Styling mirrors the
 // ThinkingBlock "done" header so live and reloaded transcripts look identical.
 
@@ -2018,7 +2018,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   // When a turn ends without producing anything (e.g. server emits
   // prompt_login and closes the stream before any text/task/progress), the
   // assistant placeholder is left empty + not-streaming. Rendering it would
-  // show a bare Kaira avatar with no bubble — and after the post-login replay
+  // show a bare Kaira avatar with no bubble - and after the post-login replay
   // adds a fresh streaming placeholder, the user sees two stacked Kaira
   // avatars. Drop the empty husk.
   if (!hasProgress && !hasTasks && !hasContent && !streaming && !message.isError) {
@@ -2260,7 +2260,7 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
   onRequestLogin,
   onCreateVersion,
 }) => {
-  // Reactive auth + itinerary — re-renders on login/logout with no reload.
+  // Reactive auth + itinerary - re-renders on login/logout with no reload.
   const token = useSelector((state: any) => state?.auth?.token);
   const authId = useSelector((state: any) => state?.auth?.id);
   const authName = useSelector((state: any) => state?.auth?.name);
@@ -2268,7 +2268,7 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
 
   const loggedIn = !!token;
   const ownerId = itinerary?.customer;
-  // `customer_name` is the populated signal in both P1 (draft) and P2 — the bot
+  // `customer_name` is the populated signal in both P1 (draft) and P2 - the bot
   // Itinerary object doesn't always carry `id`/`customer`, so key off the name.
   const ownerName =
     typeof itinerary?.customer_name === "string"
@@ -2643,8 +2643,8 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
 // centered so it lines up with the 30px Kaira avatar. Sizing uses clamp() so it
 // scales from small phones up to desktop.
 // Shown as "Word…" while Kaira thinks. Kept deliberately context-agnostic:
-// each one reads sensibly for ANY query — a contact question as much as a trip
-// plan — while still carrying a light travel/journey flavour. Avoid
+// each one reads sensibly for ANY query - a contact question as much as a trip
+// plan - while still carrying a light travel/journey flavour. Avoid
 // activity-specific verbs (e.g. "Booking stays") that look odd on a generic ask.
 const THINKING_PHRASES = [
   "Reticulating",
@@ -2694,7 +2694,7 @@ const THINKING_PHRASES = [
 
 // Advances once per ThinkingDots mount. Each new reply ("next chat") shows the
 // NEXT phrase, while any single thinking session keeps ONE fixed phrase for its
-// whole lifetime — no rotating through the list mid-wait.
+// whole lifetime - no rotating through the list mid-wait.
 // Seed at a random offset so we don't always open on the first phrase; the
 // sequential advance from there keeps consecutive replies from repeating.
 let thinkingPhraseCursor = Math.floor(Math.random() * THINKING_PHRASES.length);

@@ -11,7 +11,7 @@ const countItems = (arrLike) => {
   return 0;
 };
 
-const ItineraryCardV2 = ({ itinerary, onClick,currency="INR" }) => {
+const ItineraryCardV2 = ({ itinerary, onClick, currency = "INR", className }) => {
   if (!itinerary) return null;
   const {
     name,
@@ -34,6 +34,7 @@ const ItineraryCardV2 = ({ itinerary, onClick,currency="INR" }) => {
     activities,
     number_of_adults,
     number_of_children,
+    includes: includesOverride,
   } = itinerary;
 
   const firstImage =
@@ -105,12 +106,20 @@ const ItineraryCardV2 = ({ itinerary, onClick,currency="INR" }) => {
     countItems(transfers) ||
     (routeCities.length ? Math.max(routeCities.length - 1, 1) : 0);
 
-  const includes = [
-    staysCount ? `${staysCount} Stays` : null,
-    flightsCount ? `${flightsCount} Flights` : null,
-    transfersCount ? `${transfersCount} Transfers` : null,
-    activitiesCount ? `${activitiesCount} Activities` : null,
-  ].filter(Boolean);
+  // The counts above are best-effort: when the source has no stays/flights/
+  // transfers, they fall back to an assumption (one stay per city, a return
+  // flight, a transfer per hop). A caller whose data proves only some of them
+  // can pass `includes` and have it used verbatim instead of publishing a
+  // guess — see lib/seo/tripsCards, where flights and transfers are genuinely
+  // absent from the payload.
+  const includes = Array.isArray(includesOverride)
+    ? includesOverride
+    : [
+        staysCount ? `${staysCount} Stays` : null,
+        flightsCount ? `${flightsCount} Flights` : null,
+        transfersCount ? `${transfersCount} Transfers` : null,
+        activitiesCount ? `${activitiesCount} Activities` : null,
+      ].filter(Boolean);
 
   const travellers = [
     number_of_adults
@@ -152,6 +161,10 @@ const ItineraryCardV2 = ({ itinerary, onClick,currency="INR" }) => {
       href={onClick ? undefined : href}
       onClick={onClick ? () => onClick(itinerary) : undefined}
       currency={currency}
+      // Passed through to PackageCard so a caller can apply the card
+      // stylesheet's opt-in modifiers (noCtaMobile / fillHeight) without this
+      // component having to know about them.
+      className={className}
     />
   );
 };

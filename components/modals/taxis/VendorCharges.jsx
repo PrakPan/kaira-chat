@@ -147,13 +147,13 @@ export const summariseVendorCharges = (charges, currencySymbol = "₹") => {
   if (onActuals.length) {
     lines.push({
       tone: "extra",
-      text: sentenceCase(`${joinList(onActuals)} not included — charged on actuals`),
+      text: sentenceCase(`${joinList(onActuals)} not included - charged on actuals`),
     });
   }
   // Only worth saying when nothing above was said: beside a real breakdown it is
   // noise, and on its own it is the whole answer for the all-in-fare suppliers.
   if (!lines.length && charges.all_inclusive === true) {
-    lines.push({ tone: "included", text: "All-inclusive fare — nothing payable to the driver" });
+    lines.push({ tone: "included", text: "All-inclusive fare - nothing payable to the driver" });
   }
   if (isPositive(charges.airport_entry_fee)) {
     lines.push({ tone: "neutral", text: `Airport entry ${money(charges.airport_entry_fee, symbol)}` });

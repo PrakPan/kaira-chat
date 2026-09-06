@@ -297,7 +297,13 @@ const HotelsBooking = (props) => {
               handleClickAc={handleClickAc}
               selectedBooking={booking}
               city_id={props?.breif?.city_slabs[index + 1]?.city_id}
-              cityName={props?.breif?.city_slabs[index + 1]?.city_name}
+              // Positional lookup into city_slabs only lines up when every city
+              // has a stay; the booking's own city_name is authoritative when
+              // it carries one (V1 archive itineraries do).
+              cityName={
+                booking?.city_name ||
+                props?.breif?.city_slabs[index + 1]?.city_name
+              }
               _SelectedBookingHandler={_SelectedBookingHandler}
               setHideBookingModal={props.setHideBookingModal}
               loginModal={showLoginModal}

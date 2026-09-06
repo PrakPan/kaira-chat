@@ -42,6 +42,8 @@ import {
 import { getThemePagePath } from "../theme/cinematic/palettes";
 import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
 import ItineraryLegend from "../itinerary/itineraryCity/ItineraryLegend";
+import ArchiveChatPanel from "./components/ArchiveChatPanel";
+import CloneItineraryModal from "./components/CloneItineraryModal";
 import MobileItinerary from "../revamp/mobileItinerary/MobileItinerary";
 import kairaPrompts from "../revamp/mobileItinerary/kairaPrompts";
 import {
@@ -757,6 +759,11 @@ export default function BotApp({
   }, [showPaymentDrawer, activeItineraryId, fetchPaymentData]);
 
   const itineraryRedux = useSelector((state: any) => state.Itinerary);
+  // Archived V1 itineraries predate the chat service: no thread exists, so the
+  // right-hand panel is a static clone CTA instead of the live chat.
+  const isV1Archive = useSelector(
+    (state: any) => state.Itinerary?.is_v1_archive,
+  );
   const galleryImages = useSelector((state: any) => state.galleryImages);
   const itineraryReduxName = itineraryRedux?.name;
   const socialProofCount = routeSocialProofCount(
@@ -795,9 +802,6 @@ export default function BotApp({
   useEffect(() => {
     itineraryStatusRef.current = itineraryRedux?.status;
   }, [itineraryRedux?.status]);
-  const isV1 =
-    useSelector((state: any) => state.ItineraryStatus?.version) === "v1";
-
   // ── Page-level flags for the shell ───────────────────────────────────────
   // On a phone <main> is a document-scrolling page (that is what lets the
   // browser retract its address bar — see `.app-shell` in styles/globals.css),
@@ -806,14 +810,15 @@ export default function BotApp({
   // that off. Freezing the page under a sheet is a separate, temporary lock
   // owned by MobileLayout (`.app-shell-locked`).
   //
-  // NOT for v1, which returns ItineraryContainer below instead of the shell —
-  // that is an ordinary long page and wants the browser's own gestures.
+  // Unconditional: v1 used to bail out to a bare ItineraryContainer above the
+  // shell and wanted the browser's own gestures, but archived v1 now renders
+  // through this same shell (see the v1 note further down), so it needs the
+  // same page flags.
   useEffect(() => {
-    if (isV1) return undefined;
     const root = document.documentElement;
     root.classList.add("app-shell-page");
     return () => root.classList.remove("app-shell-page");
-  }, [isV1]);
+  }, []);
 
   const statusDisplayText = useSelector(
     (state: any) => state.ItineraryStatus?.display_text,
@@ -860,6 +865,9 @@ export default function BotApp({
   // from the gear) so a reason can never carry over into the next one.
   const [settingsReason, setSettingsReason] = useState<string | null>(null);
   const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
+  // Opened by the archive bar's "Get this trip!" — the same popup the archive
+  // chat panel's clone card opens.
+  const [showArchiveCloneModal, setShowArchiveCloneModal] = useState(false);
   // Mobile: the compact trip strip collapses the traveller/date/social meta
   // behind a chevron. Desktop always shows the full header.
   const [tripMetaOpen, setTripMetaOpen] = useState(false);
@@ -2682,6 +2690,7 @@ export default function BotApp({
       let statusOk = false;
       let stage: string | null = null;
       let allDone = false;
+      let archivedV1 = false;
       try {
         const { axiosGetItineraryStatus } =
           await import("../../services/itinerary/daybyday/preview");
@@ -2699,9 +2708,24 @@ export default function BotApp({
         statusOk = false;
       }
 
+      // Whether there is a live chat behind this id is decided by the archive,
+      // not by the status API's `version` — Mercury reports most archived
+      // itineraries as "v2" (see ItineraryContainer's fetchItinerary), and
+      // trusting it here fired the /chatkit p2 summary against ids the chat
+      // service has never seen. Same object ItineraryContainer fetches, served
+      // from the browser cache on the second read.
+      try {
+        const { fetchV1Itinerary } = await import(
+          "../../services/itinerary/v1/archive"
+        );
+        archivedV1 = !!(await fetchV1Itinerary(sid));
+      } catch (e) {
+        archivedV1 = false;
+      }
+
       if (!statusOk) {
         console.warn(
-          "[restoreLatestThread] status API failed — redirecting to /thank-you",
+          "[restoreLatestThread] status API failed - redirecting to /thank-you",
         );
         try {
           await router.replace("/thank-you");
@@ -2724,6 +2748,15 @@ export default function BotApp({
         setShowStartScreen(false);
         setIsChatActive(true);
       }
+
+      // ── Archived V1: no chat behind it, so stop here ─────────────────────
+      // These itineraries predate the chat service. There is no thread to
+      // restore, and the "empty chatkit" branch below would read that absence
+      // as a new P2 trip and seed "Hey Kaira! provide summary of my
+      // itinerary" — firing a /chatkit p2 request against an itinerary the
+      // service has never seen. The panel is the static ArchiveChatPanel
+      // anyway, so there is nothing for a thread to render into.
+      if (archivedV1) return;
 
       // ── Step 3: chatkit threads.list → loadThread (threads.get_by_id) ────
       try {
@@ -2761,7 +2794,7 @@ export default function BotApp({
           // instead of auto-sending an unauthenticated summary request.
           const loggedIn = !!getAuthToken();
           console.log(
-            `[restoreLatestThread] stage P2 + empty chatkit — seeding summary prompt (loggedIn=${loggedIn})`,
+            `[restoreLatestThread] stage P2 + empty chatkit - seeding summary prompt (loggedIn=${loggedIn})`,
           );
           setInitialPrompt("Hey Kaira! provide summary of my itinerary");
           setInitialPromptRequiresLogin(!loggedIn);
@@ -2774,11 +2807,11 @@ export default function BotApp({
           // SUCCESS.
           pendingTailoredSeedRef.current = true;
           console.log(
-            "[restoreLatestThread] stage P2 + fromTailored + still building — deferring summary prompt until itinerary_status=SUCCESS",
+            "[restoreLatestThread] stage P2 + fromTailored + still building - deferring summary prompt until itinerary_status=SUCCESS",
           );
         } else {
           console.log(
-            `[restoreLatestThread] stage ${stage ?? "unknown"} + empty chatkit — chat skipped`,
+            `[restoreLatestThread] stage ${stage ?? "unknown"} + empty chatkit - chat skipped`,
           );
         }
       } catch (err) {
@@ -3780,7 +3813,9 @@ Start Location: ${details.startLocation}`;
   // Editing the route hangs off the route strip because it acts on the same data
   // the strip shows. Seeing it on the map does not — that CTA sits at the head of
   // the day-by-day, above the starting city, where the journey it plots begins.
-  const changeRouteButton = (
+  // Archived V1 itineraries have no coordinates or city ids, so there is no
+  // route to edit — the pill would open an editor over data that isn't there.
+  const changeRouteButton = isV1Archive ? null : (
     <button
       type="button"
       aria-label="Change route"
@@ -3974,14 +4009,26 @@ Start Location: ${details.startLocation}`;
 
   // Compact mobile header sub-line ("dates · pax") shown under the title in the
   // collapsed trip strip (mirrors the design's .trip-row .t-sub).
-  const _tripDates =
-    itineraryRedux?.start_date && itineraryRedux?.end_date
+  //
+  // Archived V1 itineraries show their length instead of their dates. The dates
+  // are real but they are the dates the trip was originally planned for — years
+  // past for most of the archive — so printing them next to a live "Get in
+  // touch" CTA reads as a trip on offer for a date that has already gone. The
+  // night count is the part that still describes the itinerary.
+  const _tripNights =
+    itineraryRedux?.duration > 0
+      ? `${itineraryRedux.duration} ${itineraryRedux.duration === 1 ? "Night" : "Nights"}`
+      : "";
+  const _tripDates = isV1Archive
+    ? _tripNights
+    : itineraryRedux?.start_date && itineraryRedux?.end_date
       ? `${new Date(itineraryRedux.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} – ${new Date(itineraryRedux.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
       : itineraryRedux?.travel_date || "";
   // Same dates with a 2-digit year — used on mobile where the two-column meta
   // is too tight for the full "2026" and the dates would otherwise overflow.
-  const _tripDatesShort =
-    itineraryRedux?.start_date && itineraryRedux?.end_date
+  const _tripDatesShort = isV1Archive
+    ? _tripNights
+    : itineraryRedux?.start_date && itineraryRedux?.end_date
       ? `${new Date(itineraryRedux.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })} – ${new Date(itineraryRedux.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })}`
       : itineraryRedux?.travel_date || "";
   const _tripPax = [
@@ -3998,6 +4045,33 @@ Start Location: ${details.startLocation}`;
     .filter(Boolean)
     .join(", ");
   const tripCompactSub = [_tripDates, _tripPax].filter(Boolean).join(" · ");
+
+  // Archived V1 itineraries have no cart or pricing service behind them, but the
+  // export carries the price the trip was sold at in `payment_info`. Values are
+  // in paise, so they are divided by 100 before display.
+  //
+  // `show_per_person_cost` is the export's own flag for which figure to lead
+  // with. It is set on very few records, so most archives show the trip total.
+  // Around one in ten carries a zero total — those fall through to the
+  // get-in-touch message rather than advertising a free trip.
+  const archivePrice = (() => {
+    if (!isV1Archive) return null;
+
+    const info = itineraryRedux?.payment_info;
+    if (!info) return null;
+
+    const perPerson = !!info.show_per_person_cost;
+    const paise = Number(
+      perPerson ? info.per_person_total_cost : info.total_cost,
+    );
+    if (!Number.isFinite(paise) || paise <= 0) return null;
+
+    return {
+      amount: paise / 100,
+      perPerson,
+      code: itineraryRedux?.currency || "INR",
+    };
+  })();
 
   // ── Shared itinerary panel content (header strip + container + CTA) ──────
   // On mobile, MobileLayout's activeTab already gates visibility (the panel
@@ -4140,6 +4214,8 @@ Start Location: ${details.startLocation}`;
     loaderDisplayText: statusDisplayText || loaderDisplayText,
     currency,
     countCartItems,
+    isV1Archive,
+    archivePrice,
     isHovered,
     setIsHovered,
     popupStyle,
@@ -4180,6 +4256,11 @@ Start Location: ${details.startLocation}`;
     },
     onViewBookings: itineraryIsComplete ? handleViewBookings : undefined,
     notes: statusNotes,
+    // Archive-only: the bar's CTA clones the trip rather than raising a contact
+    // request. get_in_touch/ is an authenticated call against a live itinerary,
+    // which an archived one isn't — cloning is the action that actually goes
+    // somewhere from here.
+    onGetThisTrip: () => setShowArchiveCloneModal(true),
     onGetInTouch: () => {
       if (!activeItineraryId) return;
       const token = localStorage.getItem("access_token");
@@ -4580,7 +4661,10 @@ Start Location: ${details.startLocation}`;
                 />
               )}
               <div className="flex items-center gap-[8px] ml-auto">
-                {!isDraft && (
+                {/* No settings on an archive: the panel edits pax, dates and
+                    room config through the live itinerary-edit endpoint, which
+                    has nothing to write back to for a V1 snapshot. */}
+                {!isDraft && !isV1Archive && (
                   <button
                     aria-label="Settings"
                     className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-gray-100 hover:bg-gray-200"
@@ -4688,7 +4772,9 @@ Start Location: ${details.startLocation}`;
           </div>
 
           <div className="flex gap-3 max-ph:gap-[6px] items-center absolute top-0 right-0">
-            {!isDraft && (
+            {/* See the mobile settings button above — hidden for the same
+                reason on desktop. */}
+            {!isDraft && !isV1Archive && (
               <button
                 className="max-ph:hidden flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
                 onClick={() => {
@@ -4814,10 +4900,23 @@ Start Location: ${details.startLocation}`;
     </div>
   );
 
-  // v1 itineraries — render only the itinerary component, no chatbot/sidebar/toggle
-  if (isV1) {
-    return <ItineraryContainer id={activeItineraryId} />;
-  }
+  // v1 itineraries used to bail out here to a bare ItineraryContainer — no
+  // `mercuryItinerary`, no `fromChat` — which made MenuV2 take all of its
+  // standalone branches: the Breif route editor pinned above the title, the old
+  // Chatbot in the right column, and an unpinned cart. That was the only way to
+  // show a v1 itinerary while its content still lived on the supplier portal.
+  //
+  // Archived v1 itineraries no longer need it: their data is adapted into the
+  // Mercury shape (lib/v1Itinerary -> adaptV1ToMercuryShape) and renders through
+  // the normal chat layout below, with ArchiveChatPanel standing in for the chat.
+  // The bail-out stays for a v1 itinerary the archive doesn't have.
+  // No v1 bail-out. It used to return a bare ItineraryContainer here, which
+  // produced a visible three-step flip on every archived itinerary: the chat
+  // layout painted first, then `isV1` arrived from the status API and swapped in
+  // the old standalone interface, then the archive loaded and swapped back. The
+  // chat layout below now handles v1 from the first paint — and if the archive
+  // has nothing for this id, ItineraryContainer falls back internally (oldOne)
+  // without changing the shell around it.
 
   return (
     <main
@@ -5002,7 +5101,12 @@ Start Location: ${details.startLocation}`;
  : "opacity-0 translate-y-2 pointer-events-none"
  }`}
           >
-            {!isMobile && (
+            {/* Archived V1 itineraries have no chat thread — mounting the real
+                panel makes it try to start a session and fail. */}
+            {!isMobile && isV1Archive && (
+              <ArchiveChatPanel itineraryId={sessionId} />
+            )}
+            {!isMobile && !isV1Archive && (
               <ChatKitPanel
                 key={chatKey}
                 {...sharedChatKitProps}
@@ -5095,7 +5199,10 @@ Start Location: ${details.startLocation}`;
                   zIndex: isChatActive ? 1 : 0,
                 }}
               >
-                {isMobile && (
+                {isMobile && isV1Archive && (
+                  <ArchiveChatPanel itineraryId={sessionId} />
+                )}
+                {isMobile && !isV1Archive && (
                   <ChatKitPanel
                     key={`${chatKey}`}
                     {...sharedChatKitProps}
@@ -5255,7 +5362,7 @@ Start Location: ${details.startLocation}`;
           ? {
               heading: { lead: "Update your", emphasis: "travel", trail: "dates" },
               subheading:
-                "Your trip dates have passed — pick new ones and I'll re-plan the trip.",
+                "Your trip dates have passed - pick new ones and I'll re-plan the trip.",
             }
           : {};
         return isMobile ? (
@@ -5294,8 +5401,16 @@ Start Location: ${details.startLocation}`;
 
       
 
+      {/* Archive bar's "Get this trip!". Mounted here rather than inside the
+          bar because the bar is `position: fixed` and re-mounts per layout. */}
+      <CloneItineraryModal
+        show={showArchiveCloneModal}
+        onHide={() => setShowArchiveCloneModal(false)}
+        itineraryId={activeItineraryId || sessionId}
+      />
+
       {showSettingsLoginPrompt && !authToken && (
-        
+
         <BotLoginModal
           show={showSettingsLoginPrompt}
           onhide={() => setShowSettingsLoginPrompt(false)}
@@ -5398,12 +5513,21 @@ interface BottomCTABarProps {
   loaderDisplayText: string | null;
   currency: any;
   countCartItems: number;
+  isV1Archive?: boolean;
+  /** Archive-only price, already converted from the export's paise. */
+  archivePrice?: {
+    amount: number;
+    perPerson: boolean;
+    code: string;
+  } | null;
   isHovered: boolean;
   setIsHovered: (v: boolean) => void;
   popupStyle: React.CSSProperties;
   onConfirm: () => void;
   onViewCart: () => void;
   onGetInTouch?: () => void;
+  /** Archive-only: opens the clone popup from "Get this trip!". */
+  onGetThisTrip?: () => void;
   onRetryCart?: () => void;
   // The Bookings view's only entry point. Left undefined until the itinerary is
   // complete — that is the same gate the Bookings tab used to carry — and the
@@ -5560,7 +5684,9 @@ const ItineraryStepsLoader = ({
   );
 };
 
-const BottomCTABar = React.memo(
+// Exported so the /trips leaf pages get the real bar rather than a lookalike —
+// they render the same V1 archive layout and need the same fixed price strip.
+export const BottomCTABar = React.memo(
   ({
     viewMode,
     activeItineraryId,
@@ -5571,12 +5697,15 @@ const BottomCTABar = React.memo(
     loaderDisplayText,
     currency,
     countCartItems,
+    isV1Archive,
+    archivePrice,
     isHovered,
     setIsHovered,
     popupStyle,
     onConfirm,
     onViewCart,
     onGetInTouch,
+    onGetThisTrip,
     onRetryCart,
     onViewBookings,
     notes,
@@ -5592,6 +5721,48 @@ const BottomCTABar = React.memo(
       (!activeItineraryId && !showItineraryShimmer)
     )
       return null;
+
+    // Archived V1 itineraries have no cart, pricing service or bookings behind
+    // them, so the usual price + View Cart pair has nothing to read from. The
+    // export does carry the price the trip was sold at, though, so that is
+    // shown in the same shape the live bar uses. When it doesn't (a zero total,
+    // on roughly one in ten records), the bar falls back to pointing at
+    // contact — same as the pricing-failure branch below.
+    if (isV1Archive) {
+      return (
+        <div
+          data-bottom-cta-bar
+          style={barStyle}
+          className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between"
+        >
+          {archivePrice ? (
+            <div className="flex flex-col">
+              <span className="font-mono text-[10px] md:text-[11px] font-semibold uppercase tracking-[0.06em] text-[#8A9099]">
+                {archivePrice.perPerson ? "Per Person" : "Total Cost"}
+              </span>
+              <span className="font-sans text-[16px] md:text-[21px] font-bold leading-tight text-[#111827] whitespace-nowrap">
+                {currencySymbols[archivePrice.code] || "₹"}
+                {formatCurrencyValue(
+                  Math.round(archivePrice.amount),
+                  archivePrice.code,
+                )}
+                /-
+              </span>
+            </div>
+          ) : (
+            <p className="ttw-type-body text-[#6E757A]">
+              Get in touch for pricing
+            </p>
+          )}
+          <button
+            onClick={onGetThisTrip}
+            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-semibold"
+          >
+            Get this trip!
+          </button>
+        </div>
+      );
+    }
 
     if (isDraft) {
       return (

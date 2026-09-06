@@ -445,7 +445,7 @@ const WelcomeState = () => (
       Planning a trip today?
     </h2>
     <p className="ttw-type-small text-gray-400 text-center max-w-xs leading-relaxed">
-      I'm Kaira — your AI travel companion. Ask me anything about destinations,
+      I'm Kaira - your AI travel companion. Ask me anything about destinations,
       itineraries, routes, or local tips.
     </p>
   </div>
@@ -2129,7 +2129,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         id: `intake-greeting-${sessionIdRef.current}`,
         role: "assistant",
         content:
-          "Hi, I'm Kaira, your travel friend. Let's build something good — a few quick taps and I'll get to work.",
+          "Hi, I'm Kaira, your travel friend. Let's build something good - a few quick taps and I'll get to work.",
         timestamp: new Date(),
       },
       {
