@@ -14,12 +14,20 @@
 // the frontend never has an opinion about how a page is addressed.
 
 import Head from "next/head";
+import { useEffect } from "react";
+import { connect } from "react-redux";
 
-import Layout from "../../../components/Layout";
+// No <Layout> on purpose. This page is the V1 itinerary shell, and
+// pages/chat/[id].tsx — the V1 page it mirrors — renders no site chrome
+// either: a viewport-height, non-scrolling split leaves nowhere for a nav
+// bar or a footer to sit. Layout was also what called checkAuthState, so
+// the page dispatches it directly, exactly as the chat page does.
+import * as authaction from "../../../store/actions/auth";
 import TripSeoPage, { heroImageUrl } from "../../../components/trips/TripSeoPage";
 import { SITE_ORIGIN } from "../../../lib/seo/tripsIndexed";
 import { readTripPage, readTripsIndex } from "../../../lib/seo/tripsCache";
 import { tripCard } from "../../../lib/seo/tripsCards";
+import { tripItinerary } from "../../../lib/seo/tripItinerary";
 import {
   breadcrumbSchema,
   faqSchema,
@@ -35,12 +43,16 @@ const jsonLd = (schema) =>
     />
   ) : null;
 
-const IndexedTrip = ({ page, siblings, schemas }) => {
+const IndexedTrip = ({ page, itinerary, stays, siblings, schemas, checkAuthState }) => {
+  useEffect(() => {
+    checkAuthState();
+  }, []);
+
   const canonical = `${SITE_ORIGIN}${page.url}`;
   const ogImage = heroImageUrl(page);
 
   return (
-    <Layout staticnav page="Indexed Trip">
+    <>
       <Head>
         <title>{page.page_title}</title>
         <meta name="description" content={page.meta_description} />
@@ -69,19 +81,33 @@ const IndexedTrip = ({ page, siblings, schemas }) => {
         {jsonLd(schemas.breadcrumb)}
       </Head>
 
-      <TripSeoPage page={page} siblings={siblings} />
-    </Layout>
+      <TripSeoPage
+        page={page}
+        itinerary={itinerary}
+        stays={stays}
+        siblings={siblings}
+      />
+    </>
   );
 };
 
-export default IndexedTrip;
+const mapDispatchToProps = (dispatch) => ({
+  checkAuthState: () => dispatch(authaction.checkAuthState()),
+});
+
+export default connect(null, mapDispatchToProps)(IndexedTrip);
 
 /**
- * Up to six other trips in the same destination, biased toward different trip
+ * Up to three other trips in the same destination, biased toward different trip
  * lengths so the block reads as a real choice ("5 days · 10 days · family")
- * rather than six near-identical durations. Falls back to filling from
+ * rather than three near-identical durations. Falls back to filling from
  * whatever is left when the destination has few distinct lengths.
+ *
+ * Three, not six: they render as full cards now rather than list rows, so the
+ * block is what a reader scrolls past to reach the end of the page.
  */
+const SIBLING_COUNT = 3;
+
 const pickSiblings = (rows, current) => {
   const pool = rows.filter(
     (row) => row.destination === current.destination && row.slug !== current.slug
@@ -91,14 +117,14 @@ const pickSiblings = (rows, current) => {
   const seenDurations = new Set([current.duration]);
 
   for (const row of pool) {
-    if (chosen.length >= 6) break;
+    if (chosen.length >= SIBLING_COUNT) break;
     if (seenDurations.has(row.duration)) continue;
     seenDurations.add(row.duration);
     chosen.push(row);
   }
 
   for (const row of pool) {
-    if (chosen.length >= 6) break;
+    if (chosen.length >= SIBLING_COUNT) break;
     if (!chosen.includes(row)) chosen.push(row);
   }
 
@@ -129,9 +155,16 @@ export async function getStaticProps({ params }) {
 
   const rows = readTripsIndex();
 
+  // The day-by-day is rendered by the V1 itinerary view, which reads Redux —
+  // so the state it needs is built here, at build time, and seeded during the
+  // first render. See components/trips/TripItineraryView.
+  const view = tripItinerary(page) || { itinerary: null, stays: [] };
+
   return {
     props: {
       page,
+      itinerary: view.itinerary,
+      stays: view.stays,
       siblings: pickSiblings(rows, page),
       schemas: {
         trip: touristTripSchema(page),

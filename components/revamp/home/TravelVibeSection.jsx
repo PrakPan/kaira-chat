@@ -39,19 +39,21 @@ const TravelVibeSection = (props) => {
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "theme/honeymoon-2026",
+      link: "theme/honeymoon",
     },
     {
       id: 2,
-      title: "Road Trips 2026",
-      description: "DRIVE DIARIES",
-      image: `${imgUrlEndPoint}media/page/174860004456110548973083496094.jpg`,
+      title: "Christmas Markets",
+      description: "GLÜHWEIN & LIGHTS",
+      // The theme page's own hero, so the card and the page it opens show the
+      // same image (pages/theme/christmas-markets.tsx → HERO.heroVienna).
+      image: `${imgUrlEndPoint}media/website/christmas-markets-2026/hero-vienna-rathausplatz-hq.jpg`,
       fallbackImage:
-        "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1512389142860-9c449e58a543?auto=format&fit=crop&w=900&q=80",
       tags: ["Trending"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link:"theme/roadtrips-2025"
+      link: "theme/christmas-markets",
     },
     {
       id: 3,

@@ -11,7 +11,7 @@ const countItems = (arrLike) => {
   return 0;
 };
 
-const ItineraryCardV2 = ({ itinerary, onClick,currency="INR" }) => {
+const ItineraryCardV2 = ({ itinerary, onClick, currency = "INR", className }) => {
   if (!itinerary) return null;
   const {
     name,
@@ -161,6 +161,10 @@ const ItineraryCardV2 = ({ itinerary, onClick,currency="INR" }) => {
       href={onClick ? undefined : href}
       onClick={onClick ? () => onClick(itinerary) : undefined}
       currency={currency}
+      // Passed through to PackageCard so a caller can apply the card
+      // stylesheet's opt-in modifiers (noCtaMobile / fillHeight) without this
+      // component having to know about them.
+      className={className}
     />
   );
 };

@@ -1,82 +1,36 @@
-import { useRef } from "react";
-import {
-  ANIMATION_CONFIG,
-  createEntranceAnimation,
-  createSequentialContentAnimation,
-  gsap,
-  splitTextIntoWords,
-  useGSAP,
-} from "../../common/gsapConfig";
 import styles from "./HeadingContent.module.scss";
 import Link from "next/link";
 import Button from "../../common/components/button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
+// Hero heading, subtitle and CTA.
+//
+// Deliberately unanimated. This block used to run a GSAP entrance timeline: it
+// split the <h1> into per-word spans and set them to
+// ANIMATION_CONFIG.initialStates.fromBottom — `{ y: 100, opacity: 0 }` — then
+// tweened them in. The h1 is the page's LCP element, so painting it was gated
+// on the GSAP bundle downloading, parsing and executing; until then the largest
+// thing on screen was invisible. Removing the timeline lets the heading paint
+// from the server-rendered HTML, which is as early as it can happen.
+//
+// If an entrance effect is wanted back, it has to be one that animates *from*
+// the painted state (e.g. a CSS transform on an already-opaque element) rather
+// than one that starts at opacity 0 — and it must not depend on JS to become
+// visible.
 const HeadingContent = ({ title, subtitle }) => {
-  const headingRef = useRef(null);
-  const containerRef = useRef(null);
-  const contentWrapperRef = useRef(null);
-  const buttonRef = useRef(null);
-
-  useGSAP(
-    () => {
-      // Check if refs are properly attached
-      if (
-        !headingRef.current ||
-        !contentWrapperRef.current ||
-        !buttonRef.current
-      ) {
-        console.warn("GSAP refs not properly attached");
-        return;
-      }
-
-      // Split text into words and get word elements
-      const wordElements = splitTextIntoWords(headingRef.current);
-
-      // Set initial states using shared configuration
-      gsap.set(wordElements, ANIMATION_CONFIG.initialStates.fromBottom);
-      gsap.set(
-        [contentWrapperRef.current, buttonRef.current],
-        ANIMATION_CONFIG.initialStates.fromBottomSmall
-      );
-
-      // Create timeline for coordinated animations
-      const tl = gsap.timeline();
-
-      // Animate words appearing from bottom with stagger
-      tl.to(
-        wordElements,
-        createEntranceAnimation(wordElements, {
-          stagger: ANIMATION_CONFIG.stagger.long,
-        })
-      );
-
-      // Animate content wrapper and button together
-      tl.to([contentWrapperRef.current, buttonRef.current], {
-        opacity: 1,
-        y: 0,
-        duration: ANIMATION_CONFIG.duration.fast,
-        ease: ANIMATION_CONFIG.ease.backOut,
-        stagger: 0.05,
-      });
-    },
-    { scope: containerRef }
-  );
   return (
-    <div ref={containerRef} className={styles.headingContent}>
-      <div ref={headingRef}>
+    <div className={styles.headingContent}>
+      <div>
         <h1 className={`${styles.title} heading-text`}>
           Your Trip. Your Vibe.{" "}
         </h1>
         <h1 className={`${styles.title} heading-text`}>Our AI's on It.</h1>
       </div>
-      <div ref={contentWrapperRef} className={styles.contentWrapper}>
+      <div className={styles.contentWrapper}>
         <p className={`${styles.subtitle} text-text-focused`}>
           Solo? Couple? Group? We Plan Like It’s Just for You - Because It Is.
         </p>
       </div>
-      <div ref={buttonRef}>
+      <div>
         <Link href="/new-trip">
           <Button
             variant="filled"
@@ -85,7 +39,20 @@ const HeadingContent = ({ title, subtitle }) => {
             className="mt-6 !bg-primary-indigo !border-primary-indigo hover:!bg-primary-indigo/90"
           >
             <div className="flex items-center space-x-2">
-              <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
+              {/* Inline SVG rather than <FontAwesomeIcon>: the icon sits in the
+                  hero, and pulling the Font Awesome React runtime in to draw a
+                  plus is JS the critical path doesn't need. */}
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                aria-hidden="true"
+                className="w-4 h-4"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
               <span>Create a Trip in Seconds</span>
             </div>
           </Button>

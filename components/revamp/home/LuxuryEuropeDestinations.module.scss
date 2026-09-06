@@ -272,6 +272,41 @@
 }
 }
 
+// Opt-in modifiers, applied by a caller through PackageCard's `className`.
+//
+// `noCtaMobile` — drops the "View trip" CTA below 640px. The homepage rail uses
+// it: at rail widths the price row has no room for the CTA beside it (the fixed
+// gaps above are tuned for a full-bleed card), and the whole card is already a
+// link, so the CTA is the part that can go.
+.noCtaMobile {
+  @media (max-width: 640px) {
+    .cta {
+      display: none;
+    }
+  }
+}
+
+// `fillHeight` — lets a card stretch to its row. In a flex rail the items
+// already stretch; the card is what needs telling to fill the box it is given,
+// so every card in the row ends the same height and their price rows line up.
+.fillHeight {
+  height: 100%;
+
+  // Below 640px the card is a single column — image row, then body row — and a
+  // grid with a definite height stretches its auto rows to fill it. That is a
+  // problem here and only here, because `.img` pairs its height with
+  // `aspect-ratio: 16 / 9`: a stretched image row asks for a proportionally
+  // WIDER column, the column outgrows the card, and `overflow: hidden` clips
+  // the title. The shorter the body, the taller the image row, the worse it got.
+  //
+  // Give the leftover height to the body instead. The image then keeps the size
+  // its own rules ask for, and `.meta`'s `margin-top: auto` still pushes the
+  // price row to the bottom, so equal-height cards still line their prices up.
+  @media (max-width: 640px) {
+    grid-template-rows: auto 1fr;
+  }
+}
+
 .price {
   display: flex;
   flex-direction: column;

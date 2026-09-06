@@ -5168,7 +5168,9 @@ const ItineraryStepsLoader = ({
   );
 };
 
-const BottomCTABar = React.memo(
+// Exported so the /trips leaf pages get the real bar rather than a lookalike —
+// they render the same V1 archive layout and need the same fixed price strip.
+export const BottomCTABar = React.memo(
   ({
     viewMode,
     activeItineraryId,
