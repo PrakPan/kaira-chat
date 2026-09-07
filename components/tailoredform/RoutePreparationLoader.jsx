@@ -1,16 +1,28 @@
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import { useAnalyticsSession } from "../../hooks/useAnalyticsSession";
 import { CHATBOT_SOCKET_HOST } from "../../services/constants";
+import { IconCheck } from "./kaira/icons";
 
+/**
+ * The "One second. I'm reading {destination}…" interstitial shown between
+ * step 1 and the route step while /initiate runs.
+ *
+ * The socket plumbing is unchanged from the previous loader: it listens to
+ * the chatbot progress stream for this session and completes once the
+ * /initiate call has succeeded (apiSucceeded) — either straight away, or
+ * when the stream sends `done`. Only the rendering is new (Kaira design).
+ */
 const RoutePreparationLoader = ({
   itineraryId,
   onComplete,
   onError,
   handleCompletion,
-  apiSucceeded, 
+  apiSucceeded,
+  destName,
+  monthPhrase,
+  fetchLabels = [],
 }) => {
-  const [message, setMessage] = useState("Preparing your route...");
+  const [message, setMessage] = useState("");
   const [reasoningParts, setReasoningParts] = useState([]);
   const socketRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
@@ -19,57 +31,42 @@ const RoutePreparationLoader = ({
   const hasCompletedRef = useRef(false);
   const apiSucceededRef = useRef(false);
   const MAX_RECONNECT_ATTEMPTS = 3;
-  const NO_RESPONSE_TIMEOUT = 10000;
   const { sessionId, isReady } = useAnalyticsSession();
-
 
   useEffect(() => {
     apiSucceededRef.current = apiSucceeded;
   }, [apiSucceeded]);
 
   useEffect(() => {
-  if (apiSucceeded && !hasCompletedRef.current) {
-    const timer = setTimeout(() => {
-      handleRealCompletion();
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }
-}, [apiSucceeded]);
+    if (apiSucceeded && !hasCompletedRef.current) {
+      const timer = setTimeout(() => {
+        handleRealCompletion();
+      }, 100);
 
- const handleRealCompletion = () => {
-  if (hasCompletedRef.current) {
-    return;
-  }
+      return () => clearTimeout(timer);
+    }
+  }, [apiSucceeded]);
 
-  hasCompletedRef.current = true;
-
-  setMessage("Route prepared successfully!");
-
-  cleanupTimers();
-
-  if (socketRef.current?.readyState === WebSocket.OPEN) {
-    socketRef.current.close();
-  }
-
-  // ✅ Call completion handler immediately
-  if (handleCompletion) {
-    handleCompletion();
-  } else if (onComplete) { // ✅ Fallback to onComplete
-    onComplete();
-  } else {
-    console.warn("⚠️ No completion handler defined");
-  }
-};
-
-  const handleError = (errorMessage) => {
+  const handleRealCompletion = () => {
     if (hasCompletedRef.current) {
       return;
     }
 
-    console.error("Error:", errorMessage);
+    hasCompletedRef.current = true;
 
     cleanupTimers();
+
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
+      socketRef.current.close();
+    }
+
+    if (handleCompletion) {
+      handleCompletion();
+    } else if (onComplete) {
+      onComplete();
+    } else {
+      console.warn("⚠️ No completion handler defined");
+    }
   };
 
   const cleanupTimers = () => {
@@ -83,11 +80,7 @@ const RoutePreparationLoader = ({
     }
   };
 
- useEffect(() => {
-    if (!isReady || !sessionId) {
-      // Don't return - still show the loading message even if session isn't ready
-    }
-
+  useEffect(() => {
     const initializeSocket = () => {
       // Don't reconnect if already completed
       if (hasCompletedRef.current) {
@@ -113,36 +106,25 @@ const RoutePreparationLoader = ({
             const data = JSON.parse(event.data);
 
             if (data.type === "progress" && data.text) {
-              setReasoningParts((prev) => {
-                const newParts = [...prev, data.text];
-                return newParts;
-              });
-
+              setReasoningParts((prev) => [...prev, data.text]);
               setMessage(data.text.trim());
-
-              const currentParts = reasoningParts.length + 1;
-              const newProgress = Math.min(20 + currentParts * 15, 95);
             }
 
-            // ✅ UPDATED: Handle done event - check API success before completing
+            // Only complete if API has succeeded
             if (data.type === "done") {
-              // Only complete if API has succeeded
               if (apiSucceededRef.current) {
                 handleRealCompletion();
-              } else {
               }
               return;
             }
 
-            // Handle session events (just log them)
             if (data.type === "session") {
               return;
             }
 
-            // Handle errors
             if (data.type === "error") {
               console.error("Server error:", data.error);
-              // Don't show error, keep showing "Preparing your route..."
+              // Keep the reading screen up; /initiate decides success.
               return;
             }
           } catch (err) {
@@ -154,7 +136,7 @@ const RoutePreparationLoader = ({
           console.error("WebSocket error:", error);
         };
 
-        socketRef.current.onclose = (event) => {
+        socketRef.current.onclose = () => {
           // Don't reconnect if already completed successfully
           if (hasCompletedRef.current) {
             return;
@@ -189,68 +171,49 @@ const RoutePreparationLoader = ({
     };
   }, [itineraryId, sessionId, isReady, apiSucceeded, handleCompletion]);
 
+  // Which of the three labels is "active": advance one per progress message
+  // from the stream, and mark everything done once /initiate has succeeded.
+  const labels = fetchLabels.length
+    ? fetchLabels
+    : ["Searching your destination", "Drafting your route", "Picking what's good"];
+  const active = apiSucceeded
+    ? labels.length
+    : Math.min(reasoningParts.length, labels.length - 1);
+
+  // The stream's latest line, minus markdown bold, so the live reasoning still
+  // shows through under the checklist.
+  const live = message.replace(/\*\*/g, "").split("\n\n")[0];
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] px-4">
-      <div className="flex flex-col items-center gap-6 max-w-md  text-center">
-        {/* Animated Icon */}
-        <div className="relative">
-          <div className="">
-            <Image
-              src="/delivery 1-1.svg"
-              width={120}
-              height={120}
-              alt="Route preparation"
-              priority
-            />
-          </div>
-        </div>
-
-        {/* Title */}
-        {/* <h2 className="text-xl-md font-600 text-gray-900">
-          Preparing your route...
-        </h2> */}
-
-        <div className="min-h-[60px] flex items-center justify-center">
-          <div className="text-md text-gray-600 leading-relaxed animate-fade-in max-w-xl">
-            {message.split("\n\n").map((paragraph, idx) => {
-              const isBold =
-                paragraph.startsWith("**") && paragraph.includes("**");
-
-              if (isBold) {
-                const boldText = paragraph.replace(/\*\*/g, "");
-                return (
-                  <p key={idx} className="text-[24px] font-600 text-gray-900 mb-2">
-                    {boldText}
-                  </p>
-                );
-              }
-
-              return (
-                <p key={idx} className="mb-2 last:mb-0">
-                  {paragraph}
-                </p>
-              );
-            })}
-          </div>
-        </div>
+    <div className="kform-fetch">
+      <img className="kform-fetch-avatar" src="/KairaInsta.png" alt="Kaira" />
+      <h2 className="kform-fetch-h2">
+        One second. I'm <span className="kform-serif">reading</span>{" "}
+        {destName || "your trip"}
+        {monthPhrase ? ` in ${monthPhrase}` : ""}.
+      </h2>
+      <p className="kform-fetch-p">
+        Your route and my suggestions come from your dates. Seasons, festivals,
+        what's actually open.
+      </p>
+      <div className="kform-fetch-steps">
+        {labels.map((label, i) => {
+          const state = i < active ? "is-done" : i === active ? "is-active" : "is-pending";
+          return (
+            <div key={label} className={`kform-fetch-step ${state}`}>
+              {state === "is-done" ? (
+                <IconCheck size={14} style={{ color: "#1f8a5a" }} />
+              ) : state === "is-active" ? (
+                <span className="kform-spin" />
+              ) : (
+                <span className="kform-ring" />
+              )}
+              <span>{label}</span>
+            </div>
+          );
+        })}
       </div>
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-out;
-        }
-      `}</style>
+      {live ? <div className="kform-fetch-live">{live}</div> : null}
     </div>
   );
 };

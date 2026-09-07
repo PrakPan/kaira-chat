@@ -1,0 +1,1983 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Kaira trip planner form — components/tailoredform/Index.js and the step
+   components under components/tailoredform/kaira/
+   ─────────────────────────────────────────────────────────────────────────
+   Tokens live on `.kform` (not :root) so the Kaira palette cannot leak into
+   the rest of the app. Everything here is namespaced `kform-`.
+
+   Layout differences between desktop and mobile are done HERE with media
+   queries, never with useMediaQuery — see hooks/useMedia.js for why. Where the
+   two layouts need different markup, both variants are rendered and one is
+   hidden with .kform-wide-only / .kform-narrow-only.
+
+   Reference: Claude Design · "Trip Planner Flow" (desktop) and
+   "Trip Planner Mobile" · Kaira design system.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.kform {
+  --kf-yellow: #f7e700;
+  --kf-yellow-soft: #fff8b3;
+  --kf-yellow-wash: #fffde7;
+  --kf-yellow-700: #d4b900;
+
+  --kf-ink: #0b1220;
+  --kf-ink-2: #1a2436;
+  --kf-ink-3: #445069;
+  --kf-ink-4: #8a93a6;
+  --kf-ink-5: #b8becc;
+  --kf-ink-6: #dfe2ea;
+
+  --kf-paper: #fafaf5;
+  --kf-paper-2: #f4f3ec;
+  --kf-paper-3: #eeeadb;
+  --kf-white: #ffffff;
+  --kf-line: #ececec;
+
+  --kf-midnight: #0a1020;
+  --kf-green: #1f8a5a;
+  --kf-red: #b84034;
+
+  --kf-shadow-sm: 0 2px 6px -2px rgba(11, 18, 32, 0.06);
+  --kf-shadow-md: 0 8px 20px -10px rgba(11, 18, 32, 0.15);
+  --kf-shadow-xl: 0 30px 80px -30px rgba(11, 18, 32, 0.3);
+  --kf-ring: 0 0 0 3px rgba(247, 231, 0, 0.15);
+
+  --kf-ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --kf-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --kf-serif: "Instrument Serif", "Times New Roman", serif;
+  --kf-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  font-family: var(--kf-sans);
+  color: var(--kf-ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.4;
+}
+
+.kform *,
+.kform *::before,
+.kform *::after {
+  box-sizing: border-box;
+}
+
+/* Element resets go through :where() so they carry the specificity of `.kform`
+   alone (0,1,0). A plain `.kform button {…}` selector is 0,1,1 and would beat
+   every component class below it — which is how the primary CTA ended up
+   painting ink text on an ink background. */
+.kform :where(button) {
+  font-family: inherit;
+  color: var(--kf-ink);
+  line-height: inherit;
+}
+
+.kform :where(input, textarea) {
+  font-family: inherit;
+}
+
+.kform :where(input, textarea)::placeholder {
+  color: var(--kf-ink-5);
+  font-weight: 400;
+}
+
+.kform :where(p, h1, h2) {
+  margin: 0;
+}
+
+@keyframes kfPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(247, 231, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(247, 231, 0, 0);
+  }
+}
+@keyframes kfSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes kfFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes kfShimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+/* ── Type helpers ──────────────────────────────────────────────────────── */
+.kform-serif {
+  font-family: var(--kf-serif);
+  font-style: italic;
+  font-weight: 400;
+}
+.kform-mono {
+  font-family: var(--kf-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--kf-ink-5);
+}
+.kform-label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kf-ink-4);
+}
+.kform-h1 {
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  margin: 6px 0 6px 0;
+}
+.kform-lead {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--kf-ink-3);
+  margin: 0 0 28px 0;
+}
+
+/* ── Shell ─────────────────────────────────────────────────────────────── */
+.kform-backdrop {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: linear-gradient(rgba(11, 18, 32, 0.32), rgba(11, 18, 32, 0.32)),
+    var(--kf-paper);
+  display: grid;
+  place-items: center;
+  /* Kept in step with the card's max-height below: together they must not
+     exceed the viewport, or the page picks up a few pixels of scroll and a
+     band of backdrop under the card. */
+  padding: 24px;
+}
+
+.kform-card {
+  width: min(1120px, 96vw);
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  background: var(--kf-white);
+  border: 1px solid var(--kf-line);
+  border-radius: 28px;
+  box-shadow: var(--kf-shadow-xl);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Rendered inside another modal (tailoredFormModal / HeroBanner): the host
+   supplies the backdrop, so the card just fills it — which only works if this
+   root passes the host's height down (see the note in Index.js). */
+.kform--embedded {
+  height: 100%;
+  min-height: 0;
+}
+
+.kform-card--embedded {
+  width: 100%;
+  height: 100%;
+  /* The host is content-height, so this is what stops a tall step from running
+     off the screen — the body scrolls inside the card instead. */
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────── */
+.kform-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 28px 16px 28px;
+  flex-shrink: 0;
+}
+.kform-avatar {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+}
+.kform-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  display: block;
+  border: 1px solid var(--kf-line);
+  object-fit: cover;
+}
+.kform-online {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  background: var(--kf-green);
+  border: 2px solid var(--kf-white);
+  animation: kfPulse 2s infinite;
+}
+.kform-head-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.kform-title {
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+.kform-title .kform-serif {
+  color: var(--kf-ink-3);
+}
+.kform-kline {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--kf-ink-3);
+  line-height: 1.4;
+}
+.kform-summary {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--kf-ink-4);
+  background: var(--kf-paper-2);
+  border-radius: 999px;
+  padding: 6px 12px;
+  white-space: nowrap;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kform-iconbtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--kf-line);
+  background: var(--kf-white);
+  color: var(--kf-ink-3);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.15s var(--kf-ease);
+}
+.kform-iconbtn:hover {
+  background: var(--kf-paper-2);
+  color: var(--kf-ink);
+}
+.kform-iconbtn--sm {
+  width: 26px;
+  height: 26px;
+}
+.kform-iconbtn--cal {
+  width: 28px;
+  height: 28px;
+}
+.kform-iconbtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Progress ──────────────────────────────────────────────────────────── */
+.kform-progress {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 0 28px 6px 28px;
+  flex-shrink: 0;
+}
+.kform-progress-item {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.kform-seg {
+  height: 3px;
+  border-radius: 999px;
+  background: var(--kf-paper-3);
+  transition: background 0.25s;
+}
+.kform-seg.is-done {
+  background: var(--kf-yellow);
+}
+.kform-seg.is-next {
+  background: var(--kf-yellow-soft);
+}
+.kform-seg-label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kf-ink-5);
+}
+.kform-seg-label.is-current {
+  color: var(--kf-ink);
+}
+.kform-seg-label.is-past {
+  color: var(--kf-ink-3);
+}
+.kform-crumb {
+  display: none;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--kf-ink-4);
+  padding: 7px 18px 0 18px;
+}
+
+/* ── Body ──────────────────────────────────────────────────────────────── */
+.kform-body {
+  flex: 1;
+  overflow: auto;
+  padding: 16px 48px 24px 48px;
+  /* No floor. A 460px minimum held the card open at a fixed height, which on
+     the short steps left a band of empty white between the last field and the
+     footer. The card now takes the height of whatever step is in it. */
+  min-height: 0;
+  scrollbar-width: thin;
+}
+.kform-step {
+  max-width: 720px;
+  margin: 0 auto;
+  animation: kfFadeUp 0.35s var(--kf-ease);
+}
+.kform-step--wide {
+  max-width: none;
+}
+.kform-step--group,
+.kform-step--vibe {
+  max-width: 760px;
+}
+
+/* ── Fields & popovers ─────────────────────────────────────────────────── */
+.kform-field-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  /* z-index: 30; */
+}
+.kform-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: var(--kf-white);
+  border: 1px solid var(--kf-ink-6);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: var(--kf-shadow-sm);
+  transition: all 0.15s;
+  text-align: left;
+  cursor: text;
+}
+.kform-field--btn {
+  cursor: pointer;
+}
+.kform-field:hover {
+  border-color: var(--kf-ink-4);
+}
+.kform-field.is-open {
+  border-color: var(--kf-ink);
+  box-shadow: var(--kf-ring);
+}
+.kform-field.has-error {
+  border-color: var(--kf-red);
+}
+.kform-field-icon {
+  color: var(--kf-ink-3);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+.kform-field-icon--muted {
+  color: var(--kf-ink-4);
+}
+.kform-input {
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--kf-ink);
+  flex: 1;
+  padding: 0;
+  min-width: 0;
+  width: 100%;
+}
+.kform-field-value {
+  font-weight: 600;
+  font-size: 15px;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kform-field-value.is-placeholder {
+  color: var(--kf-ink-5);
+}
+.kform-field-value--sm {
+  font-size: 14px;
+}
+.kform-clear {
+  border: 0;
+  background: transparent;
+  padding: 2px;
+  cursor: pointer;
+  color: var(--kf-ink-4);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.kform-clear:hover {
+  color: var(--kf-ink);
+}
+.kform-pill {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  background: var(--kf-paper-2);
+  border-radius: 999px;
+  padding: 4px 10px;
+  color: var(--kf-ink-3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.kform-field-error {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--kf-red);
+}
+
+/* Result lists and the When panel float over the page instead of sitting in
+   the flow — opening one must not push the fields below it down. */
+.kform-pop {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  z-index: 40;
+  background: var(--kf-white);
+  border: 1px solid var(--kf-line);
+  border-radius: 14px;
+  box-shadow: var(--kf-shadow-md);
+  overflow: auto;
+  max-height: 300px;
+  animation: kfFadeUp 0.2s var(--kf-ease);
+}
+/* The When panel is the same kind of overlay, anchored to the right edge of
+   its field because it is much wider than the field itself. */
+.kform-when-pop {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  z-index: 40;
+  width: max-content;
+  max-width: min(640px, calc(100vw - 120px));
+}
+.kform-pop-label {
+  padding: 10px 16px 4px 16px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kf-ink-5);
+}
+.kform-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 10px 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+.kform-opt:hover {
+  background: var(--kf-paper-2);
+}
+.kform-opt-name {
+  font-weight: 700;
+  font-size: 14px;
+}
+.kform-opt-sub {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kf-ink-4);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kform-opt-body {
+  flex: 1;
+  min-width: 0;
+}
+.kform-pop-empty {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--kf-ink-4);
+}
+.kform-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+}
+
+/* destination / city tiles */
+.kform-tile {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #7ab8e8, #4a7fb5);
+  color: var(--kf-white);
+}
+.kform-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.kform-tile--sm {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  font-size: 18px;
+}
+.kform-tile--xs {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  font-size: 16px;
+}
+.kform-tile-num {
+  font-family: var(--kf-mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ── Step 1 layout ─────────────────────────────────────────────────────── */
+.kform-trip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "from when"
+    "dest dest";
+  gap: 16px;
+  align-items: start;
+}
+.kform-trip > .kform-area-from {
+  grid-area: from;
+}
+.kform-trip > .kform-area-when {
+  grid-area: when;
+  z-index: 40;
+}
+.kform-trip > .kform-area-dest {
+  grid-area: dest;
+  margin-top: 4px;
+}
+
+.kform-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 26px;
+  background: var(--kf-yellow-wash);
+  border: 1px solid var(--kf-line);
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--kf-ink-3);
+  line-height: 1.5;
+}
+.kform-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── When panel ────────────────────────────────────────────────────────── */
+/* The panel floats, so on a short window it would run past the bottom of the
+   card and take Clear / Done with it. Cap its height and scroll the middle,
+   keeping the tab row and the footer buttons in view. */
+.kform-panel {
+  background: var(--kf-white);
+  border: 1px solid var(--kf-line);
+  border-radius: 18px;
+  box-shadow: var(--kf-shadow-md);
+  padding: 18px 20px;
+  animation: kfFadeUp 0.2s var(--kf-ease);
+  display: flex;
+  flex-direction: column;
+  /* Replaced at runtime by the measured space below the field; this is the
+     upper bound and the value used before the first measurement. */
+  /* max-height: min(72vh, 560px); */
+  max-height: 100% !important;
+}
+.kform-panel-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  scrollbar-width: thin;
+}
+.kform-tabs {
+  display: inline-flex;
+  background: var(--kf-paper-2);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+  margin-bottom: 16px;
+}
+.kform-tab {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s;
+  background: transparent;
+  color: var(--kf-ink-3);
+  white-space: nowrap;
+}
+.kform-tab.is-on {
+  background: var(--kf-ink);
+  color: var(--kf-paper);
+}
+
+.kform-cal-nav {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  max-width: 560px;
+}
+.kform-cal-title {
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
+  font-size: 13.5px;
+}
+.kform-cal-months {
+  display: flex;
+  gap: 24px;
+}
+.kform-cal-dow,
+.kform-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 34px);
+  gap: 2px;
+}
+.kform-cal-dow {
+  margin-bottom: 4px;
+}
+.kform-cal-dow div {
+  font-family: var(--kf-mono);
+  font-size: 9px;
+  color: var(--kf-ink-5);
+  text-align: center;
+}
+.kform-day {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  font-size: 12.5px;
+  padding: 0;
+  background: transparent;
+  color: var(--kf-ink);
+  border-radius: 8px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.kform-day:hover:not(:disabled):not(.is-sel) {
+  background: var(--kf-paper-2);
+}
+.kform-day.is-range {
+  background: var(--kf-paper-2);
+  border-radius: 0;
+}
+.kform-day.is-sel {
+  background: var(--kf-ink);
+  color: var(--kf-paper);
+  border-radius: 999px;
+  font-weight: 700;
+}
+.kform-day.is-blank,
+.kform-day:disabled {
+  cursor: default;
+}
+.kform-day:disabled:not(.is-blank) {
+  color: var(--kf-ink-5);
+}
+
+.kform-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 600px;
+}
+.kform-chip {
+  padding: 9px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: all 0.15s;
+  border: 1px solid var(--kf-line);
+  background: var(--kf-white);
+  color: var(--kf-ink-3);
+}
+.kform-chip:hover {
+  border-color: var(--kf-ink-4);
+}
+.kform-chip.is-on {
+  background: var(--kf-ink);
+  color: var(--kf-paper);
+  border-color: var(--kf-ink);
+}
+.kform-hint {
+  font-size: 12.5px;
+  color: var(--kf-ink-4);
+  margin-top: 10px;
+}
+
+.kform-soft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+  background: var(--kf-paper);
+  border: 1px solid var(--kf-line);
+  border-radius: 14px;
+  padding: 12px 16px;
+  max-width: 600px;
+}
+.kform-soft-title {
+  font-weight: 700;
+  font-size: 14px;
+}
+.kform-soft-sub {
+  font-size: 12.5px;
+  color: var(--kf-ink-4);
+  margin-top: 1px;
+}
+.kform-soft-body {
+  flex: 1;
+  min-width: 0;
+}
+.kform-soft--wash {
+  background: var(--kf-yellow-wash);
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 0;
+  font-size: 13px;
+  color: var(--kf-ink-3);
+  line-height: 1.5;
+}
+.kform-soft--wash svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.kform-panel-foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--kf-line);
+}
+.kform-panel-foot-text {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kf-ink-3);
+  flex: 1;
+  min-width: 0;
+}
+.kform-linkbtn {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kf-ink-4);
+  padding: 4px;
+}
+.kform-linkbtn:hover {
+  color: var(--kf-red);
+}
+.kform-btn-ink {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--kf-ink);
+  color: var(--kf-paper);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.kform-btn-ink:hover {
+  background: var(--kf-ink-2);
+}
+
+/* ── Stepper (− n +) ───────────────────────────────────────────────────── */
+.kform-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--kf-line);
+  border-radius: 999px;
+  background: var(--kf-white);
+  flex-shrink: 0;
+}
+.kform-stepper-btn {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--kf-ink-3);
+  padding: 0;
+}
+.kform-stepper-btn:first-child {
+  border-radius: 999px 0 0 999px;
+}
+.kform-stepper-btn:last-child {
+  border-radius: 0 999px 999px 0;
+}
+.kform-stepper-btn:hover:not(:disabled) {
+  background: var(--kf-paper-2);
+}
+.kform-stepper-btn:disabled {
+  color: var(--kf-ink-6);
+  cursor: not-allowed;
+}
+.kform-stepper-val {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  min-width: 76px;
+  text-align: center;
+}
+.kform-stepper--sm .kform-stepper-btn {
+  width: 30px;
+  height: 30px;
+  font-size: 15px;
+}
+.kform-stepper--sm .kform-stepper-val {
+  min-width: 64px;
+}
+.kform-stepper--mono .kform-stepper-val {
+  font-family: var(--kf-mono);
+  font-size: 13px;
+  min-width: 44px;
+}
+
+/* ── Section rule ("Route ──────── 9 nights") ──────────────────────────── */
+.kform-rule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 0 14px 0;
+}
+.kform-rule-line {
+  flex: 1;
+  height: 1px;
+  background: var(--kf-line);
+}
+.kform-rule-right {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kf-ink-3);
+}
+.kform-rule-right.is-ok {
+  color: var(--kf-green);
+}
+.kform-rule-right.is-bad {
+  color: var(--kf-red);
+}
+
+/* ── Step 2: route ─────────────────────────────────────────────────────── */
+.kform-route {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 36px;
+  align-items: start;
+}
+.kform-route-list {
+  min-width: 0;
+}
+.kform-depart {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px 16px 4px;
+}
+.kform-depart-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--kf-ink);
+  display: grid;
+  place-items: center;
+  color: var(--kf-yellow);
+  flex-shrink: 0;
+}
+.kform-depart-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--kf-ink-3);
+}
+.kform-city {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 8px;
+  border-top: 1px solid var(--kf-line);
+  border-radius: 12px;
+  background: var(--kf-white);
+  user-select: none;
+}
+.kform-city.is-dragging {
+  box-shadow: 0 8px 20px -10px rgba(11, 18, 32, 0.25);
+  border-top-color: transparent;
+}
+.kform-grip {
+  color: var(--kf-ink-5);
+  cursor: grab;
+  touch-action: none;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  margin: -6px;
+  flex-shrink: 0;
+}
+.kform-grip:active {
+  cursor: grabbing;
+}
+.kform-city-body {
+  flex: 1;
+  min-width: 0;
+}
+.kform-city-name {
+  font-weight: 700;
+  font-size: 15.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kform-city-sub {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kf-ink-4);
+  margin-top: 2px;
+}
+.kform-trash {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--kf-ink-5);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.kform-trash:hover:not(:disabled) {
+  color: var(--kf-red);
+}
+.kform-trash:disabled {
+  color: #eceef3;
+  cursor: not-allowed;
+}
+.kform-dashed-btn {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1.5px dashed var(--kf-ink-5);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--kf-ink-3);
+  cursor: pointer;
+  transition: all 0.15s var(--kf-ease);
+}
+.kform-dashed-btn:hover {
+  border-color: var(--kf-ink);
+  color: var(--kf-ink);
+}
+.kform-add {
+  margin-top: 10px;
+  border: 1px solid var(--kf-line);
+  border-radius: 18px;
+  background: var(--kf-paper);
+  padding: 16px;
+  animation: kfFadeUp 0.2s var(--kf-ease);
+}
+.kform-add-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.kform-add-head .kform-label {
+  font-weight: 600;
+  flex: 1;
+}
+.kform-add-list {
+  margin-top: 8px;
+  background: var(--kf-white);
+  border: 1px solid var(--kf-line);
+  border-radius: 14px;
+  overflow: auto;
+  max-height: 190px;
+}
+.kform-add-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+.kform-add-foot .kform-label {
+  font-weight: 600;
+  color: var(--kf-ink-3);
+}
+.kform-add-foot-hint {
+  flex: 1;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--kf-ink-4);
+}
+
+.kform-map {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid var(--kf-line);
+  /* Shows through until the map tiles paint, so it is a light neutral rather
+     than the midnight the hand-drawn map used to sit on. */
+  background: var(--kf-paper-2);
+  height: 430px;
+  isolation: isolate;
+}
+.kform-map-caption {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(10, 16, 32, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 7px 14px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  max-width: calc(100% - 28px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kform-map-caption svg {
+  color: var(--kf-yellow);
+  flex-shrink: 0;
+}
+
+/* ── Step 3: group ─────────────────────────────────────────────────────── */
+.kform-groups {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.kform-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 18px;
+  border-radius: 18px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s var(--kf-ease);
+  border: 1px solid var(--kf-line);
+  background: var(--kf-white);
+  box-shadow: none;
+}
+.kform-group:hover {
+  transform: translateY(-2px);
+}
+.kform-group.is-on {
+  background: var(--kf-yellow-wash);
+  border-color: var(--kf-ink);
+  box-shadow: var(--kf-ring);
+}
+.kform-group svg {
+  color: var(--kf-ink);
+  flex-shrink: 0;
+}
+.kform-group-name {
+  font-weight: 700;
+  font-size: 14.5px;
+}
+.kform-group-sub {
+  font-size: 12px;
+  color: var(--kf-ink-4);
+  margin-top: 2px;
+}
+
+.kform-counts {
+  margin-top: 14px;
+  border: 1px solid var(--kf-line);
+  border-radius: 18px;
+  background: var(--kf-paper);
+  overflow: hidden;
+  animation: kfFadeUp 0.3s var(--kf-ease);
+}
+.kform-count-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+}
+.kform-count-row + .kform-count-row {
+  border-top: 1px solid var(--kf-line);
+}
+.kform-count-note {
+  padding: 10px 18px 14px 18px;
+  font-size: 12.5px;
+  color: var(--kf-ink-4);
+}
+
+.kform-section-label {
+  margin: 26px 0 10px 0;
+}
+.kform-list-card {
+  border: 1px solid var(--kf-line);
+  border-radius: 18px;
+  background: var(--kf-white);
+  overflow: hidden;
+}
+.kform-list-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+}
+.kform-list-row + .kform-list-row {
+  border-top: 1px solid var(--kf-line);
+}
+.kform-list-row > svg {
+  color: var(--kf-ink-3);
+  flex-shrink: 0;
+}
+.kform-toggle {
+  width: 40px;
+  height: 24px;
+  border-radius: 999px;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  transition: background 0.15s;
+  background: var(--kf-ink-6);
+  justify-content: flex-start;
+  flex-shrink: 0;
+}
+.kform-toggle.is-on {
+  background: var(--kf-ink);
+  justify-content: flex-end;
+}
+.kform-toggle span {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--kf-white);
+  pointer-events: none;
+  box-shadow: 0 1px 2px rgba(11, 18, 32, 0.25);
+}
+
+/* ── Step 4: vibe ──────────────────────────────────────────────────────── */
+.kform-picks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.kform-chipset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.kform-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--kf-ink);
+  background: var(--kf-ink);
+  color: var(--kf-paper);
+  transition: all 0.15s var(--kf-ease);
+  animation: kfFadeUp 0.25s var(--kf-ease);
+}
+.kform-pick:hover {
+  background: var(--kf-ink-2);
+}
+.kform-suggest {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px dashed var(--kf-ink-5);
+  background: transparent;
+  color: var(--kf-ink-3);
+  transition: all 0.15s var(--kf-ease);
+}
+.kform-suggest:hover {
+  border-color: var(--kf-ink);
+  color: var(--kf-ink);
+  border-style: solid;
+}
+.kform-suggest-skel {
+  height: 39px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--kf-paper-2) 25%,
+    var(--kf-paper-3) 50%,
+    var(--kf-paper-2) 75%
+  );
+  background-size: 800px 100%;
+  animation: kfShimmer 1.4s linear infinite;
+}
+.kform-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kf-ink-3);
+  padding: 4px 0;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+.kform-more:hover {
+  color: var(--kf-ink);
+}
+.kform-more:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.kform-more.is-loading svg {
+  animation: kfSpin 0.8s linear infinite;
+}
+.kform-textarea {
+  width: 100%;
+  background: var(--kf-white);
+  border: 1px solid var(--kf-ink-6);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--kf-ink);
+  resize: vertical;
+  outline: none;
+  box-shadow: var(--kf-shadow-sm);
+  transition: border-color 0.15s;
+  min-height: 110px;
+}
+.kform-textarea:focus {
+  border-color: var(--kf-ink);
+  box-shadow: var(--kf-ring);
+}
+
+/* ── Fetching interstitial ─────────────────────────────────────────────── */
+.kform-fetch {
+  max-width: 520px;
+  margin: 30px auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: kfFadeUp 0.35s var(--kf-ease);
+}
+.kform-fetch-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  display: block;
+  border: 1px solid var(--kf-line);
+  animation: kfPulse 2s infinite;
+  object-fit: cover;
+}
+.kform-fetch-h2 {
+  margin: 24px 0 6px 0;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+.kform-fetch-p {
+  margin: 0 0 24px 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--kf-ink-3);
+}
+.kform-fetch-steps {
+  width: 100%;
+  max-width: 400px;
+  background: var(--kf-paper);
+  border: 1px solid var(--kf-line);
+  border-radius: 18px;
+  padding: 16px 20px;
+  text-align: left;
+}
+.kform-fetch-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 0;
+  transition: opacity 0.3s;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.kform-fetch-step.is-pending {
+  opacity: 0.5;
+  color: var(--kf-ink-5);
+}
+.kform-fetch-step.is-active {
+  color: var(--kf-ink);
+}
+.kform-fetch-step.is-done {
+  color: var(--kf-ink-4);
+}
+.kform-fetch-step svg {
+  flex-shrink: 0;
+}
+.kform-spin {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 2px solid rgba(212, 185, 0, 0.3);
+  border-top-color: var(--kf-yellow-700);
+  animation: kfSpin 0.8s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.kform-ring {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--kf-ink-6);
+  display: inline-block;
+  flex-shrink: 0;
+}
+.kform-fetch-live {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--kf-ink-4);
+  line-height: 1.5;
+  max-width: 400px;
+}
+
+/* ── Footer ────────────────────────────────────────────────────────────── */
+.kform-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 28px;
+  border-top: 1px solid var(--kf-line);
+  background: var(--kf-paper);
+  flex-shrink: 0;
+}
+.kform-foot-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.kform-trust {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.kform-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kf-ink-3);
+  white-space: nowrap;
+}
+.kform-trust-item img {
+  width: 18px;
+  height: 18px;
+  display: block;
+  flex-shrink: 0;
+}
+.kform-foot-spacer {
+  flex: 1;
+}
+.kform-foot-note {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kf-ink-4);
+}
+.kform-back {
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: 1px solid var(--kf-ink-6);
+  background: var(--kf-white);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--kf-ink-3);
+  cursor: pointer;
+  transition: all 0.15s var(--kf-ease);
+}
+.kform-back:hover {
+  border-color: var(--kf-ink);
+  color: var(--kf-ink);
+}
+.kform-back--icon {
+  display: none;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  place-items: center;
+  flex-shrink: 0;
+}
+.kform-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 13px 28px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--kf-ink);
+  color: var(--kf-paper);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 20px -10px rgba(11, 18, 32, 0.4);
+  transition: all 0.15s var(--kf-ease);
+  white-space: nowrap;
+}
+.kform-cta:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.kform-cta:disabled,
+.kform-cta.is-disabled {
+  background: var(--kf-ink-6);
+  color: var(--kf-ink-4);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+.kform-cta .kform-spin {
+  border-color: rgba(250, 250, 245, 0.3);
+  border-top-color: var(--kf-paper);
+}
+.kform-error {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--kf-red);
+  text-align: center;
+}
+
+/* ── Visibility helpers ────────────────────────────────────────────────── */
+.kform-narrow-only {
+  display: none !important;
+}
+
+/* ── Mobile ────────────────────────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+  .kform-wide-only {
+    display: none !important;
+  }
+  .kform-narrow-only {
+    display: initial !important;
+  }
+
+  .kform-backdrop {
+    padding: 0;
+    background: var(--kf-paper);
+    display: block;
+  }
+  /* Exactly the viewport, not `min-height` — the body scrolls inside the card
+     so the footer's nav buttons stay pinned to the bottom of the screen
+     instead of scrolling away with a tall step. */
+  .kform-card {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    max-height: none;
+    min-height: 0;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+  }
+  .kform-card--embedded {
+    height: 100%;
+    /* Fill the sheet exactly. The desktop cap (100dvh - 48px) is a couple of
+       pixels shorter than the 92dvh sheet, which would leave a sliver of panel
+       showing under the footer. */
+    max-height: 100%;
+  }
+
+  .kform-head {
+    gap: 12px;
+    padding: 16px 18px 10px 18px;
+  }
+  .kform-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  .kform-title {
+    font-size: 15px;
+  }
+  .kform-kline {
+    font-size: 12px;
+  }
+  .kform-summary {
+    display: none;
+  }
+  .kform-iconbtn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .kform-progress {
+    gap: 6px;
+    padding: 0 18px 0 18px;
+  }
+  .kform-seg-label {
+    display: none;
+  }
+  .kform-crumb {
+    display: block;
+  }
+
+  .kform-body {
+    padding: 14px 18px 24px 18px;
+    min-height: 0;
+  }
+  .kform-h1 {
+    font-size: 29px;
+    line-height: 1.05;
+    margin: 4px 0 4px 0;
+  }
+  .kform-lead {
+    font-size: 13.5px;
+    margin-bottom: 20px;
+  }
+
+  .kform-trip {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "from"
+      "dest"
+      "when";
+  }
+  .kform-trip > .kform-area-dest {
+    margin-top: 0;
+  }
+  .kform-note {
+    margin-top: 20px;
+    padding: 12px 14px;
+    font-size: 12.5px;
+  }
+
+  /* One narrow column: the panel spans the field instead of hanging off its
+     right edge. */
+  .kform-when-pop {
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: none;
+  }
+  .kform-panel {
+    padding: 14px 16px;
+    max-height: none;
+  }
+  .kform-tabs {
+    display: flex;
+    margin-bottom: 14px;
+  }
+  .kform-tab {
+    flex: 1;
+    padding: 9px 4px;
+    font-size: 12.5px;
+  }
+  .kform-cal-nav {
+    max-width: none;
+    margin-bottom: 10px;
+  }
+  .kform-cal-title--second {
+    display: none;
+  }
+  .kform-cal-months {
+    gap: 0;
+  }
+  .kform-cal-month:nth-child(2) {
+    display: none;
+  }
+  .kform-cal-month {
+    width: 100%;
+  }
+  .kform-cal-dow,
+  .kform-cal-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+  .kform-day {
+    width: auto;
+    height: 42px;
+    font-size: 13px;
+  }
+  .kform-iconbtn--cal {
+    width: 32px;
+    height: 32px;
+  }
+  .kform-chip {
+    padding: 10px 15px;
+    font-size: 12.5px;
+  }
+  .kform-soft {
+    gap: 12px;
+    margin-top: 14px;
+    padding: 12px 14px;
+    max-width: none;
+  }
+  .kform-soft-title {
+    font-size: 13.5px;
+  }
+  .kform-soft-sub {
+    font-size: 12px;
+  }
+  .kform-stepper-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .kform-stepper-val {
+    min-width: 66px;
+  }
+  .kform-stepper--sm .kform-stepper-btn {
+    width: 32px;
+    height: 32px;
+  }
+  .kform-stepper--sm .kform-stepper-val {
+    min-width: 34px;
+  }
+  .kform-stepper--mono .kform-stepper-val {
+    min-width: 40px;
+  }
+  .kform-panel-foot {
+    gap: 10px;
+    padding-top: 12px;
+  }
+  .kform-panel-foot-text {
+    font-size: 11.5px;
+  }
+
+  .kform-route {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .kform-route-list {
+    order: 2;
+  }
+  /* No map on a phone: at 240px tall it showed a country-scale view that could
+     not be read, and the route list right below already names every stop in
+     order. StepRoute watches this container's width, so hiding it here also
+     keeps the Google Maps script off mobile entirely. */
+  .kform-map {
+    display: none;
+  }
+  .kform-map-caption {
+    top: 12px;
+    left: 12px;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  .kform-city {
+    gap: 10px;
+    padding: 12px 6px;
+  }
+  .kform-city-name {
+    font-size: 14.5px;
+  }
+  .kform-city-sub {
+    display: none;
+  }
+  .kform-tile--city {
+    width: 40px;
+    height: 40px;
+  }
+  .kform-trash {
+    width: 36px;
+    height: 36px;
+  }
+  .kform-dashed-btn {
+    margin-top: 8px;
+    padding: 11px 18px;
+  }
+  .kform-add {
+    padding: 14px;
+  }
+
+  .kform-groups {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .kform-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 16px;
+  }
+  .kform-group:hover {
+    transform: none;
+  }
+  .kform-group-name {
+    font-size: 14px;
+  }
+  .kform-group-sub {
+    font-size: 11.5px;
+    margin-top: 1px;
+  }
+  .kform-count-row {
+    gap: 12px;
+    padding: 13px 16px;
+  }
+  .kform-section-label {
+    margin: 22px 0 10px 0;
+  }
+  .kform-list-row {
+    gap: 12px;
+    padding: 14px 16px;
+  }
+  .kform-toggle {
+    width: 44px;
+    height: 26px;
+  }
+  .kform-toggle span {
+    width: 18px;
+    height: 18px;
+  }
+
+  .kform-picks {
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .kform-chipset {
+    gap: 8px;
+  }
+  .kform-pick,
+  .kform-suggest {
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+  .kform-textarea {
+    padding: 13px 15px;
+  }
+
+  .kform-fetch {
+    margin-top: 36px;
+  }
+  .kform-fetch-avatar {
+    width: 60px;
+    height: 60px;
+  }
+  .kform-fetch-h2 {
+    font-size: 25px;
+    line-height: 1.1;
+    margin-top: 20px;
+  }
+  .kform-fetch-p {
+    font-size: 13.5px;
+    margin-bottom: 20px;
+  }
+  .kform-fetch-steps {
+    max-width: none;
+    padding: 14px 16px;
+  }
+
+  .kform-foot {
+    position: sticky;
+    bottom: 0;
+    padding: 10px 16px 12px 16px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    gap: 6px;
+  }
+  .kform-foot-row {
+    gap: 10px;
+  }
+  .kform-trust {
+    display: none;
+  }
+  .kform-back--text {
+    display: none;
+  }
+  .kform-back--icon {
+    display: grid;
+  }
+  .kform-foot-note {
+    flex: 1;
+    text-align: center;
+    padding: 14px 0;
+  }
+  .kform-cta {
+    flex: 1;
+    height: 44px;
+    padding: 0 18px;
+    font-size: 14px;
+  }
+  .kform-back--icon {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* ── The planner as an overlay ──────────────────────────────────────────────
+   Used by components/tailoredform/TailoredFormModal — the hero CTA on the
+   homepage opens the form here instead of navigating to /new-trip.
+
+   The panel rises from the bottom on both breakpoints: a sheet anchored to the
+   bottom edge on a phone, a centred dialog that lifts into place on desktop.
+   `.is-open` is added a frame after mount and removed for the length of the
+   exit, so the same transition runs in both directions.
+   ───────────────────────────────────────────────────────────────────────── */
+.ttw-formmodal {
+  position: fixed;
+  inset: 0;
+  z-index: 3300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(11, 18, 32, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 0.24s var(--kf-ease, cubic-bezier(0.2, 0.7, 0.3, 1));
+}
+.ttw-formmodal.is-open {
+  opacity: 1;
+}
+
+.ttw-formmodal-panel {
+  width: min(1120px, 94vw);
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  background: #ffffff;
+  border-radius: 24px;
+  /* Clips the embedded card, which is square-cornered by design, to this
+     panel's radius. */
+  overflow: hidden;
+  box-shadow: 0 30px 80px -30px rgba(11, 18, 32, 0.5);
+  transform: translateY(28px);
+  opacity: 0;
+  transition:
+    transform 0.28s var(--kf-ease, cubic-bezier(0.2, 0.7, 0.3, 1)),
+    opacity 0.28s var(--kf-ease, cubic-bezier(0.2, 0.7, 0.3, 1));
+}
+.ttw-formmodal.is-open .ttw-formmodal-panel {
+  transform: none;
+  opacity: 1;
+}
+
+@media (max-width: 767.98px) {
+  /* A sheet: full width, pinned to the bottom edge, and it travels its own
+     full height so it reads as coming up from off screen rather than nudging
+     into place. */
+  .ttw-formmodal {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .ttw-formmodal-panel {
+    width: 100%;
+    max-height: none;
+    height: 92vh;
+    height: 92dvh;
+    border-radius: 20px 20px 0 0;
+    transform: translateY(100%);
+    /* The sheet slides rather than fades — a fade on something this large
+       reads as a flicker. */
+    opacity: 1;
+  }
+}
+
+/* Honour a reduced-motion preference: the panel still appears and disappears,
+   it just does not travel. */
+@media (prefers-reduced-motion: reduce) {
+  .ttw-formmodal,
+  .ttw-formmodal-panel {
+    transition-duration: 0.01ms;
+  }
+  .ttw-formmodal-panel {
+    transform: none;
+  }
+}

@@ -1,253 +1,231 @@
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import styled from "styled-components";
-import Button from "../ui/button/Index";
 import { useStatsStripPinned } from "../../services/floatingStatsStrip";
+import { setPendingSeed } from "../../services/heroChatHandoff";
 
-const Container = styled.div`
-  display: none;
-  @media screen and (min-width: 768px) {
-    display: initial;
-    z-index: 998 !important;
-    width: auto;
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    ${(props) => props.newYear ? "bottom: 16px" : "bottom: 0"};
-    margin-bottom: 1rem;
-  }
-`;
+// The floating "plan your trip" bar that appears once a marketing page is
+// scrolled past its first screen.
+//
+// Rebuilt as the docked ask-bar from the cinematic theme pages
+// (components/theme/cinematic/CinematicThemeLanding.tsx → AskKairaStrip): a
+// translucent paper pill with a real free-text field, a yellow CTA and Kaira's
+// avatar. The old version was a dark lozenge carrying a sentence and one
+// button, so the two floating bars on the site looked like two different
+// products.
+//
+// Every action lands on /chat. Anything typed is handed over through the same
+// seed channel the hero and the theme pages use (module memory +
+// sessionStorage + `?seed=`), so the chat opens on the reader's own words
+// rather than a canned opener.
 
-/* Compact mobile-only floating bar — same dark pill, less text and a
-   smaller responsive CTA so it never overflows on narrow screens. */
-const MobileContainer = styled.div`
-  display: flex;
-  justify-content: center;
+const INK = "#0b1220";
+const BORDER = "#ececec";
+const YELLOW = "#f7e700";
+
+const Dock = styled.div`
   position: fixed;
   left: 0;
   right: 0;
+  ${(props) => (props.newYear ? "bottom: 16px;" : "bottom: 0;")}
   z-index: 998;
-  ${(props) => (props.newYear ? "bottom: 12px" : "bottom: 0")};
-  padding: 0 12px calc(12px + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  padding: 0 16px calc(16px + env(safe-area-inset-bottom));
   pointer-events: none;
+`;
+
+const Pill = styled.div`
+  pointer-events: auto;
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 999px;
+  border: 1px solid ${BORDER};
+  background: rgba(250, 250, 245, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 18px 44px -18px rgba(11, 18, 32, 0.35);
 
   @media screen and (min-width: 768px) {
-    display: none;
+    gap: 10px;
+    padding: 10px;
   }
 `;
 
-const MobileBar = styled.div`
-  pointer-events: auto;
-  background-color: rgba(0, 0, 0, 0.82);
-  color: white;
-  width: 100%;
-  max-width: 440px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 7px 7px 7px 16px;
-  border-radius: 999px;
-  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.45);
+const Field = styled.input`
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: "Inter", -apple-system, sans-serif;
+  font-size: 13.5px;
+  color: ${INK};
+  padding: 0 4px;
+
+  &::placeholder {
+    color: #8a93a6;
+  }
+
+  @media screen and (min-width: 768px) {
+    min-width: 90px;
+    padding: 0 6px;
+  }
 `;
 
-/* Yellow "Chat with Kaira" pill — black text + arrow. Shared by the mobile
-   bar and the desktop banner. */
-const KairaCta = styled.button`
+/* Yellow, because this is the one action on the bar. Ink text on yellow is the
+   pairing the rest of the Kaira surfaces use for a primary CTA on paper. */
+const Cta = styled.button`
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  justify-content: center;
+  gap: 8px;
   white-space: nowrap;
-  background-color: #f7e700;
-  color: #000;
   border: none;
-  border-radius: 999px;
-  padding: 9px 16px;
-  font-family: "Inter", -apple-system, sans-serif;
-  font-size: 12.5px;
-  font-weight: 600;
   cursor: pointer;
+  border-radius: 999px;
+  background: ${YELLOW};
+  color: ${INK};
+  font-family: "Inter", -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 11px 16px;
+  box-shadow: 0 8px 20px -10px rgba(247, 231, 0, 0.9);
+  transition: transform 0.15s cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+  &:active {
+    transform: none;
+  }
 
   @media screen and (min-width: 768px) {
-    gap: 9px;
-    padding: 11px 22px;
-    font-size: 15px;
+    font-size: 14px;
+    padding: 14px 24px;
+    min-width: 190px;
   }
 `;
 
-const MobileText = styled.p`
-  font-family: "Inter", -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  font-size: 0.9rem;
-  line-height: 1.2;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-`;
+/* The "just ask" shortcut. Hidden on the narrowest screens so the field keeps a
+   usable width — the CTA next to it goes to the same place. */
+const Avatar = styled.button`
+  position: relative;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: none;
 
-const GridContainer = styled.div`
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 0.5rem 1rem;
-  display: grid;
-  width: max-content;
-  margin: auto;
-  grid-template-columns: auto max-content;
-  border-radius: 2rem;
-`;
+  img {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    object-fit: cover;
+    border: 2px solid #ffffff;
+    box-shadow: 0 8px 20px -8px rgba(11, 18, 32, 0.35);
+    display: block;
+  }
 
-const Serif = styled.span`
-  font-family: "Instrument Serif", "Times New Roman", serif;
-  font-style: italic;
-`;
+  span {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #1f8a5a;
+    border: 2px solid #ffffff;
+  }
 
-const Text = styled.p`
-  font-family: "Inter", -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  font-size: 1rem;
-  margin: 0;
-  text-align: center;
-  @media screen and (min-width: 768px) {
-    text-align: left;
-    font-size: 1.25rem;
-    display: inline;
-    margin: 0 2.5vw;
+  @media screen and (min-width: 480px) {
+    display: block;
   }
 `;
 
 const Banner = (props) => {
+  const router = useRouter();
   const [showBanner, setShowBanner] = useState(false);
+  const [draft, setDraft] = useState("");
   // On phones the destination stats strip floats at the bottom until the page
   // scrolls down to its slot — this bar waits its turn so the two never stack.
   const statsStripPinned = useStatsStripPinned();
 
   useEffect(() => {
-    let scrollhandler = () => {
-      let currentScroll = window.pageYOffset;
-      if (currentScroll > window.innerHeight / 2) {
-        setShowBanner(true);
-      } else {
-        setShowBanner(false);
-      }
+    const scrollhandler = () => {
+      setShowBanner(window.pageYOffset > window.innerHeight / 2);
     };
-    window.addEventListener("scroll", scrollhandler);
-    return () => {
-      window.removeEventListener("scroll", scrollhandler);
-    };
-  });
+    scrollhandler();
+    window.addEventListener("scroll", scrollhandler, { passive: true });
+    return () => window.removeEventListener("scroll", scrollhandler);
+  }, []);
 
-  const renderText = () => {
-    const { text, destinationName } = props;
-    if (!destinationName || typeof text !== "string") return text;
-    const parts = text.split(destinationName);
-    if (parts.length === 1) return text;
-    return parts.map((part, i) => (
-      <React.Fragment key={i}>
-        {part}
-        {i < parts.length - 1 && <Serif>{destinationName}</Serif>}
-      </React.Fragment>
-    ));
+  const openChat = () => {
+    const seed = draft.trim();
+    // Same handoff as the hero and the theme pages: stash it so a cold /chat
+    // load can still pick it up, and put it in the URL for the warm one.
+    if (seed) setPendingSeed(seed);
+    router.push(seed ? `/chat?seed=${encodeURIComponent(seed)}` : "/chat");
   };
 
-  // Condensed copy for the mobile bar — just the destination, no long sentence.
-  const renderMobileText = () => {
-    const { destinationName } = props;
-    if (destinationName)
-      return (
-        <>
-          Plan your trip to <Serif>{destinationName}</Serif>
-        </>
-      );
-    return (
-      <>
-        Plan your trip within <Serif>minutes</Serif>
-      </>
-    );
+  const onKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      openChat();
+    }
   };
 
-  if (showBanner)
-    return (
-      <>
-      {!props.hideMobile && !statsStripPinned && (
-        <MobileContainer newYear={props.newYear}>
-          <MobileBar>
-            <MobileText>{renderMobileText()}</MobileText>
-            <KairaCta type="button" onClick={props.onclick}>
-              Chat with Kaira
-              <svg
-                viewBox="0 0 12 12"
-                height="14"
-                width="14"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M2 10L10 2M10 2H4M10 2V8"></path>
-              </svg>
-            </KairaCta>
-          </MobileBar>
-        </MobileContainer>
-      )}
-      <Container newYear={props.newYear}>
-        <GridContainer>
-          <div className="center-div">
-            <Text className="">{renderText()}</Text>
-          </div>
-          {/* <Button
-            display="inline-block"
-            boxShadow
-            onclick={props.onclick}
-            // hoverColor=""
-            // hoverBgColor="black"
-            bgColor="#0f1a2e"
-            borderStyle="none"
-            padding="0.5rem 0.5rem"
-            borderRadius="2rem"
-            color="white"
-            className="w-fit"
+  if (!showBanner) return null;
+  if (props.hideMobile && statsStripPinned) return null;
+
+  // The destination gives the field its question — "Where in Bali?" reads as a
+  // prompt to answer, where a bare placeholder reads as a search box.
+  const placeholder = props.destinationName
+    ? `Tell me about your ${props.destinationName} trip…`
+    : "Tell me where you want to go…";
+
+  return (
+    <Dock newYear={props.newYear}>
+      <Pill>
+        <Field
+          type="text"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={onKeyDown}
+          placeholder={placeholder}
+          aria-label={placeholder}
+        />
+        <Cta type="button" onClick={openChat}>
+          {draft.trim() ? "Send" : props.cta || "Start planning"}
+          <svg
+            viewBox="0 0 12 12"
+            height="14"
+            width="14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
           >
-            <div className="flex items-center gap-2 w-[4rem]">
-              {props.cta ? props.cta : "Start Planning"}{" "}
-              <svg
-                viewBox="0 0 12 12"
-                height="14"
-                width="14"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M2 10L10 2M10 2H4M10 2V8"></path>
-              </svg>
-            </div>
-          </Button> */}
-           <div className="flex justify-center">
-              <KairaCta type="button" onClick={props.onclick}>
-                Chat with Kaira
-                <svg
-                  viewBox="0 0 12 12"
-                  height="14"
-                  width="14"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M2 10L10 2M10 2H4M10 2V8"></path>
-                </svg>
-              </KairaCta>
-            </div>
-        </GridContainer>
-      </Container>
-      </>
-    );
-  else return null;
+            <path d="M2 10L10 2M10 2H4M10 2V8"></path>
+          </svg>
+        </Cta>
+        <Avatar type="button" onClick={openChat} aria-label="Chat with Kaira">
+          <img src="/KairaInsta.jpg" alt="" width={46} height={46} />
+          <span aria-hidden="true" />
+        </Avatar>
+      </Pill>
+    </Dock>
+  );
 };
 
 export default Banner;

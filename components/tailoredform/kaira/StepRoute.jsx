@@ -1,0 +1,394 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import useDebounce from "../../../hooks/useDebounce";
+import axiossearchinstance from "../../../services/search/searchsuggest";
+import Stepper from "./Stepper";
+import { DestTile } from "./StepTrip";
+import { fmtDayMon, fromYMD } from "./dateUtils";
+import {
+  IconGrip,
+  IconPlane,
+  IconPlus,
+  IconSearch,
+  IconTrash,
+  IconX,
+} from "./icons";
+
+// The same Google map the chat page draws the trip on — numbered stop pins and
+// a dashed, arrowed curve between them.
+//
+// Loaded on demand: it reaches straight for `google.maps` (so it can't render
+// on the server), and it pulls in the POI drawer and the day-by-day card stack
+// behind it. The tailored form is imported statically by the homepage and the
+// other marketing pages, so a static import here would land all of that in the
+// bundle every one of them ships.
+const TripMap = dynamic(() => import("../../bot-components/Map"), {
+  ssr: false,
+});
+
+const GRADS = [
+  "linear-gradient(135deg,#7a8fb5,#4a5d80)",
+  "linear-gradient(135deg,#d98d6b,#b05f42)",
+  "linear-gradient(135deg,#6ba883,#3d7a58)",
+  "linear-gradient(135deg,#7ab8e8,#4a7fb5)",
+  "linear-gradient(135deg,#c9a86b,#96753d)",
+  "linear-gradient(135deg,#d4a5c9,#9c6b91)",
+  "linear-gradient(135deg,#e8a87c,#c96f4a)",
+];
+
+const MAX_NIGHTS = 14;
+
+export const cityName = (c) =>
+  c?.name || c?.city_name || c?.city?.name || c?.text || "Stop";
+const cityLat = (c) => c?.latitude ?? c?.lat ?? c?.city?.latitude;
+const cityLng = (c) => c?.longitude ?? c?.long ?? c?.city?.longitude;
+const cityNights = (c) => Number(c?.duration || c?.nights || 1);
+
+const rowKey = (c, i) =>
+  String(c?.itinerary_city_id || c?.city_id || c?.id || `${cityName(c)}-${i}`);
+
+/**
+ * Step 2 — "Shape the route": reorder stops, trade nights, add or remove a
+ * city. Works directly on `cities` (the /initiate basic_route), which the
+ * parent re-submits to /initiate when the user continues with changes.
+ */
+const StepRoute = ({
+  startName,
+  cities,
+  setCities,
+  setIsRouteChanged,
+}) => {
+  // The map is desktop-only (CSS hides `.kform-map` below 768px). Mount it off
+  // the container's measured width rather than a media query, so CSS stays the
+  // single authority on the layout — and so a phone never pays for the Google
+  // Maps script at all, which a plain `display:none` would still have loaded.
+  const mapSlotRef = useRef(null);
+  const [mapVisible, setMapVisible] = useState(false);
+  useEffect(() => {
+    const el = mapSlotRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return undefined;
+    const ro = new ResizeObserver(() => setMapVisible(el.clientWidth > 0));
+    ro.observe(el);
+    setMapVisible(el.clientWidth > 0);
+    return () => ro.disconnect();
+  }, []);
+
+  const [addOpen, setAddOpen] = useState(false);
+  const [addQuery, setAddQuery] = useState("");
+  const [addNights, setAddNights] = useState(2);
+  const [addResults, setAddResults] = useState([]);
+  const [addLoading, setAddLoading] = useState(false);
+  const debouncedAdd = useDebounce(addQuery, 350);
+
+  useEffect(() => {
+    let cancelled = false;
+    const q = debouncedAdd.trim();
+    if (q.length < 2) {
+      setAddResults([]);
+      return;
+    }
+    setAddLoading(true);
+    axiossearchinstance
+      .get(`?type=City&q=${encodeURIComponent(q)}`)
+      .then((res) => {
+        if (!cancelled) setAddResults(Array.isArray(res.data) ? res.data.slice(0, 6) : []);
+      })
+      .catch(() => {
+        if (!cancelled) setAddResults([]);
+      })
+      .finally(() => {
+        if (!cancelled) setAddLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedAdd]);
+
+  const commit = (next) => {
+    setCities(next);
+    setIsRouteChanged(true);
+  };
+
+  const setNights = (i, n) =>
+    commit(cities.map((c, j) => (j === i ? { ...c, duration: n, nights: n } : c)));
+
+  const remove = (i) => {
+    if (cities.length <= 1) return;
+    commit(cities.filter((_, j) => j !== i));
+  };
+
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+    const from = result.source.index;
+    const to = result.destination.index;
+    if (from === to) return;
+    const next = Array.from(cities);
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    commit(next);
+  };
+
+  const addCity = (r) => {
+    const exists = cities.some(
+      (c) =>
+        (r.resource_id && (c.city_id === r.resource_id || c.resource_id === r.resource_id)) ||
+        cityName(c).toLowerCase() === String(r.name).toLowerCase(),
+    );
+    if (exists) return;
+    commit([
+      ...cities,
+      {
+        name: r.name,
+        city_id: r.resource_id,
+        latitude: r.latitude,
+        longitude: r.longitude,
+        image: r.image,
+        country: r.country,
+        duration: addNights,
+        nights: addNights,
+      },
+    ]);
+    setAddQuery("");
+    setAddResults([]);
+  };
+
+  // The map matches a stop to its pin number by id, so every stop needs one of
+  // its own even when the same city appears twice.
+  const mapLocations = useMemo(
+    () =>
+      cities
+        .map((c, i) => ({
+          id: `${rowKey(c, i)}#${i}`,
+          name: cityName(c),
+          description: "",
+          lat: Number(cityLat(c)),
+          lng: Number(cityLng(c)),
+          duration: cityNights(c),
+          image: c?.image || c?.city?.image?.[0]?.image,
+        }))
+        .filter((l) => Number.isFinite(l.lat) && Number.isFinite(l.lng)),
+    [cities],
+  );
+  // Only read while there is no route to fit, i.e. before the first stop has
+  // coordinates.
+  const mapState = useMemo(
+    () => ({
+      lat: mapLocations[0]?.lat ?? 20,
+      lng: mapLocations[0]?.lng ?? 78,
+      zoom: 5,
+    }),
+    [mapLocations],
+  );
+
+  const dateSub = (c) => {
+    const s = fromYMD(c?.start_date);
+    const e = fromYMD(c?.end_date);
+    if (s && e) return `${fmtDayMon(s)} → ${fmtDayMon(e)}`;
+    return c?.country || "";
+  };
+
+  return (
+    <div className="kform-step kform-step--wide">
+      <h1 className="kform-h1">
+        Shape the <span className="kform-serif">route</span>.
+      </h1>
+      <p className="kform-lead" style={{ marginBottom: 26 }}>
+        Drag to reorder, trade nights between cities.
+        {/* There is no map on a phone — see the .kform-map rule. */}
+        <span className="kform-wide-only"> The map follows you.</span>
+      </p>
+
+      <div className="kform-route">
+        <div className="kform-route-list">
+          <div className="kform-rule">
+            <div className="kform-label">Route</div>
+          </div>
+
+          {startName && (
+            <div className="kform-depart">
+              <div className="kform-depart-dot">
+                <IconPlane />
+              </div>
+              <div className="kform-depart-name">{startName}</div>
+              <div className="kform-label">Departure</div>
+            </div>
+          )}
+
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="kform-route">
+              {(provided) => (
+                <div ref={provided.innerRef} {...provided.droppableProps}>
+                  {cities.map((c, i) => (
+                    <Draggable key={rowKey(c, i)} draggableId={rowKey(c, i)} index={i}>
+                      {(drag, snapshot) => (
+                        <div
+                          ref={drag.innerRef}
+                          {...drag.draggableProps}
+                          className={`kform-city${snapshot.isDragging ? " is-dragging" : ""}`}
+                        >
+                          <span className="kform-grip" {...drag.dragHandleProps} aria-label="drag to reorder">
+                            <IconGrip />
+                          </span>
+                          {c?.image || c?.city?.image?.[0]?.image ? (
+                            <DestTile
+                              dest={{ image: c.image || c.city.image[0].image }}
+                              className="kform-tile--sm kform-tile--city"
+                            />
+                          ) : (
+                            <div
+                              className="kform-tile kform-tile--sm kform-tile--city"
+                              style={{ background: GRADS[i % GRADS.length] }}
+                            >
+                              <span className="kform-tile-num">{i + 1}</span>
+                            </div>
+                          )}
+                          <div className="kform-city-body">
+                            <div className="kform-city-name">{cityName(c)}</div>
+                            <div className="kform-city-sub">{dateSub(c)}</div>
+                          </div>
+                          <Stepper
+                            size="sm"
+                            value={cityNights(c)}
+                            min={1}
+                            max={MAX_NIGHTS}
+                            onChange={(n) => setNights(i, n)}
+                            label={
+                              <>
+                                <span className="kform-wide-only">
+                                  {cityNights(c)} night{cityNights(c) === 1 ? "" : "s"}
+                                </span>
+                                <span className="kform-narrow-only">{cityNights(c)}N</span>
+                              </>
+                            }
+                          />
+                          <button
+                            type="button"
+                            className="kform-trash"
+                            onClick={() => remove(i)}
+                            disabled={cities.length <= 1}
+                            aria-label={`remove ${cityName(c)}`}
+                          >
+                            <IconTrash />
+                          </button>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+
+          {!addOpen ? (
+            <button
+              type="button"
+              className="kform-dashed-btn"
+              onClick={() => {
+                setAddOpen(true);
+                setAddQuery("");
+                setAddNights(2);
+              }}
+            >
+              <IconPlus />
+              Add a city
+            </button>
+          ) : (
+            <div className="kform-add">
+              <div className="kform-add-head">
+                <div className="kform-label">Add a stop</div>
+                <button
+                  type="button"
+                  className="kform-iconbtn kform-iconbtn--sm"
+                  onClick={() => setAddOpen(false)}
+                  aria-label="close"
+                >
+                  <IconX size={12} />
+                </button>
+              </div>
+              <div className="kform-field" style={{ padding: "12px 14px", gap: 10 }}>
+                <span className="kform-field-icon kform-field-icon--muted">
+                  <IconSearch size={15} />
+                </span>
+                <input
+                  className="kform-input"
+                  style={{ fontSize: 14 }}
+                  value={addQuery}
+                  autoFocus
+                  placeholder="Where else?"
+                  onChange={(e) => setAddQuery(e.target.value)}
+                />
+              </div>
+              {addQuery.trim().length >= 2 && (
+                <div className="kform-add-list">
+                  {addResults.map((r) => (
+                    <button
+                      key={r.resource_id || r.name}
+                      type="button"
+                      className="kform-opt"
+                      style={{ padding: "10px 14px", gap: 11 }}
+                      onClick={() => addCity(r)}
+                    >
+                      <DestTile dest={r} className="kform-tile--xs" />
+                      <div className="kform-opt-body">
+                        <div className="kform-opt-name" style={{ fontSize: 13.5 }}>
+                          {r.name}
+                        </div>
+                        <div className="kform-opt-sub">{r.country || ""}</div>
+                      </div>
+                      <IconPlus size={13} style={{ color: "#b8becc" }} />
+                    </button>
+                  ))}
+                  {!addLoading && addResults.length === 0 && (
+                    <div className="kform-pop-empty" style={{ fontSize: 12.5 }}>
+                      Nothing matches that. Try another spelling.
+                    </div>
+                  )}
+                  {addLoading && addResults.length === 0 && (
+                    <div className="kform-pop-empty" style={{ fontSize: 12.5 }}>
+                      searching…
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="kform-add-foot">
+                <div className="kform-label">How long?</div>
+                <Stepper
+                  size="sm"
+                  value={addNights}
+                  min={1}
+                  max={MAX_NIGHTS}
+                  onChange={setAddNights}
+                  label={`${addNights} night${addNights === 1 ? "" : "s"}`}
+                />
+                <div className="kform-add-foot-hint">Tap a place to add it</div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="kform-map" ref={mapSlotRef}>
+          {mapVisible && mapLocations.length > 0 && (
+            <TripMap
+              state={mapState}
+              locations={mapLocations}
+              currentRoute={mapLocations}
+              userLocation={null}
+              showCityDecks={false}
+            />
+          )}
+          <div className="kform-map-caption">
+            <IconPlane />
+            <span>
+              {startName ? `from ${startName} · ` : ""}
+              {cities.length} stop{cities.length === 1 ? "" : "s"}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default StepRoute;

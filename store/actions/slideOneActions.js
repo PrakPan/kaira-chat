@@ -134,6 +134,13 @@ export const setSpecialRequests = (value) => ({
   payload: value,
 });
 
+// Chips picked on the "What's the vibe?" step. Sent to /complete as
+// `preferences` (only when non-empty).
+export const setVibePreferences = (list) => ({
+  type: actionTypes.SET_VIBE_PREFERENCES,
+  payload: Array.isArray(list) ? list : [],
+});
+
 export const setItineraryCreated=(value)=>({
   type:actionTypes.SET_ITINERARY_CREATED,
   payload:value

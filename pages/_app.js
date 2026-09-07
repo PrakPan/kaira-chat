@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "overlayscrollbars/overlayscrollbars.css";
 import "../containers/itinerary/typography.css";
 import "../styles/kaira-sidebar.css";
+import "../styles/kaira-form.css";
 import { useRouter } from "next/router";
 import * as ga from "../services/ga/Index";
 import { GOOGLE_CLIENT_ID, JUPITER_HOST } from "../services/constants";

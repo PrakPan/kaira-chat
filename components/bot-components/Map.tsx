@@ -83,6 +83,17 @@ interface MapProps {
    * visible — see the placement pass.
    */
   chromeBottom?: number;
+  /**
+   * Draw each city's day-by-day deck on its pin. The decks come from the
+   * itinerary in redux, which on the chat surface is the very trip being shown
+   * — so they are the point there and this stays on.
+   *
+   * The tailored form maps a route for an itinerary that does not exist yet,
+   * and anything left in that slice from an earlier page is a different trip
+   * whose cities can still match by name. It passes false and gets the plain
+   * numbered pins.
+   */
+  showCityDecks?: boolean;
 }
 
 /**
@@ -525,6 +536,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       currentRoute,
       isVisible = true,
       chromeBottom = 0,
+      showCityDecks = true,
     },
     ref,
   ) => {
@@ -620,6 +632,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
     // bind to a deck exactly instead of re-deriving it from coordinates (which
     // is ambiguous when a route visits the same city twice).
     const cityCards = useMemo<DeckCard[]>(() => {
+      if (!showCityDecks) return [];
       if (!effectiveRoute || effectiveRoute.length === 0) return [];
       const decks = buildCityCards(itineraryRedux);
       if (decks.length === 0) return [];
@@ -664,7 +677,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         matched.push({ ...best, lat: stop.lat, lng: stop.lng, stopIndex });
       });
       return matched;
-    }, [itineraryRedux, effectiveRoute]);
+    }, [itineraryRedux, effectiveRoute, showCityDecks]);
 
     // ── Element coordinates ─────────────────────────────────────────────────
     // The itinerary names its day-by-day elements but ships no coordinates for

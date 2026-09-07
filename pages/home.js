@@ -13,12 +13,14 @@ import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
 import FaqSection from "../components/revamp/home/FaqSection";
 import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
 import NewFooter from "../components/newfooter/Index";
+import FloatingBanner from "../components/containers/Banner";
 
 // import Layout from "../components/Layout";
+import dynamic from "next/dynamic";
 import { connect, useSelector } from "react-redux";
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import styles from "../styles/pages/revamp/home.module.scss";
 import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
@@ -36,6 +38,14 @@ import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDest
 import TrustFactors from "../components/revamp/home/TrustFactors";
 import ThemeHeadline from "../containers/travelplanner/ThemeHeadines";
 
+// The planner opens over the homepage rather than navigating to /new-trip
+// (which still renders the same form as a full page). Loaded on demand so the
+// form's bundle isn't part of the homepage's first paint.
+const TailoredFormModal = dynamic(
+  () => import("../components/tailoredform/TailoredFormModal"),
+  { ssr: false },
+);
+
 
 
 const Home = (props) => {
@@ -44,6 +54,7 @@ const Home = (props) => {
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
   const router = useRouter();
+  const [planning, setPlanning] = useState(false);
   return (
     <>
       <Head>
@@ -132,7 +143,7 @@ const Home = (props) => {
       <div className={styles.ttwRevamp}>
         <NavigationMenu />
         {/* <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Dec 20`}/> */}
-        <HeroSection slug={'home'} />
+        <HeroSection slug={'home'} onCraftTrip={() => setPlanning(true)} />
         <TrustFactors/>
         {/* <JourneySimplified /> */}
         {props.token && <MyTripsSection className={'max-w-7xl'} />}
@@ -151,6 +162,14 @@ const Home = (props) => {
         <CtaBoardingSection ctaLabel="Plan my trip" ctaHref="/new-trip" />
       </div>
       <NewFooter page="Homepage" />
+
+      {/* The same docked ask-bar the destination and theme pages carry: it
+          appears once the page is scrolled past its first screen and hands
+          whatever is typed to /chat. No `destinationName` here, so it asks the
+          open question rather than a per-destination one. */}
+      <FloatingBanner />
+
+      <TailoredFormModal show={planning} onHide={() => setPlanning(false)} />
       {/* <div id="login" className="width-[100%] z-[1650]">
         <Login
           show={props.showLogin}

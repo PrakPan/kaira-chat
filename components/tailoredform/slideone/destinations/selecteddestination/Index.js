@@ -31,6 +31,16 @@ const DELHI_FALLBACK = {
 };
 
 const SelectedDestination = (props) => {
+  // Whether an empty field should fill itself in with the visitor's own city.
+  //
+  // That is right for the trip form, where "where are you flying from" almost
+  // always is where they are. It is wrong when the caller deliberately opened
+  // the field empty — cloning somebody else's finished trip (a V1 archive or a
+  // /trips itinerary), where the point is to make the traveller state their own
+  // departure city rather than inherit one. Without this the caller's empty
+  // value was refilled from the cookie a moment after mount, so
+  // `prefillStartDetails={false}` looked like it did nothing.
+  const autoFill = props.autoFillUserLocation !== false;
   const [searchFinalized, setSearchFinalized] = useState(false);
   const [focusLocation, setFocusLocation] = useState(false);
   const [focusSearch, setFocusSearch] = useState(null);
@@ -98,6 +108,11 @@ const SelectedDestination = (props) => {
       setLoading(false);
       return;
     }
+    // Caller wants the field to stay empty until the traveller picks.
+    if (!autoFill) {
+      setLoading(false);
+      return;
+    }
     if (userLocation && isValidLocation(userLocation)) {
       setLoading(false);
 
@@ -115,13 +130,13 @@ const SelectedDestination = (props) => {
     } else if (!userLocation) {
       setLoading(true);
     }
-  }, [userLocation, hasManuallyCleared, props.startingLocation]);
+  }, [userLocation, hasManuallyCleared, props.startingLocation, autoFill]);
 
   // Safety net: if the user-location bootstrap never resolves (no cookie within
   // a few seconds), drop a New Delhi default into the cookie so the 500ms poll
   // above picks it up — the field falls back to Delhi instead of spinning.
   useEffect(() => {
-    if (props.startingLocation) return;
+    if (props.startingLocation || !autoFill) return;
     const t = setTimeout(() => {
       if (!Cookies.get("userLocation") && !props.startingLocation) {
         try {
@@ -132,7 +147,7 @@ const SelectedDestination = (props) => {
       }
     }, 4500);
     return () => clearTimeout(t);
-  }, [props.startingLocation]);
+  }, [props.startingLocation, autoFill]);
 
   const handleLocationChange = (newLocation) => {
     setHasManuallyCleared(false); 
@@ -162,6 +177,10 @@ const SelectedDestination = (props) => {
     if (props.startingLocation) {
       return props.startingLocation.name;
     }
+    // With auto-fill off there is no location to show and no default to
+    // invent — prompt instead, so the empty field reads as a question rather
+    // than as a wrong answer the traveller has to notice.
+    if (!autoFill) return props.emptyLabel || "Select a start location";
     if (userLocation) {
       return userLocation.text || userLocation.city || "Delhi, IN";
     }
@@ -236,7 +255,13 @@ const SelectedDestination = (props) => {
               </div>
             ) : (
               <div className="w-[90%] flex flex-row gap-2 justify-between">
-                <div className="truncate Body2M_14">{getDisplayLocation()}</div>
+                <div
+                  className={`truncate Body2M_14${
+                    !props.startingLocation && !autoFill ? " text-text-disabled" : ""
+                  }`}
+                >
+                  {getDisplayLocation()}
+                </div>
               </div>
             )
           ) : (

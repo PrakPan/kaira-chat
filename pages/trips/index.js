@@ -13,10 +13,18 @@ import { readDestinations } from "../../lib/seo/tripsCache";
 import { tripCard } from "../../lib/seo/tripsCards";
 import { breadcrumbSchema } from "../../lib/seo/tripsJsonLd";
 import { destinationLabel } from "../../lib/seo/tripsFormat";
+import { THEMES, tripTheme } from "../../lib/seo/tripTheme";
 
 const CANONICAL = `${SITE_ORIGIN}/trips`;
 
-const TripsIndex = ({ title, description, chips, sections, schema }) => (
+const TripsIndex = ({
+  title,
+  description,
+  chips,
+  sections,
+  schema,
+  defaultTheme,
+}) => (
   <Layout staticnav page="Trips Index">
     <Head>
       <title>{title}</title>
@@ -37,6 +45,7 @@ const TripsIndex = ({ title, description, chips, sections, schema }) => (
       intro={description}
       chips={chips}
       sections={sections}
+      defaultTheme={defaultTheme}
     />
   </Layout>
 );
@@ -62,15 +71,28 @@ export async function getStaticProps() {
     "released by our travel team with stays, transfers and activities already planned. " +
     "Open any of them as a starting point and reshape it free before you book.";
 
-  // The newest trips, so the root has real content of its own rather than only
-  // being a list of links to lists of links. 48 rather than a dozen because the
-  // filter bar now sits above them: a set small enough to read at a glance
-  // gives the filters nothing to do, and every one of these is a crawlable
-  // anchor either way.
-  const recent = [...byDestination.values()]
+  // Every released trip, newest first — not a 48-row sample. The filter bar
+  // above them is what makes that readable: the page opens on one theme (see
+  // `defaultTheme`), so the reader meets a few hundred trips of one kind rather
+  // than all 1,718 at once, and the other themes are one chip away.
+  //
+  // All of them stay in the served HTML as real anchors, filtered or not —
+  // that is the property this page exists for (see the note in TripsFilters).
+  const all = [...byDestination.values()]
     .flat()
-    .sort((a, b) => String(b.modified_at).localeCompare(String(a.modified_at)))
-    .slice(0, 48);
+    .sort((a, b) => String(b.modified_at).localeCompare(String(a.modified_at)));
+
+  // Open on the theme with the most trips, so the first screen is the fullest
+  // one. Counted from the same rows the cards are built from rather than
+  // hard-coded, so it follows the corpus as it grows.
+  const themeCounts = new Map();
+  for (const row of all) {
+    const id = tripTheme(row);
+    if (id) themeCounts.set(id, (themeCounts.get(id) || 0) + 1);
+  }
+  const defaultTheme =
+    [...themeCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ||
+    THEMES[0].id;
 
   return {
     props: {
@@ -81,10 +103,11 @@ export async function getStaticProps() {
         note: `All ${destinations.length} destinations we have released trips for, most trips first.`,
         items: destinations.map(({ href, label, count }) => ({ href, label, count })),
       },
+      defaultTheme,
       sections: [
         {
-          title: "Recently updated",
-          items: recent.map(tripCard).filter(Boolean),
+          title: "Every trip we've released",
+          items: all.map(tripCard).filter(Boolean),
         },
       ],
       schema: breadcrumbSchema([{ name: "Trips", href: "/trips" }]),

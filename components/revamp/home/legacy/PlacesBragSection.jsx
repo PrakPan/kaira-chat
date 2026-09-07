@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import KairaCta from "../KairaCta";
 import { Japan } from "../../assets";
 import { DestinationCard } from "../../common/components/card";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -249,14 +250,9 @@ const PlacesBragSection = (props) => {
 
           <div className=" flex items-center justify-center mt-8 lg:mt-10">
             {/* <Link href="/new-trip"> */}
-              <Button
-                variant="filled"
-                size="medium"
-                onClick={() => router.push("/new-trip")}
-                className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
-              >
-                + Create a Trip Now!
-              </Button>
+              <KairaCta onClick={() => router.push("/new-trip")}>
+                Create a Trip Now!
+              </KairaCta>
             {/* </Link> */}
           </div>
         </div>
