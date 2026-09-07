@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { replaceUrl, pushUrlDetached } from "../../../helper/historyUrl";
+import { getLockInState } from "../../../helper/lockIn";
 import styled, { keyframes } from "styled-components";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
@@ -2737,21 +2738,13 @@ const Details = (props) => {
       sale.payment_type === "full_payment" && sale.status === "Completed",
   );
 
-  // Lock-in. The fee is per-cart (`lock_in_fee`), so it is read rather than
-  // assumed. `lock_in_fee_paid` is the cart's own flag; the completed
-  // lock_payment sale is the record of what was actually collected, so that is
-  // preferred for the amount and the flag is the fallback. `lockInCompleted`
-  // covers the gap between Razorpay returning and the cart refetch landing.
-  const lockInFee = Number(Cart?.lock_in_fee) || 0;
-  const completedLockInSale = Cart?.sales?.find(
-    (sale) =>
-      sale.payment_type === "lock_payment" && sale.status === "Completed",
-  );
-  const hasLockInPaid =
-    !!Cart?.lock_in_fee_paid || !!completedLockInSale || lockInCompleted;
-  const lockInPaidAmount = hasLockInPaid
-    ? Number(completedLockInSale?.amount_paid) || lockInFee
-    : 0;
+  // Lock-in, shared with the itinerary's bottom bar so the two cannot drift.
+  // `lockInCompleted` is layered on top of the cart-derived state to cover the
+  // gap between Razorpay returning and the cart refetch landing.
+  const lockIn = getLockInState(Cart);
+  const lockInFee = lockIn.fee;
+  const hasLockInPaid = lockIn.paid || lockInCompleted;
+  const lockInPaidAmount = hasLockInPaid ? lockIn.paidAmount || lockInFee : 0;
 
   // `Cart` starts as null in Redux, so the `!price_valid_until` arm used to
   // report "expired" for the whole window before the cart API resolved. Gate on
@@ -2803,17 +2796,11 @@ const Details = (props) => {
   // cart with nothing left to pay each replace it with something else.
   const canPayNow =
     !showUpdateDates && !showRepriceExpired && calculateFilteredTotal() !== 0;
-  // Lock-in is a required first step, not an option: until the hold is paid it
-  // is the only payment this cart will take, and the single pay CTA charges it.
-  // Skipped where a hold cannot apply — a fee that is not smaller than the trip
-  // itself, or a cart that has already collected money (adding an item to a
-  // part-paid trip must not send the customer back through a hold).
+  // The single pay CTA charges the hold until it has been paid. `lockIn`
+  // already encodes when a hold applies; the extra clauses cover this screen's
+  // own live state, which the cart payload alone cannot see.
   const requiresLockIn =
-    lockInFee > 0 &&
-    !hasLockInPaid &&
-    !hasFullPaymentCompleted &&
-    !(Number(Cart?.amount_paid) > 0) &&
-    lockInFee < calculateFilteredTotal();
+    lockIn.required && !hasLockInPaid && !hasFullPaymentCompleted;
 
   const payNowType = requiresLockIn ? "lockin" : "full";
   const payNowAmount = requiresLockIn ? lockInFee : calculateFilteredTotal();
