@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { replaceUrl, pushUrlDetached } from "../../../helper/historyUrl";
-import { getLockInState, CART_TIMEZONE } from "../../../helper/lockIn";
+import { getLockInState, LOCK_IN_HOLD_HOURS } from "../../../helper/lockIn";
 import styled, { keyframes } from "styled-components";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
@@ -1137,28 +1137,42 @@ const PaymentButton = ({
 // before the balance can be settled. Both the amount and whether it has already
 // been collected come off the cart (`lock_in_fee` / `lock_in_fee_paid`) — the
 // fee is set per itinerary, so nothing here assumes the usual ₹2,000.
-// The date the hold runs to, in the shape the rest of the app shows a date the
-// customer reads ("14th Sept 2026" — the same ordinal-day, short-month style as
-// `getHumanDate` on the booking cards). Assembled from IST parts rather than
-// from a local-time Date, so the day never shifts for a traveller browsing from
-// another timezone.
-const formatHoldDate = (date) => {
-  if (!date) return "";
-  const parts = new Intl.DateTimeFormat("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: CART_TIMEZONE,
-  })
-    .formatToParts(date)
-    .reduce((acc, part) => ({ ...acc, [part.type]: part.value }), {});
-  const day = Number(parts.day);
-  const teens = day % 100;
-  const suffix =
-    teens >= 11 && teens <= 13
-      ? "th"
-      : { 1: "st", 2: "nd", 3: "rd" }[day % 10] || "th";
-  return `${day}${suffix} ${parts.month} ${parts.year}`;
+// Time left on the hold. Each part carries its unit — a bare "55:13:54" next to
+// a price reads as ambiguously as it does anywhere else. Zero-padded so the row
+// keeps its width as the digits roll over; the window is 72 hours, so hours
+// never needs a third digit.
+const formatHoldCountdown = (msLeft) => {
+  const totalSeconds = Math.max(0, Math.floor(msLeft / 1000));
+  const pad = (value) => String(value).padStart(2, "0");
+  return `${pad(Math.floor(totalSeconds / 3600))}h:${pad(
+    Math.floor((totalSeconds % 3600) / 60),
+  )}m:${pad(totalSeconds % 60)}s`;
+};
+
+// The card sits on screen for as long as the customer is reading the cart, so
+// the time left has to tick rather than freeze at whatever render drew it — and
+// when it runs out the card has to turn into the expired one by itself, without
+// waiting for a cart refetch. Stays null until mounted: the server has no
+// business rendering a clock the client will disagree with a moment later.
+const useHoldCountdown = (holdUntil) => {
+  const holdUntilMs = holdUntil ? holdUntil.getTime() : null;
+  const [msLeft, setMsLeft] = useState(null);
+
+  useEffect(() => {
+    if (!holdUntilMs) {
+      setMsLeft(null);
+      return undefined;
+    }
+    // Keyed on the timestamp rather than the Date: the cart rebuilds that object
+    // on every render, and depending on it would tear down the interval each
+    // time.
+    const tick = () => setMsLeft(Math.max(0, holdUntilMs - Date.now()));
+    tick();
+    const intervalId = setInterval(tick, 1000);
+    return () => clearInterval(intervalId);
+  }, [holdUntilMs]);
+
+  return msLeft;
 };
 
 const LockInNotice = ({
@@ -1175,15 +1189,19 @@ const LockInNotice = ({
   const amountLabel = (value) =>
     `${symbol} ${formatCurrencyValue(value, currency)}/-`;
   const feeLabel = amountLabel(lockInFee);
-  // Date only: the hold is counted in days, so naming the minute it lapses adds
-  // precision the customer cannot act on.
-  const holdUntilLabel = formatHoldDate(lockInHoldUntil);
+  const msLeft = useHoldCountdown(lockInHoldUntil);
+  // Live where the timer is running, and the cart-derived flag before the first
+  // tick lands (and on carts whose paid flag carries no `lock_in_fee_paid_at`,
+  // where there is no window to count down at all).
+  const holdRunOut = msLeft === null ? lockInHoldExpired : msLeft <= 0;
+  const countdownLabel =
+    msLeft === null || msLeft <= 0 ? "" : formatHoldCountdown(msLeft);
 
   // Paid, but the window it bought has run out. Deliberately no "reprice" call
   // to action: this card only renders while the cart still considers its prices
   // valid, and the cart offers no reprice control in that state — so it says
   // what changed and leaves the CTA below it alone.
-  if (lockInPaid && lockInHoldExpired) {
+  if (lockInPaid && holdRunOut) {
     return (
       <div className="rounded-md-lg border-sm border-[#F3C6C6] bg-[#FEF5F5] p-sm mb-md">
         <div className="flex items-center gap-xs mb-xxs">
@@ -1193,10 +1211,9 @@ const LockInNotice = ({
           </div>
         </div>
         <div className="text-sm font-400 leading-md text-text-spacegrey">
-          {amountLabel(lockInPaidAmount)} held this trip&apos;s prices
-          {holdUntilLabel ? ` till ${holdUntilLabel}` : ""}. Prices can change
-          from here, but the amount you paid stays adjusted in the amount
-          payable above.
+          The {LOCK_IN_HOLD_HOURS}-hour price hold has ended, so prices can
+          change from here. {amountLabel(lockInPaidAmount)} paid as lock-in
+          stays adjusted in the amount payable above.
         </div>
       </div>
     );
@@ -1205,16 +1222,30 @@ const LockInNotice = ({
   if (lockInPaid) {
     return (
       <div className="rounded-md-lg border-sm border-[#B7E4C7] bg-[#F2FBF5] p-sm mb-md">
-        <div className="flex items-center gap-xs mb-xxs">
-          <LuCheckCircle2 size={17} className="text-[#2E7D32] flex-shrink-0" />
-          <div className="text-sm-md font-500 leading-lg text-[#01202B]">
-            {/* Carts whose paid flag was flipped by hand carry no
-                `lock_in_fee_paid_at`, and there the sentence has to stand
-                without a date rather than invent one. */}
-            {holdUntilLabel
-              ? `Price locked for this trip till ${holdUntilLabel}`
-              : "Price locked for this trip"}
+        {/* The heading and the clock share a row, pushed apart — the clock is
+            the thing being watched here, and hanging it off the end of the
+            sentence buried it. `flex-wrap` so a narrow phone drops it to its own
+            line instead of squeezing the heading. */}
+        <div className="flex items-center justify-between flex-wrap gap-xs mb-xxs">
+          <div className="flex items-center gap-xs">
+            <LuCheckCircle2
+              size={17}
+              className="text-[#2E7D32] flex-shrink-0"
+            />
+            <div className="text-sm-md font-500 leading-lg text-[#01202B]">
+              Price locked for this trip
+            </div>
           </div>
+          {/* Monospaced so the digits keep their column and the clock does not
+              jitter on every tick. Absent before the first tick, and on carts
+              with no `lock_in_fee_paid_at` to count from — the heading stands on
+              its own in both cases. */}
+          {countdownLabel && (
+            <div className="flex items-baseline gap-xxs text-sm font-500 leading-md text-[#2E7D32]">
+              <span className="font-mono">{countdownLabel}</span>
+              <span className="font-400 text-text-spacegrey">left</span>
+            </div>
+          )}
         </div>
         {/* Full card width rather than indented into the icon's column — the
             body is the long line here, and hanging it off the icon cost it a

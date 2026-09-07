@@ -17,16 +17,15 @@
 // How long a paid lock-in holds the price for. The cart carries when the fee was
 // paid (`lock_in_fee_paid_at`) but not when the hold runs out, so the window is
 // applied here — in one place, rather than re-counted at each call site.
-export const LOCK_IN_HOLD_DAYS = 7;
+export const LOCK_IN_HOLD_HOURS = 72;
 
-const DAY_MS = 24 * 60 * 60 * 1000;
+const HOUR_MS = 60 * 60 * 1000;
 
-// The timezone the API's naive timestamps are written in. `lock_in_fee_paid_at`
-// comes back as "2026-09-05 17:43:07" with no offset on it, and that wall clock
-// is IST — so it has to be pinned here rather than left to `new Date`, which
-// would read it in whatever zone the viewer's browser happens to be in and slide
-// the hold window by hours for anyone outside India.
-export const CART_TIMEZONE = "Asia/Kolkata";
+// The API's naive timestamps are written in IST: `lock_in_fee_paid_at` comes
+// back as "2026-09-05 17:43:07" with no offset on it, and that wall clock is
+// Asia/Kolkata. Pinned here rather than left to `new Date`, which would read it
+// in whatever zone the viewer's browser happens to be in and slide the hold
+// window by hours for anyone outside India.
 const CART_UTC_OFFSET = "+05:30";
 
 // A space instead of the "T" as well, which Safari will not parse.
@@ -71,7 +70,7 @@ export function getLockInState(cart) {
   // both stay null/false and the UI falls back to a dateless "prices locked".
   const paidAt = paid ? parseCartTimestamp(cart?.lock_in_fee_paid_at) : null;
   const holdUntil = paidAt
-    ? new Date(paidAt.getTime() + LOCK_IN_HOLD_DAYS * DAY_MS)
+    ? new Date(paidAt.getTime() + LOCK_IN_HOLD_HOURS * HOUR_MS)
     : null;
   const holdExpired = !!holdUntil && holdUntil.getTime() <= Date.now();
 
