@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { replaceUrl, pushUrlDetached } from "../../../helper/historyUrl";
-import { getLockInState } from "../../../helper/lockIn";
+import { getLockInState, LOCK_IN_HOLD_HOURS } from "../../../helper/lockIn";
 import styled, { keyframes } from "styled-components";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
@@ -1186,17 +1186,16 @@ const PaymentButton = ({
           Processing...
         </>
       ) : paymentType === "lockin" ? (
-        // This arm names both the amount and what it buys. The lock-in charges
-        // far less than the total on screen, so a bare "Proceed to Pay" under a
-        // ₹2,58,729 breakdown reads as if it is about to take the whole thing —
-        // and an amount on its own still leaves it looking like an underpayment
-        // rather than a hold. The padlock carries that meaning at a glance and
-        // echoes the one on the notice directly above.
+        // This arm names the amount being charged. The lock-in charges far less
+        // than the total on screen, so a bare "Proceed to Pay" under a
+        // ₹2,58,729 breakdown reads as if it is about to take the whole thing.
+        // The padlock carries what the payment buys at a glance and echoes the
+        // one on the notice directly above.
         <>
           <span className="text-md leading-lg" aria-hidden="true">
             &#128274;
           </span>
-          {`Pay ${symbol}${formatCurrencyValue(amount, currency)} to Hold These Prices`}
+          {`Proceed to pay ${symbol} ${formatCurrencyValue(amount, currency)}/-`}
         </>
       ) : (
         `Proceed to Pay`
@@ -1235,6 +1234,12 @@ export const deriveLockIn = (Cart, { lockInCompleted = false } = {}) => {
   const hasLockInPaid = lockIn.paid || lockInCompleted;
   const lockInPaidAmount = hasLockInPaid ? lockIn.paidAmount || lockInFee : 0;
 
+  // A hold that has run its window out. `lockInCompleted` covers a payment that
+  // just went through, and that one is minutes old — never expired — so the
+  // expiry only ever comes off the cart's own `lock_in_fee_paid_at`.
+  const lockInHoldUntil = lockIn.holdUntil;
+  const lockInHoldExpired = lockIn.holdExpired;
+
   // `lockIn.required` already encodes when a hold applies at all (a fee that is
   // smaller than the balance, on a cart that has not collected money yet). The
   // extra clauses are this drawer's own live state, which the cart payload
@@ -1249,6 +1254,8 @@ export const deriveLockIn = (Cart, { lockInCompleted = false } = {}) => {
     lockInFee,
     hasLockInPaid,
     lockInPaidAmount,
+    lockInHoldUntil,
+    lockInHoldExpired,
     requiresLockIn,
     // What the one pay CTA charges, and which handler it routes to.
     payNowType: requiresLockIn ? "lockin" : "full",
@@ -1260,30 +1267,124 @@ export const deriveLockIn = (Cart, { lockInCompleted = false } = {}) => {
 // before the balance can be settled. Both the amount and whether it has already
 // been collected come off the cart (`lock_in_fee` / `lock_in_fee_paid`) — the
 // fee is set per itinerary, so nothing here assumes the usual ₹2,000.
-//
+
+// Time left on the hold. Each part carries its unit — a bare "55:13:54" next to
+// a price reads as ambiguously as it does anywhere else. Zero-padded so the row
+// keeps its width as the digits roll over; the window is 72 hours, so hours
+// never needs a third digit.
+const formatHoldCountdown = (msLeft) => {
+  const totalSeconds = Math.max(0, Math.floor(msLeft / 1000));
+  const pad = (value) => String(value).padStart(2, "0");
+  return `${pad(Math.floor(totalSeconds / 3600))}h:${pad(
+    Math.floor((totalSeconds % 3600) / 60),
+  )}m:${pad(totalSeconds % 60)}s`;
+};
+
+// The card sits on screen for as long as the customer is reading the cart, so
+// the time left has to tick rather than freeze at whatever render drew it — and
+// when it runs out the card has to turn into the expired one by itself, without
+// waiting for a cart refetch. Stays null until mounted: the server has no
+// business rendering a clock the client will disagree with a moment later.
+const useHoldCountdown = (holdUntil) => {
+  const holdUntilMs = holdUntil ? holdUntil.getTime() : null;
+  const [msLeft, setMsLeft] = useState(null);
+
+  useEffect(() => {
+    if (!holdUntilMs) {
+      setMsLeft(null);
+      return undefined;
+    }
+    // Keyed on the timestamp rather than the Date: the cart rebuilds that object
+    // on every render, and depending on it would tear down the interval each
+    // time.
+    const tick = () => setMsLeft(Math.max(0, holdUntilMs - Date.now()));
+    tick();
+    const intervalId = setInterval(tick, 1000);
+    return () => clearInterval(intervalId);
+  }, [holdUntilMs]);
+
+  return msLeft;
+};
+
 // Exported alongside deriveLockIn so the phone sheet shows the same card.
-export const LockInNotice = ({ lockInFee, lockInPaid, lockInPaidAmount }) => {
+export const LockInNotice = ({
+  lockInFee,
+  lockInPaid,
+  lockInPaidAmount,
+  lockInHoldUntil = null,
+  lockInHoldExpired = false,
+}) => {
   const { currency } = useSelector((state) => state.currency);
   const symbol = currencySymbols?.[currency]
     ? currencySymbols?.[currency]
     : "₹";
-  const feeLabel = `${symbol}${formatCurrencyValue(lockInFee, currency)}`;
+  const amountLabel = (value) =>
+    `${symbol} ${formatCurrencyValue(value, currency)}/-`;
+  const feeLabel = amountLabel(lockInFee);
+  const msLeft = useHoldCountdown(lockInHoldUntil);
+  // Live where the timer is running, and the cart-derived flag before the first
+  // tick lands (and on carts whose paid flag carries no `lock_in_fee_paid_at`,
+  // where there is no window to count down at all).
+  const holdRunOut = msLeft === null ? lockInHoldExpired : msLeft <= 0;
+  const countdownLabel =
+    msLeft === null || msLeft <= 0 ? "" : formatHoldCountdown(msLeft);
+
+  // Paid, but the window it bought has run out. Deliberately no "reprice" call
+  // to action: this card only renders while the cart still considers its prices
+  // valid, and the cart offers no reprice control in that state — so it says
+  // what changed and leaves the CTA below it alone.
+  if (lockInPaid && holdRunOut) {
+    return (
+      <div className="rounded-md-lg border-sm border-[#F3C6C6] bg-[#FEF5F5] p-sm mb-md">
+        <div className="flex items-center gap-xs mb-xxs">
+          <LuClock4 size={17} className="text-[#B3261E] flex-shrink-0" />
+          <div className="text-sm-md font-500 leading-lg text-[#01202B]">
+            Price lock expired for this itinerary
+          </div>
+        </div>
+        <div className="text-sm font-400 leading-md text-text-spacegrey">
+          The {LOCK_IN_HOLD_HOURS}-hour price hold has ended, so prices can
+          change from here. {amountLabel(lockInPaidAmount)} paid as lock-in
+          stays adjusted in the amount payable above.
+        </div>
+      </div>
+    );
+  }
 
   if (lockInPaid) {
     return (
       <div className="rounded-md-lg border-sm border-[#B7E4C7] bg-[#F2FBF5] p-sm mb-md">
-        <div className="flex items-center gap-xs mb-xxs">
-          <LuCheckCircle2 size={17} className="text-[#2E7D32] flex-shrink-0" />
-          <div className="text-sm-md font-500 leading-lg text-[#01202B]">
-            Prices locked for this trip
+        {/* The heading and the clock share a row, pushed apart — the clock is
+            the thing being watched here, and hanging it off the end of the
+            sentence buried it. `flex-wrap` so a narrow phone drops it to its own
+            line instead of squeezing the heading. */}
+        <div className="flex items-center justify-between flex-wrap gap-xs mb-xxs">
+          <div className="flex items-center gap-xs">
+            <LuCheckCircle2
+              size={17}
+              className="text-[#2E7D32] flex-shrink-0"
+            />
+            <div className="text-sm-md font-500 leading-lg text-[#01202B]">
+              Price locked for this trip
+            </div>
           </div>
+          {/* Monospaced so the digits keep their column and the clock does not
+              jitter on every tick. Absent before the first tick, and on carts
+              with no `lock_in_fee_paid_at` to count from — the heading stands on
+              its own in both cases. */}
+          {countdownLabel && (
+            <div className="flex items-baseline gap-xxs text-sm font-500 leading-md text-[#2E7D32]">
+              <span className="font-mono">{countdownLabel}</span>
+              <span className="font-400 text-text-spacegrey">left</span>
+            </div>
+          )}
         </div>
         {/* Full card width rather than indented into the icon's column — the
             body is the long line here, and hanging it off the icon cost it a
             whole extra wrap for no gain. */}
         <div className="text-sm font-400 leading-md text-text-spacegrey">
-          {`${symbol}${formatCurrencyValue(lockInPaidAmount, currency)}`} paid
-          as lock-in and already adjusted in the amount payable above.
+          {amountLabel(lockInPaidAmount)} paid as lock-in and already adjusted
+          in the amount payable above.
         </div>
       </div>
     );
@@ -1297,7 +1398,7 @@ export const LockInNotice = ({ lockInFee, lockInPaid, lockInPaidAmount }) => {
       <div className="flex items-center gap-xs mb-xxs">
         <span className="text-md-lg leading-lg flex-shrink-0">&#128274;</span>
         <div className="text-sm-md font-500 leading-lg text-[#01202B]">
-          Hold these prices for {feeLabel}
+          Hold this price for {feeLabel}
         </div>
       </div>
       {/* Full card width rather than indented into the icon's column — the body
@@ -1897,6 +1998,8 @@ const Details = (props) => {
     lockInFee,
     hasLockInPaid,
     lockInPaidAmount,
+    lockInHoldUntil,
+    lockInHoldExpired,
     requiresLockIn,
     payNowType,
     payNowAmount,
@@ -3000,9 +3103,9 @@ const Details = (props) => {
     return startDate >= currentDate;
   };
 
-  // Lock-in (`lockInFee`, `hasLockInPaid`, `payNowType`…) is derived once from
-  // deriveLockIn near the top of this component — it is needed by the auto-pay
-  // effect long before this point.
+  // Lock-in (`lockInFee`, `hasLockInPaid`, `payNowType`, the hold window…) is
+  // derived once from deriveLockIn near the top of this component — it is
+  // needed by the auto-pay effect long before this point.
 
   // `Cart` starts as null in Redux, so the `!price_valid_until` arm used to
   // report "expired" for the whole window before the cart API resolved. Gate on
@@ -3553,6 +3656,8 @@ const Details = (props) => {
                         lockInFee={lockInFee}
                         lockInPaid={hasLockInPaid}
                         lockInPaidAmount={lockInPaidAmount}
+                        lockInHoldUntil={lockInHoldUntil}
+                        lockInHoldExpired={lockInHoldExpired}
                       />
                     )}
 

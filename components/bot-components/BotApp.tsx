@@ -5921,8 +5921,16 @@ export const BottomCTABar = React.memo(
     const lockInBadge = lockIn.required ? (
       <span className="flex items-center gap-1 text-[#8A7A00] font-mono text-[10px] md:text-[11px] font-semibold uppercase tracking-[0.06em] whitespace-nowrap">
         <span aria-hidden>&#128274;</span>
-        Hold these prices for {currencySymbol}
-        {formatCurrencyValue(Math.round(lockIn.fee), currency?.currency)}
+        {/* The whole sentence is one flex child on purpose: this row has a
+            `gap`, so an element dropped mid-sentence would take that gap on
+            both sides. Inside here the symbol is spaced by a margin instead of
+            a space character — in `font-mono` a space is a full character cell
+            wide, which read as a gap rather than as separation. */}
+        <span>
+          Hold this price for{" "}
+          <span className="mr-[0.18em]">{currencySymbol}</span>
+          {formatCurrencyValue(Math.round(lockIn.fee), currency?.currency)}/-
+        </span>
       </span>
     ) : null;
 

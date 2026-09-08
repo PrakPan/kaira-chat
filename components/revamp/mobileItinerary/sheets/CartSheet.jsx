@@ -14,7 +14,8 @@ import urls from "../../../../services/urls";
 import { openNotification } from "../../../../store/actions/notification";
 import { removeCoupon } from "../../../../services/sales/itinerary/Purchase";
 import { updateCartPricing } from "../../../../services/sales/Bookings";
-import { formatMoney } from "../../../../services/money";
+import { currencySymbolFor } from "../../../../services/money";
+import { formatCurrencyValue } from "../../../../services/formatCurrencyValue";
 import {
   addAncillaryBooking,
   removeAncillaryBooking,
@@ -385,7 +386,6 @@ export default function CartSheet({
     if (!usable) return null;
 
     const code = C?.currency || currency?.currency || "INR";
-    const money = (n) => formatMoney(n, code);
 
     const bookings = Object.values(C.summary).reduce(
       (n, g) => n + (Number(g?.count) || 0),
@@ -436,10 +436,22 @@ export default function CartSheet({
       holdUrgent: secondsLeft <= 300,
       bookings,
       hidden: !!C?.are_prices_hidden,
-      payableLabel: Number.isFinite(payNow) ? money(payNow) : null,
+      // The bar's own amount, spaced and suffixed the way the desktop drawer
+      // writes every lock-in figure ("₹ 999/-"). Built here rather than in
+      // formatMoney, which the trip total and formatDelta also read.
+      payableLabel: Number.isFinite(payNow)
+        ? `${currencySymbolFor(code)} ${formatCurrencyValue(
+            Math.round(payNow),
+            code,
+          )}/-`
+        : null,
       lockInFee: lock.lockInFee,
       lockInPaid: lock.hasLockInPaid,
       lockInPaidAmount: lock.lockInPaidAmount,
+      // The hold window, so this card counts down to the same instant the
+      // drawer's does instead of showing a dateless "prices locked".
+      lockInHoldUntil: lock.lockInHoldUntil,
+      lockInHoldExpired: lock.lockInHoldExpired,
       requiresLockIn: lock.requiresLockIn,
       showLockIn,
       coupon: applied
@@ -840,6 +852,8 @@ export default function CartSheet({
               lockInFee={model.lockInFee}
               lockInPaid={model.lockInPaid}
               lockInPaidAmount={model.lockInPaidAmount}
+              lockInHoldUntil={model.lockInHoldUntil}
+              lockInHoldExpired={model.lockInHoldExpired}
             />
           )}
 
@@ -1002,8 +1016,8 @@ export default function CartSheet({
                       // from screen readers because the words carry it.
                       model.requiresLockIn ? (
                         <>
-                          <span aria-hidden="true">&#128274;</span> Hold These
-                          Prices
+                          <span aria-hidden="true">&#128274;</span> Hold this
+                          price
                         </>
                       ) : (
                         "Proceed to Pay"
