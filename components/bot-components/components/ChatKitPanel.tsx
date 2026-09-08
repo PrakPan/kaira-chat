@@ -233,6 +233,13 @@ sessionId?: string;
  *  session change instead of treating it as the same session. */
 onSessionChange?: (sessionId: string) => void;
 isItineraryCompleting?: boolean;
+/** True on a tailored-form landing (`/chat/{id}?source=tailored`). The thread
+ *  is empty for the whole build there — the summary prompt is only sent once
+ *  the itinerary finalizes — so the build loader is docked above the composer
+ *  instead of sitting alone at the top of a blank scroller. Every other build
+ *  (the bot's own creation flow) already has messages above it and keeps the
+ *  loader inline as the newest turn. */
+fromTailored?: boolean;
 itineraryCompleted?: boolean;
 /** Fired when a Make Payment CTA is clicked inside a chat widget. */
 onPaymentStart?: () => void;
@@ -772,6 +779,7 @@ onInitialPromptConsumed,
 sessionId: propSessionId,
 onSessionChange,
 isItineraryCompleting = false,
+fromTailored = false,
 itineraryCompleted = false,
 onPaymentStart,
 travellerStory = null,
@@ -3322,15 +3330,25 @@ const handleLoginCardSkip = useCallback(() => {
   }, [messages, hasDisplayItinerary, reportChatStage]);
 
 useEffect(() => {
+  // Suppress the auto inject.context only for the exact auto-seeded
+  // post-completion summary prompt (set by restoreLatestThread on P2
+  // restore / fromTailored). A broader keyword match here also caught
+  // user-typed prompts containing "itinerary", which silenced the
+  // post-completion summary on the bot-create path.
+  //
+  // Claimed as soon as the prompt arrives — deliberately OUTSIDE the
+  // `locationReady` gate below. The tailored seed is now released the moment
+  // the build finalizes, which is the same moment `itineraryCompleted` flips,
+  // so leaving the claim behind the gate let the effect below inject its own
+  // overview whenever location hadn't resolved yet — two summaries for one
+  // landing.
+  if (
+    initialPrompt === "Hey Kaira! provide summary of my itinerary" &&
+    !hasProcessedInitial.current
+  ) {
+    hasInjectedContextRef.current = true;
+  }
   if (initialPrompt && !hasProcessedInitial.current && locationReady) {
-    // Suppress the auto inject.context only for the exact auto-seeded
-    // post-completion summary prompt (set by restoreLatestThread on P2
-    // restore / fromTailored). A broader keyword match here also caught
-    // user-typed prompts containing "itinerary", which silenced the
-    // post-completion summary on the bot-create path.
-    if (initialPrompt === "Hey Kaira! provide summary of my itinerary") {
-      hasInjectedContextRef.current = true;
-    }
     // Defer prompts that require login: queue as the post-login message and
     // show the existing login/signup CTA. The authToken-change effect below
     // will fire the queued message once the user authenticates.
@@ -4228,6 +4246,22 @@ const handleShowLogin = useCallback(() => {
     return !hasContent && !hasProgress && !hasTasks;
   }, [isStreaming, messages]);
 
+  // Itinerary-creation progress card. Rendered in exactly one of two places:
+  // inline as the newest turn (the bot's own creation flow, which already has
+  // messages above it), or docked above the composer on a tailored-form
+  // landing, where the thread stays empty until the build finalizes.
+  const creationStatusCard = (
+    <StatusNotesCard
+      notes={statusNotes}
+      displayText={statusDisplayText}
+      isPolling={isItineraryCompleting}
+      cycleKey={isItineraryCompleting ? "create-cycle" : "init"}
+      resetKey={null}
+      title="Kaira is building your"
+      titleAccent="itinerary"
+    />
+  );
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     // Hands the theme slug to every widget in the thread, so a route card's
@@ -5006,22 +5040,17 @@ const handleShowLogin = useCallback(() => {
               </div>
             )}
 
-            {/* Itinerary creation progress (tailored form → /chat/[id], or the
-                bot's own completion flow). Mirrors the edit-time status card:
-                streams the same `display_text` from the /status/ poll as a
-                stepped in-chat card instead of a bare spinner. Gated on
-                `isItineraryCompleting` (creation), which is fresh per session —
-                no stale-flag mount guard needed, so it also shows on a refresh
-                mid-build. */}
-            <StatusNotesCard
-              notes={statusNotes}
-              displayText={statusDisplayText}
-              isPolling={isItineraryCompleting}
-              cycleKey={isItineraryCompleting ? "create-cycle" : "init"}
-              resetKey={null}
-              title="Kaira is building your"
-              titleAccent="itinerary"
-            />
+            {/* Itinerary creation progress from the bot's own completion flow.
+                Mirrors the edit-time status card: streams the same
+                `display_text` from the /status/ poll as a stepped in-chat card
+                instead of a bare spinner. Gated on `isItineraryCompleting`
+                (creation), which is fresh per session — no stale-flag mount
+                guard needed, so it also shows on a refresh mid-build.
+
+                The tailored-form landing renders this same card docked above
+                the composer instead (see `fromTailored` below) — its thread has
+                no messages to sit under while the build runs. */}
+            {!fromTailored && creationStatusCard}
 
             {/* Itinerary update progress (Update Dates / Route Edit / Reprice /
                 refresh_itinerary). Same stepped card, fed by the streaming
@@ -5070,6 +5099,24 @@ const handleShowLogin = useCallback(() => {
             <style dangerouslySetInnerHTML={{ __html: `@keyframes qrShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }` }} />
           </div>
         )}
+
+      {/* ── Docked build loader — tailored-form landing only ──────────────────
+          On `/chat/{id}?source=tailored` the thread is empty for the whole
+          build (the summary prompt is only sent once the itinerary finalizes),
+          so the same card rendered inline would sit alone at the top of a blank
+          scroller. Outside the message list it stays put against the composer
+          without touching how messages themselves are laid out. Quick replies
+          are suppressed while creating, so nothing competes for this row.
+
+          Gated on `isItineraryCompleting` rather than left to the card's own
+          empty-state: docked, a card that stayed pinned after the build would
+          hold the composer down for the rest of the session, and an always-
+          mounted wrapper would leave a padded blank row when it renders null. */}
+      {fromTailored && isItineraryCompleting && (
+        <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
+          <div className="mx-auto">{creationStatusCard}</div>
+        </div>
+      )}
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
