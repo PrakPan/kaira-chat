@@ -1127,7 +1127,10 @@ const PaymentButton = ({
           {`Proceed to pay ${symbol} ${formatCurrencyValue(amount, currency)}/-`}
         </>
       ) : (
-        `Proceed to Pay`
+        // Same shape as the lock-in arm minus the padlock: the amount payable
+        // is what this one charges, so the button says it rather than leaving
+        // the user to match it against the breakdown above.
+        `Proceed to pay ${symbol} ${formatCurrencyValue(amount, currency)}/-`
       )}
     </PayCta>
   );
@@ -1147,6 +1150,17 @@ const formatHoldCountdown = (msLeft) => {
   return `${pad(Math.floor(totalSeconds / 3600))}h:${pad(
     Math.floor((totalSeconds % 3600) / 60),
   )}m:${pad(totalSeconds % 60)}s`;
+};
+
+// Coarse "36 hours" wording for the sentence under the heading — the exact clock
+// already ticks in the corner of the same card, and a second ticking figure
+// mid-sentence only competes with it. Minutes in the final hour, never "0".
+const formatHoldRemainingWords = (msLeft) => {
+  const totalMinutes = Math.max(0, Math.floor(msLeft / 60000));
+  const hours = Math.floor(totalMinutes / 60);
+  if (hours >= 1) return `${hours} ${hours === 1 ? "hour" : "hours"}`;
+  const minutes = Math.max(1, totalMinutes);
+  return `${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
 };
 
 // The card sits on screen for as long as the customer is reading the cart, so
@@ -1196,6 +1210,10 @@ const LockInNotice = ({
   const holdRunOut = msLeft === null ? lockInHoldExpired : msLeft <= 0;
   const countdownLabel =
     msLeft === null || msLeft <= 0 ? "" : formatHoldCountdown(msLeft);
+  // Empty on the carts that have no window to count down at all, where the
+  // sentence falls back to naming the deadline instead of a duration.
+  const holdRemainingWords =
+    msLeft === null || msLeft <= 0 ? "" : formatHoldRemainingWords(msLeft);
 
   // Paid, but the window it bought has run out. Deliberately no "reprice" call
   // to action: this card only renders while the cart still considers its prices
@@ -1207,13 +1225,13 @@ const LockInNotice = ({
         <div className="flex items-center gap-xs mb-xxs">
           <LuClock4 size={17} className="text-[#B3261E] flex-shrink-0" />
           <div className="text-sm-md font-500 leading-lg text-[#01202B]">
-            Price lock expired for this itinerary
+            Prices have expired for this itinerary
           </div>
         </div>
         <div className="text-sm font-400 leading-md text-text-spacegrey">
           The {LOCK_IN_HOLD_HOURS}-hour price hold has ended, so prices can
           change from here. {amountLabel(lockInPaidAmount)} paid as lock-in
-          stays adjusted in the amount payable above.
+          will be adjusted in the total amount.
         </div>
       </div>
     );
@@ -1251,8 +1269,12 @@ const LockInNotice = ({
             body is the long line here, and hanging it off the icon cost it a
             whole extra wrap for no gain. */}
         <div className="text-sm font-400 leading-md text-text-spacegrey">
-          {amountLabel(lockInPaidAmount)} paid as lock-in and already adjusted
-          in the amount payable above.
+          {amountLabel(lockInPaidAmount)} already paid as lock-in will be
+          adjusted in the total amount. Pay the remaining amount{" "}
+          {holdRemainingWords
+            ? `in ${holdRemainingWords}`
+            : "before the hold ends"}{" "}
+          to confirm this itinerary.
         </div>
       </div>
     );
