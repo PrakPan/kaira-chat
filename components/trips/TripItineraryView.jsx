@@ -34,8 +34,10 @@
 
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { useRouter } from "next/router";
 
 import DaybyDay from "../../containers/itinerary/DaybyDay";
+import Sidebar from "../bot-components/components/Sidebar";
 import ArchiveChatPanel from "../bot-components/components/ArchiveChatPanel";
 import CloneItineraryModal from "../bot-components/components/CloneItineraryModal";
 import { BottomCTABar } from "../bot-components/BotApp";
@@ -54,6 +56,11 @@ const TripItineraryView = ({
   header = null,
 }) => {
   const dispatch = useDispatch();
+  const router = useRouter();
+  // The nav rail starts collapsed, exactly as BotApp's does. It expands as an
+  // overlay rather than by reflowing the row, so the two columns beside it keep
+  // their widths in both states.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   // The bar's CTA opens the clone popup. The state lives here rather than being
   // passed in: the bar and the popup are both this component's, so a caller
   // that forgets to wire a handler (which is what left "Get this trip!" doing
@@ -145,13 +152,19 @@ const TripItineraryView = ({
       />
 
       {/* The bar is `position: fixed` and its own class pins it to 48% of the
-          VIEWPORT, narrower than this column's 50%, so it stopped short of the
-          divider. Overridden here rather than via the `barStyle` prop because
-          an inline style would apply at every width and override the bar's
-          `w-full` on a phone, where it should span the screen. */}
+          VIEWPORT, narrower than this column, so it stopped short of the
+          divider. It now also has to clear the nav rail: the itinerary column
+          starts 76px in and takes half of what is left, so the bar does the
+          same. 76 is SIDEBAR_WIDTH_COLLAPSED in the Sidebar component, and it
+          holds in both states — expanding the rail overlays the page rather
+          than reflowing it.
+
+          Overridden here rather than via the `barStyle` prop because an inline
+          style would apply at every width and override the bar's `w-full` on a
+          phone, where it should span the screen. */}
       <style
         dangerouslySetInnerHTML={{
-          __html: `@media (min-width:768.02px){[data-bottom-cta-bar]{left:0!important;width:50%!important;}}`,
+          __html: `@media (min-width:768.02px){[data-bottom-cta-bar]{left:76px!important;width:calc((100% - 76px)/2)!important;}}`,
         }}
       />
 
@@ -161,10 +174,38 @@ const TripItineraryView = ({
           be crawled is duplicate content rather than a layout detail.
           On a phone the itinerary is the page and the chat is a sheet over
           it, so the column order is plain rather than reversed. */}
-      <div className="flex flex-col ph-up:flex-row ph-up:h-screen ph-up:overflow-hidden bg-white">
-        {/* Itinerary — 50% and internally scrolling on desktop, natural page
-            flow on a phone. */}
-        <div className="flex flex-col min-w-0 ph-up:w-1/2 ph-up:overflow-hidden ph-up:border-r ph-up:border-[#e5e5e5]">
+      <div className="flex flex-col ph-up:flex-row ph-up:h-screen ph-up:overflow-hidden ph-up:relative bg-white">
+        {/* Navigation — the same rail BotApp puts beside a /chat itinerary, so
+            this page opens the same way its live twin does. `contents` because
+            the component renders a fragment: an overlay, an absolutely
+            positioned rail, and a 76px spacer that holds the row open. A real
+            wrapper here would box the spacer in and the columns would sit under
+            the rail instead of beside it.
+
+            The rail is `position: absolute; height: 100%`, so it anchors to the
+            `ph-up:relative` on the row above — without that it resolves against
+            the viewport and slides out from under the page.
+
+            Hidden below 768px, where 76px of chrome would eat the itinerary it
+            is meant to sit beside; the phone layout already has the site's own
+            navigation above it. */}
+        <div className="max-ph:hidden ph-up:contents">
+          <Sidebar
+            isCollapsed={sidebarCollapsed}
+            onToggle={() => setSidebarCollapsed((collapsed) => !collapsed)}
+            onNewChat={() => router.push("/chat")}
+            onThreadSelect={(threadId, sessionId) =>
+              router.push(sessionId ? `/chat/${sessionId}` : "/chat")
+            }
+            isComplete
+          />
+        </div>
+
+        {/* Itinerary — half of what the rail leaves, internally scrolling on
+            desktop; natural page flow on a phone. `flex-1 basis-0` rather than
+            `w-1/2`: half of the FULL row would now overflow it by the rail's
+            76px and push the chat off the right edge. */}
+        <div className="flex flex-col min-w-0 ph-up:flex-1 ph-up:basis-0 ph-up:overflow-hidden ph-up:border-r ph-up:border-[#e5e5e5]">
           {itineraryColumn}
         </div>
 
@@ -175,7 +216,7 @@ const TripItineraryView = ({
             where the trip description lives, so unmounting it on a phone would
             take that copy out of the DOM entirely. `hidden` keeps it there. */}
         <div
-          className={`flex-col min-w-0 ph-up:w-1/2 ph-up:h-full ph-up:static ph-up:z-auto ph-up:flex
+          className={`flex-col min-w-0 ph-up:flex-1 ph-up:basis-0 ph-up:h-full ph-up:static ph-up:z-auto ph-up:flex
             max-ph:fixed max-ph:inset-0 max-ph:z-[2000] max-ph:bg-white
             ${chatOpen ? "max-ph:flex" : "max-ph:hidden"}`}
         >
