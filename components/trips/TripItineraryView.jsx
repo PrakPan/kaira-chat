@@ -32,7 +32,7 @@
 // Both bootstrap a live session — status polling, chatkit, /thank-you redirects
 // on failure — against an itinerary this page has no business calling.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 
@@ -71,8 +71,11 @@ const TripItineraryView = ({
   // right half there.
   const [chatOpen, setChatOpen] = useState(false);
 
-  useState(() => {
-    if (!itinerary) return null;
+  // Seeding the store is idempotent, so it can be expressed once and used both
+  // during render (for the server HTML) and from an effect (see the cleanup
+  // below).
+  const seedStore = () => {
+    if (!itinerary) return;
 
     dispatch(setItinerary(itinerary));
     dispatch(setItineraryDaybyDay(itinerary));
@@ -87,9 +90,43 @@ const TripItineraryView = ({
     dispatch(setItineraryStatus("pricing_status", "SUCCESS"));
     dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
     dispatch(setItineraryStatus("is_polling", false));
+  };
 
+  useState(() => {
+    seedStore();
     return null;
   });
+
+  // ── Hand the store back on the way out ────────────────────────────────────
+  // The snapshot carries `is_v1_archive: true` (lib/seo/tripItinerary), and the
+  // store outlives this page: a client-side navigation into /chat left that
+  // flag set, so BotApp took its archive branch and rendered the static clone
+  // CTA — "Make this trip yours" and a "Clone this itinerary" composer — on top
+  // of a brand new chat. Every route out of here hit it: the sidebar's New chat
+  // and its thread list both push into BotApp.
+  //
+  // Clearing the same keys this page seeded is the fix. The statuses go back to
+  // PENDING rather than being left SUCCESS, which is what BotApp's own
+  // handleNewChat does — a fresh chat has nothing settled yet.
+  //
+  // Setup re-seeds rather than relying on the render-time seed alone, so the
+  // pair stays balanced if StrictMode ever double-invokes effects: seed →
+  // clear → seed leaves the store correct, where a bare cleanup would blank the
+  // itinerary on the second pass.
+  useEffect(() => {
+    seedStore();
+    return () => {
+      dispatch(setItinerary({}));
+      dispatch(setItineraryDaybyDay({}));
+      dispatch(setStays([]));
+      dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+      dispatch(setItineraryStatus("hotels_status", "PENDING"));
+      dispatch(setItineraryStatus("transfers_status", "PENDING"));
+      dispatch(setItineraryStatus("pricing_status", "PENDING"));
+      dispatch(setItineraryStatus("finalized_status", "PENDING"));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!itinerary) return null;
 

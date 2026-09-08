@@ -49,11 +49,12 @@ export interface IntakeFormState {
   notes: string;
   featured: Destination[];
   /** Context-aware suggestion chips for the notes step, fetched from
-   *  `/chatkit/context-chips` when the form is received. Empty until the call
+   *  `/api/v1/itinerary/onboarding/context-chips/` when the form is received.
+   *  Empty until the call
    *  resolves; the notes step falls back to the static `NOTE_HINTS` when empty
    *  (including when the fetch fails). */
   noteHints: string[];
-  /** True while the `/chatkit/context-chips` request is in flight — the notes
+  /** True while the context-chips request is in flight — the notes
    *  step shows shimmer chips until it resolves. */
   noteHintsLoading: boolean;
   /** Left-panel hero (image + copy) for the themed mini-form flow. Set when a

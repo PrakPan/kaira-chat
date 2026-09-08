@@ -31,10 +31,11 @@ export const initialIntakeFormState = {
   // IntakeForm constants; overridden when the form_fields effect carries them).
   featured: [],
   // Context-aware suggestion chips for the notes step, fetched from
-  // `/chatkit/context-chips` when the form is received. Empty until the call
+  // `/api/v1/itinerary/onboarding/context-chips/` when the form is received.
+  // Empty until the call
   // resolves; the notes step falls back to the static NOTE_HINTS when empty.
   noteHints: [],
-  // True while the `/chatkit/context-chips` request for the notes step is in
+  // True while the context-chips request for the notes step is in
   // flight — the notes step shows shimmer chips until it resolves.
   noteHintsLoading: false,
   // Left-panel hero for the themed mini-form flow (image + copy), set when a

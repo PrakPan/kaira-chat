@@ -36,11 +36,35 @@ const linksArr = [
       // crawler's only route in is the sitemap, and Google had not discovered
       // a single one of those URLs. /trips itself links out to all 194
       // destination hubs, so one entry point here is enough to reach them.
-      { title: "Trip Itineraries", link: "/trips" },
-      { title: "Personalise", link: "" },
-      { title: "La Tomatina", link: urls.travel_planner.LATOMATINA },
-      { title: "Summer Holidays", link: urls.travel_planner.SUMMER },
-      { title: "Road Trips", link: urls.travel_planner.ROADTRIPS },
+      { title: "Trip Packages", link: "/trips" },
+      // { title: "Personalise", link: "" },
+
+      // Every theme landing built on CinematicThemeLanding, in the order the
+      // year runs rather than alphabetically, so the list reads as a calendar.
+      // These pages had no site-wide inbound link either — each one's only
+      // route in was the sitemap and whatever "Other themes" grid happened to
+      // point at it, and several were reachable from nothing at all.
+      //
+      // Each label is the page's own `header.title`, so the footer and the page
+      // agree — the exception is the Australia & New Zealand theme, qualified
+      // here because "Travel Destinations" above already has a link with that
+      // exact name pointing at the /oceania continent hub.
+      { title: "Honeymoon", link: "/theme/honeymoon" },
+      { title: "Filmy getaways", link: "/theme/filmy-getaways" },
+      // { title: "Greece islands", link: "/theme/greece-islands-done-right" },
+      // { title: "Offbeat Thailand + Bali", link: "/theme/thailand-bali-offbeat" },
+      {
+        title: "Thailand bachelor & bachelorette",
+        link: "/theme/thailand-bachelor",
+      },
+      { title: "Hokkaido powder & Sapporo", link: "/theme/hokkaido-powder" },
+      { title: "Northern lights", link: "/theme/northern-lights" },
+      // { title: "Lapland", link: "/theme/lapland" },
+      { title: "Christmas markets & NYE", link: "/theme/christmas-markets" },
+      // { title: "Edinburgh Hogmanay", link: "/theme/edinburgh-hogmanay" },
+      { title: "Australia & NZ summer", link: "/theme/australia-newzealand" },
+
+      // { title: "La Tomatina", link: urls.travel_planner.LATOMATINA },
       { title: "Europe under 1 Lakh", link: urls.travel_planner.EUROPE_1_LAKH },
     ],
   },

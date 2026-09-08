@@ -56,7 +56,16 @@ const WhenPanel = ({
       : 7,
   );
   const now = today();
-  const initialCal = ds || now;
+  // The first date anyone can pick is tomorrow. A trip that departs today
+  // cannot be planned, sourced and booked in the hours that are left, so today
+  // is disabled in the calendar rather than offered and then rejected later.
+  //
+  // Everything that used to key off `now` for "how far back can you go" keys
+  // off this instead — otherwise, on the last day of a month, the calendar
+  // would open on a month with no selectable day in it and let you page back
+  // into it.
+  const earliest = addDays(now, 1);
+  const initialCal = ds || earliest;
   const [calY, setCalY] = useState(initialCal.getFullYear());
   const [calM, setCalM] = useState(initialCal.getMonth());
 
@@ -148,8 +157,8 @@ const WhenPanel = ({
     } else setCalM(calM + 1);
   };
   const atCurrentMonth =
-    calY < now.getFullYear() ||
-    (calY === now.getFullYear() && calM <= now.getMonth());
+    calY < earliest.getFullYear() ||
+    (calY === earliest.getFullYear() && calM <= earliest.getMonth());
 
   const y2 = calM === 11 ? calY + 1 : calY;
   const m2 = (calM + 1) % 12;
@@ -166,7 +175,7 @@ const WhenPanel = ({
         key: `d${day}`,
         d,
         label: day,
-        past: d < now,
+        past: d < earliest,
         sel: (ds && t === ds.getTime()) || (de && t === de.getTime()),
         range: ds && de && t > ds.getTime() && t < de.getTime(),
       });

@@ -22,6 +22,7 @@ import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
 import BottomModal from "../../ui/LowerModal";
 import useMediaQuery from "../../../hooks/useMedia";
 import { MERCURY_HOST, CHATKIT_HOST, CHATKIT_API_URL } from "../../../services/constants";
+
 import { openNotification } from "../../../store/actions/notification";
 import setItinerary, {
   deletePoiFromItinerary,
@@ -63,6 +64,12 @@ import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, i
 import ReleaseItineraryCta from "./ReleaseItineraryCta";
 import { isStaffEmail } from "../../../utils/staffUser";
 import { pushUrlDetached } from "../../../helper/historyUrl";
+
+// Caps on what rides along to the context-chips endpoint as `user_conversation`.
+// A long thread is mostly itinerary edits; the recent turns are what say what
+// kind of trip this is, and an unbounded payload would grow with every message.
+const MAX_CONTEXT_TURNS = 6;
+const MAX_TURN_CHARS = 1200;
 
 const PAGINATION_SCROLL_THRESHOLD = 80;
 const CHATKIT = CHATKIT_HOST;
@@ -1893,7 +1900,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   // ── Context chips for the intake notes step ────────────────────────────────
   // Once the traveller reaches the final ("notes") step of the intake form with
   // the three prior steps (destination, when, who) filled, fetch context-aware
-  // suggestion chips from `/chatkit/context-chips`, built from what they picked.
+  // suggestion chips from `/api/v1/itinerary/onboarding/context-chips/`, built
+  // from what they picked plus whatever has already been said in the thread.
   // Works for restored threads (thread_id present) AND fresh new-chat /
   // `?intake=1&destination=…` sessions (thread_id null — the destination / date
   // / group drive the request). A shimmer loader shows on the notes step while
@@ -1920,6 +1928,43 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     .join(", ");
   const intakeStartDate = intakeFormSlice?.startDate || null;
   const intakeWho = intakeFormSlice?.who || "";
+  // The thread so far, as the {user, system} turns the chips endpoint takes.
+  // Read from the existing `messagesRef` at fetch time rather than being a
+  // dependency: the effect deliberately fires once per unique set of form
+  // answers, and keying it on the conversation as well would re-request chips
+  // on every new message. The ref is assigned during render, so by the time an
+  // effect runs it holds the current thread.
+  const buildIntakeConversation = useCallback(() => {
+    // Only real prose counts. Widgets, forms and login cards carry no text a
+    // model can use, and streaming messages are still half-written.
+    const turns = (messagesRef.current as any[]).filter(
+      (m) =>
+        (!m?.type || m.type === "text") &&
+        !m?.isStreaming &&
+        typeof m?.content === "string" &&
+        m.content.trim().length > 0,
+    );
+
+    const pairs: Array<{ user: string; system: string }> = [];
+    for (let i = 0; i < turns.length; i += 1) {
+      if (turns[i].role !== "user") continue;
+      // The reply is the next assistant message, if the thread got one — a
+      // question the user asked last, still unanswered, is worth sending too.
+      const reply = turns
+        .slice(i + 1)
+        .find((m) => m.role === "assistant" || m.role === "user");
+      pairs.push({
+        user: String(turns[i].content).trim().slice(0, MAX_TURN_CHARS),
+        system:
+          reply?.role === "assistant"
+            ? String(reply.content).trim().slice(0, MAX_TURN_CHARS)
+            : "",
+      });
+    }
+    // Only the tail matters for "what is this trip about", and the whole thread
+    // could be dozens of turns of itinerary edits.
+    return pairs.slice(-MAX_CONTEXT_TURNS);
+  }, []);
   const contextChipsSignatureRef = useRef<string | null>(null);
   useEffect(() => {
     if (!intakeFormActive) {
@@ -1936,31 +1981,47 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     if (contextChipsSignatureRef.current === signature) return;
     contextChipsSignatureRef.current = signature;
 
-    // Slice keeps dates as ISO (YYYY-MM-DD); the API expects DD-MM-YYYY.
-    const toDDMMYYYY = (iso: string | null): string => {
-      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || "").trim());
-      return m ? `${m[3]}-${m[2]}-${m[1]}` : "";
-    };
+    // The Mercury endpoint takes ISO (YYYY-MM-DD), which is what the slice
+    // already stores — the old chatkit one wanted DD-MM-YYYY, hence the
+    // converter that used to sit here. The date genuinely drives the answer
+    // (Goa in June returns "on a budget"; the same trip in December returns
+    // "splurge worthy"), so this is not a cosmetic difference.
+    const isoDate = /^\d{4}-\d{2}-\d{2}$/.test(String(intakeStartDate || "").trim())
+      ? String(intakeStartDate).trim()
+      : "";
+
+    const intakeConversation = buildIntakeConversation();
 
     const controller = new AbortController();
     dispatch(updateIntakeForm({ noteHintsLoading: true }));
     (async () => {
       try {
-        const res = await fetch(`${CHATKIT_API_URL}/context-chips`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+        const res = await fetch(
+          `${MERCURY_HOST}/api/v1/itinerary/onboarding/context-chips/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+            },
+            body: JSON.stringify({
+              destination: intakeDestinationName,
+              start_date: isoDate,
+              group_type: intakeWho,
+              max_chips: 6,
+              // What has already been said in this thread, so the chips answer
+              // the conversation rather than just the form. A traveller who has
+              // been talking about diving and avoiding nightlife gets "quiet
+              // south goa" and "grand island dive" instead of the generic set.
+              // Omitted entirely when there is nothing to send — a fresh
+              // `?intake=1` landing has no history at all.
+              ...(intakeConversation.length > 0 && {
+                user_conversation: intakeConversation,
+              }),
+            }),
+            signal: controller.signal,
           },
-          body: JSON.stringify({
-            thread_id: threadIdRef.current || null,
-            destination: intakeDestinationName,
-            start_date: toDDMMYYYY(intakeStartDate),
-            group_type: intakeWho,
-            max_chips: 6,
-          }),
-          signal: controller.signal,
-        });
+        );
         if (!res.ok) return;
         const data = await res.json();
         const chips = Array.isArray(data?.chips)
@@ -1986,7 +2047,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     intakeWho,
     authToken,
     dispatch,
-    threadIdRef,
+    buildIntakeConversation,
   ]);
 
   // Logged-out user viewing an existing thread (restored via threads.get_by_id)

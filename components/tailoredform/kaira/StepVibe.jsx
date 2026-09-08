@@ -17,8 +17,12 @@ const asLabel = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
 /**
  * Step 4 — "What's the vibe?": Kaira's suggested preference chips for this
- * destination / date / group (POST /chatkit/context-chips), the user's picks,
- * and a free-text note.
+ * destination / date / group (POST /api/v1/itinerary/onboarding/context-chips/),
+ * the user's picks, and a free-text note.
+ *
+ * No `user_conversation` is sent from here — the tailored form is a form, not a
+ * chat, so there are no prior turns to pass. The chat's intake form does send
+ * them (see ChatKitPanel).
  *
  * Picks are stored in slideFour.vibePreferences and sent to /complete as
  * `preferences`; the note stays `special_request`.
