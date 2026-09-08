@@ -81,6 +81,76 @@ import {
   removeAncillaryBooking,
 } from "../../../store/actions/ancillaryBookings";
 
+const RAZORPAY_SRC = "https://checkout.razorpay.com/v1/checkout.js";
+
+// One shared promise for checkout.js, resolved only once `window.Razorpay`
+// actually exists.
+//
+// This drawer used to append the tag from a mount effect and hope: fine on
+// desktop, where the traveller mounts the cart, reads it, and only then presses
+// Pay. On the phone's "Review & pay" sheet the drawer mounts and auto-fires the
+// payment in the same breath, so `new window.Razorpay(...)` ran while the tag
+// was still in flight, threw "Razorpay is not a constructor", and the throw was
+// swallowed by an empty catch — no gateway, no error, and `paymentLoading` left
+// true forever, which is what pinned the sheet's button on "Opening payment…".
+//
+// Reusing a tag someone else appended is not enough on its own: it may still be
+// loading, so we wait for ITS load event (and poll as a backstop, because a tag
+// that finished before we attached the listener fires nothing).
+let razorpayLoadPromise = null;
+export const ensureRazorpayLoaded = () => {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("Razorpay: no window"));
+  }
+  if (window.Razorpay) return Promise.resolve(true);
+  if (razorpayLoadPromise) return razorpayLoadPromise;
+
+  razorpayLoadPromise = new Promise((resolve, reject) => {
+    const settle = () => {
+      if (window.Razorpay) {
+        resolve(true);
+        return true;
+      }
+      return false;
+    };
+
+    let script = document.querySelector(`script[src="${RAZORPAY_SRC}"]`);
+    if (!script) {
+      script = document.createElement("script");
+      script.src = RAZORPAY_SRC;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    script.addEventListener("load", () => {
+      if (!settle()) {
+        razorpayLoadPromise = null;
+        reject(
+          new Error("Razorpay: script loaded but window.Razorpay missing"),
+        );
+      }
+    });
+    script.addEventListener("error", () => {
+      razorpayLoadPromise = null;
+      reject(new Error("Razorpay: script failed to load"));
+    });
+
+    // Backstop for a tag that was already done before we listened, and for a
+    // network that never answers.
+    const startedAt = Date.now();
+    const poll = setInterval(() => {
+      if (settle()) {
+        clearInterval(poll);
+      } else if (Date.now() - startedAt > 15000) {
+        clearInterval(poll);
+        razorpayLoadPromise = null;
+        reject(new Error("Razorpay: timed out loading checkout.js"));
+      }
+    }, 100);
+  });
+
+  return razorpayLoadPromise;
+};
+
 // The cart's primary CTA. Its own styled button rather than one more
 // `!bg-[...]` override on `ttw-btn-secondary-fill`: that class is shared with
 // the reprice and get-in-touch buttons, which should stay flat.
@@ -907,7 +977,8 @@ const CouponSection = ({
 };
 
 // 4. Price Details Component (Add after coupon section)
-const PriceDetails = ({
+// Exported for the phone's "Review & pay" sheet — see ItineraryInclusions.
+export const PriceDetails = ({
   itineraryCost,
   lockInCost,
   couponDiscount,
@@ -1136,10 +1207,70 @@ const PaymentButton = ({
   );
 };
 
+// Everything the two checkout surfaces need to know about the hold, read off
+// one cart. Exported for the same reason ItineraryInclusions and PriceDetails
+// are: the phone's "Review & pay" sheet has to charge and explain EXACTLY what
+// this drawer would, and a second copy of these rules on the mobile side is how
+// the two drift into charging different amounts.
+//
+// Pure, and derives nothing the cart doesn't already state — the balance is the
+// cart's `total_payable_amount`, never recomputed here.
+//
+// `lockInCompleted` is the caller's own post-Razorpay flag, covering the gap
+// between the gateway returning and the cart refetch landing. Surfaces that
+// don't run the gateway themselves leave it out.
+export const deriveLockIn = (Cart, { lockInCompleted = false } = {}) => {
+  // The same figure calculateFilteredTotal() returns — what is still owed.
+  const total = Math.round(Number(Cart?.total_payable_amount) || 0);
+
+  const hasFullPaymentCompleted = !!Cart?.sales?.some(
+    (sale) =>
+      sale.payment_type === "full_payment" && sale.status === "Completed",
+  );
+
+  // What the hold is and whether it has been collected comes from
+  // helper/lockIn — the itinerary's bottom bar reads the same function to
+  // decide whether to advertise a hold, and a bar that offers one this drawer
+  // then refuses to charge is worse than no hint at all.
+  const lockIn = getLockInState(Cart);
+  const lockInFee = lockIn.fee;
+  const hasLockInPaid = lockIn.paid || lockInCompleted;
+  const lockInPaidAmount = hasLockInPaid ? lockIn.paidAmount || lockInFee : 0;
+
+  // A hold that has run its window out. `lockInCompleted` covers a payment that
+  // just went through, and that one is minutes old — never expired — so the
+  // expiry only ever comes off the cart's own `lock_in_fee_paid_at`.
+  const lockInHoldUntil = lockIn.holdUntil;
+  const lockInHoldExpired = lockIn.holdExpired;
+
+  // `lockIn.required` already encodes when a hold applies at all (a fee that is
+  // smaller than the balance, on a cart that has not collected money yet). The
+  // extra clauses are this drawer's own live state, which the cart payload
+  // alone cannot see: a hold paid moments ago in this session, and a full
+  // payment already put through.
+  const requiresLockIn =
+    lockIn.required && !hasLockInPaid && !hasFullPaymentCompleted;
+
+  return {
+    total,
+    hasFullPaymentCompleted,
+    lockInFee,
+    hasLockInPaid,
+    lockInPaidAmount,
+    lockInHoldUntil,
+    lockInHoldExpired,
+    requiresLockIn,
+    // What the one pay CTA charges, and which handler it routes to.
+    payNowType: requiresLockIn ? "lockin" : "full",
+    payNowAmount: requiresLockIn ? lockInFee : total,
+  };
+};
+
 // Lock-in: the small amount that has to be paid first to hold today's prices,
 // before the balance can be settled. Both the amount and whether it has already
 // been collected come off the cart (`lock_in_fee` / `lock_in_fee_paid`) — the
 // fee is set per itinerary, so nothing here assumes the usual ₹2,000.
+
 // Time left on the hold. Each part carries its unit — a bare "55:13:54" next to
 // a price reads as ambiguously as it does anywhere else. Zero-padded so the row
 // keeps its width as the digits roll over; the window is 72 hours, so hours
@@ -1189,7 +1320,8 @@ const useHoldCountdown = (holdUntil) => {
   return msLeft;
 };
 
-const LockInNotice = ({
+// Exported alongside deriveLockIn so the phone sheet shows the same card.
+export const LockInNotice = ({
   lockInFee,
   lockInPaid,
   lockInPaidAmount,
@@ -1302,7 +1434,11 @@ const LockInNotice = ({
   );
 };
 
-const ItineraryInclusions = ({
+// Exported so the phone's "Review & pay" sheet renders the SAME breakdown this
+// drawer does (components/revamp/mobileItinerary/sheets/CartSheet). It is a
+// pure presentational component — every piece of state it needs arrives as a
+// prop — so the two surfaces cannot drift.
+export const ItineraryInclusions = ({
   Cart,
   selectedInclusions,
   onToggleInclusion,
@@ -1874,6 +2010,23 @@ const Details = (props) => {
   const [paymentStep, setPaymentStep] = useState("initial"); // 'initial', 'options', 'detailed'
   const [showDetailedPayment, setShowDetailedPayment] = useState(false);
 
+  // The hold, on the rules the phone's Review & pay sheet also runs on.
+  //
+  // Derived up here rather than down beside the pay CTA because the auto-pay
+  // effect below has to know which payment it is starting, and that effect runs
+  // long before the pricing column is built.
+  const {
+    hasFullPaymentCompleted,
+    lockInFee,
+    hasLockInPaid,
+    lockInPaidAmount,
+    lockInHoldUntil,
+    lockInHoldExpired,
+    requiresLockIn,
+    payNowType,
+    payNowAmount,
+  } = deriveLockIn(Cart, { lockInCompleted });
+
   const [showPaymentDrawer, setShowPaymentDrawer] = useState(false);
   const [repriceLoading, setRepriceLoading] = useState(false);
 
@@ -1950,6 +2103,74 @@ const Details = (props) => {
     }
   }, [props?.openPaymentDrawer]);
 
+  // Opt-in: jump straight to the gateway instead of stopping on the cart.
+  //
+  // The new "Review & pay" sheet already showed the user what they are buying,
+  // so landing them on this drawer again is one browse too many. Firing the
+  // drawer's own handlePayNow means every gate still applies — the traveller
+  // -details drawer still intercepts, an expired price still blocks — rather
+  // than a second checkout path that has to be kept in sync with this one.
+  //
+  // Guarded so it fires once per open: re-firing would POST /payment/initiate/
+  // again and mint a second order.
+  //
+  // Firing it was not enough on its own: this drawer still MOUNTED on the cart
+  // while the initiate call was in flight, and stayed there under the gateway —
+  // so tapping "Pay now" on the sheet put the traveller straight back on the
+  // screen they had just finished with. On an auto-started payment this drawer
+  // paints NOTHING (see `hideCartForAutoPay`); it is the payment engine, and
+  // the phone's own sheet stays up as the screen behind the gateway.
+  //
+  // Latched for the life of this mount rather than read live: the caller clears
+  // `autoStartPayment` as soon as the attempt stops (so its own button stops
+  // reading as busy), and reading the flag directly would let the cart screen
+  // paint at exactly that moment. Every open bumps `paymentDrawerKey` and
+  // remounts, so each open gets its own latch.
+  const autoPayMountRef = useRef(!!props?.autoStartPayment);
+  const hideCartForAutoPay = autoPayMountRef.current;
+
+  const autoPayFiredRef = useRef(false);
+  useEffect(() => {
+    if (!autoPayMountRef.current) return;
+    if (autoPayFiredRef.current) return;
+    // Still waiting on the cart, or on this drawer's own open — nothing has
+    // failed, so come back on the next change.
+    if (!Cart?.id || !showDetailedPayment) return;
+    // Nothing to charge: there is no gateway to send anyone to. Hand back
+    // rather than revealing a cart the traveller did not ask to see.
+    if (calculateFilteredTotal() === 0) {
+      autoPayFiredRef.current = true;
+      props.onAutoPayEnded?.("nothing-to-pay");
+      return;
+    }
+    autoPayFiredRef.current = true;
+    // `payNowType`, not a hardcoded "full": on a cart that still owes its hold
+    // this has to open the lock-in sale, exactly as the desktop CTA does.
+    // Charging the full balance here would take ₹76,847 from a traveller whose
+    // sheet said ₹999.
+    handlePayNow(payNowType);
+  }, [props?.autoStartPayment, Cart?.id, showDetailedPayment]);
+
+  // The auto-started attempt has settled — hand back to whoever started it.
+  //
+  // `paymentLoading` spans the WHOLE attempt: set at the top of
+  // _fullPaymentHandler, and cleared on every exit it has, including Razorpay's
+  // own `ondismiss` and the verify call that follows a successful payment. So
+  // this fires once, when the traveller is done with the gateway one way or the
+  // other, and the caller takes the drawer down.
+  const payAttemptStartedRef = useRef(false);
+  useEffect(() => {
+    if (!autoPayMountRef.current) return;
+    if (paymentLoading) {
+      payAttemptStartedRef.current = true;
+      return;
+    }
+    if (payAttemptStartedRef.current) {
+      payAttemptStartedRef.current = false;
+      props.onAutoPayEnded?.("settled");
+    }
+  }, [paymentLoading]);
+
   useEffect(() => {
     if (Cart?.summary) {
       const initialSelections = {};
@@ -1990,11 +2211,12 @@ const Details = (props) => {
     if (adults) setPax(adults);
   }, [props?.itinerary?.number_of_adults, Itinerary?.number_of_adults]);
 
+  // Warm the gateway up on mount. The payment path awaits the same promise, so
+  // this is only a head start — not something it depends on having finished.
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
+    ensureRazorpayLoaded().catch((e) =>
+      console.error("[ERROR]: razorpay preload:", e?.message),
+    );
   }, []);
   useEffect(() => {
     // console.log("loading is:", props.loadpricing);
@@ -2394,15 +2616,49 @@ const Details = (props) => {
     "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
     getURL();
 
-  const _startRazorpayHandler = (data, paymentType) => {
+  // The gateway could not be opened. There is no modal to dismiss, so nothing
+  // else will ever clear `paymentLoading` — this is the only exit, and an
+  // auto-started payment needs it to hand back to the sheet that started it.
+  const _failRazorpay = (context, error) => {
+    console.error(`[ERROR]: razorpay ${context}:`, error?.message || error);
+    setPaymentLoading(false);
+    dispatch(
+      openNotification({
+        text: "We couldn't open the payment window. Please try again.",
+        heading: "Error!",
+        type: "error",
+      }),
+    );
+  };
+
+  const _startRazorpayHandler = async (data, paymentType) => {
+    // Razorpay rejects a non-integer paise amount, and every total here is a
+    // float (₹44,078.31): 44078.31 * 100 is 4407830.999999999, not 4407831.
+    const paise = Math.round(
+      (Number(data?.amount) || Number(data?.discounted_cost) || 0) * 100,
+    );
+    const orderId = data?.sales?.[0]?.orders?.[0]?.order_id;
+
+    if (!orderId) {
+      _failRazorpay("no order id on the initiated sale");
+      return;
+    }
+
+    try {
+      await ensureRazorpayLoaded();
+    } catch (error) {
+      _failRazorpay("checkout.js", error);
+      return;
+    }
+
     let razorpayOptions = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-      amount: data.amount * 100 || data?.discounted_cost * 100,
+      amount: paise,
       name: "The Tarzan Way Payment Portal",
       description: "Payment for your itinerary",
       image:
         "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
-      order_id: data?.sales[0]?.orders[0]?.order_id,
+      order_id: orderId,
       modal: {
         ondismiss: function () {
           setPaymentLoading(false);
@@ -2450,8 +2706,25 @@ const Details = (props) => {
 
     try {
       var rzp1 = new window.Razorpay(razorpayOptions);
+      // Razorpay reports a rejected order (expired, already paid, bad amount)
+      // through this event rather than by throwing — without it the modal
+      // closes itself and the caller is left thinking it is still open.
+      rzp1.on?.("payment.failed", (response) => {
+        setPaymentLoading(false);
+        dispatch(
+          openNotification({
+            text:
+              response?.error?.description ||
+              "Your payment could not be completed. Please try again.",
+            heading: "Payment failed",
+            type: "error",
+          }),
+        );
+      });
       rzp1.open();
-    } catch (error) {}
+    } catch (error) {
+      _failRazorpay("open", error);
+    }
   };
 
   // Refetch the itinerary detail (which carries the `travellers` array) and
@@ -2683,6 +2956,10 @@ const Details = (props) => {
       Itinerary.travellers.length === 0
     ) {
       setTravellerDetailsOpen(true);
+      // An auto-started payment stops HERE rather than at the gateway. Tell the
+      // caller so its button stops reading as busy — but the gate is rendered
+      // inside this drawer, so the drawer itself has to stay mounted.
+      if (autoPayMountRef.current) props.onAutoPayEnded?.("traveller-details");
       return;
     }
 
@@ -2848,23 +3125,9 @@ const Details = (props) => {
     return startDate >= currentDate;
   };
 
-  const hasFullPaymentCompleted = Cart?.sales?.some(
-    (sale) =>
-      sale.payment_type === "full_payment" && sale.status === "Completed",
-  );
-
-  // Lock-in, shared with the itinerary's bottom bar so the two cannot drift.
-  // `lockInCompleted` is layered on top of the cart-derived state to cover the
-  // gap between Razorpay returning and the cart refetch landing.
-  const lockIn = getLockInState(Cart);
-  const lockInFee = lockIn.fee;
-  const hasLockInPaid = lockIn.paid || lockInCompleted;
-  const lockInPaidAmount = hasLockInPaid ? lockIn.paidAmount || lockInFee : 0;
-  // A hold that has run its window out. `lockInCompleted` covers a payment that
-  // just went through, and that one is minutes old — never expired — so the
-  // expiry only ever comes off the cart's own `lock_in_fee_paid_at`.
-  const lockInHoldUntil = lockIn.holdUntil;
-  const lockInHoldExpired = lockIn.holdExpired;
+  // Lock-in (`lockInFee`, `hasLockInPaid`, `payNowType`, the hold window…) is
+  // derived once from deriveLockIn near the top of this component — it is
+  // needed by the auto-pay effect long before this point.
 
   // `Cart` starts as null in Redux, so the `!price_valid_until` arm used to
   // report "expired" for the whole window before the cart API resolved. Gate on
@@ -2916,15 +3179,6 @@ const Details = (props) => {
   // cart with nothing left to pay each replace it with something else.
   const canPayNow =
     !showUpdateDates && !showRepriceExpired && calculateFilteredTotal() !== 0;
-  // The single pay CTA charges the hold until it has been paid. `lockIn`
-  // already encodes when a hold applies; the extra clauses cover this screen's
-  // own live state, which the cart payload alone cannot see.
-  const requiresLockIn =
-    lockIn.required && !hasLockInPaid && !hasFullPaymentCompleted;
-
-  const payNowType = requiresLockIn ? "lockin" : "full";
-  const payNowAmount = requiresLockIn ? lockInFee : calculateFilteredTotal();
-
   // The card explains what the pay CTA is about to charge, so it is on screen
   // in exactly the states that CTA is — the notice while the hold is owed, the
   // confirmation once it has been paid. It deliberately has no conditions of
@@ -2985,7 +3239,7 @@ const Details = (props) => {
     <>
       {/* Payment Drawer - shows full pricing + detailed payment when proceeding */}
 
-      {showPaymentDrawer && (
+      {showPaymentDrawer && !hideCartForAutoPay && (
         <Drawer
           show={showPaymentDrawer}
           anchor={"right"}
@@ -3715,7 +3969,11 @@ const Details = (props) => {
 
               return ReactDOM.createPortal(
                 <div
-                  className="fixed bottom-0 left-0 right-0 md:hidden bg-white px-4 pt-3 pb-4 shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
+                  // `ttw-cart-pay-bar` is what hides it under the phone's own
+                  // bottom sheets — see the `html.ttw-sheet-open` rule in
+                  // styles/globals.css. `anyOverlayOpen` above only knows about
+                  // the overlays this drawer itself owns.
+                  className="ttw-cart-pay-bar fixed bottom-0 left-0 right-0 md:hidden bg-white px-4 pt-3 pb-4 shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
                   style={{ zIndex: 1650 }}
                 >
                   {showUpdateDates ? (

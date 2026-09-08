@@ -75,6 +75,7 @@ import axios from "axios";
 import { MERCURY_HOST, CHATKIT_API_URL } from "../../services/constants";
 import SmallGallery from "../../containers/newitinerary/overview/SmallGallery";
 import NewSummaryContainers from "../../containers/itinerary/NewSummaryContainers";
+import CartSheet from "../revamp/mobileItinerary/sheets/CartSheet";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import ModalWithBackdrop from "../ui/ModalWithBackdrop";
@@ -662,6 +663,14 @@ export default function BotApp({
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentDrawerKey, setPaymentDrawerKey] = useState(0);
 
+  // The phone's "Review & pay" summary. It sits IN FRONT of the payment drawer
+  // (NewSummaryContainers/NewBookingSlide), which stays mounted and untouched —
+  // that drawer still owns coupons, traveller details and the gateway. Desktop
+  // never opens this and keeps the drawer as its only cart.
+  const [showCartSheet, setShowCartSheet] = useState(false);
+  const [autoStartPayment, setAutoStartPayment] = useState(false);
+  const [isRepricing, setIsRepricing] = useState(false);
+
   const fetchPaymentData = useCallback(
     async (itinId: string) => {
       if (!itinId) return;
@@ -717,6 +726,22 @@ export default function BotApp({
     url.searchParams.delete("drawer");
     pushUrlDetached(url.toString());
   }, []);
+
+  // An auto-started payment has stopped — at the gateway, or before it.
+  //
+  // Either way the sheet's button stops reading as busy. The drawer only comes
+  // DOWN when it has nothing left to show: the traveller-details gate is
+  // rendered inside it, so closing on that reason would take the gate away with
+  // it and the traveller would have nowhere to enter them.
+  const handleAutoPayEnded = React.useCallback(
+    (reason?: string) => {
+      setAutoStartPayment(false);
+      if (reason === "traveller-details") return;
+      closePaymentDrawer();
+      if (activeItineraryId) fetchPaymentData(activeItineraryId);
+    },
+    [closePaymentDrawer, activeItineraryId, fetchPaymentData],
+  );
 
   // When drawer is open (e.g. after refresh with ?drawer=payment) and the itinerary ID
   // becomes available, fetch the payment data automatically.
@@ -3897,6 +3922,69 @@ Start Location: ${details.startLocation}`;
   // where it is mounted. Hoisted because the bar now appears in three places —
   // the desktop itinerary panel, the desktop map view, and MobileLayout — and
   // they must stay in lockstep.
+  // Reprice, mirroring the cart drawer's flow (NewBookingSlide.handleRepriceBookings).
+  //
+  // Two things are deliberately NOT copied from it. It reads `router.query.id`,
+  // which on /chat/<id> is the CHAT SESSION id, not the itinerary — so the
+  // itinerary id is passed explicitly here. And its failure path is what
+  // restores the four PENDING statuses; without that the pricing skeleton and
+  // the chat composer stay locked forever, so the `finally` below is
+  // load-bearing.
+  const handleReprice = React.useCallback(async () => {
+    const itinId = activeItineraryId;
+    if (!itinId || isRepricing) return;
+    setIsRepricing(true);
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("is_polling", true));
+    try {
+      const token = localStorage.getItem("access_token") || authToken;
+      await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${itinId}/reprice/bookings`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      // Repricing worked, so the sheet the traveller pressed it in is now
+      // showing prices that no longer exist. Close it and let the itinerary
+      // behind it repaint; they reopen Review & pay on the new prices. Only on
+      // success — a failed reprice leaves the sheet up, expired notice and all.
+      setShowCartSheet(false);
+    } catch (e) {
+      console.error("Failed to reprice itinerary", e);
+    } finally {
+      // Whether it succeeded or failed, the four PENDING statuses above have to
+      // be replaced by the server's real ones and `is_polling` released, or the
+      // pricing skeleton and the chat composer stay stuck.
+      dispatch(setItineraryStatus("is_polling", false));
+      try {
+        const { axiosGetItineraryStatus } = await import(
+          "../../services/itinerary/daybyday/preview"
+        );
+        const statusRes = await axiosGetItineraryStatus.get(`${itinId}/status/`);
+        const st = statusRes.data?.celery;
+        dispatch(
+          setItineraryStatus("itinerary_status", st?.ITINERARY || "SUCCESS"),
+        );
+        dispatch(setItineraryStatus("hotels_status", st?.HOTELS || "SUCCESS"));
+        dispatch(
+          setItineraryStatus("transfers_status", st?.TRANSFERS || "SUCCESS"),
+        );
+        dispatch(setItineraryStatus("pricing_status", st?.PRICING || "SUCCESS"));
+      } catch (e) {
+        console.error("Failed to refresh itinerary status after reprice", e);
+      }
+      await fetchPaymentData(itinId);
+      // Restart ItineraryContainer's status poll. The PENDING statuses above
+      // are what put the "Updating your itinerary" loader up, and only a poll
+      // observing them resolve takes it off again — that poll stops itself once
+      // everything reads SUCCESS, so by reprice time nothing is watching.
+      // Bumping the counter is how the desktop cart restarts it too.
+      setItineraryRefetchCounter((c) => c + 1);
+      setIsRepricing(false);
+    }
+  }, [activeItineraryId, authToken, isRepricing, dispatch, fetchPaymentData]);
+
   const ctaBarProps = {
     activeItineraryId,
     showItineraryShimmer,
@@ -3928,6 +4016,20 @@ Start Location: ${details.startLocation}`;
       reportChatStage("chat_cart_viewed", activeItineraryId || "", "P2");
       openPaymentDrawer();
     },
+    // Phone only: View Cart raises the "Review & pay" sheet instead of the
+    // drawer. BottomCTABar falls back to onViewCart when this is undefined, so
+    // desktop keeps the drawer.
+    onReviewPay: isMobile
+      ? () => {
+          if (!authToken) {
+            setShowApiLoginPrompt(true);
+            return;
+          }
+          reportChatStage("chat_cart_viewed", activeItineraryId || "", "P2");
+          if (activeItineraryId) fetchPaymentData(activeItineraryId);
+          setShowCartSheet(true);
+        }
+      : undefined,
     onViewBookings: itineraryIsComplete ? handleViewBookings : undefined,
     notes: statusNotes,
     // Archive-only: the bar's CTA clones the trip rather than raising a contact
@@ -5029,6 +5131,54 @@ Start Location: ${details.startLocation}`;
       {/* Toaster notifications — portal to modal-portal div */}
       <NotificationPopup />
 
+      {/* ── Phone cart: the "Review & pay" bottom sheet. The drawer below stays
+             the payment engine, coupon owner and traveller-details gate. ── */}
+      {isMobile && activeItineraryId && (
+        <CartSheet
+          open={showCartSheet}
+          onClose={() => setShowCartSheet(false)}
+          onPay={() => {
+            // Straight to the gateway. The drawer still mounts — it owns the
+            // traveller-details gate and the Razorpay handshake — but on
+            // `autoStartPayment` it paints nothing, so the traveller is never
+            // handed back the cart they just reviewed.
+            //
+            // This sheet STAYS OPEN behind it: it is the screen the gateway
+            // opens over, and the one they land on when they dismiss it.
+            //
+            // Not logged in: onViewCart raises the login prompt and never
+            // mounts the drawer, so nothing would ever report the attempt
+            // ended and the button would sit on "Opening payment…" for good.
+            // Latch the flag only on the path that mounts the payment engine.
+            if (!authToken) {
+              ctaBarProps.onViewCart();
+              return;
+            }
+            setAutoStartPayment(true);
+            ctaBarProps.onViewCart();
+          }}
+          isPaying={autoStartPayment}
+          onCouponApplied={() =>
+            activeItineraryId && fetchPaymentData(activeItineraryId)
+          }
+          // Saving traveller details flips `traveler_details_verified` on the
+          // cart — refetch so the sheet's traveller card, and the drawer's pay
+          // gate behind it, both see the names that were just added.
+          onTravellersSaved={() =>
+            activeItineraryId && fetchPaymentData(activeItineraryId)
+          }
+          token={authToken}
+          // The cart PATCH behind the include/exclude checkboxes is addressed
+          // by ITINERARY id. `router.query.id` on /chat/<id> is the chat
+          // session, so it has to be passed explicitly — same trap as
+          // handleReprice.
+          itineraryId={activeItineraryId}
+          askKaira={handleItineraryContainerSendMessage}
+          onReprice={handleReprice}
+          isRepricing={isRepricing}
+        />
+      )}
+
       {/* ── Payment — mounts NewSummaryContainers which portals its own full-screen Drawer ── */}
 
       {showPaymentDrawer && activeItineraryId && itineraryRedux && (
@@ -5065,6 +5215,12 @@ Start Location: ${details.startLocation}`;
             social_title={itineraryRedux?.social_title}
             social_description={itineraryRedux?.social_description}
             openPaymentDrawer={true}
+            // Straight-to-gateway. On this flag the drawer paints nothing at
+            // all (`hideCartForAutoPay`) and acts purely as the payment engine,
+            // so the traveller is never handed back the cart they just
+            // reviewed in the sheet.
+            autoStartPayment={autoStartPayment}
+            onAutoPayEnded={handleAutoPayEnded}
           />
         </div>
       )}
@@ -5095,6 +5251,7 @@ interface BottomCTABarProps {
   popupStyle: React.CSSProperties;
   onConfirm: () => void;
   onViewCart: () => void;
+  onReviewPay?: () => void;
   onGetInTouch?: () => void;
   /** Archive-only: opens the clone popup from "Get this trip!". */
   onGetThisTrip?: () => void;
@@ -5251,6 +5408,7 @@ export const BottomCTABar = React.memo(
     popupStyle,
     onConfirm,
     onViewCart,
+    onReviewPay,
     onGetInTouch,
     onGetThisTrip,
     onRetryCart,
@@ -5523,7 +5681,7 @@ export const BottomCTABar = React.memo(
               </button>
             ) : (
               <button
-                onClick={onViewCart}
+                onClick={onReviewPay || onViewCart}
                 className="flex items-center gap-2 h-[42px] md:h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[14px] md:text-[15px] font-inter font-bold text-black whitespace-nowrap shrink-0"
               >
                 View Cart

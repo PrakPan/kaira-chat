@@ -213,8 +213,29 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        {/* The single viewport for the whole app (Next disallows it in _document). */}
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* The single viewport for the whole app (Next disallows it in _document).
+
+            `viewport-fit=cover` lets the page paint edge to edge — under the
+            notch/dynamic island, under the home indicator, under a display
+            cutout in landscape. It is also what makes every
+            `env(safe-area-inset-*)` in this codebase resolve to something other
+            than 0 on iOS: without it those values are hard 0 and the padding
+            they guard silently does nothing — which is why the bottom sheets
+            (Sheet.jsx, QuoteDetailSheet, TripIdeasSheet) and the taxi/transfer
+            drawers all pad with `calc(Npx + env(safe-area-inset-bottom))` and
+            got none of it.
+
+            `interactive-widget=resizes-content` is what makes the on-screen
+            keyboard shrink the LAYOUT viewport rather than only the visual one.
+            Chrome's default (`resizes-visual`) leaves the layout viewport — and
+            therefore `100dvh` — at full height when the keyboard opens, so a
+            sheet's pinned footer stays exactly where it was: underneath the
+            keyboard. iOS ignores this key and scrolls the field into view
+            itself. */}
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+        />
         {/* Default title; per-page <title> tags override this via next/head
             deduplication, so every page ends up with exactly one title. */}
         <title>AI Trip Planner & Custom Travel Itineraries | The Tarzan Way</title>

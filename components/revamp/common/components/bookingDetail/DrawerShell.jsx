@@ -7,7 +7,18 @@ import React from "react";
  * The body is plain white with no pane tint. Sections separate themselves with
  * rules, so there is nothing for a card to sit on and nothing to outline.
  */
-export default function DrawerShell({ band, footer, children }) {
+export default function DrawerShell({
+  band,
+  footer,
+  children,
+  embedded = false,
+}) {
+  // Embedded in a host that already owns the panel, its header and its action
+  // bar — the mobile itinerary's detail sheet. The frame would fight it:
+  // `h-screen` on a sheet body is a second full-height scroller, and the band
+  // would be a second title under the sheet's own.
+  if (embedded) return <div className="flex flex-col">{children}</div>;
+
   return (
     <div className="h-screen bg-white flex flex-col overflow-hidden">
       {/* `overflow-y-auto` alone computes overflow-x to `auto` as well, so any
