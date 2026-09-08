@@ -116,6 +116,22 @@ const BOOKING_TYPE_FOR_CATEGORY = {
   Ancillaries: "ancillary",
 };
 
+// The trip has already departed. Redux seeds `Itinerary` with a `{ name,
+// images }` placeholder that carries no `start_date`, so a missing date reads
+// as "not loaded yet" and never as an expired trip — the same guard the
+// desktop cart makes (NewBookingSlide's `isItineraryInFuture`) before it swaps
+// its pay CTA for Update Dates. Both ends are floored to midnight: a trip
+// starting today has not started too late to pay for.
+const tripHasStarted = (startDate) => {
+  if (!startDate) return false;
+  const start = new Date(startDate);
+  if (Number.isNaN(start.getTime())) return false;
+  const today = new Date();
+  start.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  return start < today;
+};
+
 // ─── A cart row, as a detail-sheet descriptor ────────────────────────────────
 //
 //  Tapping a booking's name in the cart opens THIS surface's detail sheet — the
@@ -318,6 +334,11 @@ export default function CartSheet({
   onClose,
   onPay,
   onReprice,
+  // The trip's dates have gone by. Handled by the host rather than here: the
+  // fix is the Settings sheet's date picker, which re-plans the whole trip
+  // around the new dates, and it paints inside the page rather than in this
+  // sheet's portal — so opening it is also the moment this sheet stands down.
+  onUpdateDates,
   onCouponApplied,
   // Traveller details were just saved. The cart carries
   // `traveler_details_verified`, so the card's state only flips once the cart
@@ -407,13 +428,36 @@ export default function CartSheet({
     const validUntilMs = validUntil
       ? new Date(String(validUntil).replace(" ", "T")).getTime()
       : null;
-    const expired = !validUntilMs || validUntilMs <= now;
+    const pricesExpired = !validUntilMs || validUntilMs <= now;
     // How long the quote is actually held for, counted down live rather than
     // asserted as "today" — the same number the desktop drawer's LivePriceTimer
     // shows, in the header this sheet already has instead of a second banner.
-    const secondsLeft = expired
+    const secondsLeft = pricesExpired
       ? 0
       : Math.max(0, Math.floor((validUntilMs - now) / 1000));
+
+    // ── Dates in the past ───────────────────────────────────────────────────
+    // A quote that has lapsed and a trip that has already departed are two
+    // different problems with two different answers, and this sheet knew only
+    // the first: on a past-dated itinerary it offered "Reprice itinerary",
+    // which re-quotes the same dead dates and hands the traveller straight
+    // back here. The desktop cart separates them and so does this one.
+    const datesPast = tripHasStarted(itinerary?.start_date);
+    const anyPaid = Object.values(C.summary).some((g) =>
+      (g?.bookings || []).some((b) => b?.status === "Paid"),
+    );
+    // Nothing paid yet, so the dates are still the traveller's to move: every
+    // pay CTA becomes Update Dates, because paying today's prices for a trip
+    // that started last week is a dead end.
+    const showUpdateDates = datesPast && !anyPaid;
+    // The reprice case is what is left: a lapsed quote on a live trip, and a
+    // part-paid trip whose dates have gone — that one is already ticketed
+    // against those dates, so the cart can only re-quote it, exactly as the
+    // desktop cart's `showRepriceExpired` does.
+    const showReprice = !showUpdateDates && (pricesExpired || datesPast);
+    // Either way the figures below are not today's, which is what freezes the
+    // include/exclude checkboxes and stands the hold down.
+    const stale = showUpdateDates || showReprice;
 
     // The hold, on the drawer's rules rather than this sheet's. `lockInCompleted`
     // is the drawer's own post-gateway flag and belongs to the surface that runs
@@ -423,13 +467,15 @@ export default function CartSheet({
     // the balance — the same swap the desktop CTA makes.
     const payNow = lock.requiresLockIn ? lock.payNowAmount : payable;
     // The card is on screen in exactly the states the CTA it explains is: while
-    // the hold is owed, and once it has been paid. Not while prices have
-    // expired, where the bar offers a reprice instead of a payment.
+    // the hold is owed, and once it has been paid. Not while the cart is stale,
+    // where the bar offers a reprice or new dates instead of a payment.
     const showLockIn =
-      !expired && (lock.requiresLockIn || lock.hasLockInPaid) && payable > 0;
+      !stale && (lock.requiresLockIn || lock.hasLockInPaid) && payable > 0;
 
     return {
-      expired,
+      showUpdateDates,
+      showReprice,
+      stale,
       holdClock: clock(secondsLeft),
       // Under five minutes the countdown goes red, the threshold the shared
       // CountdownTimer already uses.
@@ -466,7 +512,7 @@ export default function CartSheet({
           }
         : { applied: false, text: "Have a coupon?", cta: "Apply" },
     };
-  }, [cart, currency, now]);
+  }, [cart, currency, now, itinerary?.start_date]);
 
   // The traveller card's contents. `verified` is the cart's own flag first —
   // it accounts for pax changes the itinerary's `travellers` array can't
@@ -632,7 +678,9 @@ export default function CartSheet({
                 {/* The hold is a deadline, so the header states the deadline.
                     "PRICE HELD TODAY" was both vaguer than the cart knows and a
                     claim it could not honour once the quote had lapsed. */}
-                {model.expired ? (
+                {model.showUpdateDates ? (
+                  <span className="text-[#b84034]">DATES EXPIRED</span>
+                ) : model.showReprice ? (
                   <span className="text-[#b84034]">PRICES EXPIRED</span>
                 ) : (
                   <>
@@ -655,7 +703,28 @@ export default function CartSheet({
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-[14px] py-[12px]">
-          {model.expired ? (
+          {/* Why this cart cannot be paid as it stands. Past dates are named
+              first and on their own: they are the reason the prices are stale,
+              so "reprice" would be the wrong instruction to give here. */}
+          {model.showUpdateDates ? (
+            <div
+              style={{
+                border: "1px solid #f3c9c4",
+                background: "#fff1ee",
+                borderRadius: 11,
+                boxShadow: "none",
+              }}
+              className="mb-[12px] flex flex-col gap-[3px] p-[12px]"
+            >
+              <div className="font-mono text-[9.5px] tracking-[0.07em] text-[#b84034]">
+                DATES EXPIRED
+              </div>
+              <div className="text-[13px] leading-[1.45] text-[#0b1220]">
+                Your itinerary dates are in the past. Update the dates to see
+                current pricing and continue with booking.
+              </div>
+            </div>
+          ) : model.showReprice ? (
             <div
               style={{
                 border: "1px solid #f3c9c4",
@@ -779,7 +848,7 @@ export default function CartSheet({
             onOpenDetails={setDetailBooking}
             arePricesHidden={model.hidden}
             updatingInclusions={updatingInclusions}
-            arePricesExpired={model.expired}
+            arePricesExpired={model.stale}
           />
 
           {/* Coupons stay this sheet's own: a dashed row that opens CouponSheet
@@ -977,53 +1046,74 @@ export default function CartSheet({
         </div>
 
         <div className="flex-none border-t border-[#e6e8ec] px-[14px] pb-[14px] pt-[11px]">
-          <div className="flex items-center justify-between gap-[13px]">
-            <div className="min-w-0">
-              <div className="font-mono text-[9.5px] tracking-[0.07em] text-[#8a93a6]">
-                {model.expired
-                  ? "PRICES EXPIRED"
-                  : model.requiresLockIn
-                    ? "PAY NOW TO HOLD"
-                    : "PAYABLE NOW"}
-              </div>
-              <div className="mt-[2px] whitespace-nowrap text-[17px] font-[800] tracking-[-0.02em] text-[#0b1220]">
-                {model.hidden ? "—" : model.payableLabel || "—"}
-              </div>
-            </div>
+          {model.showUpdateDates ? (
+            // The one state with no amount beside its button: every figure in
+            // this cart is quoted against dates that have gone, so printing
+            // one here would name a price we are about to replace. The desktop
+            // cart's mobile bar drops its amount for the same reason and
+            // gives the whole strip to the Update Dates CTA.
             <button
               type="button"
-              onClick={model.expired ? onReprice : handlePayNow}
-              disabled={isRepricing || isPaying}
+              onClick={() => onUpdateDates?.()}
               style={{
                 border: "none",
                 background: "#f7e700",
                 borderRadius: 10,
                 boxShadow: "0 8px 20px -10px rgba(247,231,0,0.55)",
               }}
-              className="flex-none whitespace-nowrap px-[20px] py-[12px] text-[14.5px] font-[800] text-[#0b1220] disabled:opacity-60"
+              className="w-full px-[20px] py-[12px] text-[14.5px] font-[800] text-[#0b1220]"
             >
-              {isRepricing
-                ? "Repricing…"
-                : model.expired
-                  ? "Reprice itinerary"
-                  : isPaying
-                    ? "Opening payment…"
-                    : // The amount is already printed beside this button, so
-                      // the label only has to say what paying it BUYS — which
-                      // is the part a bare "Proceed to Pay" under a fee far
-                      // smaller than the total gets wrong. The padlock echoes
-                      // the notice above, as it does on desktop, and is hidden
-                      // from screen readers because the words carry it.
-                      model.requiresLockIn ? (
-                        <>
-                          <span aria-hidden="true">&#128274;</span> Hold this
-                          price
-                        </>
-                      ) : (
-                        "Proceed to Pay"
-                      )}
+              Update dates
             </button>
-          </div>
+          ) : (
+            <div className="flex items-center justify-between gap-[13px]">
+              <div className="min-w-0">
+                <div className="font-mono text-[9.5px] tracking-[0.07em] text-[#8a93a6]">
+                  {model.showReprice
+                    ? "PRICES EXPIRED"
+                    : model.requiresLockIn
+                      ? "PAY NOW TO HOLD"
+                      : "PAYABLE NOW"}
+                </div>
+                <div className="mt-[2px] whitespace-nowrap text-[17px] font-[800] tracking-[-0.02em] text-[#0b1220]">
+                  {model.hidden ? "—" : model.payableLabel || "—"}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={model.showReprice ? onReprice : handlePayNow}
+                disabled={isRepricing || isPaying}
+                style={{
+                  border: "none",
+                  background: "#f7e700",
+                  borderRadius: 10,
+                  boxShadow: "0 8px 20px -10px rgba(247,231,0,0.55)",
+                }}
+                className="flex-none whitespace-nowrap px-[20px] py-[12px] text-[14.5px] font-[800] text-[#0b1220] disabled:opacity-60"
+              >
+                {isRepricing
+                  ? "Repricing…"
+                  : model.showReprice
+                    ? "Reprice itinerary"
+                    : isPaying
+                      ? "Opening payment…"
+                      : // The amount is already printed beside this button, so
+                        // the label only has to say what paying it BUYS — which
+                        // is the part a bare "Proceed to Pay" under a fee far
+                        // smaller than the total gets wrong. The padlock echoes
+                        // the notice above, as it does on desktop, and is hidden
+                        // from screen readers because the words carry it.
+                        model.requiresLockIn ? (
+                          <>
+                            <span aria-hidden="true">&#128274;</span> Hold this
+                            price
+                          </>
+                        ) : (
+                          "Proceed to Pay"
+                        )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

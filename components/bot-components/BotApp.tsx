@@ -3985,6 +3985,32 @@ Start Location: ${details.startLocation}`;
     }
   }, [activeItineraryId, authToken, isRepricing, dispatch, fetchPaymentData]);
 
+  // The cart's other dead end: the trip's dates have already gone by, so the
+  // prices in it are quoted against a trip that cannot happen and repricing
+  // would only re-quote the same dead dates. The fix is the Settings sheet on
+  // its past-dates copy — the same destination the Route tab's blocked action
+  // bar sends people to — which re-plans the trip around new dates.
+  //
+  // The cart sheet closes first, and not only for tidiness: Settings paints
+  // inline in this page (BottomModal, z 50) while the cart sheet portals to
+  // #modal-portal at z 1620, so a Settings opened over it would be invisible.
+  const handleUpdateDates = React.useCallback(() => {
+    if (!activeItineraryId) return;
+    setShowCartSheet(false);
+    // Whether the trip has hotels decides which pax editor Settings shows, and
+    // it is not on the itinerary object — every other opener fetches it too.
+    axios
+      .get(
+        `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`,
+      )
+      .then((res) => setIsHotelsPresent(res.data.no_of_hotels > 0))
+      .catch(() => setIsHotelsPresent(false))
+      .finally(() => {
+        setSettingsReason("past-dates");
+        setShowSettings(true);
+      });
+  }, [activeItineraryId]);
+
   const ctaBarProps = {
     activeItineraryId,
     showItineraryShimmer,
@@ -5176,6 +5202,7 @@ Start Location: ${details.startLocation}`;
           askKaira={handleItineraryContainerSendMessage}
           onReprice={handleReprice}
           isRepricing={isRepricing}
+          onUpdateDates={handleUpdateDates}
         />
       )}
 
