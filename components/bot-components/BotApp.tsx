@@ -5471,7 +5471,9 @@ const LockInHoldStrip = ({
         <span>
           Hold this price for{" "}
           <span className="font-semibold text-primary-yellow">
-            {currencySymbol}
+            {/* Non-breaking, so the symbol can never be left stranded at the
+                end of a line away from the amount it belongs to. */}
+            {currencySymbol}&nbsp;
             {formatCurrencyValue(Math.round(fee), currencyCode)}/-
           </span>
         </span>
