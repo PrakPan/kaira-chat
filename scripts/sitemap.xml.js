@@ -1,4 +1,5 @@
 const axios = require("axios");
+const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 require('dotenv').config();
@@ -21,17 +22,18 @@ const CHILD_SITEMAPS = {
   themesStatic: "sitemap-themes-static.xml", // static site pages + theme landing pages
 };
 
-// `lastmod` falls back to the build timestamp because most of these APIs return
-// only a path or slug, with no per-entity updated_at to report. Where a real
-// one *is* available it must be used: 663 identical lastmods is a signal Google
-// ignores outright, so an entry may carry its own `lastmod`.
-const buildUrlset = (paths) => `<?xml version="1.0" encoding="UTF-8"?>
+// `lastmod` falls back to the child sitemap's own resolved lastmod (see
+// resolveChildLastmod) because most of these APIs return only a path or slug,
+// with no per-entity updated_at to report. Where a real one *is* available it
+// must be used: 663 identical lastmods is a signal Google ignores outright, so
+// an entry may carry its own `lastmod`.
+const buildUrlset = (paths, fallbackLastmod) => `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${paths
   .map(
     (el) => `  <url>
     <loc>${el.link}</loc>
-    <lastmod>${el.lastmod || NOW}</lastmod>
+    <lastmod>${el.lastmod || fallbackLastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>${el.priority || "0.8"}</priority>
   </url>`
@@ -40,18 +42,109 @@ ${paths
 </urlset>
 `;
 
-const buildIndex = (files) => `<?xml version="1.0" encoding="UTF-8"?>
+const buildIndex = (children) => `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${files
+${children
   .map(
-    (file) => `  <sitemap>
+    ({ file, lastmod }) => `  <sitemap>
     <loc>${PROD_BASE_URL}/${file}</loc>
-    <lastmod>${NOW}</lastmod>
+    <lastmod>${lastmod}</lastmod>
   </sitemap>`
   )
   .join("\n")}
 </sitemapindex>
 `;
+
+// --- child lastmod resolution -------------------------------------------------
+//
+// The index used to stamp all four children with the build timestamp, so every
+// deploy told Google that all four had just changed even when a child's bytes
+// were identical. Google discounts a `lastmod` it finds unreliable, and the
+// symptom was the Sitemaps report reading the children on an unrelated rotation
+// (trips Aug 30, countries Aug 31, themes Sep 6, cities Sep 8) rather than on
+// the change we were signalling. A child's lastmod must now move only when that
+// child's contents actually move.
+
+/** Newest of a set of W3C dates, as the original string. */
+const pickLatest = (values) =>
+  values
+    .filter(Boolean)
+    .reduce(
+      (latest, value) =>
+        !latest || Date.parse(value) > Date.parse(latest) ? value : latest,
+      ""
+    );
+
+// Identity of a child sitemap ignoring lastmod: the same URLs at the same
+// priorities fingerprint the same, so a rebuild on its own cannot look like a
+// content change.
+const urlFingerprint = (entries) =>
+  crypto
+    .createHash("sha1")
+    .update(
+      entries
+        .map((el) => `${el.link} ${el.priority || "0.8"}`)
+        .sort()
+        .join("\n")
+    )
+    .digest("hex");
+
+const tagValue = (block, name) => {
+  const match = block.match(new RegExp(`<${name}>([\\s\\S]*?)</${name}>`));
+  return match ? match[1].trim() : "";
+};
+
+/**
+ * The child sitemap currently live in production, or null.
+ *
+ * This is the only record of what the previous deploy published: the generated
+ * sitemaps are gitignored and CI builds from a clean checkout, so there is no
+ * on-disk history to diff against.
+ */
+const readPublishedChild = async (file) => {
+  try {
+    const { data } = await axios.get(`${PROD_BASE_URL}/${file}`, {
+      timeout: 15000,
+      responseType: "text",
+    });
+    const blocks = String(data).match(/<url>[\s\S]*?<\/url>/g) || [];
+    if (!blocks.length) return null;
+
+    return {
+      fingerprint: urlFingerprint(
+        blocks.map((block) => ({
+          link: tagValue(block, "loc"),
+          priority: tagValue(block, "priority") || undefined,
+        }))
+      ),
+      lastmod: pickLatest(blocks.map((block) => tagValue(block, "lastmod"))),
+    };
+  } catch (err) {
+    console.error(`[sitemap] could not read published ${file}: ${err.message}`);
+    return null;
+  }
+};
+
+/**
+ * The lastmod to publish for one child, in preference order:
+ *   1. the newest real per-URL lastmod it carries (trips: every entry has the
+ *      itinerary's own modified_at, so this needs no history at all)
+ *   2. the lastmod already live, when the URL set is unchanged since the last
+ *      deploy — which also keeps the file byte-identical, since entries with no
+ *      lastmod of their own fall back to this value
+ *   3. now, for a genuinely changed child (and whenever prod is unreachable,
+ *      which degrades to exactly the old build-timestamp behaviour)
+ */
+const resolveChildLastmod = async (file, entries) => {
+  const real = pickLatest(entries.map((el) => el.lastmod));
+  if (real) return real;
+
+  const published = await readPublishedChild(file);
+  if (published && published.fingerprint === urlFingerprint(entries)) {
+    return published.lastmod || NOW;
+  }
+  return NOW;
+};
 
 const writeSitemap = (file, xml) => {
   fs.writeFileSync(path.join(process.cwd(), "public", file), xml, "utf8");
@@ -190,11 +283,26 @@ const generateSitemap = async () => {
       priority: "0.6",
     }));
 
+    // A hub page has no timestamp of its own, but it is generated entirely from
+    // the trips listed on it — so its newest trip *is* its lastmod. Deriving it
+    // keeps the build timestamp out of this file completely: with all 1,865
+    // entries carrying a real date, sitemap-trips.xml is byte-stable across
+    // rebuilds and its index lastmod moves only when a trip does.
+    const latestTripLastmod = (trips) =>
+      pickLatest(trips.map((trip) => String(trip.modified_at || "").slice(0, 10)));
+
+    const destinations = readDestinations();
     hubPaths = [
-      { title: "Trips Index", link: `${PROD_BASE_URL}/trips`, priority: "0.8" },
-      ...[...readDestinations().keys()].map((destination) => ({
+      {
+        title: "Trips Index",
+        link: `${PROD_BASE_URL}/trips`,
+        lastmod: latestTripLastmod(rows) || undefined,
+        priority: "0.8",
+      },
+      ...[...destinations.entries()].map(([destination, destinationTrips]) => ({
         title: "Trips Hub",
         link: `${PROD_BASE_URL}/trips/${destination}`,
+        lastmod: latestTripLastmod(destinationTrips) || undefined,
         priority: "0.7",
       })),
     ];
@@ -250,21 +358,27 @@ const generateSitemap = async () => {
   const tripsGroup = [...hubPaths, ...tripsPaths];
   const themesStaticGroup = [...StaticPaths, ...themePaths];
 
-  writeSitemap(CHILD_SITEMAPS.countries, buildUrlset(countriesGroup));
-  writeSitemap(CHILD_SITEMAPS.cities, buildUrlset(citiesGroup));
-  writeSitemap(CHILD_SITEMAPS.trips, buildUrlset(tripsGroup));
-  writeSitemap(CHILD_SITEMAPS.themesStatic, buildUrlset(themesStaticGroup));
+  // Resolve each child's lastmod before writing it: the same value is both the
+  // child's entry in the index and the per-URL fallback inside it, so an
+  // unchanged child is republished byte-for-byte identical.
+  const groups = [
+    { file: CHILD_SITEMAPS.countries, entries: countriesGroup },
+    { file: CHILD_SITEMAPS.cities, entries: citiesGroup },
+    { file: CHILD_SITEMAPS.trips, entries: tripsGroup },
+    { file: CHILD_SITEMAPS.themesStatic, entries: themesStaticGroup },
+  ];
+
+  const children = [];
+  for (const { file, entries } of groups) {
+    const lastmod = await resolveChildLastmod(file, entries);
+    writeSitemap(file, buildUrlset(entries, lastmod));
+    children.push({ file, lastmod });
+  }
 
   // sitemap.xml is now a sitemap index. The existing GSC submission of
   // https://thetarzanway.com/sitemap.xml keeps working and auto-discovers the
   // four children below.
-  const index = buildIndex([
-    CHILD_SITEMAPS.countries,
-    CHILD_SITEMAPS.cities,
-    CHILD_SITEMAPS.trips,
-    CHILD_SITEMAPS.themesStatic,
-  ]);
-  writeSitemap("sitemap.xml", index);
+  writeSitemap("sitemap.xml", buildIndex(children));
 
   const PagesToIdJson = await axios.get(`${BASE_URL}/api/v1/geos/pages/all/`);
   fs.writeFileSync(
@@ -289,6 +403,10 @@ const generateSitemap = async () => {
   console.log(
     `  themes: ${staticThemeSlugs.length} static file(s) + ${cmsThemeSlugs.length} CMS = ${allThemeSlugs.length} unique`
   );
+  console.log("  index lastmod per child:");
+  for (const { file, lastmod } of children) {
+    console.log(`    ${file}: ${lastmod}${lastmod === NOW ? " (changed)" : ""}`);
+  }
 };
 
 generateSitemap().catch((error) => {
