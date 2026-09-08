@@ -687,6 +687,13 @@ const PromptCard: React.FC<{
 }) => {
   const selection = useThemeSelection();
   const palette = usePalette();
+  // An ink card in a RAIL is a different object from an ink card in a grid.
+  // The grid version (two or three cards filling the panel) carries a tall hero
+  // image and headline type; a rail of ten has to stay scannable, so it takes
+  // the mockup's smaller proportions instead — 292px wide, a 140px image, a
+  // 14px centred name. Without this split the rail inherits the grid's 220px
+  // images and 18px names and the row reads twice the size it should.
+  const darkRail = !!(onDark && inRail);
   // The saved item: an explicit card.item wins; else derive from the card when
   // the section is selectable. An activity card carries its catalog id so the
   // element id rides along in the request.
@@ -721,8 +728,14 @@ const PromptCard: React.FC<{
         onSelectPrompt(card.prompt, { source: "card", label: card.name });
     }}
     aria-pressed={selectable ? selected : undefined}
-    className={`ctl-card group flex flex-col text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] shrink-0 ${
-      inRail ? "md:w-[288px]" : "md:w-auto md:shrink"
+    className={`ctl-card group flex flex-col rounded-[18px] overflow-hidden cursor-pointer shrink-0 ${
+      darkRail ? "text-center" : "text-left"
+    } ${
+      darkRail
+        ? "w-[272px] md:w-[292px]"
+        : inRail
+          ? "w-[262px] md:w-[288px]"
+          : "w-[262px] md:w-auto md:shrink"
     }`}
     style={{
       ...(onDark
@@ -735,7 +748,11 @@ const PromptCard: React.FC<{
   >
     <div
       className={`relative overflow-hidden ${
-        onDark ? "h-[176px] md:h-[220px]" : "h-[148px] md:h-[160px]"
+        darkRail
+          ? "h-[132px] md:h-[140px]"
+          : onDark
+            ? "h-[176px] md:h-[220px]"
+            : "h-[148px] md:h-[160px]"
       }`}
       style={{ background: onDark ? "rgba(255,255,255,0.04)" : SAND }}
     >
@@ -757,13 +774,21 @@ const PromptCard: React.FC<{
       )}
     </div>
     <div
-      className={`flex flex-col flex-1 px-[17px] py-[16px] ${
-        onDark ? "md:px-[22px] md:py-[22px]" : "md:px-[18px] md:py-[17px]"
+      className={`flex flex-col flex-1 ${
+        darkRail
+          ? "px-[16px] py-[16px]"
+          : onDark
+            ? "px-[17px] py-[16px] md:px-[22px] md:py-[22px]"
+            : "px-[17px] py-[16px] md:px-[18px] md:py-[17px]"
       }`}
     >
       <div
         className={`font-bold leading-[1.3] ${
-          onDark ? "text-[16px] md:text-[18px]" : "text-[15px] md:text-[16.5px]"
+          darkRail
+            ? "text-[13.5px] md:text-[14px]"
+            : onDark
+              ? "text-[16px] md:text-[18px]"
+              : "text-[15px] md:text-[16.5px]"
         }`}
         style={{ color: onDark ? PAPER : INK, letterSpacing: "-0.01em" }}
       >
@@ -1071,14 +1096,10 @@ const StackedTripCard: React.FC<{
             )}
           </div>
         )}
-        {ctaLabel && (
-          <span
-            className="block w-full text-center rounded-full text-[13px] font-bold px-[14px] py-[12px] mt-[14px]"
-            style={{ background: INK, color: PAPER, border: "none" }}
-          >
-            {ctaLabel}
-          </span>
-        )}
+        {/* The urgency notice sits ABOVE the CTA so the button is always the
+            card's last element. Below it, a card carrying one would push its
+            own CTA up while the cards beside it kept theirs on the bottom
+            edge, and a row of plans would end in a ragged line of buttons. */}
         {card.urgent && (
           <div className="flex items-start gap-[7px] mt-[10px]">
             <span
@@ -1090,6 +1111,19 @@ const StackedTripCard: React.FC<{
               style={{ color: RED, fontSize: 9, lineHeight: 1.4 }}
             >
               {card.urgent}
+            </span>
+          </div>
+        )}
+        {ctaLabel && (
+          // `mt-auto` pins the button to the bottom even on a card with no
+          // `line` to absorb the slack, so the CTAs line up whatever mix of
+          // copy, chips and notices the cards above them carry.
+          <div className="mt-auto pt-[14px]">
+            <span
+              className="block w-full text-center rounded-full text-[13px] font-bold px-[14px] py-[12px]"
+              style={{ background: INK, color: PAPER, border: "none" }}
+            >
+              {ctaLabel}
             </span>
           </div>
         )}
