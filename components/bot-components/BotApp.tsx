@@ -5388,6 +5388,98 @@ const ItineraryStepsLoader = ({
   );
 };
 
+// ── LockInHoldStrip ──────────────────────────────────────────────────────────
+// The "hold this price" hint, as a band across the top of the cart bar instead
+// of a chip in its foot line: at the bar's full width it reads as an offer
+// rather than a caption, and it stops sharing one line with the bookings count
+// and the coupon hint — which on a phone meant one of them had to be hidden.
+//
+// It slides up out of the bar a beat after the bar has settled. Only the
+// transform animates: the clip wrapper's height is switched, not transitioned,
+// because two ResizeObservers watch this bar (to size the scroll pane above it
+// and to park the "Back to itinerary" pill) and a transitioned height would
+// re-measure and re-render the tree every frame. The switch is invisible — at
+// rest the band is parked a full height below the clip box.
+const LOCK_IN_STRIP_HEIGHT = 28; // px
+const LOCK_IN_STRIP_DELAY_MS = 450;
+
+const LockInHoldStrip = ({
+  fee,
+  currencySymbol,
+  currencyCode,
+}: {
+  fee: number;
+  currencySymbol: string;
+  currencyCode?: string;
+}) => {
+  // Mounts only once the cart has resolved a required lock-in, so "after the
+  // page loads" is measured from here rather than from the bar's own mount.
+  const [revealed, setRevealed] = React.useState(false);
+  React.useEffect(() => {
+    const t = setTimeout(() => setRevealed(true), LOCK_IN_STRIP_DELAY_MS);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div
+      // Negative margins cancel the bar's own padding so the band runs edge to
+      // edge and caps the bar — the bar drops its own top hairline while this
+      // is up, so the band is the top edge.
+      className="overflow-hidden -mx-[24px] max-ph:-mx-[10px] -mt-2 mb-1"
+      style={{ height: revealed ? LOCK_IN_STRIP_HEIGHT : 0 }}
+      aria-hidden={!revealed}
+    >
+      <div
+        // The brand's indigo/yellow pair, not another pale tint: the bar below
+        // is already cornsilk and a second warm band on top of it read as part
+        // of the same surface. Sentence case in the UI font too — small caps in
+        // mono is the bar's label voice ("Total Cost"), and this is a sentence.
+        className="flex items-center justify-center gap-2 px-3 bg-primary-indigo font-inter text-[11.5px] md:text-[12.5px] leading-none text-white/90 whitespace-nowrap transition-transform duration-500 ease-out motion-reduce:transition-none"
+        style={{
+          height: LOCK_IN_STRIP_HEIGHT,
+          transform: revealed ? "translateY(0)" : "translateY(100%)",
+        }}
+      >
+        {/* A drawn padlock rather than the emoji: at this size the emoji lands
+            at a different weight, colour and baseline in every OS, and next to
+            one line of text that inconsistency is the whole strip. */}
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden
+          className="shrink-0 -mt-[1px]"
+        >
+          <path
+            d="M8 10V7.5a4 4 0 0 1 8 0V10"
+            stroke="#F7E700"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          />
+          <rect
+            x="4.5"
+            y="10"
+            width="15"
+            height="10.5"
+            rx="2.2"
+            fill="#F7E700"
+          />
+        </svg>
+        {/* One flex child for the whole sentence — the row has a `gap`, and an
+            element dropped mid-sentence would take that gap on both sides. */}
+        <span>
+          Hold this price for{" "}
+          <span className="font-semibold text-primary-yellow">
+            {currencySymbol}
+            {formatCurrencyValue(Math.round(fee), currencyCode)}/-
+          </span>
+        </span>
+      </div>
+    </div>
+  );
+};
+
 // Exported so the /trips leaf pages get the real bar rather than a lookalike —
 // they render the same V1 archive layout and need the same fixed price strip.
 export const BottomCTABar = React.memo(
@@ -5550,23 +5642,9 @@ export const BottomCTABar = React.memo(
     );
 
     // Lock-in hint. Same derivation as the cart drawer's pay CTA, so the bar
-    // never advertises a hold the cart will not actually offer.
+    // never advertises a hold the cart will not actually offer. Rendered as the
+    // band across the top of the bar, not in the foot line.
     const lockIn = getLockInState(cart);
-    const lockInBadge = lockIn.required ? (
-      <span className="flex items-center gap-1 text-[#8A7A00] font-mono text-[10px] md:text-[11px] font-semibold uppercase tracking-[0.06em] whitespace-nowrap">
-        <span aria-hidden>&#128274;</span>
-        {/* The whole sentence is one flex child on purpose: this row has a
-            `gap`, so an element dropped mid-sentence would take that gap on
-            both sides. Inside here the symbol is spaced by a margin instead of
-            a space character — in `font-mono` a space is a full character cell
-            wide, which read as a gap rather than as separation. */}
-        <span>
-          Hold this price for{" "}
-          <span className="mr-[0.18em]">{currencySymbol}</span>
-          {formatCurrencyValue(Math.round(lockIn.fee), currency?.currency)}/-
-        </span>
-      </span>
-    ) : null;
 
     // The price is what it is because of these bookings, so the count doubles as
     // the door into the Bookings view — it sits directly under the total it
@@ -5609,8 +5687,21 @@ export const BottomCTABar = React.memo(
       <div
         data-bottom-cta-bar
         style={barStyle}
-        className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-[24px] max-ph:px-[10px] py-2 flex flex-col gap-1"
+        // The grey hairline is the bar's separation from the content scrolling
+        // behind it. The hold band does that job itself when it is up, and the
+        // two stacked read as a stray line above it — so the border is dropped
+        // for as long as the band is there.
+        className={`z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] px-[24px] max-ph:px-[10px] py-2 flex flex-col gap-1 ${
+          lockIn.required ? "" : "border-t border-slate-100"
+        }`}
       >
+        {lockIn.required && (
+          <LockInHoldStrip
+            fee={lockIn.fee}
+            currencySymbol={currencySymbol}
+            currencyCode={currency?.currency}
+          />
+        )}
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             {cost !== null ? (
@@ -5698,20 +5789,10 @@ export const BottomCTABar = React.memo(
             coupon hint under the CTA it applies to. justify-end (not
             justify-between) so the coupon badge stays put when there is no
             bookings chip to push it right. */}
-        {(cost !== null || bookingsChip || lockInBadge) && (
+        {(cost !== null || bookingsChip) && (
           <div className="flex items-center justify-end gap-3">
             {bookingsChip && <span className="mr-auto">{bookingsChip}</span>}
-            {lockInBadge}
-            {/* Both hints fit side by side in the desktop bar's width. A phone
-                has room for one, and the hold is the one with a next action
-                attached — the coupon hint is repeated inside the cart anyway.
-                `max-ph:hidden`, not `hidden md:block`: a global `.hidden` with
-                `!important` ships in this app's CSS and outranks every `md:*`. */}
-            {cost !== null && (
-              <span className={lockInBadge ? "max-ph:hidden" : undefined}>
-                {couponBadge}
-              </span>
-            )}
+            {cost !== null && couponBadge}
           </div>
         )}
       </div>
