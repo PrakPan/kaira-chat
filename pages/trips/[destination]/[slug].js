@@ -25,7 +25,10 @@ import { connect } from "react-redux";
 import * as authaction from "../../../store/actions/auth";
 import TripSeoPage, { heroImageUrl } from "../../../components/trips/TripSeoPage";
 import { SITE_ORIGIN } from "../../../lib/seo/tripsIndexed";
-import { readTripPage, readTripsIndex } from "../../../lib/seo/tripsCache";
+// Commented out with the data fetching below — tripsCache requires `fs`, which
+// only stays out of the client bundle while getStaticProps/getStaticPaths
+// reference it. See the note in pages/trips/index.js.
+// import { readTripPage, readTripsIndex } from "../../../lib/seo/tripsCache";
 import { tripCard } from "../../../lib/seo/tripsCards";
 import { tripItinerary } from "../../../lib/seo/tripItinerary";
 import {

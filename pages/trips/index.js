@@ -9,7 +9,11 @@ import Head from "next/head";
 import Layout from "../../components/Layout";
 import TripsHub from "../../components/trips/TripsHub";
 import { SITE_ORIGIN } from "../../lib/seo/tripsIndexed";
-import { readDestinations } from "../../lib/seo/tripsCache";
+// Commented out with the data fetching below: tripsCache requires `fs`, and it
+// is dropped from the client bundle only while getStaticProps still references
+// it. With that body disabled the import is dead but still emitted, and webpack
+// fails the client build with "Can't resolve 'fs'".
+// import { readDestinations } from "../../lib/seo/tripsCache";
 import { tripCard } from "../../lib/seo/tripsCards";
 import { breadcrumbSchema } from "../../lib/seo/tripsJsonLd";
 import { destinationLabel } from "../../lib/seo/tripsFormat";
