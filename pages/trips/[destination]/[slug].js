@@ -131,7 +131,20 @@ const pickSiblings = (rows, current) => {
   return chosen.map(tripCard).filter(Boolean);
 };
 
+// ---------------------------------------------------------------------------
+// TRIPS ARE NOT DEPLOYED FROM THIS BRANCH (feature/lockin → Vercel).
+//
+// The empty path list below is normally the failure mode this function's
+// comment warns about — it is deliberate here: scripts/tripsSeoCache.js is
+// commented out of package.json's `prebuild`, so the .seo-cache snapshot does
+// not exist in the Vercel build and readTripsIndex() would throw. Nothing under
+// /trips is published from this branch; see the note in pages/trips/index.js
+// for how to turn the group back on.
+// ---------------------------------------------------------------------------
 export async function getStaticPaths() {
+  return { paths: [], fallback: false };
+
+  /*
   // Unguarded on purpose: readTripsIndex throws when the prebuild snapshot is
   // missing. Swallowing that would return an empty path list, which Next builds
   // as zero trips pages while exiting 0 — a deploy that looks clean and 404s
@@ -144,9 +157,14 @@ export async function getStaticPaths() {
     })),
     fallback: false,
   };
+  */
 }
 
 export async function getStaticProps({ params }) {
+  return { notFound: true };
+
+  /* eslint-disable no-unreachable */
+  /*
   const page = readTripPage(params.slug);
 
   // A slug in the index with no cached page means the detail fetch failed or
@@ -180,4 +198,5 @@ export async function getStaticProps({ params }) {
       },
     },
   };
+  */
 }

@@ -43,7 +43,24 @@ const TripsIndex = ({ title, description, chips, sections, schema }) => (
 
 export default TripsIndex;
 
+// ---------------------------------------------------------------------------
+// TRIPS ARE NOT DEPLOYED FROM THIS BRANCH (feature/lockin → Vercel).
+//
+// The trips pages are built from the .seo-cache snapshot that
+// `scripts/tripsSeoCache.js` crawls (~3 min, 1,865 pages), and that crawl is
+// commented out of package.json's `prebuild` for the Vercel build — so
+// readDestinations() would throw here and take the whole build down.
+// Returning notFound keeps the route compiled but unpublished.
+//
+// To restore: put tripsSeoCache.js back in `prebuild`, then delete the early
+// return below and uncomment the body — same in pages/trips/[destination]/
+// index.js and pages/trips/[destination]/[slug].js.
+// ---------------------------------------------------------------------------
 export async function getStaticProps() {
+  return { notFound: true };
+
+  /* eslint-disable no-unreachable */
+  /*
   const byDestination = readDestinations();
 
   const destinations = [...byDestination.entries()]
@@ -90,4 +107,5 @@ export async function getStaticProps() {
       schema: breadcrumbSchema([{ name: "Trips", href: "/trips" }]),
     },
   };
+  */
 }

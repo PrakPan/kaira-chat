@@ -59,16 +59,33 @@ const DestinationHub = ({ label, url, title, description, sections, schema }) =>
 
 export default DestinationHub;
 
+// ---------------------------------------------------------------------------
+// TRIPS ARE NOT DEPLOYED FROM THIS BRANCH (feature/lockin → Vercel).
+//
+// scripts/tripsSeoCache.js is commented out of package.json's `prebuild`, so
+// the .seo-cache snapshot these pages read does not exist in the Vercel build
+// and readDestinations() would throw. An empty path list emits zero hubs; the
+// route stays compiled but unpublished. See the note in pages/trips/index.js
+// for how to turn the group back on.
+// ---------------------------------------------------------------------------
 export async function getStaticPaths() {
+  return { paths: [], fallback: false };
+
+  /*
   return {
     paths: [...readDestinations().keys()].map((destination) => ({
       params: { destination },
     })),
     fallback: false,
   };
+  */
 }
 
 export async function getStaticProps({ params }) {
+  return { notFound: true };
+
+  /* eslint-disable no-unreachable */
+  /*
   const rows = readDestinations().get(params.destination);
   if (!rows?.length) return { notFound: true };
 
@@ -128,4 +145,5 @@ export async function getStaticProps({ params }) {
       ]),
     },
   };
+  */
 }
