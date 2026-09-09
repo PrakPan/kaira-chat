@@ -220,19 +220,23 @@ function MyApp({ Component, pageProps }) {
             cutout in landscape. It is also what makes every
             `env(safe-area-inset-*)` in this codebase resolve to something other
             than 0 on iOS: without it those values are hard 0 and the padding
-            they guard silently does nothing. See the --safe-* tokens in
-            styles/globals.css for the tokens to pad with.
+            they guard silently does nothing — which is why the bottom sheets
+            (Sheet.jsx, QuoteDetailSheet, TripIdeasSheet) and the taxi/transfer
+            drawers all pad with `calc(Npx + env(safe-area-inset-bottom))` and
+            got none of it. See the --safe-* tokens in styles/globals.css for
+            what to pad with.
 
             `interactive-widget=resizes-content` is what makes the on-screen
             keyboard shrink the LAYOUT viewport rather than only the visual one.
             Chrome's default (`resizes-visual`) leaves the layout viewport — and
             therefore `100dvh`, and therefore the app shell — at full height when
-            the keyboard opens, so the shell's bottom row stays exactly where it
-            was: underneath the keyboard. That is why Kaira's composer went out
-            of reach on Android the moment it was focused, while iOS (which
-            ignores this key and scrolls the field into view itself) was fine.
-            With `resizes-content` the shell shrinks to the space above the
-            keyboard and its foot rides up with it. */}
+            the keyboard opens, so the shell's bottom row and a sheet's pinned
+            footer both stay exactly where they were: underneath the keyboard.
+            That is why Kaira's composer went out of reach on Android the moment
+            it was focused, while iOS (which ignores this key and scrolls the
+            field into view itself) was fine. With `resizes-content` the shell
+            shrinks to the space above the keyboard and its foot rides up with
+            it. */}
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
