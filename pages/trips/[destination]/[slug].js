@@ -29,7 +29,10 @@ import { SITE_ORIGIN } from "../../../lib/seo/tripsIndexed";
 // only stays out of the client bundle while getStaticProps/getStaticPaths
 // reference it. See the note in pages/trips/index.js.
 // import { readTripPage, readTripsIndex } from "../../../lib/seo/tripsCache";
-import { tripCard } from "../../../lib/seo/tripsCards";
+// Commented out for the same reason: tripsCards requires tripsCache, and so
+// pulls `fs` into the client bundle. pickSiblings below, its only remaining
+// caller, is commented out with it.
+// import { tripCard } from "../../../lib/seo/tripsCards";
 import { tripItinerary } from "../../../lib/seo/tripItinerary";
 import {
   breadcrumbSchema,
@@ -111,6 +114,7 @@ export default connect(null, mapDispatchToProps)(IndexedTrip);
  */
 const SIBLING_COUNT = 3;
 
+/*
 const pickSiblings = (rows, current) => {
   const pool = rows.filter(
     (row) => row.destination === current.destination && row.slug !== current.slug
@@ -133,6 +137,7 @@ const pickSiblings = (rows, current) => {
 
   return chosen.map(tripCard).filter(Boolean);
 };
+*/
 
 // ---------------------------------------------------------------------------
 // TRIPS ARE NOT DEPLOYED FROM THIS BRANCH (feature/lockin → Vercel).

@@ -20,7 +20,9 @@ import { SITE_ORIGIN } from "../../../lib/seo/tripsIndexed";
 // only stays out of the client bundle while getStaticProps/getStaticPaths
 // reference it. See the note in pages/trips/index.js.
 // import { readDestinations, readTripPage } from "../../../lib/seo/tripsCache";
-import { tripCard } from "../../../lib/seo/tripsCards";
+// Commented out for the same reason: tripsCards requires tripsCache, and so
+// pulls `fs` into the client bundle.
+// import { tripCard } from "../../../lib/seo/tripsCards";
 import { breadcrumbSchema } from "../../../lib/seo/tripsJsonLd";
 import {
   destinationLabel,

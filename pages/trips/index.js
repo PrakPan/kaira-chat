@@ -14,7 +14,10 @@ import { SITE_ORIGIN } from "../../lib/seo/tripsIndexed";
 // it. With that body disabled the import is dead but still emitted, and webpack
 // fails the client build with "Can't resolve 'fs'".
 // import { readDestinations } from "../../lib/seo/tripsCache";
-import { tripCard } from "../../lib/seo/tripsCards";
+// Commented out for the same reason: tripsCards requires tripsCache, so it
+// drags `fs` into the client bundle once the getStaticProps that used it is
+// disabled.
+// import { tripCard } from "../../lib/seo/tripsCards";
 import { breadcrumbSchema } from "../../lib/seo/tripsJsonLd";
 import { destinationLabel } from "../../lib/seo/tripsFormat";
 
