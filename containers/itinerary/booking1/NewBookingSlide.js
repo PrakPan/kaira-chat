@@ -1447,6 +1447,7 @@ export const ItineraryInclusions = ({
   updatingInclusions = {},
   defaultExpanded = false,
   arePricesExpired = false,
+  isReleased = false,
 }) => {
   const [expandedCategories, setExpandedCategories] = useState({
     Stays: true,
@@ -1742,56 +1743,63 @@ export const ItineraryInclusions = ({
                           </div>
                         </div>
 
-                        {/* Checkbox */}
-                        <div className="pt-0.5">
-                          {updatingInclusions[booking.id] ? (
-                            <div className="w-4 h-4 flex items-center justify-center">
-                              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
-                            </div>
-                          ) : arePricesExpired ? (
-                            <div
-                              className={`relative ${
-                                showRepriceTooltip ? "group cursor-pointer" : ""
-                              }`}
-                            >
-                              <span className="relative mr-xl pointer-events-none">
-                                <label className="ttw-custom-greenCheckbox-label opacity-60">
+                        {/* Checkbox — a released itinerary is locked, so the
+                            selection control is dropped rather than shown disabled. */}
+                        {!isReleased && (
+                          <div className="pt-0.5">
+                            {updatingInclusions[booking.id] ? (
+                              <div className="w-4 h-4 flex items-center justify-center">
+                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
+                              </div>
+                            ) : arePricesExpired ? (
+                              <div
+                                className={`relative ${
+                                  showRepriceTooltip
+                                    ? "group cursor-pointer"
+                                    : ""
+                                }`}
+                              >
+                                <span className="relative mr-xl pointer-events-none">
+                                  <label className="ttw-custom-greenCheckbox-label opacity-60">
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedInclusions[booking.id]}
+                                      disabled
+                                      className="ttw-custom-greenCheckbox"
+                                    />
+                                  </label>
+                                </span>
+
+                                {/* Tooltip */}
+                                {showRepriceTooltip && (
+                                  <div
+                                    className="absolute z-[999] bottom-full -left-20 -translate-x-1/2 mb-2
+                             hidden group-hover:!block whitespace-nowrap overflow-visible
+                            bg-black text-white text-xs px-2 py-1 rounded cursor-pointer"
+                                  >
+                                    Reprice itinerary to add/remove this booking
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="relative mr-xl">
+                                <label className="cursor-pointer ttw-custom-greenCheckbox-label">
                                   <input
                                     type="checkbox"
                                     checked={selectedInclusions[booking.id]}
-                                    disabled
-                                    className="ttw-custom-greenCheckbox"
+                                    onChange={() =>
+                                      onToggleInclusion(booking.id)
+                                    }
+                                    disabled={booking.status === "Paid"}
+                                    className="accent-primary-yellow cursor-pointer
+                           disabled:cursor-not-allowed disabled:opacity-50
+                           ttw-custom-greenCheckbox"
                                   />
                                 </label>
                               </span>
-
-                              {/* Tooltip */}
-                              {showRepriceTooltip && (
-                                <div
-                                  className="absolute z-[999] bottom-full -left-20 -translate-x-1/2 mb-2
-                           hidden group-hover:!block whitespace-nowrap overflow-visible
-                          bg-black text-white text-xs px-2 py-1 rounded cursor-pointer"
-                                >
-                                  Reprice itinerary to add/remove this booking
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <span className="relative mr-xl">
-                              <label className="cursor-pointer ttw-custom-greenCheckbox-label">
-                                <input
-                                  type="checkbox"
-                                  checked={selectedInclusions[booking.id]}
-                                  onChange={() => onToggleInclusion(booking.id)}
-                                  disabled={booking.status === "Paid"}
-                                  className="accent-primary-yellow cursor-pointer
-                         disabled:cursor-not-allowed disabled:opacity-50
-                         ttw-custom-greenCheckbox"
-                                />
-                              </label>
-                            </span>
-                          )}
-                        </div>
+                            )}
+                          </div>
+                        )}
 
                         {/* Price - Desktop only */}
                         {!arePricesHidden && booking.booking_cost > 0 && (
@@ -1873,9 +1881,11 @@ export const ItineraryInclusions = ({
         );
       })}
 
-      <div className="text-xs text-gray-500 mt-2 px-1">
-        Note: Unselect items you don't want to include in your booking
-      </div>
+      {!isReleased && (
+        <div className="text-xs text-gray-500 mt-2 px-1">
+          Note: Unselect items you don't want to include in your booking
+        </div>
+      )}
     </div>
   );
 };
@@ -3584,6 +3594,7 @@ const Details = (props) => {
                         (hasPlanExpired && isItineraryInFuture()) ||
                         !isItineraryInFuture()
                       }
+                      isReleased={final_status === "Released"}
                     />
                   </div>
                 </div>
