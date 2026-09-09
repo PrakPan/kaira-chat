@@ -634,12 +634,16 @@ export default function CartSheet({
   //
   // Nothing resumes the payment afterwards, matching desktop: saving refetches
   // the cart, the card flips to ADDED, and the traveller taps Pay now again.
-  const handlePayNow = () => {
+  // `type` is which sale the drawer should open — "lockin" for the hold,
+  // "full" for the whole balance. The hold card offers both, so the choice has
+  // to travel with the tap; the footer bar leaves it out and the drawer falls
+  // back to its own `payNowType`, exactly as before.
+  const handlePayNow = (type) => {
     if (!traveller.verified) {
       setTravellersOpen(true);
       return;
     }
-    onPay?.();
+    onPay?.(type);
   };
 
   const handleWhatsappChat = () => {
@@ -935,6 +939,17 @@ export default function CartSheet({
               lockInPaidAmount={model.lockInPaidAmount}
               lockInHoldUntil={model.lockInHoldUntil}
               lockInHoldExpired={model.lockInHoldExpired}
+              // The gross the hold freezes and the balance still owed — both
+              // read off the cart, never one from the other.
+              tripTotal={cart?.discounted_cost}
+              balanceDue={Math.round(cart?.total_payable_amount || 0)}
+              // Straight to the drawer, naming which sale to open. This card
+              // is the only pay CTA on screen wherever it renders: the sheet's
+              // own footer bar stands down for it, the way the desktop
+              // column's Proceed-to-Pay does.
+              onHold={() => handlePayNow("lockin")}
+              onPayFull={() => handlePayNow("full")}
+              isPaying={isPaying}
             />
           )}
 
@@ -1057,6 +1072,12 @@ export default function CartSheet({
           </div>
         </div>
 
+        {/* The sticky pay bar. Stood down while the hold card is on screen:
+            that card carries both CTAs itself ("Hold this price" over "or pay
+            in full", or "Pay balance" once the hold is paid), and a bar under
+            it offering the same charge in different words is how a traveller
+            ends up paying ₹1,54,008 from a screen that said ₹999. */}
+        {!model.showLockIn && (
         <div className="flex-none border-t border-[#e6e8ec] px-[14px] pb-[14px] pt-[11px]">
           {model.showUpdateDates ? (
             // The one state with no amount beside its button: every figure in
@@ -1093,7 +1114,10 @@ export default function CartSheet({
               </div>
               <button
                 type="button"
-                onClick={model.showReprice ? onReprice : handlePayNow}
+                // Wrapped rather than passed straight through: `handlePayNow`
+                // now takes the sale type, and handing it to onClick would send
+                // it a click event to open a payment with.
+                onClick={model.showReprice ? onReprice : () => handlePayNow()}
                 disabled={isRepricing || isPaying}
                 style={{
                   border: "none",
@@ -1127,6 +1151,7 @@ export default function CartSheet({
             </div>
           )}
         </div>
+        )}
       </div>
 
       {/* Rendered inside the Sheet's tree but portalled out by Drawer, so it

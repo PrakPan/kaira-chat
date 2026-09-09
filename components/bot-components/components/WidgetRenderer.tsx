@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import axios from "axios";
 import { currencySymbols } from "../../../data/currencySymbols";
+import { getLockInState, LOCK_IN_HOLD_HOURS } from "../../../helper/lockIn";
 import { MERCURY_HOST } from "../../../services/constants";
 import { openNotification } from "../../../store/actions/notification";
 import { FaTaxi, FaWhatsapp } from "react-icons/fa";
@@ -5333,6 +5334,18 @@ function PaymentCard({
   const payload = (button.onClickAction as any).payload ?? {};
   const rows = parsePaymentRows(node);
 
+  // The hold, on the shared rules rather than this card's own — `getLockInState`
+  // is what the cart bar's ribbon and both carts read, so this widget can never
+  // offer a hold the cart would decline, or name a different fee for it. The
+  // cart comes from redux because the widget payload has no notion of one.
+  const cart = useSelector((s: any) => s?.Cart);
+  const lockIn = getLockInState(cart);
+  const holdDays = Math.max(1, Math.round(LOCK_IN_HOLD_HOURS / 24));
+  const holdFeeLabel = `${symbol}${formatPaymentAmount(
+    String(lockIn.fee),
+    symbol,
+  )}`;
+
   const titleNode = findNodesByType(node, "Title")[0];
   const title = ((titleNode?.value as string) ?? "Complete Your Booking").trim();
   const buttonLabel = (button.label as string) ?? "Make Payment";
@@ -5341,6 +5354,13 @@ function PaymentCard({
   // user should always be able to retry or open the drawer.
   const handlePay = () => {
     onAction?.({ type: "payment.start", payload });
+  };
+
+  // Its own action type, not payment.start with a flag: payment.start opens the
+  // cart drawer, and this has to skip it and charge the fee. The host maps it to
+  // the same handler the cart bar's Hold button runs.
+  const handleHold = () => {
+    onAction?.({ type: "payment.hold", payload });
   };
 
   // Pick an accent color per row label so "Balance Due" stands out.
@@ -5513,6 +5533,113 @@ function PaymentCard({
           {buttonLabel}
         </button>
       </div>
+
+      {/* ── Hold this price ──────────────────────────────────────────────────
+          The same offer the cart bar's ribbon makes, at the foot of the widget
+          that just asked for the whole balance — this is exactly the moment a
+          traveller decides not to pay today, and until now the only way to hold
+          instead was to leave the chat and open the cart.
+
+          White on this card's cream, the way the Total/Paid/Due tiles above it
+          already separate themselves. Hidden unless the cart actually owes a
+          hold: `lockIn.required` is false once the fee is paid, once any money
+          has been collected, or where the fee is not smaller than the balance. */}
+      {lockIn.required && (
+        <div style={{ padding: "0 18px 16px" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              flexWrap: "wrap",
+              background: "#ffffff",
+              border: "1px solid #FDE68A",
+              borderRadius: 12,
+              padding: "12px 14px",
+              boxSizing: "border-box",
+            }}
+          >
+            <div style={{ flex: "1 1 200px", minWidth: 0 }}>
+              <div
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "#0b1220",
+                  lineHeight: 1.35,
+                }}
+              >
+                Not paying today? I can hold this price for {holdDays} days.
+              </div>
+              <div
+                style={{
+                  marginTop: 3,
+                  fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                  fontSize: 10,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "#8A7B4A",
+                  lineHeight: 1.2,
+                }}
+              >
+                {holdFeeLabel} · Adjusts against your trip
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleHold}
+              style={{
+                flexShrink: 0,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                background: "#F7E700",
+                color: "#0b1220",
+                border: "none",
+                borderRadius: 999,
+                padding: "9px 16px",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                transition: "background 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background =
+                  "#FFEE1A";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background =
+                  "#F7E700";
+              }}
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden
+              >
+                <path
+                  d="M8 10V7.5a4 4 0 0 1 8 0V10"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                />
+                <rect
+                  x="4.5"
+                  y="10"
+                  width="15"
+                  height="10.5"
+                  rx="2.2"
+                  fill="currentColor"
+                />
+              </svg>
+              Hold · {holdFeeLabel}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

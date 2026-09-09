@@ -75,6 +75,7 @@ import axios from "axios";
 import { MERCURY_HOST, CHATKIT_API_URL } from "../../services/constants";
 import SmallGallery from "../../containers/newitinerary/overview/SmallGallery";
 import NewSummaryContainers from "../../containers/itinerary/NewSummaryContainers";
+import HoldOfferOverlay from "./components/HoldOfferOverlay";
 import CartSheet from "../revamp/mobileItinerary/sheets/CartSheet";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -95,7 +96,11 @@ import {
 } from "../../services/analyticsFunnel";
 import Login from "../modals/Login";
 import { replaceUrl, pushUrlDetached } from "../../helper/historyUrl";
-import { getLockInState } from "../../helper/lockIn";
+import {
+  getLockInState,
+  LOCK_IN_HOLD_HOURS,
+  parseCartTimestamp,
+} from "../../helper/lockIn";
 import { FiCalendar } from "react-icons/fi";
 import { tr } from "date-fns/locale";
 import {
@@ -669,6 +674,16 @@ export default function BotApp({
   // never opens this and keeps the drawer as its only cart.
   const [showCartSheet, setShowCartSheet] = useState(false);
   const [autoStartPayment, setAutoStartPayment] = useState(false);
+  // Which sale the auto-started payment should open. The hold card in the cart
+  // sheet offers both a hold and paying in full, so the drawer can no longer
+  // infer it from the cart alone. `null` leaves the drawer on its own
+  // `payNowType`, which is what the sheet's footer bar still wants.
+  const [autoPayType, setAutoPayType] = useState<string | null>(null);
+  // The "Not paying today?" card, raised by the cart bar's hold ribbon and the
+  // in-chat payment widget. Declared here with the other payment flags because
+  // `handleAutoPayEnded` below takes it down — it is held open for the length of
+  // an attempt, not just until the click.
+  const [holdOfferOpen, setHoldOfferOpen] = useState(false);
   const [isRepricing, setIsRepricing] = useState(false);
 
   const fetchPaymentData = useCallback(
@@ -736,6 +751,13 @@ export default function BotApp({
   const handleAutoPayEnded = React.useCallback(
     (reason?: string) => {
       setAutoStartPayment(false);
+      // The hold card is deliberately NOT closed here. An attempt "ending" is
+      // not the same as it succeeding: a dismissed gateway, a failed initiate
+      // and the traveller-details gate all arrive through this, and closing on
+      // any of them dropped the traveller back on the itinerary with the offer
+      // gone and nothing paid. The card is an offer, so it comes down when the
+      // offer is taken — see the effect on the cart below — and stays up
+      // otherwise, ready to be retried.
       if (reason === "traveller-details") return;
       closePaymentDrawer();
       if (activeItineraryId) fetchPaymentData(activeItineraryId);
@@ -969,6 +991,76 @@ export default function BotApp({
   const [isHotelsPresent, setIsHotelsPresent] = useState(false);
 
   const authToken = useSelector((state: any) => state.auth?.token);
+
+  // The hold, offered from outside the cart — the ribbon capping the cart bar
+  // and the bar at the foot of the in-chat payment widget both run this.
+  //
+  // It RAISES THE OFFER rather than charging. Both those surfaces are one line
+  // and a button, which is enough to make the offer and not enough to explain
+  // it; going straight to Razorpay from there asked for ₹999 with every reason
+  // to pay it still inside a cart the traveller had not opened. So it opens the
+  // same "Not paying today?" card the cart shows inline, and the payment starts
+  // from that card's own buttons (see `runHoldPayment`).
+  //
+  // The login gate stays here, at the point of intent, so an unauthenticated
+  // traveller gets the prompt instead of a card whose buttons cannot work.
+  const startPriceHold = React.useCallback(() => {
+    if (!authToken) {
+      setShowApiLoginPrompt(true);
+      return;
+    }
+    reportChatStage("chat_cart_viewed", activeItineraryId || "", "P2");
+    if (activeItineraryId) fetchPaymentData(activeItineraryId);
+    setHoldOfferOpen(true);
+  }, [authToken, activeItineraryId, fetchPaymentData]);
+
+  // …and what its two buttons do. Straight to the gateway from here: the
+  // payment drawer still mounts, since it owns the traveller-details gate and
+  // the Razorpay handshake, but on `autoStartPayment` it paints nothing, so the
+  // traveller goes from the card to the gateway without a cart in between.
+  // `autoPayType` pins which sale to open rather than leaving the drawer to
+  // infer one — the card offers both a hold and paying in full, so that is the
+  // traveller's choice here and not something to re-derive from the cart.
+  //
+  // Straight to the gateway. No cart in between — this card has already made
+  // the offer and named the amount, so dropping the traveller into a cart to
+  // press an equivalent button again is a screen for nothing.
+  //
+  // The card itself STAYS UP, and that is what makes the absence of a cart
+  // workable: creating the sale is a round trip to /payment/initiate/ and then
+  // Razorpay's script load, so closing it on click left the traveller looking
+  // at the itinerary with nothing happening. Held open, its own "Opening
+  // payment…" state covers the gap, it is the screen the gateway opens over,
+  // and it is where they land if they dismiss it. `handleAutoPayEnded` takes it
+  // down once the attempt settles — including on the traveller-details gate,
+  // which opens its own drawer over the top and is handled exactly as it is
+  // from inside the cart.
+  // The one thing that takes the hold card down: money on the cart.
+  //
+  // Read off the refetched cart rather than off a "payment finished" callback,
+  // because only the cart knows whether anything was actually collected — the
+  // gateway closing tells us nothing either way. `amount_paid` covers paying in
+  // full from this same card; `lock_in_fee_paid` covers the hold, whose fee can
+  // land on the cart before `amount_paid` moves.
+  //
+  // Deliberately not `!lockIn.required`: that also goes false on a cart that is
+  // merely absent or errored mid-refetch, which would blink the card away for
+  // reasons that have nothing to do with a payment.
+  useEffect(() => {
+    if (!holdOfferOpen) return;
+    const paid =
+      !!cart?.lock_in_fee_paid || Number(cart?.amount_paid) > 0;
+    if (paid) setHoldOfferOpen(false);
+  }, [holdOfferOpen, cart]);
+
+  const runHoldPayment = React.useCallback(
+    (payType: "lockin" | "full") => {
+      setAutoPayType(payType);
+      setAutoStartPayment(true);
+      openPaymentDrawer();
+    },
+    [openPaymentDrawer],
+  );
   const isLoggedIn = !!(
     authToken ?? (typeof window !== "undefined" ? getAuthToken() : null)
   );
@@ -3575,6 +3667,9 @@ export default function BotApp({
     // Route "Make Payment" CTAs from in-chat widgets to the existing
     // payment drawer instead of the generic widget-action fallback.
     onPaymentStart: openPaymentDrawer,
+    // …and the hold bar at the foot of that same widget, which charges the fee
+    // directly rather than opening the cart.
+    onHoldStart: startPriceHold,
     travellerStory: activeTravellerStory,
     onTravellerStoryDismiss: () => setActiveTravellerStory(null),
     onLoginSuccess: attachUserToItinerary,
@@ -4100,7 +4195,10 @@ Start Location: ${details.startLocation}`;
           setShowCartSheet(true);
         }
       : undefined,
+    onHold: startPriceHold,
     onViewBookings: itineraryIsComplete ? handleViewBookings : undefined,
+    // Only the hold ribbon reads this — see `tripHasDeparted`.
+    tripStartDate: itineraryRedux?.start_date ?? null,
     notes: statusNotes,
     // Archive-only: the bar's CTA clones the trip rather than raising a contact
     // request. get_in_touch/ is an authenticated call against a live itinerary,
@@ -5201,13 +5299,29 @@ Start Location: ${details.startLocation}`;
       {/* Toaster notifications — portal to modal-portal div */}
       <NotificationPopup />
 
+      {/* ── The hold offer, raised by the cart bar's ribbon and the in-chat
+             payment widget. Popup on desktop, bottom sheet on the phone; the
+             card inside it is the cart's own. Mounted here rather than beside
+             either caller because both raise the same one. ── */}
+      {activeItineraryId && (
+        <HoldOfferOverlay
+          open={holdOfferOpen}
+          onClose={() => setHoldOfferOpen(false)}
+          isMobile={isMobile}
+          cart={cart}
+          isPaying={autoStartPayment}
+          onHold={() => runHoldPayment("lockin")}
+          onPayFull={() => runHoldPayment("full")}
+        />
+      )}
+
       {/* ── Phone cart: the "Review & pay" bottom sheet. The drawer below stays
              the payment engine, coupon owner and traveller-details gate. ── */}
       {isMobile && activeItineraryId && (
         <CartSheet
           open={showCartSheet}
           onClose={() => setShowCartSheet(false)}
-          onPay={() => {
+          onPay={(payType?: string) => {
             // Straight to the gateway. The drawer still mounts — it owns the
             // traveller-details gate and the Razorpay handshake — but on
             // `autoStartPayment` it paints nothing, so the traveller is never
@@ -5224,6 +5338,7 @@ Start Location: ${details.startLocation}`;
               ctaBarProps.onViewCart();
               return;
             }
+            setAutoPayType(payType || null);
             setAutoStartPayment(true);
             ctaBarProps.onViewCart();
           }}
@@ -5266,6 +5381,13 @@ Start Location: ${details.startLocation}`;
             payment={paymentData}
             plan={itineraryRedux}
             id={activeItineraryId}
+            // Every call the drawer makes authenticates with `props.token` —
+            // /payment/initiate/ for both sale types, the coupon endpoints, the
+            // reprice. Without it those went out as `Bearer undefined` and came
+            // back 401, so a pay CTA on this surface reached the API and never
+            // the gateway. The axios instances in services/sales/itinerary carry
+            // no interceptor to fall back on; the header is passed per call.
+            token={authToken}
             itinerary={itineraryRedux}
             mercuryItinerary={true}
             loadpricing={false}
@@ -5291,6 +5413,9 @@ Start Location: ${details.startLocation}`;
             // so the traveller is never handed back the cart they just
             // reviewed in the sheet.
             autoStartPayment={autoStartPayment}
+            // Which sale the sheet's tap asked for. Omitted by the footer bar,
+            // where the drawer's own `payNowType` is still the right answer.
+            autoPayType={autoPayType}
             onAutoPayEnded={handleAutoPayEnded}
           />
         </div>
@@ -5323,6 +5448,19 @@ interface BottomCTABarProps {
   onConfirm: () => void;
   onViewCart: () => void;
   onReviewPay?: () => void;
+  /**
+   * The itinerary's start date, purely so the hold ribbon can tell whether the
+   * trip has already departed. The cart payload does not carry it — both carts
+   * read it off the itinerary in redux for the same test.
+   */
+  tripStartDate?: string | null;
+  /**
+   * The hold ribbon's "Hold · ₹999" button. Goes straight to the gateway for
+   * the lock-in fee rather than through the cart — the ribbon has already
+   * named the amount and what it buys, so a stop at the cart to press the
+   * same button again is one screen too many.
+   */
+  onHold?: () => void;
   onGetInTouch?: () => void;
   /** Archive-only: opens the clone popup from "Get this trip!". */
   onGetThisTrip?: () => void;
@@ -5460,28 +5598,118 @@ const ItineraryStepsLoader = ({
 };
 
 // ── LockInHoldStrip ──────────────────────────────────────────────────────────
-// The "hold this price" hint, as a band across the top of the cart bar instead
-// of a chip in its foot line: at the bar's full width it reads as an offer
-// rather than a caption, and it stops sharing one line with the bookings count
-// and the coupon hint — which on a phone meant one of them had to be hidden.
+// The "hold this price" offer, as a midnight ribbon capping the cart bar. It
+// used to be a one-line caption that only *named* the hold — the traveller then
+// had to open the cart to find the button. The ribbon carries the button
+// itself, so the offer and the way to take it are the same object.
+//
+// Kaira says it, in the first person and over her own portrait: the sentence is
+// a judgement about this trip's prices ("prices change often"), and attributing
+// it to the planner the traveller has been talking to all session is what makes
+// it advice rather than a upsell banner.
 //
 // It slides up out of the bar a beat after the bar has settled. Only the
 // transform animates: the clip wrapper's height is switched, not transitioned,
 // because two ResizeObservers watch this bar (to size the scroll pane above it
 // and to park the "Back to itinerary" pill) and a transitioned height would
 // re-measure and re-render the tree every frame. The switch is invisible — at
-// rest the band is parked a full height below the clip box.
-const LOCK_IN_STRIP_HEIGHT = 28; // px
+// rest the band is parked a full height below the clip box, and `translateY`
+// is a percentage of the band's own height, so nothing here needs a hardcoded
+// pixel height to animate correctly at either breakpoint.
 const LOCK_IN_STRIP_DELAY_MS = 450;
+
+// The trip has already departed. Mirrors CartSheet's `tripHasStarted` and the
+// desktop cart's `isItineraryInFuture` — the same test all three have to make,
+// because a hold on a trip that has left is as empty an offer as a hold on a
+// lapsed price. Both ends floored to midnight: a trip starting TODAY has not
+// started too late to pay for. A missing date reads as "not loaded yet" and
+// never as departed — redux seeds the itinerary with a placeholder that carries
+// no `start_date`, and treating that as past would blank the ribbon on load.
+const tripHasDeparted = (startDate?: string | null) => {
+  if (!startDate) return false;
+  const start = new Date(startDate);
+  if (Number.isNaN(start.getTime())) return false;
+  const today = new Date();
+  start.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  return start < today;
+};
+
+// The quote's own deadline, as the design's zero-padded clock. This is
+// `price_valid_until` — how long today's PRICES stand — and not the hold
+// window, which only starts once the fee is paid. Two different clocks: the
+// ribbon is the offer to stop this one from running out.
+const formatExpiryClock = (msLeft: number) => {
+  const total = Math.max(0, Math.floor(msLeft / 1000));
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(Math.floor(total / 3600))}:${pad(
+    Math.floor((total % 3600) / 60),
+  )}:${pad(total % 60)}`;
+};
+
+// Ticks once a second while the quote is still live, and stops dead the moment
+// it lapses rather than counting on into negatives.
+const usePriceExpiryClock = (priceValidUntil?: string | null) => {
+  // Parsed as IST, not as browser-local: Mercury writes these without an
+  // offset, so `new Date` on the bare string slides the deadline by hours for
+  // anyone outside India. See helper/lockIn's parseCartTimestamp.
+  const deadlineMs = React.useMemo(() => {
+    const parsed = parseCartTimestamp(priceValidUntil);
+    return parsed ? parsed.getTime() : null;
+  }, [priceValidUntil]);
+
+  const [label, setLabel] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    if (!deadlineMs) {
+      setLabel(null);
+      return;
+    }
+    const tick = () => {
+      const left = deadlineMs - Date.now();
+      setLabel(left > 0 ? formatExpiryClock(left) : null);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [deadlineMs]);
+
+  return label;
+};
+
+// The padlock, drawn rather than the emoji: at this size the emoji lands at a
+// different weight, colour and baseline in every OS, and on a button face that
+// inconsistency is the whole control.
+const HoldLock = ({ size = 13 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden
+    className="shrink-0"
+  >
+    <path
+      d="M8 10V7.5a4 4 0 0 1 8 0V10"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+    />
+    <rect x="4.5" y="10" width="15" height="10.5" rx="2.2" fill="currentColor" />
+  </svg>
+);
 
 const LockInHoldStrip = ({
   fee,
   currencySymbol,
   currencyCode,
+  priceValidUntil,
+  onHold,
 }: {
   fee: number;
   currencySymbol: string;
   currencyCode?: string;
+  priceValidUntil?: string | null;
+  onHold?: () => void;
 }) => {
   // Mounts only once the cart has resolved a required lock-in, so "after the
   // page loads" is measured from here rather than from the bar's own mount.
@@ -5491,63 +5719,176 @@ const LockInHoldStrip = ({
     return () => clearTimeout(t);
   }, []);
 
+  const expiry = usePriceExpiryClock(priceValidUntil);
+  // The quote this ribbon offers to freeze has run out. The blank clock was
+  // only the visible half of that — the offer itself is the stale part, and a
+  // live "Hold · ₹999" against a price that no longer stands would be taking
+  // money to freeze nothing. So the whole ribbon stands down and the bar goes
+  // back to its plain state; View Cart still works, and the cart's own reprice
+  // flow is what picks the traveller up from there.
+  //
+  // Read off the clock rather than re-derived: `expiry` is null both when the
+  // cart states no deadline at all and when the one it states has passed, and
+  // only the second of those is a lapse.
+  const quoteLapsed = !!priceValidUntil && !expiry;
+  const holdDays = Math.max(1, Math.round(LOCK_IN_HOLD_HOURS / 24));
+  const feeLabel = `${currencySymbol}${formatCurrencyValue(
+    Math.round(fee),
+    currencyCode,
+  )}`;
+
+  // The quote's deadline, sat beside Kaira's byline under the sentence. Null
+  // while the cart states no `price_valid_until`, or once it has run out — the
+  // ribbon then makes its case without a clock rather than showing 00:00:00,
+  // which would argue against taking the offer it is making.
+  const expiryClock = expiry ? (
+    // The label sits back and the digits come forward — it is the number that
+    // is moving, and setting both at one weight made the whole thing read as a
+    // caption. `tabular-nums` so the seconds tick without the row jittering.
+    <span className="font-mono text-[9.5px] leading-[11px] tracking-[0.1em] text-[#7C8698] whitespace-nowrap">
+      EXPIRES IN{" "}
+      <span className="text-white/90 tabular-nums">{expiry}</span>
+    </span>
+  ) : null;
+
+  if (quoteLapsed) return null;
+
   return (
     <div
-      // Negative margins cancel the bar's own padding so the band runs edge to
-      // edge and caps the bar — the bar drops its own top hairline while this
-      // is up, so the band is the top edge.
-      className="overflow-hidden -mx-[24px] max-ph:-mx-[10px] -mt-2 mb-1"
-      style={{ height: revealed ? LOCK_IN_STRIP_HEIGHT : 0 }}
+      // Negative margins cancel the bar's own padding so the ribbon runs edge
+      // to edge and caps the bar — the bar drops its own top hairline while
+      // this is up, so the ribbon is the top edge.
+      //
+      // `auto`, not a pixel constant: the phone lays the sentence out over two
+      // lines and desktop over one, and a fixed height would clip one of them.
+      // Switched instantly either way, never transitioned — see the header.
+      // The corners live on the BAND, not on this clip box. Rounding only the
+      // box meant the band squared off against it on the way up: mid-slide its
+      // own top edge is below the box's, so the clip had nothing to round and
+      // the ribbon rose as a hard rectangle, snapping to rounded only once it
+      // landed. Rounded on the band it is rounded the whole way. The clip is
+      // still what hides it at rest, and is rounded to match so nothing of the
+      // band can paint outside the corners once it has arrived.
+      className="overflow-hidden rounded-t-[12px] -mx-[24px] max-ph:-mx-[10px] -mt-2 mb-1"
+      style={{ height: revealed ? "auto" : 0 }}
       aria-hidden={!revealed}
     >
       <div
-        // The brand's indigo/yellow pair, not another pale tint: the bar below
-        // is already cornsilk and a second warm band on top of it read as part
-        // of the same surface. Sentence case in the UI font too — small caps in
-        // mono is the bar's label voice ("Total Cost"), and this is a sentence.
-        className="flex items-center justify-center gap-2 px-3 bg-primary-indigo font-inter text-[11.5px] md:text-[12.5px] leading-none text-white/90 whitespace-nowrap transition-transform duration-500 ease-out motion-reduce:transition-none"
-        style={{
-          height: LOCK_IN_STRIP_HEIGHT,
-          transform: revealed ? "translateY(0)" : "translateY(100%)",
-        }}
+        // Midnight, not the brand's `primary-indigo` (#07213A) — that is a blue
+        // navy and the design's ribbon is near-black. #0B1220 is the ink the
+        // rest of the checkout already sets its darkest type in.
+        className="ttw-hold-ribbon flex items-center gap-[10px] max-ph:gap-[9px] rounded-t-[12px] bg-[#0B1220] px-[20px] max-ph:px-[10px] py-[10px] max-ph:py-[8px] transition-transform duration-500 ease-out motion-reduce:transition-none"
+        style={{ transform: revealed ? "translateY(0)" : "translateY(100%)" }}
       >
-        {/* A drawn padlock rather than the emoji: at this size the emoji lands
-            at a different weight, colour and baseline in every OS, and next to
-            one line of text that inconsistency is the whole strip. */}
-        <svg
-          width="13"
-          height="13"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden
-          className="shrink-0 -mt-[1px]"
-        >
-          <path
-            d="M8 10V7.5a4 4 0 0 1 8 0V10"
-            stroke="#F7E700"
-            strokeWidth="2.2"
-            strokeLinecap="round"
+        {/* Kaira, ringed in the brand yellow so she reads as the speaker rather
+            than as a stray thumbnail on a dark band. `margin`/`maxWidth` are
+            set inline because styles.css and Bootstrap both carry bare `img`
+            rules that otherwise break an <img> used as a flex child. */}
+        <span className="shrink-0 grid h-[30px] w-[30px] place-items-center overflow-hidden rounded-full border border-[#F7E700]/70 bg-[#16202F]">
+          <img
+            src="/KairaInsta.png"
+            alt=""
+            width={30}
+            height={30}
+            style={{
+              margin: 0,
+              maxWidth: "none",
+              width: 30,
+              height: 30,
+              objectFit: "cover",
+              borderRadius: "50%",
+            }}
           />
-          <rect
-            x="4.5"
-            y="10"
-            width="15"
-            height="10.5"
-            rx="2.2"
-            fill="#F7E700"
-          />
-        </svg>
-        {/* One flex child for the whole sentence — the row has a `gap`, and an
-            element dropped mid-sentence would take that gap on both sides. */}
-        <span>
-          Hold this price for{" "}
-          <span className="font-semibold text-primary-yellow">
-            {/* Non-breaking, so the symbol can never be left stranded at the
-                end of a line away from the amount it belongs to. */}
-            {currencySymbol}&nbsp;
-            {formatCurrencyValue(Math.round(fee), currencyCode)}/-
-          </span>
         </span>
+
+        {/* ── Phone: sentence over the clock, the byline dropped ────────────── */}
+        <div className="ph-up:hidden min-w-0 flex-1">
+          <div className="font-inter text-[12px] font-600 leading-[14px] text-white">
+            I can hold this price for you, {holdDays} full days.
+          </div>
+          {/* Hard against the sentence, as the design has it. `flex` is doing
+              the work, not a margin: as a plain block this div laid the clock
+              out in a LINE BOX, and a line box is at least as tall as the
+              block's own strut — inherited here from the app's ~16px/1.5 body
+              metrics, so ~24px of it around a 9.5px span. The clock's own
+              `leading` could not touch that; the strut is the div's, not the
+              span's. A flex container has no line boxes at all, so the row is
+              exactly the clock's height and what is left between the two is
+              half-leading measured in their own type sizes — which left the two
+              almost touching, hence the 3px put back deliberately. With the
+              strut gone this margin is the whole gap and nothing else, so it
+              can be read off the design instead of guessed at. */}
+          <div className="mt-[3px] flex">{expiryClock}</div>
+        </div>
+
+        {/* ── Desktop ───────────────────────────────────────────────────────
+            The design's row — sentence, byline, clock, button — wants about
+            1080px, and this bar is the itinerary panel at `md:w-[48%]`, so it
+            often has less. `flex-wrap` decides what happens then, off the real
+            text rather than a guessed breakpoint: flex breaks lines by each
+            item's MAX-CONTENT width, so the clock stays on the row while the
+            sentence's full single line plus the clock still fit, and drops to
+            the next line the moment they do not — which is the rule by eye
+            ("same row if there is room, next line if not") expressed exactly.
+            No resize listener either, on a bar two ResizeObservers already
+            watch.
+
+            The sentence and the Hold button never move. The byline is the one
+            piece that hides outright, since the portrait beside it already
+            says whose voice this is — see `.ttw-hold-byline` in globals.css.
+
+            `min-w-0` so a genuinely narrow panel wraps the sentence itself
+            rather than shoving the button off the bar. */}
+        <div className="max-ph:hidden min-w-0 flex-1 flex flex-wrap items-baseline gap-x-3 gap-y-[3px]">
+          {/* `grow` on the SENTENCE is what right-aligns the clock, rather than
+              anything on the clock itself. When both share a line the sentence
+              swells to fill the gap and the clock ends up against the Hold
+              button, as the design has it; when the sentence is too long to
+              share, it takes the line alone and the clock starts the next one
+              at the left. Growing the sentence cannot misplace the clock the
+              way a spacer or an `ml-auto` can — see the note below. */}
+          <span className="grow font-inter text-[13.5px] font-600 leading-[18px] text-white">
+            Prices change often. I can hold this one for you, for {holdDays}{" "}
+            full days.
+            {/* Her byline, in the bar's own label voice — small caps in mono is
+                how every other label on this bar reads ("Total Cost").
+                Deliberately INSIDE the sentence rather than a flex item beside
+                it: as a sibling it was the growing sentence that pushed it, so
+                it drifted across the bar and came to rest against the clock
+                instead of sitting at the end of the line it belongs to. As
+                inline text it simply follows the last word, wherever that
+                falls. Shown only where the row is wide enough to keep the
+                sentence on one line — see `.ttw-hold-byline` in globals.css. */}
+            <span className="ttw-hold-byline ml-3 font-mono text-[9.5px] font-400 tracking-[0.1em] text-[#7C8698] whitespace-nowrap">
+              KAIRA · YOUR TRIP PLANNER
+            </span>
+          </span>
+          {/* Nothing on the clock does the aligning — deliberately. `ml-auto`
+              right-aligns it on WHICHEVER line it lands, so once it wrapped it
+              hung off the right of line two. A zero-width growing spacer before
+              it fails the same way for a subtler reason: when the sentence is
+              wider than the bar it takes line one alone and the spacer is
+              pushed onto line two WITH the clock, where it grows and shoves it
+              right again. Only the sentence can be trusted to stay on line one,
+              so the sentence is what grows. */}
+          <span>{expiryClock}</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={onHold}
+          // The clip box is `aria-hidden` and zero-height for the first beat,
+          // and a focusable control inside that is the one thing that combination
+          // actually breaks — tab lands on a button nobody can see.
+          tabIndex={revealed ? undefined : -1}
+          // The one control on the ribbon, and the reason it exists. Same
+          // yellow, hover bloom and press as the cart's own hold CTA, so the
+          // two read as the same button in two places.
+          className="shrink-0 flex items-center gap-[6px] rounded-67br bg-primary-yellow px-[14px] max-ph:px-[12px] h-[33px] max-ph:h-[29px] font-inter text-[13px] max-ph:text-[12px] font-bold text-[#0B1220] whitespace-nowrap cursor-pointer transition-all duration-200 ease-out hover:bg-[#FFEE1A] hover:-translate-y-[1px] hover:shadow-[0_10px_22px_-12px_rgba(247,231,0,0.95)] active:translate-y-0 active:bg-[#EFDF00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F7E700]"
+        >
+          <HoldLock size={13} />
+          Hold · {feeLabel}
+        </button>
       </div>
     </div>
   );
@@ -5574,6 +5915,8 @@ export const BottomCTABar = React.memo(
     onConfirm,
     onViewCart,
     onReviewPay,
+    onHold,
+    tripStartDate,
     onGetInTouch,
     onGetThisTrip,
     onRetryCart,
@@ -5718,6 +6061,21 @@ export const BottomCTABar = React.memo(
     // never advertises a hold the cart will not actually offer. Rendered as the
     // band across the top of the bar, not in the foot line.
     const lockIn = getLockInState(cart);
+    // Whether the hold ribbon is actually going to paint. There are two ways
+    // the offer goes stale and BOTH have to stand it down, because the ribbon's
+    // Hold button charges immediately:
+    //   • the quote lapsed — `price_valid_until` has passed, so the price it
+    //     promises to freeze no longer stands;
+    //   • the trip departed — the cart behind View Cart has already swapped
+    //     every pay CTA for Update Dates, and a bar still selling a hold beside
+    //     it contradicts it.
+    // The bar also gives up its own top hairline only for a ribbon that is
+    // really there — otherwise these states left it with no top edge at all.
+    const quoteDeadline = parseCartTimestamp(cart?.price_valid_until);
+    const showHoldRibbon =
+      lockIn.required &&
+      !(quoteDeadline && quoteDeadline.getTime() <= Date.now()) &&
+      !tripHasDeparted(tripStartDate);
 
     // The price is what it is because of these bookings, so the count doubles as
     // the door into the Bookings view — it sits directly under the total it
@@ -5764,15 +6122,23 @@ export const BottomCTABar = React.memo(
         // behind it. The hold band does that job itself when it is up, and the
         // two stacked read as a stray line above it — so the border is dropped
         // for as long as the band is there.
-        className={`z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] px-[24px] max-ph:px-[10px] py-2 flex flex-col gap-1 ${
-          lockIn.required ? "" : "border-t border-slate-100"
+        // `rounded-t-[12px]` so the hold ribbon capping it can round its own
+        // top corners without the bar's cornsilk showing square behind them.
+        // Top only — the bar is flush with the bottom of the viewport, so the
+        // design's card corners exist on this edge and nowhere else.
+        className={`z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] rounded-t-[12px] px-[24px] max-ph:px-[10px] py-2 flex flex-col gap-1 ${
+          showHoldRibbon ? "" : "border-t border-slate-100"
         }`}
       >
-        {lockIn.required && (
+        {showHoldRibbon && (
           <LockInHoldStrip
             fee={lockIn.fee}
             currencySymbol={currencySymbol}
             currencyCode={currency?.currency}
+            // How long today's PRICES stand — the clock the ribbon offers to
+            // stop. Not the hold window, which only starts once the fee is paid.
+            priceValidUntil={cart?.price_valid_until}
+            onHold={onHold}
           />
         )}
         <div className="flex items-center justify-between">
@@ -6912,7 +7278,13 @@ const MobileLayout = React.memo(
           ["itinerary", "routes", "bookings"].includes(activeTab) && (
             <div
               className="fixed z-[100] flex flex-col items-end gap-2"
-              style={{ bottom: 80, right: 16 }}
+              // Measured off the bar rather than the old hardcoded 80px. The
+              // cart bar changes height — one-line confirm, steps loader,
+              // two-line cart row, and now the hold ribbon on top of it — and
+              // 80px was short enough that the ribbon put the bar straight
+              // under this button. Same `ctaBarHeight + 12` the Back to
+              // itinerary pill parks itself with.
+              style={{ bottom: ctaBarHeight + 12, right: 16 }}
             >
               {/* Chat Banner */}
               {showChatBanner && (

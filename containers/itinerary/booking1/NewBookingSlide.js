@@ -58,7 +58,15 @@ import {
   removeCoupon,
   repriceBookings,
 } from "../../../services/sales/itinerary/Purchase";
-import { LuCheckCircle2, LuClock4 } from "react-icons/lu";
+import {
+  LuCheck,
+  LuCheckCircle2,
+  LuClock4,
+  LuHeadphones,
+  LuLock,
+  LuMessageCircle,
+  LuShieldCheck,
+} from "react-icons/lu";
 import { openNotification } from "../../../store/actions/notification";
 import setCart from "../../../store/actions/Cart";
 import ReactDOM from "react-dom";
@@ -1271,34 +1279,11 @@ export const deriveLockIn = (Cart, { lockInCompleted = false } = {}) => {
 // been collected come off the cart (`lock_in_fee` / `lock_in_fee_paid`) — the
 // fee is set per itinerary, so nothing here assumes the usual ₹2,000.
 
-// Time left on the hold. Each part carries its unit — a bare "55:13:54" next to
-// a price reads as ambiguously as it does anywhere else. Zero-padded so the row
-// keeps its width as the digits roll over; the window is 72 hours, so hours
-// never needs a third digit.
-const formatHoldCountdown = (msLeft) => {
-  const totalSeconds = Math.max(0, Math.floor(msLeft / 1000));
-  const pad = (value) => String(value).padStart(2, "0");
-  return `${pad(Math.floor(totalSeconds / 3600))}h:${pad(
-    Math.floor((totalSeconds % 3600) / 60),
-  )}m:${pad(totalSeconds % 60)}s`;
-};
-
-// Coarse "36 hours" wording for the sentence under the heading — the exact clock
-// already ticks in the corner of the same card, and a second ticking figure
-// mid-sentence only competes with it. Minutes in the final hour, never "0".
-const formatHoldRemainingWords = (msLeft) => {
-  const totalMinutes = Math.max(0, Math.floor(msLeft / 60000));
-  const hours = Math.floor(totalMinutes / 60);
-  if (hours >= 1) return `${hours} ${hours === 1 ? "hour" : "hours"}`;
-  const minutes = Math.max(1, totalMinutes);
-  return `${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
-};
-
-// The card sits on screen for as long as the customer is reading the cart, so
-// the time left has to tick rather than freeze at whatever render drew it — and
-// when it runs out the card has to turn into the expired one by itself, without
-// waiting for a cart refetch. Stays null until mounted: the server has no
-// business rendering a clock the client will disagree with a moment later.
+// Ticks the hold window down. Nothing PRINTS this any more — the cart's own
+// `price_valid_until` timer at the top of the column is the one clock the
+// traveller watches — but the card still has to know the moment the window
+// closes, so that it flips from "hold active" to "hold expired" there and then
+// rather than on whenever the cart is next refetched.
 const useHoldCountdown = (holdUntil) => {
   const holdUntilMs = holdUntil ? holdUntil.getTime() : null;
   const [msLeft, setMsLeft] = useState(null);
@@ -1320,50 +1305,202 @@ const useHoldCountdown = (holdUntil) => {
   return msLeft;
 };
 
+// The hold window in whole days, off the one constant that defines it. The
+// card says "3 days" in two places and "not 24 hours" in a third, so a change
+// to LOCK_IN_HOLD_HOURS that left those reading three would be a promise the
+// cart does not keep.
+const HOLD_DAYS = Math.max(1, Math.round(LOCK_IN_HOLD_HOURS / 24));
+
+// How the deadline reads in the card's prose — "Sat, 12 Sep". Pinned to en-IN
+// rather than the browser's locale: every figure beside it is rupees, and a
+// US-ordered "Sep 12" next to "₹1,54,008" reads like two different documents.
+const formatHoldDate = (date) =>
+  date instanceof Date && !Number.isNaN(date.getTime())
+    ? date.toLocaleDateString("en-IN", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+      })
+    : "";
+
+// One promise in the hold card's list. `div`s rather than `ul`/`li` on purpose:
+// Bootstrap's reboot sets a left padding on every list in the app, and the rest
+// of this drawer avoids the fight the same way.
+const HoldBenefit = ({ icon: Icon, children }) => (
+  <div className="flex items-start gap-sm">
+    <Icon
+      size={17}
+      strokeWidth={1.6}
+      className="mt-[2px] flex-shrink-0 text-[#8A93A6]"
+      aria-hidden="true"
+    />
+    <div className="text-sm-md font-400 leading-lg text-[#3F4A57]">
+      {children}
+    </div>
+  </div>
+);
+
+// The card's own buttons. The hold card owns the pay CTA in every state it
+// renders — see `showLockInBlock` at the call site, which drops the drawer's
+// standalone Proceed-to-Pay while this is on screen — so these are the real
+// checkout controls, not a second decoration of them.
+
+// Shared by all three of the card's buttons. `pointer-events-none` while
+// disabled so a button already opening a gateway stops inviting the press
+// altogether — hover, cursor and all — rather than lighting up under a click it
+// will ignore. The focus ring is the drawer's existing PayCta ring, so keyboard
+// checkout looks the same wherever it happens.
+const HOLD_CTA_MOTION =
+  "cursor-pointer transition-all duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[#01202B] disabled:pointer-events-none disabled:opacity-60";
+
+// The design's hover: the button lifts a millimetre and its own colour blooms
+// underneath it, then presses flat again on click. Lift, shadow and tint share
+// one transition — staggering them reads as a wobble at this size. The yellows
+// are the drawer's existing PayCta values (#ffee1a hover, #efdf00 press) rather
+// than new ones: this card replaced that button, and a second, brighter yellow
+// for the same gesture would read as a different control.
+const HoldCta = ({ tone = "yellow", busy = false, busyLabel, children, ...rest }) => (
+  <button
+    type="button"
+    className={`flex w-full items-center justify-center gap-xs rounded-67br border-none px-md py-sm-md text-md font-700 leading-lg ${HOLD_CTA_MOTION} ${
+      tone === "dark"
+        ? "bg-primary-indigo text-white shadow-[0_8px_20px_-12px_rgba(7,33,58,0.55)] hover:-translate-y-[1px] hover:bg-[#0B2E4F] hover:shadow-[0_12px_26px_-12px_rgba(7,33,58,0.7)] active:translate-y-0 active:bg-[#061A2E] active:shadow-[0_4px_12px_-8px_rgba(7,33,58,0.6)]"
+        : "bg-primary-yellow text-[#0B1220] shadow-[0_8px_20px_-12px_rgba(247,231,0,0.75)] hover:-translate-y-[1px] hover:bg-[#FFEE1A] hover:shadow-[0_12px_26px_-10px_rgba(247,231,0,0.95)] active:translate-y-0 active:bg-[#EFDF00] active:shadow-[0_4px_12px_-8px_rgba(247,231,0,0.8)]"
+    }`}
+    {...rest}
+  >
+    {busy ? busyLabel : children}
+  </button>
+);
+
 // Exported alongside deriveLockIn so the phone sheet shows the same card.
+//
+// `tripTotal` is the gross trip price the hold freezes (the cart's
+// `discounted_cost`) and `balanceDue` is what is actually still owed
+// (`total_payable_amount`, already net of anything collected). They are two
+// different figures once a hold is paid, and neither is derived from the other
+// here — the cart states both, and re-deriving one would double count the fee.
 export const LockInNotice = ({
   lockInFee,
   lockInPaid,
   lockInPaidAmount,
   lockInHoldUntil = null,
   lockInHoldExpired = false,
+  tripTotal = 0,
+  balanceDue = 0,
+  onHold,
+  onPayFull,
+  isPaying = false,
 }) => {
   const { currency } = useSelector((state) => state.currency);
   const symbol = currencySymbols?.[currency]
     ? currencySymbols?.[currency]
     : "₹";
-  const amountLabel = (value) =>
-    `${symbol} ${formatCurrencyValue(value, currency)}/-`;
-  const feeLabel = amountLabel(lockInFee);
+  // No "/-" suffix here, unlike the drawer's older copy: these amounts sit
+  // inside sentences and on button faces, where the suffix read as part of the
+  // number. `spaced` is the button face's wider gap after the symbol.
+  const money = (value, { spaced = false } = {}) =>
+    `${symbol}${spaced ? " " : ""}${formatCurrencyValue(value, currency)}`;
+
   const msLeft = useHoldCountdown(lockInHoldUntil);
   // Live where the timer is running, and the cart-derived flag before the first
   // tick lands (and on carts whose paid flag carries no `lock_in_fee_paid_at`,
   // where there is no window to count down at all).
+  // Still ticked, but no longer PRINTED here: the cart already carries a live
+  // countdown at the top of the column (`price_valid_until`), and a second clock
+  // in this chip had the traveller watching two different numbers run down for
+  // what reads as one deadline. The tick is kept because it is what flips this
+  // card to its expired state the moment the window closes, rather than waiting
+  // on the next cart refetch.
   const holdRunOut = msLeft === null ? lockInHoldExpired : msLeft <= 0;
-  const countdownLabel =
-    msLeft === null || msLeft <= 0 ? "" : formatHoldCountdown(msLeft);
-  // Empty on the carts that have no window to count down at all, where the
-  // sentence falls back to naming the deadline instead of a duration.
-  const holdRemainingWords =
-    msLeft === null || msLeft <= 0 ? "" : formatHoldRemainingWords(msLeft);
 
-  // Paid, but the window it bought has run out. Deliberately no "reprice" call
-  // to action: this card only renders while the cart still considers its prices
-  // valid, and the cart offers no reprice control in that state — so it says
-  // what changed and leaves the CTA below it alone.
+  // Which button the traveller pressed, so only that one reads as busy. The
+  // parent reports one `isPaying` for the whole drawer — without this the
+  // "pay in full" tap lit up the hold button instead.
+  const [pending, setPending] = useState(null);
+  useEffect(() => {
+    if (!isPaying) setPending(null);
+  }, [isPaying]);
+  const press = (type, handler) => () => {
+    setPending(type);
+    handler?.();
+  };
+
+  // Once paid the hold has a real deadline; before that the card is quoting
+  // what a hold bought *now* would run to, which is what the design's "Price
+  // locked till …" line promises.
+  const holdDateLabel = formatHoldDate(
+    lockInHoldUntil ||
+      new Date(Date.now() + LOCK_IN_HOLD_HOURS * 60 * 60 * 1000),
+  );
+
+  // Descriptive only — it names what is frozen, never what is charged. Falls
+  // back to the balance on a cart that states no gross, which understates the
+  // sentence rather than inventing a figure by adding the fee back on.
+  const frozenTotal = Number(tripTotal) > 0 ? tripTotal : balanceDue;
+
+  const card = "mb-md rounded-4xl border-sm bg-white p-lg";
+
+  // Paid, but the window it bought has run out — prices can move from here, so
+  // the card says so instead of repeating the promise. It keeps a pay CTA
+  // because it is the only one on screen: the drawer's own Proceed-to-Pay is
+  // suppressed wherever this card renders.
   if (lockInPaid && holdRunOut) {
     return (
-      <div className="rounded-md-lg border-sm border-[#F3C6C6] bg-[#FEF5F5] p-sm mb-md">
-        <div className="flex items-center gap-xs mb-xxs">
-          <LuClock4 size={17} className="text-[#B3261E] flex-shrink-0" />
-          <div className="text-sm-md font-500 leading-lg text-[#01202B]">
-            Prices have expired for this itinerary
+      <div className={`${card} border-[#F3C6C6]`}>
+        <div className="flex items-center gap-xxs-md">
+          <LuClock4
+            size={16}
+            strokeWidth={2.2}
+            className="flex-shrink-0 text-[#B3261E]"
+            aria-hidden="true"
+          />
+          <div className="font-mono text-xs font-600 uppercase tracking-[0.08em] text-[#B3261E]">
+            Hold expired
           </div>
         </div>
-        <div className="text-sm font-400 leading-md text-text-spacegrey">
-          The {LOCK_IN_HOLD_HOURS}-hour price hold has ended, so prices can
-          change from here. {amountLabel(lockInPaidAmount)} paid as lock-in
-          will be adjusted in the total amount.
+
+        <div className="mt-xs text-md-lg font-700 leading-xl-sm text-[#0B1220]">
+          The {HOLD_DAYS}-day hold has{" "}
+          <span className="font-serif font-400 italic text-[#6E757A]">
+            ended.
+          </span>
+        </div>
+
+        <div className="mt-xs text-sm-md font-400 leading-lg text-text-spacegrey">
+          Prices can change from here. The {money(lockInPaidAmount)} you paid to
+          hold this trip is not lost — it is still adjusted against your total.
+        </div>
+
+        <div className="mt-md rounded-lg bg-[#F5F6F7] px-sm-md py-sm">
+          <div className="flex items-center justify-between gap-sm">
+            <span className="text-sm-md font-400 leading-lg text-text-spacegrey">
+              Hold fee paid
+            </span>
+            <span className="text-sm-md font-400 leading-lg text-text-spacegrey">
+              {money(lockInPaidAmount)}
+            </span>
+          </div>
+          <div className="mt-xxs flex items-center justify-between gap-sm">
+            <span className="text-sm-md font-600 leading-lg text-[#0B1220]">
+              Balance on booking
+            </span>
+            <span className="text-sm-md font-600 leading-lg text-[#0B1220]">
+              {money(balanceDue)}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-md">
+          <HoldCta
+            tone="dark"
+            onClick={press("full", onPayFull)}
+            disabled={isPaying}
+            busy={isPaying && pending === "full"}
+            busyLabel="Opening payment…"
+          >
+            {`Pay balance · ${money(balanceDue, { spaced: true })}`}
+          </HoldCta>
         </div>
       </div>
     );
@@ -1371,64 +1508,141 @@ export const LockInNotice = ({
 
   if (lockInPaid) {
     return (
-      <div className="rounded-md-lg border-sm border-[#B7E4C7] bg-[#F2FBF5] p-sm mb-md">
-        {/* The heading and the clock share a row, pushed apart — the clock is
-            the thing being watched here, and hanging it off the end of the
-            sentence buried it. `flex-wrap` so a narrow phone drops it to its own
-            line instead of squeezing the heading. */}
-        <div className="flex items-center justify-between flex-wrap gap-xs mb-xxs">
-          <div className="flex items-center gap-xs">
-            <LuCheckCircle2
-              size={17}
-              className="text-[#2E7D32] flex-shrink-0"
-            />
-            <div className="text-sm-md font-500 leading-lg text-[#01202B]">
-              Price locked for this trip
-            </div>
+      <div className={`${card} border-[#E6E8EC]`}>
+        {/* The chip the design gives to a hold reference. There is no such
+            reference on the cart, so the slot carries the thing the cart does
+            know and the traveller is actually watching — how much of the
+            window is left. Absent before the first tick, and on carts whose
+            paid flag has no `lock_in_fee_paid_at` behind it to count from. */}
+        <div className="flex items-center gap-xxs-md">
+          <LuCheck
+            size={16}
+            strokeWidth={2.5}
+            className="flex-shrink-0 text-[#1A7F4B]"
+            aria-hidden="true"
+          />
+          <div className="font-mono text-xs font-600 uppercase tracking-[0.08em] text-[#1A7F4B]">
+            Hold active
           </div>
-          {/* Monospaced so the digits keep their column and the clock does not
-              jitter on every tick. Absent before the first tick, and on carts
-              with no `lock_in_fee_paid_at` to count from — the heading stands on
-              its own in both cases. */}
-          {countdownLabel && (
-            <div className="flex items-baseline gap-xxs text-sm font-500 leading-md text-[#2E7D32]">
-              <span className="font-mono">{countdownLabel}</span>
-              <span className="font-400 text-text-spacegrey">left</span>
-            </div>
-          )}
         </div>
-        {/* Full card width rather than indented into the icon's column — the
-            body is the long line here, and hanging it off the icon cost it a
-            whole extra wrap for no gain. */}
-        <div className="text-sm font-400 leading-md text-text-spacegrey">
-          {amountLabel(lockInPaidAmount)} already paid as lock-in will be
-          adjusted in the total amount. Pay the remaining amount{" "}
-          {holdRemainingWords
-            ? `in ${holdRemainingWords}`
-            : "before the hold ends"}{" "}
-          to confirm this itinerary.
+
+        <div className="mt-xs text-md-lg font-700 leading-xl-sm text-[#0B1220]">
+          Done — this price is{" "}
+          <span className="font-serif font-400 italic text-[#6E757A]">
+            yours.
+          </span>
+        </div>
+
+        <div className="mt-xs text-sm-md font-400 leading-lg text-text-spacegrey">
+          I&apos;ve frozen {money(frozenTotal)}
+          {holdDateLabel ? ` till ${holdDateLabel}` : ""}. Chat, tweak, or sleep
+          on it — the price won&apos;t move. Your {money(lockInPaidAmount)}{" "}
+          adjusts when you book.
+        </div>
+
+        <div className="mt-md rounded-lg bg-[#F5F6F7] px-sm-md py-sm">
+          <div className="flex items-center justify-between gap-sm">
+            <span className="text-sm-md font-400 leading-lg text-text-spacegrey">
+              Hold fee paid
+            </span>
+            <span className="text-sm-md font-400 leading-lg text-text-spacegrey">
+              {money(lockInPaidAmount)}
+            </span>
+          </div>
+          <div className="mt-xxs flex items-center justify-between gap-sm">
+            <span className="text-sm-md font-600 leading-lg text-[#0B1220]">
+              Balance on booking
+            </span>
+            <span className="text-sm-md font-600 leading-lg text-[#0B1220]">
+              {money(balanceDue)}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-md">
+          <HoldCta
+            tone="dark"
+            onClick={press("full", onPayFull)}
+            disabled={isPaying}
+            busy={isPaying && pending === "full"}
+            busyLabel="Opening payment…"
+          >
+            {`Pay balance · ${money(balanceDue, { spaced: true })}`}
+          </HoldCta>
         </div>
       </div>
     );
   }
 
-  // Nothing to choose here — the hold is the first step, not an alternative to
-  // paying. This only explains what the one Proceed-to-Pay button is about to
-  // charge, which is why it carries no CTA of its own.
+  // The hold is owed. Both ways out of this screen live in the card: holding is
+  // the primary, paying the whole trip today the quiet alternative under it.
   return (
-    <div className="rounded-md-lg border-sm border-primary-yellow bg-primary-jasmineWhite p-sm mb-md">
-      <div className="flex items-center gap-xs mb-xxs">
-        <span className="text-md-lg leading-lg flex-shrink-0">&#128274;</span>
-        <div className="text-sm-md font-500 leading-lg text-[#01202B]">
-          Hold this price for {feeLabel}
+    <div className={`${card} border-[#E6E8EC]`}>
+      <div className="flex items-start gap-sm">
+        <span
+          className="flex h-[38px] w-[38px] flex-shrink-0 items-center justify-center rounded-xl bg-primary-yellow"
+          aria-hidden="true"
+        >
+          <LuLock size={18} strokeWidth={2} className="text-[#0B1220]" />
+        </span>
+        <div className="text-md-lg font-700 leading-xl-sm text-[#0B1220]">
+          Not paying today?{" "}
+          <span className="font-serif font-400 italic text-[#6E757A]">
+            Hold it.
+          </span>
         </div>
       </div>
-      {/* Full card width rather than indented into the icon's column — the body
-          is the long line here, and hanging it off the icon cost it a whole
-          extra wrap for no gain. */}
-      <div className="text-sm font-400 leading-md text-text-spacegrey">
-        Pay {feeLabel} now to freeze today&apos;s price for this itinerary. You
-        pay the balance later, and this amount is adjusted against it.
+
+      <div className="mt-sm text-sm-md font-400 leading-lg text-text-spacegrey">
+        {money(lockInFee)} freezes this trip for {HOLD_DAYS} days — and it
+        adjusts against your trip, so you lose nothing.
+      </div>
+
+      <div className="mt-md flex flex-col gap-sm">
+        <HoldBenefit icon={LuClock4}>
+          Price locked till{" "}
+          <span className="font-600 text-[#0B1220]">{holdDateLabel}</span> —{" "}
+          {HOLD_DAYS} full days, not 24 hours
+        </HoldBenefit>
+        <HoldBenefit icon={LuMessageCircle}>
+          Unlimited itinerary changes &amp; chats with Kaira
+        </HoldBenefit>
+        <HoldBenefit icon={LuHeadphones}>
+          A human travel expert on WhatsApp, whenever you want
+        </HoldBenefit>
+        <HoldBenefit icon={LuShieldCheck}>
+          Best price guarantee — if it drops, you pay the lower one
+        </HoldBenefit>
+      </div>
+
+      <div className="mt-md">
+        <HoldCta
+          onClick={press("lockin", onHold)}
+          disabled={isPaying}
+          busy={isPaying && pending === "lockin"}
+          busyLabel="Opening payment…"
+        >
+          <LuLock size={17} strokeWidth={2.4} aria-hidden="true" />
+          {`Hold this price · ${money(lockInFee, { spaced: true })}`}
+        </HoldCta>
+      </div>
+
+      <div className="mt-xs">
+        <button
+          type="button"
+          onClick={press("full", onPayFull)}
+          disabled={isPaying}
+          // The quiet alternative, and its hover stays quiet with it: the
+          // outline firms up and the face takes a grey wash, with none of the
+          // lift the yellow button gets. Matching that lift here would put the
+          // two CTAs at the same weight on hover and lose the hierarchy the
+          // card is built on.
+          className={`w-full rounded-67br border-sm border-[#DCDFE5] bg-white px-md py-sm text-sm-md font-500 leading-lg text-[#3F4A57] hover:border-[#B6BCC6] hover:bg-[#F5F6F7] hover:text-[#0B1220] active:bg-[#ECEEF1] ${HOLD_CTA_MOTION}`}
+        >
+          {isPaying && pending === "full"
+            ? "Opening payment…"
+            : `or pay in full — ${money(balanceDue)}`}
+        </button>
       </div>
     </div>
   );
@@ -1915,6 +2129,12 @@ const Details = (props) => {
   const [showSetPassenger, setShowSetPassenger] = useState(false);
   const [travellerDetailsOpen, setTravellerDetailsOpen] = useState(false);
   const travellerDrawerRef = useRef(null);
+  // Gates the drawer's very first mount — see the note at its render.
+  const [travellerDrawerEverOpened, setTravellerDrawerEverOpened] =
+    useState(false);
+  useEffect(() => {
+    if (travellerDetailsOpen) setTravellerDrawerEverOpened(true);
+  }, [travellerDetailsOpen]);
 
   useEffect(() => {
     if (!travellerDetailsOpen) return undefined;
@@ -1928,8 +2148,20 @@ const Details = (props) => {
         setTravellerDetailsOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleOutside);
-    return () => document.removeEventListener("mousedown", handleOutside);
+    // Attached on a delay, not synchronously. This drawer is opened from inside
+    // a click handler — the pay gate raises it when traveller details are
+    // missing — and on touch the browser then fires an EMULATED mousedown for
+    // that same tap, up to ~300ms after the click. Bound straight away, that
+    // emulated event arrives with the pay button as its target, which is
+    // outside the panel, and closed the drawer before the traveller ever saw
+    // it. The delay lets the tap that opened it finish first.
+    const armOutside = setTimeout(() => {
+      document.addEventListener("mousedown", handleOutside);
+    }, 350);
+    return () => {
+      clearTimeout(armOutside);
+      document.removeEventListener("mousedown", handleOutside);
+    };
   }, [travellerDetailsOpen]);
   const [showVisaDrawer, setShowVisaDrawer] = useState(false);
   const [showEsimDrawer, setShowEsimDrawer] = useState(false);
@@ -2137,7 +2369,18 @@ const Details = (props) => {
   // paint at exactly that moment. Every open bumps `paymentDrawerKey` and
   // remounts, so each open gets its own latch.
   const autoPayMountRef = useRef(!!props?.autoStartPayment);
-  const hideCartForAutoPay = autoPayMountRef.current;
+  // …unless the caller asked for the cart to stay on screen. The phone's Review
+  // & pay sheet does not — it has just shown the traveller this exact cart, so
+  // a second copy behind the gateway is one browse too many. The hold modal
+  // does: it is a single card, not a cart, and an invisible drawer left nothing
+  // on screen while the sale was being created, and nothing for the
+  // traveller-details gate to open over.
+  //
+  // Latched at mount with the flag above, for the same reason: reading it live
+  // would let the cart appear or vanish mid-attempt.
+  const autoPayShowCartRef = useRef(!!props?.autoPayShowCart);
+  const hideCartForAutoPay =
+    autoPayMountRef.current && !autoPayShowCartRef.current;
 
   const autoPayFiredRef = useRef(false);
   useEffect(() => {
@@ -2154,11 +2397,16 @@ const Details = (props) => {
       return;
     }
     autoPayFiredRef.current = true;
-    // `payNowType`, not a hardcoded "full": on a cart that still owes its hold
-    // this has to open the lock-in sale, exactly as the desktop CTA does.
-    // Charging the full balance here would take ₹76,847 from a traveller whose
-    // sheet said ₹999.
-    handlePayNow(payNowType);
+    // The caller's own choice first: the sheet's hold card offers BOTH a hold
+    // and paying in full, so which sale to open is the traveller's decision
+    // there, not something to be re-derived from the cart.
+    //
+    // `payNowType` is the fallback for callers that don't state one (the
+    // sheet's footer bar) — not a hardcoded "full": on a cart that still owes
+    // its hold that has to open the lock-in sale, exactly as the desktop CTA
+    // does. Charging the full balance here would take ₹76,847 from a traveller
+    // whose sheet said ₹999.
+    handlePayNow(props?.autoPayType || payNowType);
   }, [props?.autoStartPayment, Cart?.id, showDetailedPayment]);
 
   // The auto-started attempt has settled — hand back to whoever started it.
@@ -2960,11 +3208,16 @@ const Details = (props) => {
     // details haven't been added yet — open the drawer to collect them
     // instead of hitting the payment API. Once filled, refreshItineraryDetails
     // repopulates `travellers` and the user can proceed.
-    if (
-      (label === "full" || label === "lockin") &&
+    // `traveler_details_verified` first — the file's own source of truth (see
+    // `travellerDetailsVerified`), because the cart accounts for pax changes the
+    // itinerary's `travellers` array cannot reflect. The array stays as the
+    // fallback for carts that predate the flag. An UNDEFINED array is not "no
+    // travellers", it is "not loaded yet", so it must not gate on its own.
+    const travellersMissing =
+      !travellerDetailsVerified &&
       Array.isArray(Itinerary?.travellers) &&
-      Itinerary.travellers.length === 0
-    ) {
+      Itinerary.travellers.length === 0;
+    if ((label === "full" || label === "lockin") && travellersMissing) {
       setTravellerDetailsOpen(true);
       // An auto-started payment stops HERE rather than at the gateway. Tell the
       // caller so its button stops reading as busy — but the gate is rendered
@@ -3691,6 +3944,17 @@ const Details = (props) => {
                         lockInPaidAmount={lockInPaidAmount}
                         lockInHoldUntil={lockInHoldUntil}
                         lockInHoldExpired={lockInHoldExpired}
+                        // The gross trip price the hold freezes, stated by the
+                        // cart rather than added back up from the balance and
+                        // the fee — that arithmetic is how the two figures
+                        // drift into double counting.
+                        tripTotal={Cart?.discounted_cost}
+                        // What paying in full actually charges, which is the
+                        // same figure the breakdown above totals to.
+                        balanceDue={calculateFilteredTotal()}
+                        onHold={() => handlePayNow("lockin")}
+                        onPayFull={() => handlePayNow("full")}
+                        isPaying={paymentLoading}
                       />
                     )}
 
@@ -3764,6 +4028,13 @@ const Details = (props) => {
                     ) : hasPlanExpired &&
                       isItineraryInFuture() &&
                       pricing_status == "SUCCESS" ? (
+                      <></>
+                    ) : showLockInBlock ? (
+                      // The hold card directly above carries the pay CTAs
+                      // itself — "Hold this price" over "or pay in full", or
+                      // "Pay balance" once the hold is paid. A second
+                      // Proceed-to-Pay under it would be the same charge twice
+                      // over, in different words.
                       <></>
                     ) : (
                       // Desktop: static button in the pricing column. Phones get
@@ -3968,6 +4239,11 @@ const Details = (props) => {
               const showPayBar =
                 !showRepriceExpired &&
                 !showUpdateDates &&
+                // The hold card in the flow above owns the pay CTAs wherever it
+                // renders, on this width as much as on desktop. Leaving the bar
+                // up would put "Proceed to pay ₹999" under a card already
+                // offering both "Hold this price" and "or pay in full".
+                !showLockInBlock &&
                 !(
                   hasPlanExpired &&
                   isItineraryInFuture() &&
@@ -4152,47 +4428,93 @@ const Details = (props) => {
         </div>
       </Drawer>
 
-      <Drawer
-        show={travellerDetailsOpen}
-        anchor={"right"}
-        backdrop
-        width={"720px"}
-        mobileWidth={"100%"}
-        style={{ zIndex: 1700 }}
-        className="font-lexend"
-        onHide={() => setTravellerDetailsOpen(false)}
-      >
-        <div ref={travellerDrawerRef} className="h-full bg-white">
-          <div className="sticky top-0 z-10 flex justify-between items-center px-lg py-md border-b-sm border-text-disabled bg-white">
-            <div>
-              <div className="text-md-lg font-500 leading-xl-md text-primary-indigo">
-                Traveller Details
+      {/* Traveller details — the gate every pay CTA passes through, including
+          the ones outside this cart (the hold modal's two buttons auto-start a
+          payment and land here when the names are missing).
+
+          A bottom sheet on the phone and a right-anchored drawer on desktop,
+          matching the surface each width already uses: as a right drawer at
+          100% width it read as a second full-screen cart on a phone, which is
+          not what the rest of that surface does with a form.
+
+          `top: auto` is load-bearing on the bottom anchor — DrawerContainer
+          sets `top: 0%` for every anchor and then adds `bottom: 0`, so without
+          releasing `top` the sheet stretches to the full viewport whatever
+          height it is given. */}
+      {/* Not rendered until it has been opened at least once. Drawer's show
+          effect calls its internal close path whenever `show` is false —
+          INCLUDING on first mount — and that path fires `onHide` on a 100ms
+          timer. This drawer remounts every time the cart is opened (the key
+          bump in openPaymentDrawer), and on the auto-pay path the traveller
+          gate raises it within those 100ms, so the stale close landed on a
+          drawer that had just legitimately opened and shut it again. Holding
+          the mount back means the first render it ever gets has `show` true.
+          Same guard, same reason, as Sheet.jsx. */}
+      {travellerDrawerEverOpened && (
+        <Drawer
+          show={travellerDetailsOpen}
+          anchor={isPageWide ? "right" : "bottom"}
+          backdrop
+          width={isPageWide ? "720px" : "100%"}
+          mobileWidth={"100%"}
+          style={
+            isPageWide
+              ? { zIndex: 1700 }
+              : {
+                  zIndex: 1700,
+                  top: "auto",
+                  height: "92dvh",
+                  maxHeight: "95dvh",
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  overflow: "hidden",
+                }
+          }
+          className="font-lexend"
+          onHide={() => setTravellerDetailsOpen(false)}
+        >
+          <div
+            ref={travellerDrawerRef}
+            className="h-full overflow-y-auto bg-white"
+          >
+            {/* The phone's sheets all carry one; it is also the affordance that
+                says this closes downward rather than sideways. */}
+            {!isPageWide && (
+              <div className="flex-none pb-[6px] pt-[9px]">
+                <div className="mx-auto h-[4px] w-[40px] rounded-full bg-[#dcdfe5]" />
               </div>
-              <div className="text-xs font-400 leading-md text-text-spacegrey mt-xxs">
-                Add details for everyone travelling on this trip.
+            )}
+            <div className="sticky top-0 z-10 flex justify-between items-center px-lg py-md border-b-sm border-text-disabled bg-white">
+              <div>
+                <div className="text-md-lg font-500 leading-xl-md text-primary-indigo">
+                  Traveller Details
+                </div>
+                <div className="text-xs font-400 leading-md text-text-spacegrey mt-xxs">
+                  Add details for everyone travelling on this trip.
+                </div>
               </div>
+              <IoMdClose
+                className="cursor-pointer text-text-spacegrey hover:text-primary-indigo"
+                onClick={() => setTravellerDetailsOpen(false)}
+                style={{ fontSize: "1.5rem" }}
+              />
             </div>
-            <IoMdClose
-              className="cursor-pointer text-text-spacegrey hover:text-primary-indigo"
-              onClick={() => setTravellerDetailsOpen(false)}
-              style={{ fontSize: "1.5rem" }}
-            />
+            <div className="px-lg py-lg">
+              <AddTravellerDetails
+                itinerary={Itinerary}
+                onSuccess={() => {
+                  setTravellerDetailsOpen(false);
+                  // Traveller details saved — refetch the itinerary detail so the
+                  // `travellers` array in Redux is populated and the next
+                  // proceed-to-pay call hits the payment API.
+                  refreshItineraryDetails();
+                  props.getPaymentHandler?.();
+                }}
+              />
+            </div>
           </div>
-          <div className="px-lg py-lg">
-            <AddTravellerDetails
-              itinerary={Itinerary}
-              onSuccess={() => {
-                setTravellerDetailsOpen(false);
-                // Traveller details saved — refetch the itinerary detail so the
-                // `travellers` array in Redux is populated and the next
-                // proceed-to-pay call hits the payment API.
-                refreshItineraryDetails();
-                props.getPaymentHandler?.();
-              }}
-            />
-          </div>
-        </div>
-      </Drawer>
+        </Drawer>
+      )}
 
       <VisaSearchDrawer
         show={showVisaDrawer}

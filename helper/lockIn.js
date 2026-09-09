@@ -29,7 +29,13 @@ const HOUR_MS = 60 * 60 * 1000;
 const CART_UTC_OFFSET = "+05:30";
 
 // A space instead of the "T" as well, which Safari will not parse.
-const parseCartTimestamp = (value) => {
+//
+// Exported because `price_valid_until` is written the same naive-IST way and is
+// read on surfaces that have nothing to do with the hold — the cart bar's
+// "expires in" clock among them. Parsing it with a bare `new Date` reads that
+// wall clock in the viewer's own zone, which slides the deadline by hours for
+// anyone outside India.
+export const parseCartTimestamp = (value) => {
   if (!value || typeof value !== "string") return null;
   const trimmed = value.trim();
   // Only naive timestamps get the offset appended; if the backend ever starts
