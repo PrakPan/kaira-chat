@@ -4,6 +4,7 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import useDebounce from "../../../hooks/useDebounce";
 import axiossearchinstance from "../../../services/search/searchsuggest";
 import Stepper from "./Stepper";
+import SearchSheet from "./SearchSheet";
 import { DestTile } from "./StepTrip";
 import { fmtDayMon, fromYMD } from "./dateUtils";
 import {
@@ -38,6 +39,12 @@ const GRADS = [
 ];
 
 const MAX_NIGHTS = 14;
+
+// See the note in StepTrip: phones get the full-screen search, wider screens
+// keep the list under the field. Read in event handlers only.
+const isNarrow = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(max-width: 767.98px)").matches;
 
 export const cityName = (c) =>
   c?.name || c?.city_name || c?.city?.name || c?.text || "Stop";
@@ -75,6 +82,7 @@ const StepRoute = ({
   }, []);
 
   const [addOpen, setAddOpen] = useState(false);
+  const [addSheet, setAddSheet] = useState(false);
   const [addQuery, setAddQuery] = useState("");
   const [addNights, setAddNights] = useState(2);
   const [addResults, setAddResults] = useState([]);
@@ -318,6 +326,15 @@ const StepRoute = ({
                   autoFocus
                   placeholder="Where else?"
                   onChange={(e) => setAddQuery(e.target.value)}
+                  // On a phone the search takes over the screen instead of
+                  // opening a list inside a panel that is already low in a
+                  // scrolling step. preventDefault keeps focus (and so the
+                  // keyboard) off this input; the sheet's own input takes it.
+                  onPointerDown={(e) => {
+                    if (!isNarrow()) return;
+                    e.preventDefault();
+                    setAddSheet(true);
+                  }}
                 />
               </div>
               {addQuery.trim().length >= 2 && (
@@ -352,6 +369,9 @@ const StepRoute = ({
                   )}
                 </div>
               )}
+              {/* The nights stay here rather than in the sheet: they are set
+                  once and apply to whatever is picked, and a picked place is
+                  added immediately. */}
               <div className="kform-add-foot">
                 <div className="kform-label">How long?</div>
                 <Stepper
@@ -367,6 +387,44 @@ const StepRoute = ({
             </div>
           )}
         </div>
+
+        <SearchSheet
+          open={addSheet}
+          onClose={() => setAddSheet(false)}
+          placeholder="Search a city to add"
+          value={addQuery}
+          onChange={(e) => setAddQuery(e.target.value)}
+          onClear={() => setAddQuery("")}
+          label={`Adding ${addNights} night${addNights === 1 ? "" : "s"}`}
+          loading={addLoading && addResults.length === 0}
+          empty={
+            addQuery.trim().length < 2
+              ? "Type a city to see matches."
+              : !addLoading && addResults.length === 0
+                ? "Nothing matches that. Try another spelling."
+                : null
+          }
+        >
+          {addQuery.trim().length >= 2 &&
+            addResults.map((r) => (
+              <button
+                key={r.resource_id || r.name}
+                type="button"
+                className="kform-opt"
+                onClick={() => {
+                  addCity(r);
+                  setAddSheet(false);
+                }}
+              >
+                <DestTile dest={r} className="kform-tile--sm" />
+                <div className="kform-opt-body">
+                  <div className="kform-opt-name">{r.name}</div>
+                  <div className="kform-opt-sub">{r.country || ""}</div>
+                </div>
+                <IconPlus size={14} style={{ color: "#b8becc" }} />
+              </button>
+            ))}
+        </SearchSheet>
 
         <div className="kform-map" ref={mapSlotRef}>
           {mapVisible && mapLocations.length > 0 && (

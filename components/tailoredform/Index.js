@@ -173,6 +173,40 @@ const EnquiryForm = (props) => {
   const source = useSourceParams();
   const [showLoginForm, setShowLoginForm] = useState(false);
 
+  // ── The on-screen keyboard ────────────────────────────────────────────────
+  // The form is a full-height sheet whose body scrolls inside it, so it has to
+  // be sized to the part of the screen the reader can actually see. `100dvh`
+  // is not that: on iOS Safari and on the Instagram / Facebook in-app browsers
+  // the keyboard is an overlay — the layout viewport does not shrink — so the
+  // sheet kept its full height and the bottom of it, including the suggestion
+  // list under whichever field had focus, sat behind the keyboard. Android is
+  // better behaved but still varies by `windowSoftInputMode`.
+  //
+  // visualViewport is the one thing that reports the visible box on all three.
+  // Publish it as custom properties and let the stylesheet use them (see
+  // `--kf-vvh` in styles/kaira-form.css); `offsetTop` matters because iOS
+  // scrolls the layout viewport up under the keyboard rather than resizing it.
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const vv = window.visualViewport;
+    if (!vv) return undefined;
+    const root = document.documentElement;
+    const apply = () => {
+      root.style.setProperty("--kf-vvh", `${Math.round(vv.height)}px`);
+      root.style.setProperty("--kf-vvo", `${Math.round(vv.offsetTop)}px`);
+    };
+    apply();
+    vv.addEventListener("resize", apply);
+    vv.addEventListener("scroll", apply);
+    return () => {
+      vv.removeEventListener("resize", apply);
+      vv.removeEventListener("scroll", apply);
+      root.style.removeProperty("--kf-vvh");
+      root.style.removeProperty("--kf-vvo");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (slideIndex === 0) {
       setApiSucceeded(false);

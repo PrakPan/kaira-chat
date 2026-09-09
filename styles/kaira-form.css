@@ -163,6 +163,13 @@
 
 .kform-card {
   width: min(1120px, 96vw);
+  /* One height for every step. Sized to the tallest step (the route, whose map
+     is a fixed 430px) so the dialog never resizes as the reader moves through
+     it — a card that grew 150px between step 1 and step 2 read as the page
+     jumping. Short steps centre their content in the extra room rather than
+     leaving it all under the last field (see .kform-step). */
+  height: min(760px, calc(100vh - 48px));
+  height: min(760px, calc(100dvh - 48px));
   max-height: calc(100vh - 48px);
   max-height: calc(100dvh - 48px);
   background: var(--kf-white);
@@ -185,11 +192,10 @@
 
 .kform-card--embedded {
   width: 100%;
+  /* Fill the host exactly — the host (the modal panel, or the bottom sheet on a
+     phone) is what has the definite height. */
   height: 100%;
-  /* The host is content-height, so this is what stops a tall step from running
-     off the screen — the body scrolls inside the card instead. */
-  max-height: calc(100vh - 48px);
-  max-height: calc(100dvh - 48px);
+  max-height: 100%;
   border-radius: 0;
   border: 0;
   box-shadow: none;
@@ -340,17 +346,32 @@
 /* ── Body ──────────────────────────────────────────────────────────────── */
 .kform-body {
   flex: 1;
-  overflow: auto;
-  padding: 16px 48px 24px 48px;
-  /* No floor. A 460px minimum held the card open at a fixed height, which on
-     the short steps left a band of empty white between the last field and the
-     footer. The card now takes the height of whatever step is in it. */
+  /* `overflow-y: auto` alone was not always enough: with the card at content
+     height the body never became the constrained box, so nothing scrolled even
+     though the content ran past the footer. The card has a fixed height now, so
+     this is the one scroller — and `min-height: 0` is what lets a flex child
+     shrink below its content and actually scroll. */
+  overflow-y: auto;
+  overflow-x: hidden;
   min-height: 0;
+  /* Don't hand the scroll on to the page (or the modal backdrop) at the ends —
+     the form is the thing being scrolled. */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 48px 24px 48px;
   scrollbar-width: thin;
+  /* Column + `margin: auto` on the step is the scroll-safe way to centre:
+     unlike `justify-content: center`, it still lets you reach the top when the
+     content is taller than the box. */
+  display: flex;
+  flex-direction: column;
 }
 .kform-step {
   max-width: 720px;
-  margin: 0 auto;
+  width: 100%;
+  /* Vertical half centres a short step in the card's fixed height; horizontal
+     half is the measure. See the note on .kform-body. */
+  margin: auto;
   animation: kfFadeUp 0.35s var(--kf-ease);
 }
 .kform-step--wide {
@@ -534,11 +555,6 @@
   padding: 14px 16px;
   font-size: 13px;
   color: var(--kf-ink-4);
-}
-.kform-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
 }
 
 /* destination / city tiles */
@@ -1570,6 +1586,9 @@
     width: 100%;
     height: 100vh;
     height: 100dvh;
+    /* Visible viewport when the browser reports one — see the note on
+       .ttw-formmodal. */
+    height: var(--kf-vvh, 100dvh);
     max-height: none;
     min-height: 0;
     border-radius: 0;
@@ -1912,7 +1931,14 @@
    ───────────────────────────────────────────────────────────────────────── */
 .ttw-formmodal {
   position: fixed;
-  inset: 0;
+  /* Pinned to the visual viewport rather than `inset: 0`, so when the keyboard
+     opens the overlay (and the sheet inside it) occupies what is still visible
+     instead of running underneath it. `--kf-vvh` / `--kf-vvo` are published by
+     the form — see the visualViewport effect in Index.js. */
+  left: 0;
+  right: 0;
+  top: var(--kf-vvo, 0px);
+  height: var(--kf-vvh, 100dvh);
   z-index: 3300;
   display: flex;
   align-items: center;
@@ -1930,8 +1956,13 @@
 
 .ttw-formmodal-panel {
   width: min(1120px, 94vw);
-  max-height: calc(100vh - 48px);
-  max-height: calc(100dvh - 48px);
+  /* The panel owns the height, and the card fills it — same fixed height on
+     every step, so the dialog does not resize as the reader moves through it.
+     A percentage works because the overlay above has a definite height. */
+  /* `100%` is already the overlay's content box, i.e. inside its 24px gutter —
+     subtracting the gutter again here would take it off twice. */
+  height: min(760px, 100%);
+  max-height: 100%;
   background: #ffffff;
   border-radius: 24px;
   /* Clips the embedded card, which is square-cornered by design, to this
@@ -1960,8 +1991,9 @@
   .ttw-formmodal-panel {
     width: 100%;
     max-height: none;
-    height: 92vh;
-    height: 92dvh;
+    /* Percentage of the overlay, which is already the visible viewport, so the
+       sheet shrinks with the keyboard instead of hiding behind it. */
+    height: 92%;
     border-radius: 20px 20px 0 0;
     transform: translateY(100%);
     /* The sheet slides rather than fades — a fade on something this large
@@ -1980,4 +2012,117 @@
   .ttw-formmodal-panel {
     transform: none;
   }
+}
+
+/* ── Full-screen search (phone) ─────────────────────────────────────────────
+   components/tailoredform/kaira/SearchSheet — the search a suggestion field
+   opens on a phone, instead of dropping a list under a field that is already
+   halfway down a scrolling form with a keyboard over the bottom half of it.
+
+   Sized to the VISIBLE viewport (`--kf-vvh` / `--kf-vvo`, published by the
+   visualViewport effect in Index.js) rather than to `100dvh`: on iOS and in the
+   Instagram / Facebook in-app browsers the keyboard is an overlay that never
+   shrinks the layout viewport, so a dvh-sized panel would run underneath it and
+   take the last few results with it.
+   ───────────────────────────────────────────────────────────────────────── */
+.ksheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--kf-vvo, 0px);
+  height: var(--kf-vvh, 100dvh);
+  /* Over the form's own modal, which sits at 3300. */
+  z-index: 3400;
+  background: var(--kf-white, #ffffff);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--kf-sans, "Inter", -apple-system, sans-serif);
+  color: var(--kf-ink, #0b1220);
+  animation: kfFadeUp 0.18s var(--kf-ease, cubic-bezier(0.2, 0.7, 0.3, 1));
+}
+
+.ksheet-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--kf-line, #ececec);
+  background: var(--kf-white, #ffffff);
+}
+.ksheet-back,
+.ksheet-clear {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: var(--kf-ink, #0b1220);
+}
+.ksheet-back {
+  width: 40px;
+  height: 40px;
+  margin-left: -4px;
+}
+.ksheet-clear {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--kf-paper-2, #f4f3ec);
+  color: var(--kf-ink-3, #445069);
+}
+.ksheet-bar-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: var(--kf-ink-4, #8a93a6);
+}
+.ksheet-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  /* 16px is the floor iOS will not zoom the page for. */
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--kf-ink, #0b1220);
+  padding: 8px 0;
+}
+
+.ksheet-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 0 24px;
+}
+.ksheet-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kf-ink-5, #b8becc);
+  padding: 10px 16px 4px;
+}
+.ksheet-empty {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--kf-ink-4, #8a93a6);
+  padding: 14px 16px;
+}
+
+/* Rows are the form's own option rows, given a phone-sized touch target. */
+.ksheet .kform-opt {
+  padding: 12px 16px;
+  gap: 14px;
+  border-radius: 0;
+}
+.ksheet .kform-opt-name {
+  font-size: 15px;
+}
+.ksheet .kform-opt-sub {
+  font-size: 12.5px;
 }
