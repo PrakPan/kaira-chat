@@ -77,6 +77,9 @@ import { useChatContext } from "../../../components/Chatbot/context/ChatContext"
 import TrustFactor from "../../../components/tailoredform/TrustFactor";
 import NavigationMenu from "../../../components/revamp/home/NavigationMenu";
 import { TbClockExclamation } from "react-icons/tb";
+// The phone's bottom-sheet primitive, so the traveller form is the same
+// surface here as it is in CartSheet.
+import Sheet from "../../../components/revamp/common/components/Sheet";
 import { FcCalendar } from "react-icons/fc";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { currencySymbols } from "../../../data/currencySymbols";
@@ -2129,9 +2132,14 @@ const Details = (props) => {
   const [showSetPassenger, setShowSetPassenger] = useState(false);
   const [travellerDetailsOpen, setTravellerDetailsOpen] = useState(false);
   const travellerDrawerRef = useRef(null);
-  // Gates the drawer's very first mount — see the note at its render.
+  // Gates the DESKTOP drawer's very first mount — see the note at its render.
   const [travellerDrawerEverOpened, setTravellerDrawerEverOpened] =
     useState(false);
+  // The phone sheet pins its save button in a fixed footer, so the form hands
+  // its submit action out through this ref and reports its pending state back —
+  // the same contract CartSheet uses for the same form.
+  const travellerSubmit = useRef(null);
+  const [travellerSaving, setTravellerSaving] = useState(false);
   useEffect(() => {
     if (travellerDetailsOpen) setTravellerDrawerEverOpened(true);
   }, [travellerDetailsOpen]);
@@ -4441,79 +4449,123 @@ const Details = (props) => {
           sets `top: 0%` for every anchor and then adds `bottom: 0`, so without
           releasing `top` the sheet stretches to the full viewport whatever
           height it is given. */}
-      {/* Not rendered until it has been opened at least once. Drawer's show
-          effect calls its internal close path whenever `show` is false —
-          INCLUDING on first mount — and that path fires `onHide` on a 100ms
-          timer. This drawer remounts every time the cart is opened (the key
-          bump in openPaymentDrawer), and on the auto-pay path the traveller
-          gate raises it within those 100ms, so the stale close landed on a
-          drawer that had just legitimately opened and shut it again. Holding
-          the mount back means the first render it ever gets has `show` true.
-          Same guard, same reason, as Sheet.jsx. */}
-      {travellerDrawerEverOpened && (
-        <Drawer
-          show={travellerDetailsOpen}
-          anchor={isPageWide ? "right" : "bottom"}
-          backdrop
-          width={isPageWide ? "720px" : "100%"}
-          mobileWidth={"100%"}
-          style={
-            isPageWide
-              ? { zIndex: 1700 }
-              : {
-                  zIndex: 1700,
-                  top: "auto",
-                  height: "92dvh",
-                  maxHeight: "95dvh",
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                  overflow: "hidden",
-                }
+      {/* ── Traveller details ────────────────────────────────────────────────
+          The gate every pay CTA passes through, including the ones outside this
+          cart: the hold modal's two buttons auto-start a payment and land here
+          when the names are missing.
+
+          On the phone this is the SAME sheet the cart raises — bottom-anchored,
+          titled, with the save button pinned in a fixed footer — rather than a
+          right-anchored drawer at 100% width with the button buried at the end
+          of a long scroll. Same `Sheet` primitive, same `AddTravellerDetails`
+          driven through `submitRef`, so the two cannot drift. Desktop keeps its
+          right drawer, where the inline button is at home. */}
+      {!isPageWide ? (
+        <Sheet
+          open={travellerDetailsOpen}
+          onClose={() => setTravellerDetailsOpen(false)}
+          title="Traveller details"
+          subtitle="EVERYONE TRAVELLING ON THIS TRIP"
+          headerRight={null}
+          height="95dvh"
+          // Above the hold modal (1660), which is deliberately left standing
+          // behind this so the offer survives a save and can be retried.
+          zIndex={1700}
+          contentClassName="px-[14px] py-[14px]"
+          footer={
+            <button
+              type="button"
+              onClick={() => travellerSubmit.current?.()}
+              disabled={travellerSaving}
+              style={{
+                border: "none",
+                background: "#f7e700",
+                borderRadius: 10,
+                boxShadow: "0 8px 20px -10px rgba(247,231,0,0.55)",
+              }}
+              className="w-full px-[20px] py-[12px] text-[14.5px] font-[800] text-[#0b1220] disabled:opacity-60"
+            >
+              {travellerSaving ? "Saving…" : "Save Traveller Details"}
+            </button>
           }
-          className="font-lexend"
-          onHide={() => setTravellerDetailsOpen(false)}
         >
-          <div
-            ref={travellerDrawerRef}
-            className="h-full overflow-y-auto bg-white"
+          {/* Keyed on the pax: the form builds one slot per traveller in its
+              state INITIALISERS, so a pax change made while this is open would
+              otherwise leave it showing the old slots. */}
+          <AddTravellerDetails
+            key={`${Itinerary?.number_of_adults || 0}-${
+              Itinerary?.number_of_children || 0
+            }-${Itinerary?.number_of_infants || 0}-${
+              Itinerary?.travellers?.length || 0
+            }`}
+            itinerary={Itinerary}
+            hideSubmit
+            submitRef={travellerSubmit}
+            onSubmittingChange={setTravellerSaving}
+            onSuccess={() => {
+              setTravellerDetailsOpen(false);
+              // Traveller details saved — refetch the itinerary detail so the
+              // `travellers` array in Redux is populated and the next
+              // proceed-to-pay call hits the payment API.
+              refreshItineraryDetails();
+              props.getPaymentHandler?.();
+            }}
+          />
+        </Sheet>
+      ) : (
+        /* Not rendered until it has been opened at least once. Drawer's show
+           effect calls its internal close path whenever `show` is false —
+           INCLUDING on first mount — and that path fires `onHide` on a 100ms
+           timer. This drawer remounts every time the cart is opened (the key
+           bump in openPaymentDrawer), and on the auto-pay path the traveller
+           gate raises it within those 100ms, so the stale close landed on a
+           drawer that had just legitimately opened and shut it again. Holding
+           the mount back means the first render it ever gets has `show` true.
+           Same guard, same reason, as Sheet.jsx — which is why the phone branch
+           above needs none of this, Sheet carries it internally. */
+        travellerDrawerEverOpened && (
+          <Drawer
+            show={travellerDetailsOpen}
+            anchor={"right"}
+            backdrop
+            width={"720px"}
+            mobileWidth={"100%"}
+            style={{ zIndex: 1700 }}
+            className="font-lexend"
+            onHide={() => setTravellerDetailsOpen(false)}
           >
-            {/* The phone's sheets all carry one; it is also the affordance that
-                says this closes downward rather than sideways. */}
-            {!isPageWide && (
-              <div className="flex-none pb-[6px] pt-[9px]">
-                <div className="mx-auto h-[4px] w-[40px] rounded-full bg-[#dcdfe5]" />
-              </div>
-            )}
-            <div className="sticky top-0 z-10 flex justify-between items-center px-lg py-md border-b-sm border-text-disabled bg-white">
-              <div>
-                <div className="text-md-lg font-500 leading-xl-md text-primary-indigo">
-                  Traveller Details
+            <div
+              ref={travellerDrawerRef}
+              className="h-full overflow-y-auto bg-white"
+            >
+              <div className="sticky top-0 z-10 flex justify-between items-center px-lg py-md border-b-sm border-text-disabled bg-white">
+                <div>
+                  <div className="text-md-lg font-500 leading-xl-md text-primary-indigo">
+                    Traveller Details
+                  </div>
+                  <div className="text-xs font-400 leading-md text-text-spacegrey mt-xxs">
+                    Add details for everyone travelling on this trip.
+                  </div>
                 </div>
-                <div className="text-xs font-400 leading-md text-text-spacegrey mt-xxs">
-                  Add details for everyone travelling on this trip.
-                </div>
+                <IoMdClose
+                  className="cursor-pointer text-text-spacegrey hover:text-primary-indigo"
+                  onClick={() => setTravellerDetailsOpen(false)}
+                  style={{ fontSize: "1.5rem" }}
+                />
               </div>
-              <IoMdClose
-                className="cursor-pointer text-text-spacegrey hover:text-primary-indigo"
-                onClick={() => setTravellerDetailsOpen(false)}
-                style={{ fontSize: "1.5rem" }}
-              />
+              <div className="px-lg py-lg">
+                <AddTravellerDetails
+                  itinerary={Itinerary}
+                  onSuccess={() => {
+                    setTravellerDetailsOpen(false);
+                    refreshItineraryDetails();
+                    props.getPaymentHandler?.();
+                  }}
+                />
+              </div>
             </div>
-            <div className="px-lg py-lg">
-              <AddTravellerDetails
-                itinerary={Itinerary}
-                onSuccess={() => {
-                  setTravellerDetailsOpen(false);
-                  // Traveller details saved — refetch the itinerary detail so the
-                  // `travellers` array in Redux is populated and the next
-                  // proceed-to-pay call hits the payment API.
-                  refreshItineraryDetails();
-                  props.getPaymentHandler?.();
-                }}
-              />
-            </div>
-          </div>
-        </Drawer>
+          </Drawer>
+        )
       )}
 
       <VisaSearchDrawer
