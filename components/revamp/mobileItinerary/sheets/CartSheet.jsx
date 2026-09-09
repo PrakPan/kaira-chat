@@ -373,10 +373,21 @@ export default function CartSheet({
   const travellerSubmit = React.useRef(null);
   const [travellerSaving, setTravellerSaving] = React.useState(false);
   const dispatch = useDispatch();
-  const { cart, currency, itinerary } = useSelector(
-    (s) => ({ cart: s.Cart, currency: s.currency, itinerary: s.Itinerary }),
+  const { cart, currency, itinerary, finalStatus } = useSelector(
+    (s) => ({
+      cart: s.Cart,
+      currency: s.currency,
+      itinerary: s.Itinerary,
+      // Same slice the drawer reads. ItineraryContainer renders underneath this
+      // tree in a display:none wrapper and is what dispatches it.
+      finalStatus: s.ItineraryStatus?.final_status,
+    }),
     shallowEqual,
   );
+  // A released itinerary is locked: the drawer drops the include/exclude
+  // checkbox rather than showing it disabled, and this sheet reuses the same
+  // breakdown component, so it has to hand the flag over too.
+  const isReleased = finalStatus === "Released";
 
   // The drawer computes expiry from Date.now() during render, so it only flips
   // when something else re-renders it — the countdown can hit zero and the pay
@@ -849,6 +860,7 @@ export default function CartSheet({
             arePricesHidden={model.hidden}
             updatingInclusions={updatingInclusions}
             arePricesExpired={model.stale}
+            isReleased={isReleased}
           />
 
           {/* Coupons stay this sheet's own: a dashed row that opens CouponSheet
