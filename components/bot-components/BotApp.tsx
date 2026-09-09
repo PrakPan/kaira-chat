@@ -1067,20 +1067,30 @@ export default function BotApp({
     }
   }, [finalizedStatus, isItineraryCompleting]);
 
-  // ── Fire the deferred tailored summary prompt once polling resolves ───────
+  // ── Fire the deferred tailored summary prompt once the loader stops ───────
   // For fromTailored landings, restoreLatestThread sets
   // pendingTailoredSeedRef while the itinerary is still building so we don't
-  // call thread.create / chatkit/p2 against an unfinished trip. Send the
-  // prompt as soon as itinerary_status flips to SUCCESS.
+  // call thread.create / chatkit/p2 against an unfinished trip.
+  //
+  // This waits for the *whole* build, not just `itinerary_status`. ITINERARY
+  // flips to SUCCESS while HOTELS / TRANSFERS / PRICING are still running, so
+  // seeding on it fired the summary against a half-built trip while the status
+  // loader was still ticking. `finalized_status === "SUCCESS"` is the signal
+  // that every celery task settled (ItineraryContainer sets it once all four
+  // are SUCCESS/FAILURE) — the same signal that clears the loader in the effect
+  // above, which is why `isItineraryCompleting` is also awaited: it holds this
+  // back for the one render between "polling resolved" and "loader torn down"
+  // so the prompt lands after the loader disappears, never alongside it.
   useEffect(() => {
     if (!pendingTailoredSeedRef.current) return;
-    if (itineraryStatus !== "SUCCESS") return;
+    if (finalizedStatus !== "SUCCESS") return;
+    if (isItineraryCompleting) return;
     pendingTailoredSeedRef.current = false;
     const loggedIn = !!getAuthToken();
     setInitialPrompt("Hey Kaira! provide summary of my itinerary");
     setInitialPromptRequiresLogin(!loggedIn);
     setIsChatActive(true);
-  }, [itineraryStatus]);
+  }, [finalizedStatus, isItineraryCompleting]);
 
   // ── On the first time we land in P2 (finalized) state, default the desktop
   //    viewMode to itinerary. The chatkit restore flow can leave viewMode on
@@ -3282,8 +3292,35 @@ export default function BotApp({
     if (!viewportMeasured) return;
     hasConsumedHeroHandoffRef.current = true;
 
-    const queryParam = router.query.seed;
-    const querySeed = Array.isArray(queryParam) ? queryParam[0] : queryParam;
+    // Params are read from the LIVE URL whenever `router.query` hasn't caught
+    // up yet. `MyApp` has getInitialProps, so the export ships `appGip: true`
+    // and Next marks the router ready on the very first client render with
+    // `router.query` still `{}` — the real query only arrives via the `?_h=1`
+    // catch-up navigation Next fires afterwards (same trap `_app.js`
+    // documents for the ad params). This effect runs the moment
+    // `viewportMeasured` flips, on the render right after mount, and consumes
+    // the handoff exactly once — so it is racing that catch-up. When it wins,
+    // `router.query.seed` is undefined, the ref is burned, and the prompt is
+    // lost for good with `?seed=` still sitting in the address bar.
+    //
+    // Reading `window.location` closes the race: the param is on the URL from
+    // the first paint regardless of how Next resolved the route, so this holds
+    // for `/chat?seed=…` and `/chat/?seed=…` alike.
+    const readParam = (name: string): string | undefined => {
+      const fromRouter = router.query[name];
+      const routerVal = Array.isArray(fromRouter) ? fromRouter[0] : fromRouter;
+      if (routerVal != null) return routerVal;
+      if (typeof window === "undefined") return undefined;
+      try {
+        return (
+          new URL(window.location.href).searchParams.get(name) ?? undefined
+        );
+      } catch {
+        return undefined;
+      }
+    };
+
+    const querySeed = readParam("seed");
     const handoffSeed = takePendingSeed();
     const seed = (querySeed || handoffSeed || "").toString().trim();
     const files = takePendingFiles();
@@ -3309,10 +3346,9 @@ export default function BotApp({
     // paths below. Gate STRICTLY on the query param: a normal prompt-card seed
     // also stashes a slug in seedMeta (so items+slug reach the request), and must
     // NOT be mistaken for a build request.
-    const themeFormParam = router.query.themeForm;
-    const themeFormSlug = Array.isArray(themeFormParam)
-      ? themeFormParam[0]
-      : themeFormParam;
+    // Read through the same live-URL fallback as the seed — this branch loses
+    // the identical race against Next's `?_h=1` catch-up otherwise.
+    const themeFormSlug = readParam("themeForm");
     const resolvedThemeForm = themeFormSlug
       ? getThemeForm(themeFormSlug)
       : null;
@@ -3345,7 +3381,12 @@ export default function BotApp({
       // (handled by its own effect below) — default the empty state to the
       // in-chat intake form instead of the StartScreen/ChatWelcomeScreen
       // inspiration surfaces. Those surfaces now only show on theme pages.
-      if (!themeConfig && !sessionId && !fromTailored && !router.query.intake) {
+      if (
+        !themeConfig &&
+        !sessionId &&
+        !fromTailored &&
+        !readParam("intake")
+      ) {
         activateEmptyIntake();
       }
       return;
@@ -3654,6 +3695,9 @@ export default function BotApp({
     restoredThread,
     initialAttachmentIds,
     isItineraryCompleting: isItineraryCompleting,
+    // Docks the build loader above the composer for this landing — see the
+    // prop's note in ChatKitPanel.
+    fromTailored,
     itineraryCompleted:
       finalizedStatus === "SUCCESS" &&
       botMode === "p2" &&
