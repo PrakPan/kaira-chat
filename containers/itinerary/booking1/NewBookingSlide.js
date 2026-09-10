@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { replaceUrl, pushUrlDetached } from "../../../helper/historyUrl";
-import styled from "styled-components";
+import { getLockInState, LOCK_IN_HOLD_HOURS } from "../../../helper/lockIn";
+import styled, { keyframes } from "styled-components";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
 import { connect, useDispatch, useSelector } from "react-redux";
@@ -57,7 +58,15 @@ import {
   removeCoupon,
   repriceBookings,
 } from "../../../services/sales/itinerary/Purchase";
-import { LuClock4 } from "react-icons/lu";
+import {
+  LuCheck,
+  LuCheckCircle2,
+  LuClock4,
+  LuHeadphones,
+  LuLock,
+  LuMessageCircle,
+  LuShieldCheck,
+} from "react-icons/lu";
 import { openNotification } from "../../../store/actions/notification";
 import setCart from "../../../store/actions/Cart";
 import ReactDOM from "react-dom";
@@ -68,6 +77,9 @@ import { useChatContext } from "../../../components/Chatbot/context/ChatContext"
 import TrustFactor from "../../../components/tailoredform/TrustFactor";
 import NavigationMenu from "../../../components/revamp/home/NavigationMenu";
 import { TbClockExclamation } from "react-icons/tb";
+// The phone's bottom-sheet primitive, so the traveller form is the same
+// surface here as it is in CartSheet.
+import Sheet from "../../../components/revamp/common/components/Sheet";
 import { FcCalendar } from "react-icons/fc";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { currencySymbols } from "../../../data/currencySymbols";
@@ -79,6 +91,145 @@ import {
   addAncillaryBooking,
   removeAncillaryBooking,
 } from "../../../store/actions/ancillaryBookings";
+
+const RAZORPAY_SRC = "https://checkout.razorpay.com/v1/checkout.js";
+
+// One shared promise for checkout.js, resolved only once `window.Razorpay`
+// actually exists.
+//
+// This drawer used to append the tag from a mount effect and hope: fine on
+// desktop, where the traveller mounts the cart, reads it, and only then presses
+// Pay. On the phone's "Review & pay" sheet the drawer mounts and auto-fires the
+// payment in the same breath, so `new window.Razorpay(...)` ran while the tag
+// was still in flight, threw "Razorpay is not a constructor", and the throw was
+// swallowed by an empty catch — no gateway, no error, and `paymentLoading` left
+// true forever, which is what pinned the sheet's button on "Opening payment…".
+//
+// Reusing a tag someone else appended is not enough on its own: it may still be
+// loading, so we wait for ITS load event (and poll as a backstop, because a tag
+// that finished before we attached the listener fires nothing).
+let razorpayLoadPromise = null;
+export const ensureRazorpayLoaded = () => {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("Razorpay: no window"));
+  }
+  if (window.Razorpay) return Promise.resolve(true);
+  if (razorpayLoadPromise) return razorpayLoadPromise;
+
+  razorpayLoadPromise = new Promise((resolve, reject) => {
+    const settle = () => {
+      if (window.Razorpay) {
+        resolve(true);
+        return true;
+      }
+      return false;
+    };
+
+    let script = document.querySelector(`script[src="${RAZORPAY_SRC}"]`);
+    if (!script) {
+      script = document.createElement("script");
+      script.src = RAZORPAY_SRC;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    script.addEventListener("load", () => {
+      if (!settle()) {
+        razorpayLoadPromise = null;
+        reject(
+          new Error("Razorpay: script loaded but window.Razorpay missing"),
+        );
+      }
+    });
+    script.addEventListener("error", () => {
+      razorpayLoadPromise = null;
+      reject(new Error("Razorpay: script failed to load"));
+    });
+
+    // Backstop for a tag that was already done before we listened, and for a
+    // network that never answers.
+    const startedAt = Date.now();
+    const poll = setInterval(() => {
+      if (settle()) {
+        clearInterval(poll);
+      } else if (Date.now() - startedAt > 15000) {
+        clearInterval(poll);
+        razorpayLoadPromise = null;
+        reject(new Error("Razorpay: timed out loading checkout.js"));
+      }
+    }, 100);
+  });
+
+  return razorpayLoadPromise;
+};
+
+// The cart's primary CTA. Its own styled button rather than one more
+// `!bg-[...]` override on `ttw-btn-secondary-fill`: that class is shared with
+// the reprice and get-in-touch buttons, which should stay flat.
+//
+// No shadow, in any state. Saturated yellow has nowhere good to cast one — a
+// tint of its own colour goes olive and smudges, and neutral ink reads as grey
+// dirt sitting under the fill. Against a white column it does not need the
+// separation anyway. What carries it instead is size, a confident radius, and
+// a hover that brightens rather than darkens, because there is no darker yellow
+// that still looks like this brand.
+const PayCta = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 24px;
+  border: 0;
+  border-radius: 14px;
+  background: #f7e700;
+  color: #01202b;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.01em;
+  transition:
+    background 0.18s ease,
+    transform 0.12s ease;
+
+  &:hover:not(:disabled) {
+    background: #ffee1a;
+  }
+
+  &:active:not(:disabled) {
+    background: #efdf00;
+    transform: scale(0.99);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #01202b;
+    outline-offset: 3px;
+  }
+
+  /* A washed-out fill rather than opacity, so the button stays crisp against
+     the page instead of going translucent over it. */
+  &:disabled {
+    background: #f6f1c4;
+    color: rgba(1, 32, 43, 0.45);
+    cursor: not-allowed;
+  }
+`;
+
+const payCtaSpin = keyframes`
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+// Sized to the cap height of the label beside it so the two sit on one optical
+// line — a glyph that rides high is the tell of a cheap-looking button.
+const PayCtaSpinner = styled.span`
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(1, 32, 43, 0.2);
+  border-top-color: rgba(1, 32, 43, 0.55);
+  animation: ${payCtaSpin} 0.7s linear infinite;
+`;
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -837,13 +988,15 @@ const CouponSection = ({
 };
 
 // 4. Price Details Component (Add after coupon section)
-const PriceDetails = ({
+// Exported for the phone's "Review & pay" sheet — see ItineraryInclusions.
+export const PriceDetails = ({
   itineraryCost,
   lockInCost,
   couponDiscount,
   totalPayable,
   surchargesTaxes,
   selectedPaymentOption,
+  lockInPaidAmount = 0,
 }) => {
   const Cart = useSelector((state) => state.Cart);
   const { currency } = useSelector((state) => state.currency);
@@ -856,6 +1009,19 @@ const PriceDetails = ({
     typeof totalPayable === "string"
       ? parseFloat(totalPayable.replace(/,/g, ""))
       : totalPayable;
+
+  const numericLockInPaid = Number(lockInPaidAmount) || 0;
+  // Everything collected on this cart minus the part that was the lock-in, so
+  // the breakdown can name the two separately and still add up to the amount
+  // payable. Only a part payment made on top of a lock-in makes this non-zero.
+  const otherAmountPaid = Math.max(
+    0,
+    (Number(Cart?.amount_paid) || 0) - numericLockInPaid,
+  );
+  // Once anything has been collected the bottom line stops being the trip's
+  // price and becomes what is still owed.
+  const hasOutstandingBalance =
+    numericTotalPayable > 0 && (numericLockInPaid > 0 || otherAmountPaid > 0);
 
   // if (numericTotalPayable === 0) {
   //   return (
@@ -943,6 +1109,33 @@ const PriceDetails = ({
           </div>
         ) : null}
 
+        {/* Lock-in already collected. It is deducted here only while a
+            balance remains — on a settled cart the "Amount Paid" row below
+            covers everything collected, and showing both would count the
+            lock-in twice. */}
+        {hasOutstandingBalance && numericLockInPaid > 0 && (
+          <div className="flex justify-between text-green-600 text-sm font-400 leading-md mb-sm">
+            <span>Lock-in Amount Paid</span>
+            <span>
+              {"-"}
+              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+              {formatCurrencyValue(numericLockInPaid, currency)}
+            </span>
+          </div>
+        )}
+
+        {/* Anything paid on top of the lock-in, so the column still adds up. */}
+        {hasOutstandingBalance && otherAmountPaid > 0 && (
+          <div className="flex justify-between text-green-600 text-sm font-400 leading-md mb-sm">
+            <span>Amount Paid</span>
+            <span>
+              {"-"}
+              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+              {formatCurrencyValue(otherAmountPaid, currency)}
+            </span>
+          </div>
+        )}
+
         {/* Nothing left to pay: without this the summary reads
             "cost − coupon … Total ₹0", which doesn't add up. Show what was
             actually collected so the arithmetic closes. */}
@@ -960,7 +1153,11 @@ const PriceDetails = ({
           <div className="flex justify-between font-semibold text-md font-500 leading-xl">
             <div className="flex flex-col">
               <span>
-                {numericTotalPayable === 0 ? "Total Payable" : "Total Amount"}
+                {numericTotalPayable === 0
+                  ? "Total Payable"
+                  : hasOutstandingBalance
+                    ? "Amount Payable"
+                    : "Total Amount"}
               </span>
               <span className="text-xs font-400 leading-sm text-text-spacegrey">
                 Inclusive of all taxes
@@ -987,33 +1184,478 @@ const PaymentButton = ({
   onClick,
   paymentType = "full",
 }) => {
-  return (
-    <button
-      className="ttw-btn-secondary-fill w-full !bg-[#f8e000] !text-black border-black"
-      onClick={onClick}
-      disabled={isLoading}
-    >
-      {isLoading ? (
-        <div className="flex items-center justify-center">
-          {/* <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-text-white mr-2"></div> */}
-          Processing...
-        </div>
-      ) : paymentType === "lockin" ? (
-        `Proceed to Pay`
-      ) : (
-        `Proceed to Pay`
-      )}
+  const { currency } = useSelector((state) => state.currency);
+  const symbol = currencySymbols?.[currency]
+    ? currencySymbols?.[currency]
+    : "₹";
 
-      {/* ) : paymentType === "lockin" ? (
-        `Proceed to Pay₹${getIndianPrice(Math.round(Math.round(amount)))} Now`
+  return (
+    <PayCta type="button" onClick={onClick} disabled={isLoading}>
+      {isLoading ? (
+        <>
+          <PayCtaSpinner aria-hidden="true" />
+          Processing...
+        </>
+      ) : paymentType === "lockin" ? (
+        // This arm names the amount being charged. The lock-in charges far less
+        // than the total on screen, so a bare "Proceed to Pay" under a
+        // ₹2,58,729 breakdown reads as if it is about to take the whole thing.
+        // The padlock carries what the payment buys at a glance and echoes the
+        // one on the notice directly above.
+        <>
+          <span className="text-md leading-lg" aria-hidden="true">
+            &#128274;
+          </span>
+          {`Proceed to pay ${symbol} ${formatCurrencyValue(amount, currency)}/-`}
+        </>
       ) : (
-        `Procced to pay ₹${getIndianPrice(Math.round(Math.round(amount)))} Now`
-      )} */}
-    </button>
+        // Same shape as the lock-in arm minus the padlock: the amount payable
+        // is what this one charges, so the button says it rather than leaving
+        // the user to match it against the breakdown above.
+        `Proceed to pay ${symbol} ${formatCurrencyValue(amount, currency)}/-`
+      )}
+    </PayCta>
   );
 };
 
-const ItineraryInclusions = ({
+// Everything the two checkout surfaces need to know about the hold, read off
+// one cart. Exported for the same reason ItineraryInclusions and PriceDetails
+// are: the phone's "Review & pay" sheet has to charge and explain EXACTLY what
+// this drawer would, and a second copy of these rules on the mobile side is how
+// the two drift into charging different amounts.
+//
+// Pure, and derives nothing the cart doesn't already state — the balance is the
+// cart's `total_payable_amount`, never recomputed here.
+//
+// `lockInCompleted` is the caller's own post-Razorpay flag, covering the gap
+// between the gateway returning and the cart refetch landing. Surfaces that
+// don't run the gateway themselves leave it out.
+export const deriveLockIn = (Cart, { lockInCompleted = false } = {}) => {
+  // The same figure calculateFilteredTotal() returns — what is still owed.
+  const total = Math.round(Number(Cart?.total_payable_amount) || 0);
+
+  const hasFullPaymentCompleted = !!Cart?.sales?.some(
+    (sale) =>
+      sale.payment_type === "full_payment" && sale.status === "Completed",
+  );
+
+  // What the hold is and whether it has been collected comes from
+  // helper/lockIn — the itinerary's bottom bar reads the same function to
+  // decide whether to advertise a hold, and a bar that offers one this drawer
+  // then refuses to charge is worse than no hint at all.
+  const lockIn = getLockInState(Cart);
+  const lockInFee = lockIn.fee;
+  const hasLockInPaid = lockIn.paid || lockInCompleted;
+  const lockInPaidAmount = hasLockInPaid ? lockIn.paidAmount || lockInFee : 0;
+
+  // A hold that has run its window out. `lockInCompleted` covers a payment that
+  // just went through, and that one is minutes old — never expired — so the
+  // expiry only ever comes off the cart's own `lock_in_fee_paid_at`.
+  const lockInHoldUntil = lockIn.holdUntil;
+  const lockInHoldExpired = lockIn.holdExpired;
+
+  // `lockIn.required` already encodes when a hold applies at all (a fee that is
+  // smaller than the balance, on a cart that has not collected money yet). The
+  // extra clauses are this drawer's own live state, which the cart payload
+  // alone cannot see: a hold paid moments ago in this session, and a full
+  // payment already put through.
+  const requiresLockIn =
+    lockIn.required && !hasLockInPaid && !hasFullPaymentCompleted;
+
+  return {
+    total,
+    hasFullPaymentCompleted,
+    lockInFee,
+    hasLockInPaid,
+    lockInPaidAmount,
+    lockInHoldUntil,
+    lockInHoldExpired,
+    requiresLockIn,
+    // What the one pay CTA charges, and which handler it routes to.
+    payNowType: requiresLockIn ? "lockin" : "full",
+    payNowAmount: requiresLockIn ? lockInFee : total,
+  };
+};
+
+// Lock-in: the small amount that has to be paid first to hold today's prices,
+// before the balance can be settled. Both the amount and whether it has already
+// been collected come off the cart (`lock_in_fee` / `lock_in_fee_paid`) — the
+// fee is set per itinerary, so nothing here assumes the usual ₹2,000.
+
+// Ticks the hold window down. Nothing PRINTS this any more — the cart's own
+// `price_valid_until` timer at the top of the column is the one clock the
+// traveller watches — but the card still has to know the moment the window
+// closes, so that it flips from "hold active" to "hold expired" there and then
+// rather than on whenever the cart is next refetched.
+const useHoldCountdown = (holdUntil) => {
+  const holdUntilMs = holdUntil ? holdUntil.getTime() : null;
+  const [msLeft, setMsLeft] = useState(null);
+
+  useEffect(() => {
+    if (!holdUntilMs) {
+      setMsLeft(null);
+      return undefined;
+    }
+    // Keyed on the timestamp rather than the Date: the cart rebuilds that object
+    // on every render, and depending on it would tear down the interval each
+    // time.
+    const tick = () => setMsLeft(Math.max(0, holdUntilMs - Date.now()));
+    tick();
+    const intervalId = setInterval(tick, 1000);
+    return () => clearInterval(intervalId);
+  }, [holdUntilMs]);
+
+  return msLeft;
+};
+
+// The hold window in whole days, off the one constant that defines it. The
+// card says "3 days" in two places and "not 24 hours" in a third, so a change
+// to LOCK_IN_HOLD_HOURS that left those reading three would be a promise the
+// cart does not keep.
+const HOLD_DAYS = Math.max(1, Math.round(LOCK_IN_HOLD_HOURS / 24));
+
+// How the deadline reads in the card's prose — "Sat, 12 Sep". Pinned to en-IN
+// rather than the browser's locale: every figure beside it is rupees, and a
+// US-ordered "Sep 12" next to "₹1,54,008" reads like two different documents.
+const formatHoldDate = (date) =>
+  date instanceof Date && !Number.isNaN(date.getTime())
+    ? date.toLocaleDateString("en-IN", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+      })
+    : "";
+
+// One promise in the hold card's list. `div`s rather than `ul`/`li` on purpose:
+// Bootstrap's reboot sets a left padding on every list in the app, and the rest
+// of this drawer avoids the fight the same way.
+const HoldBenefit = ({ icon: Icon, children }) => (
+  <div className="flex items-start gap-sm">
+    <Icon
+      size={17}
+      strokeWidth={1.6}
+      className="mt-[2px] flex-shrink-0 text-[#8A93A6]"
+      aria-hidden="true"
+    />
+    <div className="text-sm-md font-400 leading-lg text-[#3F4A57]">
+      {children}
+    </div>
+  </div>
+);
+
+// The card's own buttons. The hold card owns the pay CTA in every state it
+// renders — see `showLockInBlock` at the call site, which drops the drawer's
+// standalone Proceed-to-Pay while this is on screen — so these are the real
+// checkout controls, not a second decoration of them.
+
+// Shared by all three of the card's buttons. `pointer-events-none` while
+// disabled so a button already opening a gateway stops inviting the press
+// altogether — hover, cursor and all — rather than lighting up under a click it
+// will ignore. The focus ring is the drawer's existing PayCta ring, so keyboard
+// checkout looks the same wherever it happens.
+const HOLD_CTA_MOTION =
+  "cursor-pointer transition-all duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[#01202B] disabled:pointer-events-none disabled:opacity-60";
+
+// The design's hover: the button lifts a millimetre and its own colour blooms
+// underneath it, then presses flat again on click. Lift, shadow and tint share
+// one transition — staggering them reads as a wobble at this size. The yellows
+// are the drawer's existing PayCta values (#ffee1a hover, #efdf00 press) rather
+// than new ones: this card replaced that button, and a second, brighter yellow
+// for the same gesture would read as a different control.
+const HoldCta = ({ tone = "yellow", busy = false, busyLabel, children, ...rest }) => (
+  <button
+    type="button"
+    className={`flex w-full items-center justify-center gap-xs rounded-67br border-none px-md py-sm-md text-md font-700 leading-lg ${HOLD_CTA_MOTION} ${
+      tone === "dark"
+        ? "bg-primary-indigo text-white shadow-[0_8px_20px_-12px_rgba(7,33,58,0.55)] hover:-translate-y-[1px] hover:bg-[#0B2E4F] hover:shadow-[0_12px_26px_-12px_rgba(7,33,58,0.7)] active:translate-y-0 active:bg-[#061A2E] active:shadow-[0_4px_12px_-8px_rgba(7,33,58,0.6)]"
+        : "bg-primary-yellow text-[#0B1220] shadow-[0_8px_20px_-12px_rgba(247,231,0,0.75)] hover:-translate-y-[1px] hover:bg-[#FFEE1A] hover:shadow-[0_12px_26px_-10px_rgba(247,231,0,0.95)] active:translate-y-0 active:bg-[#EFDF00] active:shadow-[0_4px_12px_-8px_rgba(247,231,0,0.8)]"
+    }`}
+    {...rest}
+  >
+    {busy ? busyLabel : children}
+  </button>
+);
+
+// Exported alongside deriveLockIn so the phone sheet shows the same card.
+//
+// `tripTotal` is the gross trip price the hold freezes (the cart's
+// `discounted_cost`) and `balanceDue` is what is actually still owed
+// (`total_payable_amount`, already net of anything collected). They are two
+// different figures once a hold is paid, and neither is derived from the other
+// here — the cart states both, and re-deriving one would double count the fee.
+export const LockInNotice = ({
+  lockInFee,
+  lockInPaid,
+  lockInPaidAmount,
+  lockInHoldUntil = null,
+  lockInHoldExpired = false,
+  tripTotal = 0,
+  balanceDue = 0,
+  onHold,
+  onPayFull,
+  isPaying = false,
+}) => {
+  const { currency } = useSelector((state) => state.currency);
+  const symbol = currencySymbols?.[currency]
+    ? currencySymbols?.[currency]
+    : "₹";
+  // No "/-" suffix here, unlike the drawer's older copy: these amounts sit
+  // inside sentences and on button faces, where the suffix read as part of the
+  // number. `spaced` is the button face's wider gap after the symbol.
+  const money = (value, { spaced = false } = {}) =>
+    `${symbol}${spaced ? " " : ""}${formatCurrencyValue(value, currency)}`;
+
+  const msLeft = useHoldCountdown(lockInHoldUntil);
+  // Live where the timer is running, and the cart-derived flag before the first
+  // tick lands (and on carts whose paid flag carries no `lock_in_fee_paid_at`,
+  // where there is no window to count down at all).
+  // Still ticked, but no longer PRINTED here: the cart already carries a live
+  // countdown at the top of the column (`price_valid_until`), and a second clock
+  // in this chip had the traveller watching two different numbers run down for
+  // what reads as one deadline. The tick is kept because it is what flips this
+  // card to its expired state the moment the window closes, rather than waiting
+  // on the next cart refetch.
+  const holdRunOut = msLeft === null ? lockInHoldExpired : msLeft <= 0;
+
+  // Which button the traveller pressed, so only that one reads as busy. The
+  // parent reports one `isPaying` for the whole drawer — without this the
+  // "pay in full" tap lit up the hold button instead.
+  const [pending, setPending] = useState(null);
+  useEffect(() => {
+    if (!isPaying) setPending(null);
+  }, [isPaying]);
+  const press = (type, handler) => () => {
+    setPending(type);
+    handler?.();
+  };
+
+  // Once paid the hold has a real deadline; before that the card is quoting
+  // what a hold bought *now* would run to, which is what the design's "Price
+  // locked till …" line promises.
+  const holdDateLabel = formatHoldDate(
+    lockInHoldUntil ||
+      new Date(Date.now() + LOCK_IN_HOLD_HOURS * 60 * 60 * 1000),
+  );
+
+  // Descriptive only — it names what is frozen, never what is charged. Falls
+  // back to the balance on a cart that states no gross, which understates the
+  // sentence rather than inventing a figure by adding the fee back on.
+  const frozenTotal = Number(tripTotal) > 0 ? tripTotal : balanceDue;
+
+  const card = "mb-md rounded-4xl border-sm bg-white p-lg";
+
+  // Paid, but the window it bought has run out — prices can move from here, so
+  // the card says so instead of repeating the promise. It keeps a pay CTA
+  // because it is the only one on screen: the drawer's own Proceed-to-Pay is
+  // suppressed wherever this card renders.
+  if (lockInPaid && holdRunOut) {
+    return (
+      <div className={`${card} border-[#F3C6C6]`}>
+        <div className="flex items-center gap-xxs-md">
+          <LuClock4
+            size={16}
+            strokeWidth={2.2}
+            className="flex-shrink-0 text-[#B3261E]"
+            aria-hidden="true"
+          />
+          <div className="font-mono text-xs font-600 uppercase tracking-[0.08em] text-[#B3261E]">
+            Hold expired
+          </div>
+        </div>
+
+        <div className="mt-xs text-md-lg font-700 leading-xl-sm text-[#0B1220]">
+          The {HOLD_DAYS} day hold has{" "}
+          <span className="font-serif font-400 italic text-[#6E757A]">
+            ended.
+          </span>
+        </div>
+
+        <div className="mt-xs text-sm-md font-400 leading-lg text-text-spacegrey">
+          Prices can change from here. The {money(lockInPaidAmount)} you paid to
+          hold this trip is not lost, it is still adjusted against your total.
+        </div>
+
+        <div className="mt-md rounded-lg bg-[#F5F6F7] px-sm-md py-sm">
+          <div className="flex items-center justify-between gap-sm">
+            <span className="text-sm-md font-400 leading-lg text-text-spacegrey">
+              Hold fee paid
+            </span>
+            <span className="text-sm-md font-400 leading-lg text-text-spacegrey">
+              {money(lockInPaidAmount)}
+            </span>
+          </div>
+          <div className="mt-xxs flex items-center justify-between gap-sm">
+            <span className="text-sm-md font-600 leading-lg text-[#0B1220]">
+              Balance on booking
+            </span>
+            <span className="text-sm-md font-600 leading-lg text-[#0B1220]">
+              {money(balanceDue)}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-md">
+          <HoldCta
+            // tone="dark"
+            onClick={press("full", onPayFull)}
+            disabled={isPaying}
+            busy={isPaying && pending === "full"}
+            busyLabel="Opening payment…"
+          >
+            {`Pay balance · ${money(balanceDue, { spaced: true })}`}
+          </HoldCta>
+        </div>
+      </div>
+    );
+  }
+
+  if (lockInPaid) {
+    return (
+      <div className={`${card} border-[#E6E8EC]`}>
+        {/* The chip the design gives to a hold reference. There is no such
+            reference on the cart, so the slot carries the thing the cart does
+            know and the traveller is actually watching — how much of the
+            window is left. Absent before the first tick, and on carts whose
+            paid flag has no `lock_in_fee_paid_at` behind it to count from. */}
+        <div className="flex items-center gap-xxs-md">
+          <LuCheck
+            size={16}
+            strokeWidth={2.5}
+            className="flex-shrink-0 text-[#1A7F4B]"
+            aria-hidden="true"
+          />
+          <div className="font-mono text-xs font-600 uppercase tracking-[0.08em] text-[#1A7F4B]">
+            Hold active
+          </div>
+        </div>
+
+        <div className="mt-xs text-md-lg font-700 leading-xl-sm text-[#0B1220]">
+          Done. This price is{" "}
+          <span className="font-serif font-400 italic text-[#6E757A]">
+            yours.
+          </span>
+        </div>
+
+        <div className="mt-xs text-sm-md font-400 leading-lg text-text-spacegrey">
+          I&apos;ve frozen {money(frozenTotal)}
+          {holdDateLabel ? ` till ${holdDateLabel}` : ""}. Chat, tweak, or sleep
+          on it. The price won&apos;t move. Your {money(lockInPaidAmount)}{" "}
+          adjusts when you book.
+        </div>
+
+        <div className="mt-md rounded-lg bg-[#F5F6F7] px-sm-md py-sm">
+          <div className="flex items-center justify-between gap-sm">
+            <span className="text-sm-md font-400 leading-lg text-text-spacegrey">
+              Hold fee paid
+            </span>
+            <span className="text-sm-md font-400 leading-lg text-text-spacegrey">
+              {money(lockInPaidAmount)}
+            </span>
+          </div>
+          <div className="mt-xxs flex items-center justify-between gap-sm">
+            <span className="text-sm-md font-600 leading-lg text-[#0B1220]">
+              Balance on booking
+            </span>
+            <span className="text-sm-md font-600 leading-lg text-[#0B1220]">
+              {money(balanceDue)}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-md">
+          <HoldCta
+            // tone="dark"
+            onClick={press("full", onPayFull)}
+            disabled={isPaying}
+            busy={isPaying && pending === "full"}
+            busyLabel="Opening payment…"
+          >
+            {`Pay balance · ${money(balanceDue, { spaced: true })}`}
+          </HoldCta>
+        </div>
+      </div>
+    );
+  }
+
+  // The hold is owed. Both ways out of this screen live in the card: holding is
+  // the primary, paying the whole trip today the quiet alternative under it.
+  return (
+    <div className={`${card} border-[#E6E8EC]`}>
+      <div className="flex items-start gap-sm">
+        <span
+          className="flex h-[38px] w-[38px] flex-shrink-0 items-center justify-center rounded-xl bg-primary-yellow"
+          aria-hidden="true"
+        >
+          <LuLock size={18} strokeWidth={2} className="text-[#0B1220]" />
+        </span>
+        <div className="text-md-lg font-700 leading-xl-sm text-[#0B1220]">
+          Not paying today?{" "}
+          <span className="font-serif font-400 italic text-[#6E757A]">
+            Hold it.
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-sm text-sm-md font-400 leading-lg text-text-spacegrey">
+        {money(lockInFee)} freezes this trip for {HOLD_DAYS} days, and it
+        adjusts against your trip, so you lose nothing.
+      </div>
+
+      <div className="mt-md flex flex-col gap-sm">
+        <HoldBenefit icon={LuClock4}>
+          Price locked till{" "}
+          <span className="font-600 text-[#0B1220]">{holdDateLabel}</span>{" "}
+          ({HOLD_DAYS} full days, not 24 hours)
+        </HoldBenefit>
+        <HoldBenefit icon={LuMessageCircle}>
+          Unlimited itinerary changes &amp; chats with Kaira
+        </HoldBenefit>
+        <HoldBenefit icon={LuHeadphones}>
+          A human travel expert on WhatsApp, whenever you want
+        </HoldBenefit>
+        <HoldBenefit icon={LuShieldCheck}>
+          Best price guarantee. If it drops, you pay the lower one
+        </HoldBenefit>
+      </div>
+
+      <div className="mt-md">
+        <HoldCta
+          onClick={press("lockin", onHold)}
+          disabled={isPaying}
+          busy={isPaying && pending === "lockin"}
+          busyLabel="Opening payment…"
+        >
+          <LuLock size={17} strokeWidth={2.4} aria-hidden="true" />
+          {`Hold this price · ${money(lockInFee, { spaced: true })}`}
+        </HoldCta>
+      </div>
+
+      <div className="mt-xs">
+        <button
+          type="button"
+          onClick={press("full", onPayFull)}
+          disabled={isPaying}
+          // The quiet alternative, and its hover stays quiet with it: the
+          // outline firms up and the face takes a grey wash, with none of the
+          // lift the yellow button gets. Matching that lift here would put the
+          // two CTAs at the same weight on hover and lose the hierarchy the
+          // card is built on.
+          className={`w-full rounded-67br border-sm border-[#DCDFE5] bg-white px-md py-sm text-sm-md font-500 leading-lg text-[#3F4A57] hover:border-[#B6BCC6] hover:bg-[#F5F6F7] hover:text-[#0B1220] active:bg-[#ECEEF1] ${HOLD_CTA_MOTION}`}
+        >
+          {isPaying && pending === "full"
+            ? "Opening payment…"
+            : `or pay in full · ${money(balanceDue)}`}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Exported so the phone's "Review & pay" sheet renders the SAME breakdown this
+// drawer does (components/revamp/mobileItinerary/sheets/CartSheet). It is a
+// pure presentational component — every piece of state it needs arrives as a
+// prop — so the two surfaces cannot drift.
+export const ItineraryInclusions = ({
   Cart,
   selectedInclusions,
   onToggleInclusion,
@@ -1490,6 +2132,17 @@ const Details = (props) => {
   const [showSetPassenger, setShowSetPassenger] = useState(false);
   const [travellerDetailsOpen, setTravellerDetailsOpen] = useState(false);
   const travellerDrawerRef = useRef(null);
+  // Gates the DESKTOP drawer's very first mount — see the note at its render.
+  const [travellerDrawerEverOpened, setTravellerDrawerEverOpened] =
+    useState(false);
+  // The phone sheet pins its save button in a fixed footer, so the form hands
+  // its submit action out through this ref and reports its pending state back —
+  // the same contract CartSheet uses for the same form.
+  const travellerSubmit = useRef(null);
+  const [travellerSaving, setTravellerSaving] = useState(false);
+  useEffect(() => {
+    if (travellerDetailsOpen) setTravellerDrawerEverOpened(true);
+  }, [travellerDetailsOpen]);
 
   useEffect(() => {
     if (!travellerDetailsOpen) return undefined;
@@ -1503,8 +2156,20 @@ const Details = (props) => {
         setTravellerDetailsOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleOutside);
-    return () => document.removeEventListener("mousedown", handleOutside);
+    // Attached on a delay, not synchronously. This drawer is opened from inside
+    // a click handler — the pay gate raises it when traveller details are
+    // missing — and on touch the browser then fires an EMULATED mousedown for
+    // that same tap, up to ~300ms after the click. Bound straight away, that
+    // emulated event arrives with the pay button as its target, which is
+    // outside the panel, and closed the drawer before the traveller ever saw
+    // it. The delay lets the tap that opened it finish first.
+    const armOutside = setTimeout(() => {
+      document.addEventListener("mousedown", handleOutside);
+    }, 350);
+    return () => {
+      clearTimeout(armOutside);
+      document.removeEventListener("mousedown", handleOutside);
+    };
   }, [travellerDetailsOpen]);
   const [showVisaDrawer, setShowVisaDrawer] = useState(false);
   const [showEsimDrawer, setShowEsimDrawer] = useState(false);
@@ -1595,6 +2260,23 @@ const Details = (props) => {
   const [paymentStep, setPaymentStep] = useState("initial"); // 'initial', 'options', 'detailed'
   const [showDetailedPayment, setShowDetailedPayment] = useState(false);
 
+  // The hold, on the rules the phone's Review & pay sheet also runs on.
+  //
+  // Derived up here rather than down beside the pay CTA because the auto-pay
+  // effect below has to know which payment it is starting, and that effect runs
+  // long before the pricing column is built.
+  const {
+    hasFullPaymentCompleted,
+    lockInFee,
+    hasLockInPaid,
+    lockInPaidAmount,
+    lockInHoldUntil,
+    lockInHoldExpired,
+    requiresLockIn,
+    payNowType,
+    payNowAmount,
+  } = deriveLockIn(Cart, { lockInCompleted });
+
   const [showPaymentDrawer, setShowPaymentDrawer] = useState(false);
   const [repriceLoading, setRepriceLoading] = useState(false);
 
@@ -1671,6 +2353,90 @@ const Details = (props) => {
     }
   }, [props?.openPaymentDrawer]);
 
+  // Opt-in: jump straight to the gateway instead of stopping on the cart.
+  //
+  // The new "Review & pay" sheet already showed the user what they are buying,
+  // so landing them on this drawer again is one browse too many. Firing the
+  // drawer's own handlePayNow means every gate still applies — the traveller
+  // -details drawer still intercepts, an expired price still blocks — rather
+  // than a second checkout path that has to be kept in sync with this one.
+  //
+  // Guarded so it fires once per open: re-firing would POST /payment/initiate/
+  // again and mint a second order.
+  //
+  // Firing it was not enough on its own: this drawer still MOUNTED on the cart
+  // while the initiate call was in flight, and stayed there under the gateway —
+  // so tapping "Pay now" on the sheet put the traveller straight back on the
+  // screen they had just finished with. On an auto-started payment this drawer
+  // paints NOTHING (see `hideCartForAutoPay`); it is the payment engine, and
+  // the phone's own sheet stays up as the screen behind the gateway.
+  //
+  // Latched for the life of this mount rather than read live: the caller clears
+  // `autoStartPayment` as soon as the attempt stops (so its own button stops
+  // reading as busy), and reading the flag directly would let the cart screen
+  // paint at exactly that moment. Every open bumps `paymentDrawerKey` and
+  // remounts, so each open gets its own latch.
+  const autoPayMountRef = useRef(!!props?.autoStartPayment);
+  // …unless the caller asked for the cart to stay on screen. The phone's Review
+  // & pay sheet does not — it has just shown the traveller this exact cart, so
+  // a second copy behind the gateway is one browse too many. The hold modal
+  // does: it is a single card, not a cart, and an invisible drawer left nothing
+  // on screen while the sale was being created, and nothing for the
+  // traveller-details gate to open over.
+  //
+  // Latched at mount with the flag above, for the same reason: reading it live
+  // would let the cart appear or vanish mid-attempt.
+  const autoPayShowCartRef = useRef(!!props?.autoPayShowCart);
+  const hideCartForAutoPay =
+    autoPayMountRef.current && !autoPayShowCartRef.current;
+
+  const autoPayFiredRef = useRef(false);
+  useEffect(() => {
+    if (!autoPayMountRef.current) return;
+    if (autoPayFiredRef.current) return;
+    // Still waiting on the cart, or on this drawer's own open — nothing has
+    // failed, so come back on the next change.
+    if (!Cart?.id || !showDetailedPayment) return;
+    // Nothing to charge: there is no gateway to send anyone to. Hand back
+    // rather than revealing a cart the traveller did not ask to see.
+    if (calculateFilteredTotal() === 0) {
+      autoPayFiredRef.current = true;
+      props.onAutoPayEnded?.("nothing-to-pay");
+      return;
+    }
+    autoPayFiredRef.current = true;
+    // The caller's own choice first: the sheet's hold card offers BOTH a hold
+    // and paying in full, so which sale to open is the traveller's decision
+    // there, not something to be re-derived from the cart.
+    //
+    // `payNowType` is the fallback for callers that don't state one (the
+    // sheet's footer bar) — not a hardcoded "full": on a cart that still owes
+    // its hold that has to open the lock-in sale, exactly as the desktop CTA
+    // does. Charging the full balance here would take ₹76,847 from a traveller
+    // whose sheet said ₹999.
+    handlePayNow(props?.autoPayType || payNowType);
+  }, [props?.autoStartPayment, Cart?.id, showDetailedPayment]);
+
+  // The auto-started attempt has settled — hand back to whoever started it.
+  //
+  // `paymentLoading` spans the WHOLE attempt: set at the top of
+  // _fullPaymentHandler, and cleared on every exit it has, including Razorpay's
+  // own `ondismiss` and the verify call that follows a successful payment. So
+  // this fires once, when the traveller is done with the gateway one way or the
+  // other, and the caller takes the drawer down.
+  const payAttemptStartedRef = useRef(false);
+  useEffect(() => {
+    if (!autoPayMountRef.current) return;
+    if (paymentLoading) {
+      payAttemptStartedRef.current = true;
+      return;
+    }
+    if (payAttemptStartedRef.current) {
+      payAttemptStartedRef.current = false;
+      props.onAutoPayEnded?.("settled");
+    }
+  }, [paymentLoading]);
+
   useEffect(() => {
     if (Cart?.summary) {
       const initialSelections = {};
@@ -1711,11 +2477,12 @@ const Details = (props) => {
     if (adults) setPax(adults);
   }, [props?.itinerary?.number_of_adults, Itinerary?.number_of_adults]);
 
+  // Warm the gateway up on mount. The payment path awaits the same promise, so
+  // this is only a head start — not something it depends on having finished.
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
+    ensureRazorpayLoaded().catch((e) =>
+      console.error("[ERROR]: razorpay preload:", e?.message),
+    );
   }, []);
   useEffect(() => {
     // console.log("loading is:", props.loadpricing);
@@ -2115,15 +2882,49 @@ const Details = (props) => {
     "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
     getURL();
 
-  const _startRazorpayHandler = (data, paymentType) => {
+  // The gateway could not be opened. There is no modal to dismiss, so nothing
+  // else will ever clear `paymentLoading` — this is the only exit, and an
+  // auto-started payment needs it to hand back to the sheet that started it.
+  const _failRazorpay = (context, error) => {
+    console.error(`[ERROR]: razorpay ${context}:`, error?.message || error);
+    setPaymentLoading(false);
+    dispatch(
+      openNotification({
+        text: "We couldn't open the payment window. Please try again.",
+        heading: "Error!",
+        type: "error",
+      }),
+    );
+  };
+
+  const _startRazorpayHandler = async (data, paymentType) => {
+    // Razorpay rejects a non-integer paise amount, and every total here is a
+    // float (₹44,078.31): 44078.31 * 100 is 4407830.999999999, not 4407831.
+    const paise = Math.round(
+      (Number(data?.amount) || Number(data?.discounted_cost) || 0) * 100,
+    );
+    const orderId = data?.sales?.[0]?.orders?.[0]?.order_id;
+
+    if (!orderId) {
+      _failRazorpay("no order id on the initiated sale");
+      return;
+    }
+
+    try {
+      await ensureRazorpayLoaded();
+    } catch (error) {
+      _failRazorpay("checkout.js", error);
+      return;
+    }
+
     let razorpayOptions = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-      amount: data.amount * 100 || data?.discounted_cost * 100,
+      amount: paise,
       name: "The Tarzan Way Payment Portal",
       description: "Payment for your itinerary",
       image:
         "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
-      order_id: data?.sales[0]?.orders[0]?.order_id,
+      order_id: orderId,
       modal: {
         ondismiss: function () {
           setPaymentLoading(false);
@@ -2171,8 +2972,25 @@ const Details = (props) => {
 
     try {
       var rzp1 = new window.Razorpay(razorpayOptions);
+      // Razorpay reports a rejected order (expired, already paid, bad amount)
+      // through this event rather than by throwing — without it the modal
+      // closes itself and the caller is left thinking it is still open.
+      rzp1.on?.("payment.failed", (response) => {
+        setPaymentLoading(false);
+        dispatch(
+          openNotification({
+            text:
+              response?.error?.description ||
+              "Your payment could not be completed. Please try again.",
+            heading: "Payment failed",
+            type: "error",
+          }),
+        );
+      });
       rzp1.open();
-    } catch (error) {}
+    } catch (error) {
+      _failRazorpay("open", error);
+    }
   };
 
   // Refetch the itinerary detail (which carries the `travellers` array) and
@@ -2398,12 +3216,21 @@ const Details = (props) => {
     // details haven't been added yet — open the drawer to collect them
     // instead of hitting the payment API. Once filled, refreshItineraryDetails
     // repopulates `travellers` and the user can proceed.
-    if (
-      (label === "full" || label === "lockin") &&
+    // `traveler_details_verified` first — the file's own source of truth (see
+    // `travellerDetailsVerified`), because the cart accounts for pax changes the
+    // itinerary's `travellers` array cannot reflect. The array stays as the
+    // fallback for carts that predate the flag. An UNDEFINED array is not "no
+    // travellers", it is "not loaded yet", so it must not gate on its own.
+    const travellersMissing =
+      !travellerDetailsVerified &&
       Array.isArray(Itinerary?.travellers) &&
-      Itinerary.travellers.length === 0
-    ) {
+      Itinerary.travellers.length === 0;
+    if ((label === "full" || label === "lockin") && travellersMissing) {
       setTravellerDetailsOpen(true);
+      // An auto-started payment stops HERE rather than at the gateway. Tell the
+      // caller so its button stops reading as busy — but the gate is rendered
+      // inside this drawer, so the drawer itself has to stay mounted.
+      if (autoPayMountRef.current) props.onAutoPayEnded?.("traveller-details");
       return;
     }
 
@@ -2569,10 +3396,9 @@ const Details = (props) => {
     return startDate >= currentDate;
   };
 
-  const hasFullPaymentCompleted = Cart?.sales?.some(
-    (sale) =>
-      sale.payment_type === "full_payment" && sale.status === "Completed",
-  );
+  // Lock-in (`lockInFee`, `hasLockInPaid`, `payNowType`, the hold window…) is
+  // derived once from deriveLockIn near the top of this component — it is
+  // needed by the auto-pay effect long before this point.
 
   // `Cart` starts as null in Redux, so the `!price_valid_until` arm used to
   // report "expired" for the whole window before the cart API resolved. Gate on
@@ -2620,6 +3446,17 @@ const Details = (props) => {
   // on phones in that case so the two don't double up.
   const showMobileGetInTouch =
     showRepriceExpired && calculateFilteredTotal() === 0;
+
+  // Whether a pay CTA is on screen at all. Past dates, expired prices and a
+  // cart with nothing left to pay each replace it with something else.
+  const canPayNow =
+    !showUpdateDates && !showRepriceExpired && calculateFilteredTotal() !== 0;
+  // The card explains what the pay CTA is about to charge, so it is on screen
+  // in exactly the states that CTA is — the notice while the hold is owed, the
+  // confirmation once it has been paid. It deliberately has no conditions of
+  // its own: a "Proceed to Pay ₹999" button under a ₹46,429 breakdown with
+  // nothing next to it explaining why would just look broken.
+  const showLockInBlock = canPayNow && (requiresLockIn || hasLockInPaid);
 
   // Any expired/past state — used to suppress the expired price banners at the
   // top of the cart on phones (kept on desktop).
@@ -2674,7 +3511,7 @@ const Details = (props) => {
     <>
       {/* Payment Drawer - shows full pricing + detailed payment when proceeding */}
 
-      {showPaymentDrawer && (
+      {showPaymentDrawer && !hideCartForAutoPay && (
         <Drawer
           show={showPaymentDrawer}
           anchor={"right"}
@@ -3081,6 +3918,7 @@ const Details = (props) => {
                       couponDiscount={-(couponSavedAmount || 0)}
                       surchargesTaxes={Cart?.surcharges_and_taxes || 0}
                       totalPayable={calculateFilteredTotal()}
+                      lockInPaidAmount={lockInPaidAmount}
                       selectedPaymentOption={selectedPaymentOption}
                       selectedInclusions={selectedInclusions}
                       totalBookingsCost={Cart?.total_bookings_cost}
@@ -3104,6 +3942,30 @@ const Details = (props) => {
                           }`}
                         </span>
                       </div>
+                    )}
+
+                    {/* Lock-in, directly above the Proceed-to-Pay CTA. On
+                        phones that CTA lives in the fixed bottom bar, so this
+                        card stays in the flow immediately above it. */}
+                    {showLockInBlock && (
+                      <LockInNotice
+                        lockInFee={lockInFee}
+                        lockInPaid={hasLockInPaid}
+                        lockInPaidAmount={lockInPaidAmount}
+                        lockInHoldUntil={lockInHoldUntil}
+                        lockInHoldExpired={lockInHoldExpired}
+                        // The gross trip price the hold freezes, stated by the
+                        // cart rather than added back up from the balance and
+                        // the fee — that arithmetic is how the two figures
+                        // drift into double counting.
+                        tripTotal={Cart?.discounted_cost}
+                        // What paying in full actually charges, which is the
+                        // same figure the breakdown above totals to.
+                        balanceDue={calculateFilteredTotal()}
+                        onHold={() => handlePayNow("lockin")}
+                        onPayFull={() => handlePayNow("full")}
+                        isPaying={paymentLoading}
+                      />
                     )}
 
                     {/* Payment Buttons */}
@@ -3177,6 +4039,13 @@ const Details = (props) => {
                       isItineraryInFuture() &&
                       pricing_status == "SUCCESS" ? (
                       <></>
+                    ) : showLockInBlock ? (
+                      // The hold card directly above carries the pay CTAs
+                      // itself — "Hold this price" over "or pay in full", or
+                      // "Pay balance" once the hold is paid. A second
+                      // Proceed-to-Pay under it would be the same charge twice
+                      // over, in different words.
+                      <></>
                     ) : (
                       // Desktop: static button in the pricing column. Phones get
                       // a fixed bottom bar (portaled below). CSS breakpoint, not
@@ -3184,10 +4053,10 @@ const Details = (props) => {
                       // desktop briefly rendered no Proceed-to-Pay button at all.
                       <div className="ttw-desktop-only">
                         <PaymentButton
-                          amount={calculateFilteredTotal()}
+                          amount={payNowAmount}
                           isLoading={paymentLoading}
-                          paymentType={"full"}
-                          onClick={() => handlePayNow("full")}
+                          paymentType={payNowType}
+                          onClick={() => handlePayNow(payNowType)}
                         />
                       </div>
                     )}
@@ -3380,6 +4249,11 @@ const Details = (props) => {
               const showPayBar =
                 !showRepriceExpired &&
                 !showUpdateDates &&
+                // The hold card in the flow above owns the pay CTAs wherever it
+                // renders, on this width as much as on desktop. Leaving the bar
+                // up would put "Proceed to pay ₹999" under a card already
+                // offering both "Hold this price" and "or pay in full".
+                !showLockInBlock &&
                 !(
                   hasPlanExpired &&
                   isItineraryInFuture() &&
@@ -3392,7 +4266,11 @@ const Details = (props) => {
 
               return ReactDOM.createPortal(
                 <div
-                  className="fixed bottom-0 left-0 right-0 md:hidden bg-white px-4 pt-3 pb-4 shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
+                  // `ttw-cart-pay-bar` is what hides it under the phone's own
+                  // bottom sheets — see the `html.ttw-sheet-open` rule in
+                  // styles/globals.css. `anyOverlayOpen` above only knows about
+                  // the overlays this drawer itself owns.
+                  className="ttw-cart-pay-bar fixed bottom-0 left-0 right-0 md:hidden bg-white px-4 pt-3 pb-4 shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
                   style={{ zIndex: 1650 }}
                 >
                   {showUpdateDates ? (
@@ -3463,10 +4341,10 @@ const Details = (props) => {
                     </>
                   ) : (
                     <PaymentButton
-                      amount={calculateFilteredTotal()}
+                      amount={payNowAmount}
                       isLoading={paymentLoading}
-                      paymentType={"full"}
-                      onClick={() => handlePayNow("full")}
+                      paymentType={payNowType}
+                      onClick={() => handlePayNow(payNowType)}
                     />
                   )}
                 </div>,
@@ -3560,47 +4438,137 @@ const Details = (props) => {
         </div>
       </Drawer>
 
-      <Drawer
-        show={travellerDetailsOpen}
-        anchor={"right"}
-        backdrop
-        width={"720px"}
-        mobileWidth={"100%"}
-        style={{ zIndex: 1700 }}
-        className="font-lexend"
-        onHide={() => setTravellerDetailsOpen(false)}
-      >
-        <div ref={travellerDrawerRef} className="h-full bg-white">
-          <div className="sticky top-0 z-10 flex justify-between items-center px-lg py-md border-b-sm border-text-disabled bg-white">
-            <div>
-              <div className="text-md-lg font-500 leading-xl-md text-primary-indigo">
-                Traveller Details
+      {/* Traveller details — the gate every pay CTA passes through, including
+          the ones outside this cart (the hold modal's two buttons auto-start a
+          payment and land here when the names are missing).
+
+          A bottom sheet on the phone and a right-anchored drawer on desktop,
+          matching the surface each width already uses: as a right drawer at
+          100% width it read as a second full-screen cart on a phone, which is
+          not what the rest of that surface does with a form.
+
+          `top: auto` is load-bearing on the bottom anchor — DrawerContainer
+          sets `top: 0%` for every anchor and then adds `bottom: 0`, so without
+          releasing `top` the sheet stretches to the full viewport whatever
+          height it is given. */}
+      {/* ── Traveller details ────────────────────────────────────────────────
+          The gate every pay CTA passes through, including the ones outside this
+          cart: the hold modal's two buttons auto-start a payment and land here
+          when the names are missing.
+
+          On the phone this is the SAME sheet the cart raises — bottom-anchored,
+          titled, with the save button pinned in a fixed footer — rather than a
+          right-anchored drawer at 100% width with the button buried at the end
+          of a long scroll. Same `Sheet` primitive, same `AddTravellerDetails`
+          driven through `submitRef`, so the two cannot drift. Desktop keeps its
+          right drawer, where the inline button is at home. */}
+      {!isPageWide ? (
+        <Sheet
+          open={travellerDetailsOpen}
+          onClose={() => setTravellerDetailsOpen(false)}
+          title="Traveller details"
+          subtitle="EVERYONE TRAVELLING ON THIS TRIP"
+          headerRight={null}
+          height="95dvh"
+          // Above the hold modal (1660), which is deliberately left standing
+          // behind this so the offer survives a save and can be retried.
+          zIndex={1700}
+          contentClassName="px-[14px] py-[14px]"
+          footer={
+            <button
+              type="button"
+              onClick={() => travellerSubmit.current?.()}
+              disabled={travellerSaving}
+              style={{
+                border: "none",
+                background: "#f7e700",
+                borderRadius: 10,
+                boxShadow: "0 8px 20px -10px rgba(247,231,0,0.55)",
+              }}
+              className="w-full px-[20px] py-[12px] text-[14.5px] font-[800] text-[#0b1220] disabled:opacity-60"
+            >
+              {travellerSaving ? "Saving…" : "Save Traveller Details"}
+            </button>
+          }
+        >
+          {/* Keyed on the pax: the form builds one slot per traveller in its
+              state INITIALISERS, so a pax change made while this is open would
+              otherwise leave it showing the old slots. */}
+          <AddTravellerDetails
+            key={`${Itinerary?.number_of_adults || 0}-${
+              Itinerary?.number_of_children || 0
+            }-${Itinerary?.number_of_infants || 0}-${
+              Itinerary?.travellers?.length || 0
+            }`}
+            itinerary={Itinerary}
+            hideSubmit
+            submitRef={travellerSubmit}
+            onSubmittingChange={setTravellerSaving}
+            onSuccess={() => {
+              setTravellerDetailsOpen(false);
+              // Traveller details saved — refetch the itinerary detail so the
+              // `travellers` array in Redux is populated and the next
+              // proceed-to-pay call hits the payment API.
+              refreshItineraryDetails();
+              props.getPaymentHandler?.();
+            }}
+          />
+        </Sheet>
+      ) : (
+        /* Not rendered until it has been opened at least once. Drawer's show
+           effect calls its internal close path whenever `show` is false —
+           INCLUDING on first mount — and that path fires `onHide` on a 100ms
+           timer. This drawer remounts every time the cart is opened (the key
+           bump in openPaymentDrawer), and on the auto-pay path the traveller
+           gate raises it within those 100ms, so the stale close landed on a
+           drawer that had just legitimately opened and shut it again. Holding
+           the mount back means the first render it ever gets has `show` true.
+           Same guard, same reason, as Sheet.jsx — which is why the phone branch
+           above needs none of this, Sheet carries it internally. */
+        travellerDrawerEverOpened && (
+          <Drawer
+            show={travellerDetailsOpen}
+            anchor={"right"}
+            backdrop
+            width={"720px"}
+            mobileWidth={"100%"}
+            style={{ zIndex: 1700 }}
+            className="font-lexend"
+            onHide={() => setTravellerDetailsOpen(false)}
+          >
+            <div
+              ref={travellerDrawerRef}
+              className="h-full overflow-y-auto bg-white"
+            >
+              <div className="sticky top-0 z-10 flex justify-between items-center px-lg py-md border-b-sm border-text-disabled bg-white">
+                <div>
+                  <div className="text-md-lg font-500 leading-xl-md text-primary-indigo">
+                    Traveller Details
+                  </div>
+                  <div className="text-xs font-400 leading-md text-text-spacegrey mt-xxs">
+                    Add details for everyone travelling on this trip.
+                  </div>
+                </div>
+                <IoMdClose
+                  className="cursor-pointer text-text-spacegrey hover:text-primary-indigo"
+                  onClick={() => setTravellerDetailsOpen(false)}
+                  style={{ fontSize: "1.5rem" }}
+                />
               </div>
-              <div className="text-xs font-400 leading-md text-text-spacegrey mt-xxs">
-                Add details for everyone travelling on this trip.
+              <div className="px-lg py-lg">
+                <AddTravellerDetails
+                  itinerary={Itinerary}
+                  onSuccess={() => {
+                    setTravellerDetailsOpen(false);
+                    refreshItineraryDetails();
+                    props.getPaymentHandler?.();
+                  }}
+                />
               </div>
             </div>
-            <IoMdClose
-              className="cursor-pointer text-text-spacegrey hover:text-primary-indigo"
-              onClick={() => setTravellerDetailsOpen(false)}
-              style={{ fontSize: "1.5rem" }}
-            />
-          </div>
-          <div className="px-lg py-lg">
-            <AddTravellerDetails
-              itinerary={Itinerary}
-              onSuccess={() => {
-                setTravellerDetailsOpen(false);
-                // Traveller details saved — refetch the itinerary detail so the
-                // `travellers` array in Redux is populated and the next
-                // proceed-to-pay call hits the payment API.
-                refreshItineraryDetails();
-                props.getPaymentHandler?.();
-              }}
-            />
-          </div>
-        </div>
-      </Drawer>
+          </Drawer>
+        )
+      )}
 
       <VisaSearchDrawer
         show={showVisaDrawer}

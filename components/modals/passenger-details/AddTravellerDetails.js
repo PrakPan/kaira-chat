@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import LeadPaxDetails from "./LeadPaxDetails";
@@ -118,7 +118,19 @@ const extractErrorMessage = (error) => {
   return flatRoot || fallback;
 };
 
-const AddTravellerDetails = ({ itinerary, onSuccess }) => {
+// `hideSubmit` / `submitRef` / `onSubmittingChange` exist for the phone's
+// traveller sheet, which pins the save button to a fixed footer the way every
+// other sheet on that surface does — the button has to live OUTSIDE this form's
+// scrolling body, so the form hands its action out instead of drawing it. All
+// three are optional and default to the desktop drawer's behaviour: the form
+// renders its own button at the end.
+const AddTravellerDetails = ({
+  itinerary,
+  onSuccess,
+  hideSubmit = false,
+  submitRef,
+  onSubmittingChange,
+}) => {
   const dispatch = useDispatch();
   const reduxItineraryId = useSelector((state) => state.ItineraryId);
 
@@ -281,6 +293,19 @@ const AddTravellerDetails = ({ itinerary, onSuccess }) => {
     }
   };
 
+  // Assigned on every render rather than through an effect, so the footer
+  // button always calls the CURRENT closure — handleSubmit isn't memoised and
+  // captures the traveller state it was rendered with.
+  if (submitRef) submitRef.current = handleSubmit;
+
+  // `submitting` is state, so it does need to be reported. Reset on unmount
+  // too: a footer button whose form went away must not stay stuck on "Saving".
+  useEffect(() => {
+    if (!onSubmittingChange) return undefined;
+    onSubmittingChange(submitting);
+    return () => onSubmittingChange(false);
+  }, [submitting, onSubmittingChange]);
+
   const sectionDivider = "border-t-sm border-text-disabled pt-lg mt-lg";
   const subTitle =
     "text-md font-500 leading-xl text-primary-indigo mb-sm";
@@ -335,16 +360,18 @@ const AddTravellerDetails = ({ itinerary, onSuccess }) => {
         </div>
       )}
 
-      <div className="flex justify-end mt-xl pt-lg border-t-sm border-text-disabled">
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={submitting}
-          className="bg-primary-yellow text-primary-indigo font-500 leading-md text-sm-md px-xl py-sm rounded-md-lg border-sm border-primary-indigo hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
-        >
-          {submitting ? "Saving..." : "Save Traveller Details"}
-        </button>
-      </div>
+      {!hideSubmit && (
+        <div className="flex justify-end mt-xl pt-lg border-t-sm border-text-disabled">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="bg-primary-yellow text-primary-indigo font-500 leading-md text-sm-md px-xl py-sm rounded-md-lg border-sm border-primary-indigo hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
+          >
+            {submitting ? "Saving..." : "Save Traveller Details"}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

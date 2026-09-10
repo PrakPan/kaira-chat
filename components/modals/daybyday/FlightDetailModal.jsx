@@ -194,7 +194,10 @@ const FlightDetailModal = ({
 
   if (error) {
     return (
-      <DrawerShell band={<DetailBand mode="Flight" onBack={handleClose} loading />}>
+      <DrawerShell
+        embedded={isEmbedded}
+        band={<DetailBand mode="Flight" onBack={handleClose} loading />}
+      >
         <DetailError />
       </DrawerShell>
     );

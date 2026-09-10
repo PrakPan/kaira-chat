@@ -35,10 +35,7 @@ import ItineraryShimmer from "./components/ItineraryShimmer";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
 import { getPlatform, type ThemeSelectedItem } from "./hooks/useChat";
-import {
-  getThemeForm,
-  type ThemeForm,
-} from "../theme/cinematic/themeForms";
+import { getThemeForm, type ThemeForm } from "../theme/cinematic/themeForms";
 import { getThemePagePath } from "../theme/cinematic/palettes";
 import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
 import ItineraryLegend from "../itinerary/itineraryCity/ItineraryLegend";
@@ -55,7 +52,10 @@ import type {
 import { useDispatch } from "react-redux";
 import setItineraryIdAction from "../../store/actions/itineraryId";
 import setItineraryStatus from "../../store/actions/itineraryStatus";
-import { resetIntakeForm, updateIntakeForm } from "../../store/actions/intakeForm";
+import {
+  resetIntakeForm,
+  updateIntakeForm,
+} from "../../store/actions/intakeForm";
 import setItineraryDaybyDay from "../../store/actions/itineraryDaybyDay";
 import setItinerary from "../../store/actions/itinerary";
 import setBreif from "../../store/actions/breif";
@@ -67,11 +67,16 @@ import ConfirmationModal from "./components/ConfirmationModal";
 import { useSelector } from "react-redux";
 import setCart from "../../store/actions/Cart";
 import { openNotification } from "../../store/actions/notification";
-import { setUnreadMessages, setThreadCustomerName } from "../../store/actions/chatState";
+import {
+  setUnreadMessages,
+  setThreadCustomerName,
+} from "../../store/actions/chatState";
 import axios from "axios";
 import { MERCURY_HOST, CHATKIT_API_URL } from "../../services/constants";
 import SmallGallery from "../../containers/newitinerary/overview/SmallGallery";
 import NewSummaryContainers from "../../containers/itinerary/NewSummaryContainers";
+import HoldOfferOverlay from "./components/HoldOfferOverlay";
+import CartSheet from "../revamp/mobileItinerary/sheets/CartSheet";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import ModalWithBackdrop from "../ui/ModalWithBackdrop";
@@ -91,6 +96,11 @@ import {
 } from "../../services/analyticsFunnel";
 import Login from "../modals/Login";
 import { replaceUrl, pushUrlDetached } from "../../helper/historyUrl";
+import {
+  getLockInState,
+  LOCK_IN_HOLD_HOURS,
+  parseCartTimestamp,
+} from "../../helper/lockIn";
 import { FiCalendar } from "react-icons/fi";
 import { tr } from "date-fns/locale";
 import {
@@ -351,8 +361,7 @@ function transformDraftToItinerary(draft: any) {
     number_of_adults: draft?.number_of_adults ?? draft?.no_of_adults ?? null,
     number_of_children:
       draft?.number_of_children ?? draft?.no_of_children ?? null,
-    number_of_infants:
-      draft?.number_of_infants ?? draft?.no_of_infants ?? null,
+    number_of_infants: draft?.number_of_infants ?? draft?.no_of_infants ?? null,
     cities,
     start_city: toEndpointCity(draft?.start_city),
     end_city: toEndpointCity(draft?.end_city),
@@ -520,9 +529,7 @@ export default function BotApp({
   // The destination chosen inside the in-chat intake form. The left hero panel
   // only takes over once a place is picked; until then we keep the StartScreen
   // (inspiration) visible instead of a default hero image.
-  const intakeDestination = useSelector(
-    (s: any) => s.IntakeForm?.destination,
-  );
+  const intakeDestination = useSelector((s: any) => s.IntakeForm?.destination);
 
   const [leftPanelMode, setLeftPanelMode] = useState<LeftPanelMode>("default");
   const [completingItineraryId, setCompletingItineraryId] = useState<
@@ -585,7 +592,13 @@ export default function BotApp({
         scopeId: getChatFunnelScope(),
         persist: true,
         emit: (eventName: string, extra: Record<string, unknown>) =>
-          trackChatStageRef.current?.(eventName, itineraryId, ddAgent, [], extra),
+          trackChatStageRef.current?.(
+            eventName,
+            itineraryId,
+            ddAgent,
+            [],
+            extra,
+          ),
       });
     },
     [],
@@ -655,6 +668,24 @@ export default function BotApp({
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentDrawerKey, setPaymentDrawerKey] = useState(0);
 
+  // The phone's "Review & pay" summary. It sits IN FRONT of the payment drawer
+  // (NewSummaryContainers/NewBookingSlide), which stays mounted and untouched —
+  // that drawer still owns coupons, traveller details and the gateway. Desktop
+  // never opens this and keeps the drawer as its only cart.
+  const [showCartSheet, setShowCartSheet] = useState(false);
+  const [autoStartPayment, setAutoStartPayment] = useState(false);
+  // Which sale the auto-started payment should open. The hold card in the cart
+  // sheet offers both a hold and paying in full, so the drawer can no longer
+  // infer it from the cart alone. `null` leaves the drawer on its own
+  // `payNowType`, which is what the sheet's footer bar still wants.
+  const [autoPayType, setAutoPayType] = useState<string | null>(null);
+  // The "Not paying today?" card, raised by the cart bar's hold ribbon and the
+  // in-chat payment widget. Declared here with the other payment flags because
+  // `handleAutoPayEnded` below takes it down — it is held open for the length of
+  // an attempt, not just until the click.
+  const [holdOfferOpen, setHoldOfferOpen] = useState(false);
+  const [isRepricing, setIsRepricing] = useState(false);
+
   const fetchPaymentData = useCallback(
     async (itinId: string) => {
       if (!itinId) return;
@@ -710,6 +741,29 @@ export default function BotApp({
     url.searchParams.delete("drawer");
     pushUrlDetached(url.toString());
   }, []);
+
+  // An auto-started payment has stopped — at the gateway, or before it.
+  //
+  // Either way the sheet's button stops reading as busy. The drawer only comes
+  // DOWN when it has nothing left to show: the traveller-details gate is
+  // rendered inside it, so closing on that reason would take the gate away with
+  // it and the traveller would have nowhere to enter them.
+  const handleAutoPayEnded = React.useCallback(
+    (reason?: string) => {
+      setAutoStartPayment(false);
+      // The hold card is deliberately NOT closed here. An attempt "ending" is
+      // not the same as it succeeding: a dismissed gateway, a failed initiate
+      // and the traveller-details gate all arrive through this, and closing on
+      // any of them dropped the traveller back on the itinerary with the offer
+      // gone and nothing paid. The card is an offer, so it comes down when the
+      // offer is taken — see the effect on the cart below — and stays up
+      // otherwise, ready to be retried.
+      if (reason === "traveller-details") return;
+      closePaymentDrawer();
+      if (activeItineraryId) fetchPaymentData(activeItineraryId);
+    },
+    [closePaymentDrawer, activeItineraryId, fetchPaymentData],
+  );
 
   // When drawer is open (e.g. after refresh with ?drawer=payment) and the itinerary ID
   // becomes available, fetch the payment data automatically.
@@ -937,6 +991,76 @@ export default function BotApp({
   const [isHotelsPresent, setIsHotelsPresent] = useState(false);
 
   const authToken = useSelector((state: any) => state.auth?.token);
+
+  // The hold, offered from outside the cart — the ribbon capping the cart bar
+  // and the bar at the foot of the in-chat payment widget both run this.
+  //
+  // It RAISES THE OFFER rather than charging. Both those surfaces are one line
+  // and a button, which is enough to make the offer and not enough to explain
+  // it; going straight to Razorpay from there asked for ₹999 with every reason
+  // to pay it still inside a cart the traveller had not opened. So it opens the
+  // same "Not paying today?" card the cart shows inline, and the payment starts
+  // from that card's own buttons (see `runHoldPayment`).
+  //
+  // The login gate stays here, at the point of intent, so an unauthenticated
+  // traveller gets the prompt instead of a card whose buttons cannot work.
+  const startPriceHold = React.useCallback(() => {
+    if (!authToken) {
+      setShowApiLoginPrompt(true);
+      return;
+    }
+    reportChatStage("chat_cart_viewed", activeItineraryId || "", "P2");
+    if (activeItineraryId) fetchPaymentData(activeItineraryId);
+    setHoldOfferOpen(true);
+  }, [authToken, activeItineraryId, fetchPaymentData]);
+
+  // …and what its two buttons do. Straight to the gateway from here: the
+  // payment drawer still mounts, since it owns the traveller-details gate and
+  // the Razorpay handshake, but on `autoStartPayment` it paints nothing, so the
+  // traveller goes from the card to the gateway without a cart in between.
+  // `autoPayType` pins which sale to open rather than leaving the drawer to
+  // infer one — the card offers both a hold and paying in full, so that is the
+  // traveller's choice here and not something to re-derive from the cart.
+  //
+  // Straight to the gateway. No cart in between — this card has already made
+  // the offer and named the amount, so dropping the traveller into a cart to
+  // press an equivalent button again is a screen for nothing.
+  //
+  // The card itself STAYS UP, and that is what makes the absence of a cart
+  // workable: creating the sale is a round trip to /payment/initiate/ and then
+  // Razorpay's script load, so closing it on click left the traveller looking
+  // at the itinerary with nothing happening. Held open, its own "Opening
+  // payment…" state covers the gap, it is the screen the gateway opens over,
+  // and it is where they land if they dismiss it. `handleAutoPayEnded` takes it
+  // down once the attempt settles — including on the traveller-details gate,
+  // which opens its own drawer over the top and is handled exactly as it is
+  // from inside the cart.
+  // The one thing that takes the hold card down: money on the cart.
+  //
+  // Read off the refetched cart rather than off a "payment finished" callback,
+  // because only the cart knows whether anything was actually collected — the
+  // gateway closing tells us nothing either way. `amount_paid` covers paying in
+  // full from this same card; `lock_in_fee_paid` covers the hold, whose fee can
+  // land on the cart before `amount_paid` moves.
+  //
+  // Deliberately not `!lockIn.required`: that also goes false on a cart that is
+  // merely absent or errored mid-refetch, which would blink the card away for
+  // reasons that have nothing to do with a payment.
+  useEffect(() => {
+    if (!holdOfferOpen) return;
+    const paid =
+      !!cart?.lock_in_fee_paid || Number(cart?.amount_paid) > 0;
+    if (paid) setHoldOfferOpen(false);
+  }, [holdOfferOpen, cart]);
+
+  const runHoldPayment = React.useCallback(
+    (payType: "lockin" | "full") => {
+      setAutoPayType(payType);
+      setAutoStartPayment(true);
+      openPaymentDrawer();
+    },
+    [openPaymentDrawer],
+  );
   const isLoggedIn = !!(
     authToken ?? (typeof window !== "undefined" ? getAuthToken() : null)
   );
@@ -973,7 +1097,6 @@ export default function BotApp({
       }
     };
   }, []);
-
 
   // ── Refs for restore guards ──────────────────────────────────────────────
   const hasRestoredRef = useRef(false);
@@ -1847,7 +1970,11 @@ export default function BotApp({
         // `<gmaps_place_id>:<first_city_id>` and `<last_city_id>:<gmaps_place_id>`,
         // which is exactly what the server emits as
         // start_transfer/end_transfer.from/to_itinerary_city_id.
-        const upsertTransfer = (key: string, t: any, idKey: string | number) => {
+        const upsertTransfer = (
+          key: string,
+          t: any,
+          idKey: string | number,
+        ) => {
           const leg = t.legs?.[0] ?? "";
           intercity[key] = {
             id: `draft-transfer-${idKey}`,
@@ -1883,11 +2010,7 @@ export default function BotApp({
         const et = data.end_transfer;
         const lastCityId = cityIds[cityIds.length - 1];
         if (et?.to_itinerary_city_id && lastCityId) {
-          upsertTransfer(
-            `${lastCityId}:${et.to_itinerary_city_id}`,
-            et,
-            "end",
-          );
+          upsertTransfer(`${lastCityId}:${et.to_itinerary_city_id}`, et, "end");
         }
         dispatch(
           setTransfersBookings({ intercity, airport: {}, intracity: {} }),
@@ -1905,11 +2028,13 @@ export default function BotApp({
       // only sees the nested object, so backfill from the root here — keeps the
       // P1 header (Traveller Type / Date of Travelling) populated on reload too.
       const meta: any = data ?? {};
-      transformed.start_date = transformed.start_date ?? meta.start_date ?? null;
+      transformed.start_date =
+        transformed.start_date ?? meta.start_date ?? null;
       transformed.end_date = transformed.end_date ?? meta.end_date ?? null;
       transformed.travel_date =
         transformed.travel_date ?? meta.travel_date ?? null;
-      transformed.group_type = transformed.group_type ?? meta.group_type ?? null;
+      transformed.group_type =
+        transformed.group_type ?? meta.group_type ?? null;
       transformed.number_of_adults =
         transformed.number_of_adults ??
         meta.number_of_adults ??
@@ -2218,7 +2343,9 @@ export default function BotApp({
             ? window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/)?.[1]
             : undefined;
         const derivedSessionId =
-          data.session_id ?? data.filter_session_id ?? data.metadata?.session_id;
+          data.session_id ??
+          data.filter_session_id ??
+          data.metadata?.session_id;
         const threadSessionId =
           sessionIdOverride ?? derivedSessionId ?? urlSessionId;
 
@@ -2282,7 +2409,10 @@ export default function BotApp({
         // yet) feeds the chat avatar's customer-initial fallback. Only overwrite
         // when get_by_id actually carries a name — otherwise keep whatever was
         // seeded from the thread-list row in handleThreadSelect.
-        if (typeof data?.customer_name === "string" && data.customer_name.trim()) {
+        if (
+          typeof data?.customer_name === "string" &&
+          data.customer_name.trim()
+        ) {
           dispatch(setThreadCustomerName(data.customer_name.trim()));
         }
         setActiveThreadId(threadId);
@@ -2381,7 +2511,7 @@ export default function BotApp({
           // P1 chat-only thread (no itinerary yet) but has route/POI data —
           // sessionId-default of "itinerary" hides the map behind an empty
           // itinerary panel, so flip to "map" so the route pins are visible.
-          if(botModeRef.current == "p1"){
+          if (botModeRef.current == "p1") {
             setViewMode("map");
             setMobilePanel("map");
           }
@@ -2394,13 +2524,14 @@ export default function BotApp({
           // which is fresh after restoreItineraryDirectly ran this same tick —
           // a stale "p2" here is what wrongly painted the empty itinerary panel
           // when switching from a P2 thread to a P1 chat thread.
-          if(data?.items?.data?.[0]?.content?.[0]?.text == "Hey Kaira! provide summary of my itinerary"){
-             setViewMode("itinerary");
-          }
-          else if(botModeRef.current == "p2"){
+          if (
+            data?.items?.data?.[0]?.content?.[0]?.text ==
+            "Hey Kaira! provide summary of my itinerary"
+          ) {
             setViewMode("itinerary");
-          }
-          else setViewMode("map");
+          } else if (botModeRef.current == "p2") {
+            setViewMode("itinerary");
+          } else setViewMode("map");
           setMobilePanel("chat");
         }
 
@@ -2557,7 +2688,7 @@ export default function BotApp({
           // restoreItineraryDirectly has already cleared it and
           // ItineraryContainer's polling may race ahead and call
           // getPaymentInfo — wiping again would clobber that fetch and
-          // leave the CTA stuck on "Calculating price…" until the user
+          // leave the bar with no price on it at all until the user
           // reopens the cart. On thread switch, ItineraryContainer
           // remounts and its mount effect dispatches pricing_status =
           // PENDING, so the stale cart isn't visible during the gap.
@@ -2673,9 +2804,8 @@ export default function BotApp({
       // service has never seen. Same object ItineraryContainer fetches, served
       // from the browser cache on the second read.
       try {
-        const { fetchV1Itinerary } = await import(
-          "../../services/itinerary/v1/archive"
-        );
+        const { fetchV1Itinerary } =
+          await import("../../services/itinerary/v1/archive");
         archivedV1 = !!(await fetchV1Itinerary(sid));
       } catch (e) {
         archivedV1 = false;
@@ -3537,6 +3667,9 @@ export default function BotApp({
     // Route "Make Payment" CTAs from in-chat widgets to the existing
     // payment drawer instead of the generic widget-action fallback.
     onPaymentStart: openPaymentDrawer,
+    // …and the hold bar at the foot of that same widget, which charges the fee
+    // directly rather than opening the cart.
+    onHoldStart: startPriceHold,
     travellerStory: activeTravellerStory,
     onTravellerStoryDismiss: () => setActiveTravellerStory(null),
     onLoginSuccess: attachUserToItinerary,
@@ -3615,10 +3748,13 @@ Start Location: ${details.startLocation}`;
     return imgs;
   }, [itineraryRedux?.cities]);
 
-  const handleItineraryContainerSendMessage = useCallback((msg: string) => {
-    chatSendMessageRef.current?.(msg);
-    if (isMobile) mobileTabSwitchRef.current?.("chat");
-  }, [isMobile]);
+  const handleItineraryContainerSendMessage = useCallback(
+    (msg: string) => {
+      chatSendMessageRef.current?.(msg);
+      if (isMobile) mobileTabSwitchRef.current?.("chat");
+    },
+    [isMobile],
+  );
 
   const activeTab = useMemo(() => {
     if (viewMode === "bookings") return "Bookings";
@@ -3828,8 +3964,7 @@ Start Location: ${details.startLocation}`;
   // until polling reaches itinerary_status="SUCCESS". Render a skeleton in the
   // body during that window. ItineraryContainer stays mounted underneath so
   // its polling effects keep running.
-  const showTailoredSkeleton =
-    fromTailored && itineraryStatus !== "SUCCESS";
+  const showTailoredSkeleton = fromTailored && itineraryStatus !== "SUCCESS";
 
   // ── THE KEY FIX: single ItineraryContainer instance ──────────────────────
   // Rendered once here, shown in desktop OR mobile via isMobile guard in JSX.
@@ -3926,6 +4061,95 @@ Start Location: ${details.startLocation}`;
   // where it is mounted. Hoisted because the bar now appears in three places —
   // the desktop itinerary panel, the desktop map view, and MobileLayout — and
   // they must stay in lockstep.
+  // Reprice, mirroring the cart drawer's flow (NewBookingSlide.handleRepriceBookings).
+  //
+  // Two things are deliberately NOT copied from it. It reads `router.query.id`,
+  // which on /chat/<id> is the CHAT SESSION id, not the itinerary — so the
+  // itinerary id is passed explicitly here. And its failure path is what
+  // restores the four PENDING statuses; without that the pricing skeleton and
+  // the chat composer stay locked forever, so the `finally` below is
+  // load-bearing.
+  const handleReprice = React.useCallback(async () => {
+    const itinId = activeItineraryId;
+    if (!itinId || isRepricing) return;
+    setIsRepricing(true);
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("is_polling", true));
+    try {
+      const token = localStorage.getItem("access_token") || authToken;
+      await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${itinId}/reprice/bookings`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      // Repricing worked, so the sheet the traveller pressed it in is now
+      // showing prices that no longer exist. Close it and let the itinerary
+      // behind it repaint; they reopen Review & pay on the new prices. Only on
+      // success — a failed reprice leaves the sheet up, expired notice and all.
+      setShowCartSheet(false);
+    } catch (e) {
+      console.error("Failed to reprice itinerary", e);
+    } finally {
+      // Whether it succeeded or failed, the four PENDING statuses above have to
+      // be replaced by the server's real ones and `is_polling` released, or the
+      // pricing skeleton and the chat composer stay stuck.
+      dispatch(setItineraryStatus("is_polling", false));
+      try {
+        const { axiosGetItineraryStatus } = await import(
+          "../../services/itinerary/daybyday/preview"
+        );
+        const statusRes = await axiosGetItineraryStatus.get(`${itinId}/status/`);
+        const st = statusRes.data?.celery;
+        dispatch(
+          setItineraryStatus("itinerary_status", st?.ITINERARY || "SUCCESS"),
+        );
+        dispatch(setItineraryStatus("hotels_status", st?.HOTELS || "SUCCESS"));
+        dispatch(
+          setItineraryStatus("transfers_status", st?.TRANSFERS || "SUCCESS"),
+        );
+        dispatch(setItineraryStatus("pricing_status", st?.PRICING || "SUCCESS"));
+      } catch (e) {
+        console.error("Failed to refresh itinerary status after reprice", e);
+      }
+      await fetchPaymentData(itinId);
+      // Restart ItineraryContainer's status poll. The PENDING statuses above
+      // are what put the "Updating your itinerary" loader up, and only a poll
+      // observing them resolve takes it off again — that poll stops itself once
+      // everything reads SUCCESS, so by reprice time nothing is watching.
+      // Bumping the counter is how the desktop cart restarts it too.
+      setItineraryRefetchCounter((c) => c + 1);
+      setIsRepricing(false);
+    }
+  }, [activeItineraryId, authToken, isRepricing, dispatch, fetchPaymentData]);
+
+  // The cart's other dead end: the trip's dates have already gone by, so the
+  // prices in it are quoted against a trip that cannot happen and repricing
+  // would only re-quote the same dead dates. The fix is the Settings sheet on
+  // its past-dates copy — the same destination the Route tab's blocked action
+  // bar sends people to — which re-plans the trip around new dates.
+  //
+  // The cart sheet closes first, and not only for tidiness: Settings paints
+  // inline in this page (BottomModal, z 50) while the cart sheet portals to
+  // #modal-portal at z 1620, so a Settings opened over it would be invisible.
+  const handleUpdateDates = React.useCallback(() => {
+    if (!activeItineraryId) return;
+    setShowCartSheet(false);
+    // Whether the trip has hotels decides which pax editor Settings shows, and
+    // it is not on the itinerary object — every other opener fetches it too.
+    axios
+      .get(
+        `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`,
+      )
+      .then((res) => setIsHotelsPresent(res.data.no_of_hotels > 0))
+      .catch(() => setIsHotelsPresent(false))
+      .finally(() => {
+        setSettingsReason("past-dates");
+        setShowSettings(true);
+      });
+  }, [activeItineraryId]);
+
   const ctaBarProps = {
     activeItineraryId,
     showItineraryShimmer,
@@ -3957,7 +4181,24 @@ Start Location: ${details.startLocation}`;
       reportChatStage("chat_cart_viewed", activeItineraryId || "", "P2");
       openPaymentDrawer();
     },
+    // Phone only: View Cart raises the "Review & pay" sheet instead of the
+    // drawer. BottomCTABar falls back to onViewCart when this is undefined, so
+    // desktop keeps the drawer.
+    onReviewPay: isMobile
+      ? () => {
+          if (!authToken) {
+            setShowApiLoginPrompt(true);
+            return;
+          }
+          reportChatStage("chat_cart_viewed", activeItineraryId || "", "P2");
+          if (activeItineraryId) fetchPaymentData(activeItineraryId);
+          setShowCartSheet(true);
+        }
+      : undefined,
+    onHold: startPriceHold,
     onViewBookings: itineraryIsComplete ? handleViewBookings : undefined,
+    // Only the hold ribbon reads this — see `tripHasDeparted`.
+    tripStartDate: itineraryRedux?.start_date ?? null,
     notes: statusNotes,
     // Archive-only: the bar's CTA clones the trip rather than raising a contact
     // request. get_in_touch/ is an authenticated call against a live itinerary,
@@ -4033,7 +4274,7 @@ Start Location: ${details.startLocation}`;
           isMobile && viewMode === "routes" ? { display: "none" } : undefined
         }
       >
-      {/* Arbitrary px values, not px-3/py-3: bootstrap's `.px-3`/`.py-3` are
+        {/* Arbitrary px values, not px-3/py-3: bootstrap's `.px-3`/`.py-3` are
           `1rem !important` and land after Tailwind, so they silently overrode
           every padding this card asked for (`md:px-[22px]`, `max-ph:px-[12px]`,
           `max-ph:pt-[7px]`, `max-ph:pb-[10px]`) — every width really rendered at
@@ -4041,289 +4282,316 @@ Start Location: ${details.startLocation}`;
           isn't what was asked); mobile gets an even 10px box, matching the cart
           bar's gutter. One element serves both the expanded and collapsed card
           — `tripMetaOpen` only hides inner content — so this covers both. */}
-      <div
-        // Mobile: tapping anywhere on the card (not just the chevron) toggles
-        // the collapsible trip meta. Interactive children — the settings/share/
-        // change buttons, the legend chips, the chevron itself — are all
-        // `<button>`s, so a tap that lands inside one is left to that control
-        // and doesn't also toggle the card (closest() guard). Desktop no-ops:
-        // it has no compact/expanded split, so `isMobile`/`tripCompactSub` bail.
-        onClick={(e) => {
-          if (!isMobile || !tripCompactSub) return;
-          if (
-            (e.target as HTMLElement).closest(
-              "button, a, input, label, select, textarea",
+        <div
+          // Mobile: tapping anywhere on the card (not just the chevron) toggles
+          // the collapsible trip meta. Interactive children — the settings/share/
+          // change buttons, the legend chips, the chevron itself — are all
+          // `<button>`s, so a tap that lands inside one is left to that control
+          // and doesn't also toggle the card (closest() guard). Desktop no-ops:
+          // it has no compact/expanded split, so `isMobile`/`tripCompactSub` bail.
+          onClick={(e) => {
+            if (!isMobile || !tripCompactSub) return;
+            if (
+              (e.target as HTMLElement).closest(
+                "button, a, input, label, select, textarea",
+              )
             )
-          )
-            return;
-          handleTripMetaToggle();
-        }}
-        className="bg-white flex flex-col p-[16px] border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-3 max-ph:mt-[10px] max-ph:p-[10px]"
-      >
-        {/* Route and Bookings render inside this same panel (MenuV2 swaps its
+              return;
+            handleTripMetaToggle();
+          }}
+          className="bg-white flex flex-col p-[16px] border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-3 max-ph:mt-[10px] max-ph:p-[10px]"
+        >
+          {/* Route and Bookings render inside this same panel (MenuV2 swaps its
             body on activeTab). The way out of them — like the Map view's — is a
             single centered pill pinned just above the cart bar (BackToItineraryBar
             below), so it's not duplicated in this header. */}
-        {/* `relative` (all breakpoints) so the settings/share/chevron cluster
+          {/* `relative` (all breakpoints) so the settings/share/chevron cluster
             can be absolutely pinned to the top-right instead of sitting in a
             flow column. As a column it reserved its width down the whole card
             height, which is what left the heading, meta and route strip unable
             to use the right side of the card. Out of flow, the content column
             below spans the full width and the icons just float over its top
             right corner. */}
-        <div className="flex justify-between items-start gap-3 max-ph:gap-2 relative">
-          <div className="flex flex-col flex-1 min-w-0">
-            {/* Compact title + sub are max-width-capped on mobile so they
+          <div className="flex justify-between items-start gap-3 max-ph:gap-2 relative">
+            <div className="flex flex-col flex-1 min-w-0">
+              {/* Compact title + sub are max-width-capped on mobile so they
                 truncate before the absolutely-positioned icons. (Padding can't
                 reserve truncation space — text overflows into it — so a
                 max-width is used.) The expanded detail below is full width. */}
-            {/* Compact title + sub. On mobile they collapse away when the card
+              {/* Compact title + sub. On mobile they collapse away when the card
                 is expanded (the expanded detail below carries the full name);
                 the grid-rows 1fr↔0fr trick animates that as a smooth height +
                 opacity fade instead of the old `max-ph:hidden` snap. Desktop
                 stays open (base 1fr — only `max-ph:` collapses), since the 24px
                 title here is the header itself. */}
-            <div
-              className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${tripMetaOpen ? "grid-rows-[1fr] opacity-100 max-ph:grid-rows-[0fr] max-ph:opacity-0" : "grid-rows-[1fr] opacity-100"}`}
-            >
-              <div className="overflow-hidden min-h-0">
-                {/* md:pr reserves the top-right corner for the now-absolute
+              <div
+                className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${tripMetaOpen ? "grid-rows-[1fr] opacity-100 max-ph:grid-rows-[0fr] max-ph:opacity-0" : "grid-rows-[1fr] opacity-100"}`}
+              >
+                <div className="overflow-hidden min-h-0">
+                  {/* md:pr reserves the top-right corner for the now-absolute
                     settings/share icons, so a long name wraps to more lines on
                     the left while the icons stay pinned top-right (they no
                     longer hold open a column). Mobile clears its chevron with
                     the max-width + truncate instead. */}
-                <p className="font-inter font-bold md:font-extrabold text-[13.5px] md:text-[24px] leading-[1.2] md:leading-[1.15] tracking-[-0.2px] md:tracking-[-0.5px] m-0 md:pr-[100px] max-ph:truncate max-ph:max-w-[85%]">
-                  {itineraryReduxName || currentItineraryRef?.current?.name || ""}
-                </p>
-                {/* Mobile-only compact sub: dates · pax (design .trip-row .t-sub) */}
-                {tripCompactSub && (
-                  <div className="md:hidden text-[11.5px] text-[#6B7280] mt-[1px] truncate max-ph:max-w-[85%]">
-                    {tripCompactSub}
-                  </div>
-                )}
+                  <p className="font-inter font-bold md:font-extrabold text-[13.5px] md:text-[24px] leading-[1.2] md:leading-[1.15] tracking-[-0.2px] md:tracking-[-0.5px] m-0 md:pr-[100px] max-ph:truncate max-ph:max-w-[85%]">
+                    {itineraryReduxName ||
+                      currentItineraryRef?.current?.name ||
+                      ""}
+                  </p>
+                  {/* Mobile-only compact sub: dates · pax (design .trip-row .t-sub) */}
+                  {tripCompactSub && (
+                    <div className="md:hidden text-[11.5px] text-[#6B7280] mt-[1px] truncate max-ph:max-w-[85%]">
+                      {tripCompactSub}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
 
-        {(itineraryRedux?.group_type ||
-          itineraryRedux?.number_of_adults ||
-          itineraryRedux?.travel_date ||
-          (itineraryRedux?.start_date && itineraryRedux?.end_date)) && (
-          // max-ph:mt-0 when expanded: the compact title this margin was
-          // separating us from is itself hidden in expanded mode, so the margin
-          // would just stack on the card's 10px top padding and make the top gap
-          // read as double the bottom one.
-          <div
-            className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${tripMetaOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[1fr] opacity-100 max-ph:grid-rows-[0fr] max-ph:opacity-0"}`}
-          >
-            <div className="overflow-hidden min-h-0">
-          <div className="flex flex-col gap-1.5 mt-[11px] max-ph:mt-0">
-            {/* Mobile expanded: full (untruncated) itinerary name — design's
+              {(itineraryRedux?.group_type ||
+                itineraryRedux?.number_of_adults ||
+                itineraryRedux?.travel_date ||
+                (itineraryRedux?.start_date && itineraryRedux?.end_date)) && (
+                // max-ph:mt-0 when expanded: the compact title this margin was
+                // separating us from is itself hidden in expanded mode, so the margin
+                // would just stack on the card's 10px top padding and make the top gap
+                // read as double the bottom one.
+                <div
+                  className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${tripMetaOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[1fr] opacity-100 max-ph:grid-rows-[0fr] max-ph:opacity-0"}`}
+                >
+                  <div className="overflow-hidden min-h-0">
+                    <div className="flex flex-col gap-1.5 mt-[11px] max-ph:mt-0">
+                      {/* Mobile expanded: full (untruncated) itinerary name — design's
                 .trip-detail .ttl. Hidden on desktop (already shown at 24px). */}
-            <p className="md:hidden font-inter font-extrabold text-[18px] leading-[1.2] tracking-[-0.4px] m-0 mb-[3px] text-[#171A1F] max-ph:max-w-[85%]">
-              {itineraryReduxName || currentItineraryRef?.current?.name || ""}
-            </p>
-            {/* Outer row — column on mobile (so the gallery slides below the
+                      <p className="md:hidden font-inter font-extrabold text-[18px] leading-[1.2] tracking-[-0.4px] m-0 mb-[3px] text-[#171A1F] max-ph:max-w-[85%]">
+                        {itineraryReduxName ||
+                          currentItineraryRef?.current?.name ||
+                          ""}
+                      </p>
+                      {/* Outer row — column on mobile (so the gallery slides below the
                 meta), single row on desktop (gallery sits to the right of
                 traveller/date, matching the original design). */}
-            <div className="flex items-start gap-2 md:gap-[22px] max-ph:gap-[13px] max-ph:flex-col max-ph:items-stretch md:items-center">
-              <div ref={metaGroupRef} className="flex items-center gap-[22px] flex-nowrap md:flex-wrap max-ph:items-start max-ph:gap-[12px]">
-                {(itineraryRedux?.group_type ||
-                  itineraryRedux?.number_of_adults) && (
-                  <div ref={travellersColRef} className="flex items-center gap-2 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
-                    {/* No "Travellers" label — the value ("Couple · 2 adults")
+                      <div className="flex items-start gap-2 md:gap-[22px] max-ph:gap-[13px] max-ph:flex-col max-ph:items-stretch md:items-center">
+                        <div
+                          ref={metaGroupRef}
+                          className="flex items-center gap-[22px] flex-nowrap md:flex-wrap max-ph:items-start max-ph:gap-[12px]"
+                        >
+                          {(itineraryRedux?.group_type ||
+                            itineraryRedux?.number_of_adults) && (
+                            <div
+                              ref={travellersColRef}
+                              className="flex items-center gap-2 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]"
+                            >
+                              {/* No "Travellers" label — the value ("Couple · 2 adults")
                         reads for itself on both mobile and desktop. */}
-                    <span className="text-[13px] max-ph:text-[12px] font-inter text-[#3b4149] whitespace-nowrap">
-                      {itineraryRedux.group_type
-                        ? `${itineraryRedux.group_type}${
-                            itineraryRedux.number_of_adults
-                              ? ` · ${itineraryRedux.number_of_adults} adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
-                              : ""
-                          }`
-                        : itineraryRedux.number_of_adults
-                          ? `${itineraryRedux.number_of_adults} adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
-                          : ""}
-                      {itineraryRedux.number_of_children > 0
-                        ? `, ${itineraryRedux.number_of_children} child${itineraryRedux.number_of_children > 1 ? "ren" : ""}`
-                        : ""}
-                      {itineraryRedux.number_of_infants > 0
-                        ? `, ${itineraryRedux.number_of_infants} infant${itineraryRedux.number_of_infants > 1 ? "s" : ""}`
-                        : ""}
-                    </span>
-                    {isDraft && (
-                      <button
-                        type="button"
-                        aria-label="Change traveller count"
-                        className="flex items-center justify-center hover:opacity-70"
-                        onClick={() =>
-                          handleItineraryContainerSendMessage(
-                            "change traveller count",
-                          )
-                        }
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                        >
-                          <path
-                            d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                            fill="#ACACAC"
-                          />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                )}
-                {(itineraryRedux?.travel_date ||
-                  (itineraryRedux?.start_date &&
-                    itineraryRedux?.end_date)) && (
-                  <div className="flex items-center gap-2 shrink-0 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
-                    {/* No "Dates" label — the date range value stands on its
+                              <span className="text-[13px] max-ph:text-[12px] font-inter text-[#3b4149] whitespace-nowrap">
+                                {itineraryRedux.group_type
+                                  ? `${itineraryRedux.group_type}${
+                                      itineraryRedux.number_of_adults
+                                        ? ` · ${itineraryRedux.number_of_adults} adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
+                                        : ""
+                                    }`
+                                  : itineraryRedux.number_of_adults
+                                    ? `${itineraryRedux.number_of_adults} adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
+                                    : ""}
+                                {itineraryRedux.number_of_children > 0
+                                  ? `, ${itineraryRedux.number_of_children} child${itineraryRedux.number_of_children > 1 ? "ren" : ""}`
+                                  : ""}
+                                {itineraryRedux.number_of_infants > 0
+                                  ? `, ${itineraryRedux.number_of_infants} infant${itineraryRedux.number_of_infants > 1 ? "s" : ""}`
+                                  : ""}
+                              </span>
+                              {isDraft && (
+                                <button
+                                  type="button"
+                                  aria-label="Change traveller count"
+                                  className="flex items-center justify-center hover:opacity-70"
+                                  onClick={() =>
+                                    handleItineraryContainerSendMessage(
+                                      "change traveller count",
+                                    )
+                                  }
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                                      fill="#ACACAC"
+                                    />
+                                  </svg>
+                                </button>
+                              )}
+                            </div>
+                          )}
+                          {(itineraryRedux?.travel_date ||
+                            (itineraryRedux?.start_date &&
+                              itineraryRedux?.end_date)) && (
+                            <div className="flex items-center gap-2 shrink-0 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
+                              {/* No "Dates" label — the date range value stands on its
                         own on both mobile and desktop. */}
-                    <span className="text-[13px] max-ph:text-[12px] font-inter text-[#3b4149] whitespace-nowrap">
-                      {itineraryRedux.start_date && itineraryRedux.end_date ? (
-                        <>
-                          {/* Mobile: full year when it fits, else the measured
+                              <span className="text-[13px] max-ph:text-[12px] font-inter text-[#3b4149] whitespace-nowrap">
+                                {itineraryRedux.start_date &&
+                                itineraryRedux.end_date ? (
+                                  <>
+                                    {/* Mobile: full year when it fits, else the measured
                               2-digit fallback. Desktop always full. */}
-                          <span className="md:hidden">
-                            {datesShort ? _tripDatesShort : _tripDates}
-                          </span>
-                          <span className="max-ph:hidden">{_tripDates}</span>
-                          {/* Hidden full-year probe used to measure overflow. */}
-                          <span
-                            ref={datesMeasureRef}
-                            aria-hidden
-                            className="md:hidden absolute invisible pointer-events-none whitespace-nowrap"
-                          >
-                            {_tripDates}
-                          </span>
-                        </>
-                      ) : (
-                        itineraryRedux.travel_date
-                      )}
-                    </span>
-                    {isDraft && (
-                      <button
-                        type="button"
-                        aria-label="Change travelling date"
-                        className="flex items-center justify-center hover:opacity-70"
-                        onClick={() =>
-                          handleItineraryContainerSendMessage(
-                            "change my travelling date",
-                          )
-                        }
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                        >
-                          <path
-                            d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                            fill="#ACACAC"
+                                    <span className="md:hidden">
+                                      {datesShort
+                                        ? _tripDatesShort
+                                        : _tripDates}
+                                    </span>
+                                    <span className="max-ph:hidden">
+                                      {_tripDates}
+                                    </span>
+                                    {/* Hidden full-year probe used to measure overflow. */}
+                                    <span
+                                      ref={datesMeasureRef}
+                                      aria-hidden
+                                      className="md:hidden absolute invisible pointer-events-none whitespace-nowrap"
+                                    >
+                                      {_tripDates}
+                                    </span>
+                                  </>
+                                ) : (
+                                  itineraryRedux.travel_date
+                                )}
+                              </span>
+                              {isDraft && (
+                                <button
+                                  type="button"
+                                  aria-label="Change travelling date"
+                                  className="flex items-center justify-center hover:opacity-70"
+                                  onClick={() =>
+                                    handleItineraryContainerSendMessage(
+                                      "change my travelling date",
+                                    )
+                                  }
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                                      fill="#ACACAC"
+                                    />
+                                  </svg>
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        {!isMobile && itineraryRedux?.images?.length > 0 && (
+                          <SmallGallery
+                            compact
+                            maxShow={Math.min(3, galleryImages.images.length)}
+                            images={galleryImages.images}
+                            closeLabel="Back to Itinerary"
                           />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-              {!isMobile && itineraryRedux?.images?.length > 0 && (
-                <SmallGallery
-                  compact
-                  maxShow={Math.min(3, galleryImages.images.length)}
-                  images={galleryImages.images}
-                  closeLabel="Back to Itinerary"
-                />
-              )}
-            </div>
+                        )}
+                      </div>
 
-            {/* Desktop: social proof gets its own row between the meta line and
+                      {/* Desktop: social proof gets its own row between the meta line and
                 the route strip. On mobile it shares a row with the icons below.
                 Collapsed once the pane is scrolled off the top (headerCondensed)
                 so the condensed card keeps only name, travellers/dates and
                 route. Animated via the same grid-rows height + fade the legend
                 below uses (matching duration-200 ease-out) so the two collapse
                 in sync and the card's height eases instead of snapping. */}
-            {socialProofCount !== null && (
-              <div
-                className={`max-ph:hidden grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${headerCondensed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"}`}
-              >
-                <div className="overflow-hidden min-h-0">
-                  <div className="flex items-center gap-[9px] mt-[2px]">
-                    <KairaSocialProof
-                      count={socialProofCount}
-                      groupType={itineraryRedux?.group_type}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
+                      {socialProofCount !== null && (
+                        <div
+                          className={`max-ph:hidden grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${headerCondensed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"}`}
+                        >
+                          <div className="overflow-hidden min-h-0">
+                            <div className="flex items-center gap-[9px] mt-[2px]">
+                              <KairaSocialProof
+                                count={socialProofCount}
+                                groupType={itineraryRedux?.group_type}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
-            {/* Mobile: Kaira social proof (left) + settings/share (right) on one
+                      {/* Mobile: Kaira social proof (left) + settings/share (right) on one
                 row at the bottom of the expanded detail. Hidden on desktop,
                 where the icons sit top-right. The trip-image gallery is
                 deliberately not shown here — the social proof earns the space
                 better on a narrow card. */}
-            <div className="md:hidden flex items-start gap-[9px] mt-[9px]">
-              {socialProofCount !== null && (
-                <KairaSocialProof
-                  count={socialProofCount}
-                  groupType={itineraryRedux?.group_type}
-                  wrap
-                />
-              )}
-              <div className="flex items-center gap-[8px] ml-auto">
-                {/* No settings on an archive: the panel edits pax, dates and
+                      <div className="md:hidden flex items-start gap-[9px] mt-[9px]">
+                        {socialProofCount !== null && (
+                          <KairaSocialProof
+                            count={socialProofCount}
+                            groupType={itineraryRedux?.group_type}
+                            wrap
+                          />
+                        )}
+                        <div className="flex items-center gap-[8px] ml-auto">
+                          {/* No settings on an archive: the panel edits pax, dates and
                     room config through the live itinerary-edit endpoint, which
                     has nothing to write back to for a V1 snapshot. */}
-                {!isDraft && !isV1Archive && (
-                  <button
-                    aria-label="Settings"
-                    className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-gray-100 hover:bg-gray-200"
-                    onClick={() => {
-                      if (!authToken) {
-                        setShowSettingsLoginPrompt(true);
-                        return;
-                      }
-                      axios
-                        .get(
-                          `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`,
-                        )
-                        .then((res) =>
-                          setIsHotelsPresent(res.data.no_of_hotels > 0),
-                        )
-                        .catch(() => setIsHotelsPresent(false))
-                        .finally(() => {
-                      // Opened from the gear — no particular reason, so the
-                      // modal keeps its general heading.
-                      setSettingsReason(null);
-                      setShowSettings(true);
-                    });
-                    }}
-                  >
-                    <Image src="/settings.svg" height={18} width={18} alt="Settings" />
-                  </button>
-                )}
-                <button
-                  aria-label="Share"
-                  className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-gray-100 hover:bg-gray-200"
-                  onClick={() => setShowShare(true)}
-                >
-                  <Image src="/share.svg" height={18} width={18} alt="Share" />
-                </button>
-              </div>
-            </div>
-          </div>
-            </div>
-          </div>
-        )}
+                          {!isDraft && !isV1Archive && (
+                            <button
+                              aria-label="Settings"
+                              className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-gray-100 hover:bg-gray-200"
+                              onClick={() => {
+                                if (!authToken) {
+                                  setShowSettingsLoginPrompt(true);
+                                  return;
+                                }
+                                axios
+                                  .get(
+                                    `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`,
+                                  )
+                                  .then((res) =>
+                                    setIsHotelsPresent(
+                                      res.data.no_of_hotels > 0,
+                                    ),
+                                  )
+                                  .catch(() => setIsHotelsPresent(false))
+                                  .finally(() => {
+                                    // Opened from the gear — no particular reason, so the
+                                    // modal keeps its general heading.
+                                    setSettingsReason(null);
+                                    setShowSettings(true);
+                                  });
+                              }}
+                            >
+                              <Image
+                                src="/settings.svg"
+                                height={18}
+                                width={18}
+                                alt="Settings"
+                              />
+                            </button>
+                          )}
+                          <button
+                            aria-label="Share"
+                            className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-gray-100 hover:bg-gray-200"
+                            onClick={() => setShowShare(true)}
+                          >
+                            <Image
+                              src="/share.svg"
+                              height={18}
+                              width={18}
+                              alt="Share"
+                            />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-        {/* Route strip — sits outside the collapsible meta block so it stays
+              {/* Route strip — sits outside the collapsible meta block so it stays
             visible in the collapsed mobile card. Typography (Instrument Serif
             italic + hairline arrow) mirrors the route line on the itinerary
             carousel cards — see PackageCard.jsx.
@@ -4338,39 +4606,39 @@ Start Location: ${details.startLocation}`;
               the stops sit in their own row that scrolls sideways when it can't
               wrap, with the button pinned beside it (mobile keeps its
               collapsed-scroll / expanded-wrap behaviour unchanged). */}
-        {routeStops.length > 0 &&
-          (!isMobile && !headerCondensed ? (
-            // Desktop card at the top: two columns. The stops wrap in the left
-            // column; the Change Route button gets its own column and stays on
-            // the first line (items-start pins it to the top), so it never drops
-            // to a second line. The stops column is content-sized (no flex-1),
-            // so on a short route the button trails right after the text, and it
-            // shrinks to wrap (min-w-0 + flex-wrap) on a long route while the
-            // button holds its first-line spot.
-            <div className="mt-[11px] flex items-start gap-[14px]">
-              <div className="flex flex-wrap items-center gap-x-[10px] gap-y-[8px] min-w-0">
-                {routeStopEls}
-              </div>
-              {changeRouteButton}
-            </div>
-          ) : (
-            <div
-              className={`flex items-center gap-[14px] max-ph:gap-[10px] mt-[11px] max-ph:mt-[9px] ${tripMetaOpen ? "max-ph:items-start" : ""}`}
-            >
-              {/* Collapsed mobile / condensed desktop: single line that scrolls
+              {routeStops.length > 0 &&
+                (!isMobile && !headerCondensed ? (
+                  // Desktop card at the top: two columns. The stops wrap in the left
+                  // column; the Change Route button gets its own column and stays on
+                  // the first line (items-start pins it to the top), so it never drops
+                  // to a second line. The stops column is content-sized (no flex-1),
+                  // so on a short route the button trails right after the text, and it
+                  // shrinks to wrap (min-w-0 + flex-wrap) on a long route while the
+                  // button holds its first-line spot.
+                  <div className="mt-[11px] flex items-start gap-[14px]">
+                    <div className="flex flex-wrap items-center gap-x-[10px] gap-y-[8px] min-w-0">
+                      {routeStopEls}
+                    </div>
+                    {changeRouteButton}
+                  </div>
+                ) : (
+                  <div
+                    className={`flex items-center gap-[14px] max-ph:gap-[10px] mt-[11px] max-ph:mt-[9px] ${tripMetaOpen ? "max-ph:items-start" : ""}`}
+                  >
+                    {/* Collapsed mobile / condensed desktop: single line that scrolls
                   sideways. Expanded mobile: the stops wrap to as many lines as
                   the full route needs (`max-ph:flex-wrap`). */}
-              <div
-                className={`flex items-center gap-[10px] max-ph:gap-[8px] min-w-0 overflow-x-auto ${tripMetaOpen ? "max-ph:flex-wrap" : ""}`}
-                style={{ scrollbarWidth: "none" }}
-              >
-                {routeStopEls}
-              </div>
-              {changeRouteButton}
-            </div>
-          ))}
+                    <div
+                      className={`flex items-center gap-[10px] max-ph:gap-[8px] min-w-0 overflow-x-auto ${tripMetaOpen ? "max-ph:flex-wrap" : ""}`}
+                      style={{ scrollbarWidth: "none" }}
+                    >
+                      {routeStopEls}
+                    </div>
+                    {changeRouteButton}
+                  </div>
+                ))}
 
-        {/* Kaira Protected / label legend. Hidden once the pane is scrolled off
+              {/* Kaira Protected / label legend. Hidden once the pane is scrolled off
             the top (headerCondensed) so only the trip's identifying lines stay
             pinned — on mobile and desktop alike. Collapsed via an animated
             grid-rows height (the same trick the meta block above uses) instead
@@ -4379,92 +4647,96 @@ Start Location: ${details.startLocation}`;
             overflow-hidden is applied only while collapsed, so the expanded
             legend's "what the labels mean" dropdown (absolute, opens downward)
             is never clipped. */}
-        <div
-          className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${headerCondensed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"}`}
-        >
-          <div className={headerCondensed ? "overflow-hidden min-h-0" : "min-h-0"}>
-            <ItineraryLegend />
-          </div>
-        </div>
-          </div>
+              <div
+                className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${headerCondensed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"}`}
+              >
+                <div
+                  className={
+                    headerCondensed ? "overflow-hidden min-h-0" : "min-h-0"
+                  }
+                >
+                  <ItineraryLegend />
+                </div>
+              </div>
+            </div>
 
-          <div className="flex gap-3 max-ph:gap-[6px] items-center absolute top-0 right-0">
-            {/* See the mobile settings button above — hidden for the same
+            <div className="flex gap-3 max-ph:gap-[6px] items-center absolute top-0 right-0">
+              {/* See the mobile settings button above — hidden for the same
                 reason on desktop. */}
-            {!isDraft && !isV1Archive && (
+              {!isDraft && !isV1Archive && (
+                <button
+                  className="max-ph:hidden flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
+                  onClick={() => {
+                    if (!authToken) {
+                      setShowSettingsLoginPrompt(true);
+                      return;
+                    }
+                    axios
+                      .get(
+                        `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`,
+                      )
+                      .then((res) =>
+                        setIsHotelsPresent(res.data.no_of_hotels > 0),
+                      )
+                      .catch(() => setIsHotelsPresent(false))
+                      .finally(() => {
+                        // Opened from the gear — no particular reason, so the
+                        // modal keeps its general heading.
+                        setSettingsReason(null);
+                        setShowSettings(true);
+                      });
+                  }}
+                >
+                  <Image
+                    src="/settings.svg"
+                    height={22}
+                    width={22}
+                    alt="Settings"
+                  />
+                </button>
+              )}
+              {isDraft && draftCityImages.length > 0 && !isMobile && (
+                <SmallGallery
+                  maxShow={Math.min(3, draftCityImages.length)}
+                  images={draftCityImages}
+                  isDraft={true}
+                />
+              )}
               <button
                 className="max-ph:hidden flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
-                onClick={() => {
-                  if (!authToken) {
-                    setShowSettingsLoginPrompt(true);
-                    return;
-                  }
-                  axios
-                    .get(
-                      `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`,
-                    )
-                    .then((res) =>
-                      setIsHotelsPresent(res.data.no_of_hotels > 0),
-                    )
-                    .catch(() => setIsHotelsPresent(false))
-                    .finally(() => {
-                      // Opened from the gear — no particular reason, so the
-                      // modal keeps its general heading.
-                      setSettingsReason(null);
-                      setShowSettings(true);
-                    });
-                }}
+                onClick={() => setShowShare(true)}
               >
-                <Image
-                  src="/settings.svg"
-                  height={22}
-                  width={22}
-                  alt="Settings"
-                />
+                <Image src="/share.svg" height={22} width={22} alt="Share" />
               </button>
-            )}
-            {isDraft && draftCityImages.length > 0 && !isMobile && (
-              <SmallGallery
-                maxShow={Math.min(3, draftCityImages.length)}
-                images={draftCityImages}
-                isDraft={true}
-              />
-            )}
-            <button
-              className="max-ph:hidden flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
-              onClick={() => setShowShare(true)}
-            >
-              <Image src="/share.svg" height={22} width={22} alt="Share" />
-            </button>
-            {/* Mobile: toggle the collapsed trip meta (design .trip chevron) */}
-            {tripCompactSub && (
-              <button
-                type="button"
-                aria-label="Toggle trip details"
-                aria-expanded={tripMetaOpen}
-                onClick={handleTripMetaToggle}
-                className="md:hidden flex items-center justify-center w-9 h-9 max-ph:w-[28px] max-ph:h-[28px] shrink-0"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className={`transition-transform max-ph:w-4 max-ph:h-4 ${tripMetaOpen ? "rotate-180" : ""}`}
+              {/* Mobile: toggle the collapsed trip meta (design .trip chevron) */}
+              {tripCompactSub && (
+                <button
+                  type="button"
+                  aria-label="Toggle trip details"
+                  aria-expanded={tripMetaOpen}
+                  onClick={handleTripMetaToggle}
+                  className="md:hidden flex items-center justify-center w-9 h-9 max-ph:w-[28px] max-ph:h-[28px] shrink-0"
                 >
-                  <path
-                    d="m6 9 6 6 6-6"
-                    stroke="#8a9099"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            )}
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className={`transition-transform max-ph:w-4 max-ph:h-4 ${tripMetaOpen ? "rotate-180" : ""}`}
+                  >
+                    <path
+                      d="m6 9 6 6 6-6"
+                      stroke="#8a9099"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
       </div>
 
       {/* Body */}
@@ -4480,9 +4752,7 @@ Start Location: ${details.startLocation}`;
                 <ItineraryShimmer cities={skeletonCities} />
               )}
               <div
-                style={
-                  showTailoredSkeleton ? { display: "none" } : undefined
-                }
+                style={showTailoredSkeleton ? { display: "none" } : undefined}
               >
                 {itineraryContainerNode}
               </div>
@@ -4564,12 +4834,12 @@ Start Location: ${details.startLocation}`;
         >
           <div
             className={`absolute inset-0 z-10 overflow-y-auto transition-opacity duration-500 ease-in-out pointer-events-${
- (showStartScreen ||
-   (intakeActive && !intakeDestination && !startEmptyIntake)) &&
- leftPanelMode === "default"
- ? "auto"
- : "none"
- }`}
+              (showStartScreen ||
+                (intakeActive && !intakeDestination && !startEmptyIntake)) &&
+              leftPanelMode === "default"
+                ? "auto"
+                : "none"
+            }`}
             style={{
               opacity:
                 (showStartScreen ||
@@ -4590,29 +4860,36 @@ Start Location: ${details.startLocation}`;
               is chosen; its image swaps with the chosen destination. Before a
               pick we keep the StartScreen above. inset-0 keeps the hero within
               the left pane. */}
-         {botMode != "p2" ? <div
-            className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out ${
- !hasBotResponded &&
- (seedActive || (intakeActive && (intakeDestination || startEmptyIntake)))
- ? "pointer-events-auto"
- : "pointer-events-none"
- }`}
-            style={{
-              opacity:
+          {botMode != "p2" ? (
+            <div
+              className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out ${
                 !hasBotResponded &&
                 (seedActive ||
                   (intakeActive && (intakeDestination || startEmptyIntake)))
-                  ? 1
-                  : 0,
-            }}
-          >
-            {!hasBotResponded &&
-              (seedActive ||
-                (intakeActive && (intakeDestination || startEmptyIntake))) &&
-              botMode != "p2" && <IntakeLeftPanel />}
-          </div> : null}
+                  ? "pointer-events-auto"
+                  : "pointer-events-none"
+              }`}
+              style={{
+                opacity:
+                  !hasBotResponded &&
+                  (seedActive ||
+                    (intakeActive && (intakeDestination || startEmptyIntake)))
+                    ? 1
+                    : 0,
+              }}
+            >
+              {!hasBotResponded &&
+                (seedActive ||
+                  (intakeActive && (intakeDestination || startEmptyIntake))) &&
+                botMode != "p2" && <IntakeLeftPanel />}
+            </div>
+          ) : null}
 
-          <style dangerouslySetInnerHTML={{ __html: `#chatContainer::-webkit-scrollbar { display: none; }` }} />
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `#chatContainer::-webkit-scrollbar { display: none; }`,
+            }}
+          />
           <div
             id="chatContainer"
             className="flex flex-col h-full bg-white border-slate-200 transition-opacity duration-500 ease-in-out"
@@ -4687,10 +4964,10 @@ Start Location: ${details.startLocation}`;
         >
           <div
             className={`absolute inset-0 z-10 bg-white ease-in-out ${
- isChatActive
- ? "opacity-0 pointer-events-none translate-y-2"
- : "opacity-100 pointer-events-auto translate-y-0"
- }`}
+              isChatActive
+                ? "opacity-0 pointer-events-none translate-y-2"
+                : "opacity-100 pointer-events-auto translate-y-0"
+            }`}
           >
             <ChatWelcomeScreen
               onSubmit={handlePromptSelect}
@@ -4700,10 +4977,10 @@ Start Location: ${details.startLocation}`;
           </div>
           <div
             className={`flex-1 overflow-hidden min-h-0 ease-in-out ${
- isChatActive
- ? "opacity-100 translate-y-0"
- : "opacity-0 translate-y-2 pointer-events-none"
- }`}
+              isChatActive
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-2 pointer-events-none"
+            }`}
           >
             {/* Archived V1 itineraries have no chat thread — mounting the real
                 panel makes it try to start a session and fail. */}
@@ -4844,11 +5121,11 @@ Start Location: ${details.startLocation}`;
               .then((res) => setIsHotelsPresent(res.data.no_of_hotels > 0))
               .catch(() => setIsHotelsPresent(false))
               .finally(() => {
-                      // Opened from the gear — no particular reason, so the
-                      // modal keeps its general heading.
-                      setSettingsReason(null);
-                      setShowSettings(true);
-                    });
+                // Opened from the gear — no particular reason, so the
+                // modal keeps its general heading.
+                setSettingsReason(null);
+                setShowSettings(true);
+              });
           }}
           onLoginSuccess={attachUserToItinerary}
         />
@@ -4880,86 +5157,96 @@ Start Location: ${details.startLocation}`;
         </>
       )}
 
-      {showSettings && (() => {
-        const settingsHandleApply = async (req: any) => {
-          const response = await axios.post(
-            `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/itinerary-edit/`,
-            req,
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      {showSettings &&
+        (() => {
+          const settingsHandleApply = async (req: any) => {
+            const response = await axios.post(
+              `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/itinerary-edit/`,
+              req,
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                },
               },
-            },
-          );
-          // Re-poll status + canonical fetch instead of trusting the edit response,
-          // which lacks day-by-day, hotels, transfers, pricing and would clobber
-          // status:"Finalized" (hiding Routes/Bookings tabs).
-          //
-          // Guarded because the modal closes on this promise: the save is done
-          // the moment the POST above returns, and a throw from the refresh —
-          // which only rebuilds this page's own state — would otherwise keep the
-          // sheet open under an error message about a save the server accepted.
-          try {
-            if (activeItineraryId) handleItineraryRefresh(activeItineraryId);
-            // Saved from the Route view — on a phone, the route sheet standing
-            // over the itinerary. The route behind it is about to be rebuilt
-            // around the new dates, so hand the traveller back to the itinerary:
-            // the surface being rebuilt, and the one whose status loader narrates
-            // it. Same landing an accepted Update Route gives them. Left alone
-            // when Settings was opened from anywhere else — a save from the
-            // itinerary or bookings shouldn't move anyone.
-            if (viewMode === "routes") handleBackToItinerary();
-          } catch (err) {
-            console.error("[BotApp] itinerary refresh after settings edit:", err);
-          }
-          return response;
-        };
-        // Opened from the Route tab's blocked action bar: the traveller came
-        // here to fix one thing, so the modal names it instead of offering
-        // "preferences" and leaving them to find the date picker.
-        const pastDates = settingsReason === "past-dates";
-        const settingsCopy = pastDates
-          ? {
-              heading: { lead: "Update your", emphasis: "travel", trail: "dates" },
-              subheading:
-                "Your trip dates have passed - pick new ones and I'll re-plan the trip.",
+            );
+            // Re-poll status + canonical fetch instead of trusting the edit response,
+            // which lacks day-by-day, hotels, transfers, pricing and would clobber
+            // status:"Finalized" (hiding Routes/Bookings tabs).
+            //
+            // Guarded because the modal closes on this promise: the save is done
+            // the moment the POST above returns, and a throw from the refresh —
+            // which only rebuilds this page's own state — would otherwise keep the
+            // sheet open under an error message about a save the server accepted.
+            try {
+              if (activeItineraryId) handleItineraryRefresh(activeItineraryId);
+              // Saved from the Route view — on a phone, the route sheet standing
+              // over the itinerary. The route behind it is about to be rebuilt
+              // around the new dates, so hand the traveller back to the itinerary:
+              // the surface being rebuilt, and the one whose status loader narrates
+              // it. Same landing an accepted Update Route gives them. Left alone
+              // when Settings was opened from anywhere else — a save from the
+              // itinerary or bookings shouldn't move anyone.
+              if (viewMode === "routes") handleBackToItinerary();
+            } catch (err) {
+              console.error(
+                "[BotApp] itinerary refresh after settings edit:",
+                err,
+              );
             }
-          : {};
-        return isMobile ? (
-          <BottomModal
-            show={true}
-            onHide={() => setShowSettings(false)}
-            closeIcon={false}
-            width="100%"
-            height="max-content"
-            paddingX="0px"
-            paddingY="0px"
-            borderRadius="20px"
-          >
-            <Settings
-              setShowSettings={setShowSettings}
-              isHotelsPresent={isHotelsPresent}
-              handleApply={settingsHandleApply}
-              maxAdults={true}
-              maxRooms={true}
-              {...settingsCopy}
-            />
-          </BottomModal>
-        ) : (
-          <ModalWithBackdrop show={true} onHide={() => setShowSettings(false)} closeIcon={false}>
-            <Settings
-              setShowSettings={setShowSettings}
-              isHotelsPresent={isHotelsPresent}
-              handleApply={settingsHandleApply}
-              maxAdults={true}
-              maxRooms={true}
-              {...settingsCopy}
-            />
-          </ModalWithBackdrop>
-        );
-      })()}
-
-      
+            return response;
+          };
+          // Opened from the Route tab's blocked action bar: the traveller came
+          // here to fix one thing, so the modal names it instead of offering
+          // "preferences" and leaving them to find the date picker.
+          const pastDates = settingsReason === "past-dates";
+          const settingsCopy = pastDates
+            ? {
+                heading: {
+                  lead: "Update your",
+                  emphasis: "travel",
+                  trail: "dates",
+                },
+                subheading:
+                  "Your trip dates have passed - pick new ones and I'll re-plan the trip.",
+              }
+            : {};
+          return isMobile ? (
+            <BottomModal
+              show={true}
+              onHide={() => setShowSettings(false)}
+              closeIcon={false}
+              width="100%"
+              height="max-content"
+              paddingX="0px"
+              paddingY="0px"
+              borderRadius="20px"
+            >
+              <Settings
+                setShowSettings={setShowSettings}
+                isHotelsPresent={isHotelsPresent}
+                handleApply={settingsHandleApply}
+                maxAdults={true}
+                maxRooms={true}
+                {...settingsCopy}
+              />
+            </BottomModal>
+          ) : (
+            <ModalWithBackdrop
+              show={true}
+              onHide={() => setShowSettings(false)}
+              closeIcon={false}
+            >
+              <Settings
+                setShowSettings={setShowSettings}
+                isHotelsPresent={isHotelsPresent}
+                handleApply={settingsHandleApply}
+                maxAdults={true}
+                maxRooms={true}
+                {...settingsCopy}
+              />
+            </ModalWithBackdrop>
+          );
+        })()}
 
       {/* Archive bar's "Get this trip!". Mounted here rather than inside the
           bar because the bar is `position: fixed` and re-mounts per layout. */}
@@ -4970,7 +5257,6 @@ Start Location: ${details.startLocation}`;
       />
 
       {showSettingsLoginPrompt && !authToken && (
-
         <BotLoginModal
           show={showSettingsLoginPrompt}
           onhide={() => setShowSettingsLoginPrompt(false)}
@@ -4982,7 +5268,6 @@ Start Location: ${details.startLocation}`;
           }}
         />
       )}
-
 
       {showApiLoginPrompt && (
         <BotLoginModal
@@ -5014,6 +5299,72 @@ Start Location: ${details.startLocation}`;
       {/* Toaster notifications — portal to modal-portal div */}
       <NotificationPopup />
 
+      {/* ── The hold offer, raised by the cart bar's ribbon and the in-chat
+             payment widget. Popup on desktop, bottom sheet on the phone; the
+             card inside it is the cart's own. Mounted here rather than beside
+             either caller because both raise the same one. ── */}
+      {activeItineraryId && (
+        <HoldOfferOverlay
+          open={holdOfferOpen}
+          onClose={() => setHoldOfferOpen(false)}
+          isMobile={isMobile}
+          cart={cart}
+          isPaying={autoStartPayment}
+          onHold={() => runHoldPayment("lockin")}
+          onPayFull={() => runHoldPayment("full")}
+        />
+      )}
+
+      {/* ── Phone cart: the "Review & pay" bottom sheet. The drawer below stays
+             the payment engine, coupon owner and traveller-details gate. ── */}
+      {isMobile && activeItineraryId && (
+        <CartSheet
+          open={showCartSheet}
+          onClose={() => setShowCartSheet(false)}
+          onPay={(payType?: string) => {
+            // Straight to the gateway. The drawer still mounts — it owns the
+            // traveller-details gate and the Razorpay handshake — but on
+            // `autoStartPayment` it paints nothing, so the traveller is never
+            // handed back the cart they just reviewed.
+            //
+            // This sheet STAYS OPEN behind it: it is the screen the gateway
+            // opens over, and the one they land on when they dismiss it.
+            //
+            // Not logged in: onViewCart raises the login prompt and never
+            // mounts the drawer, so nothing would ever report the attempt
+            // ended and the button would sit on "Opening payment…" for good.
+            // Latch the flag only on the path that mounts the payment engine.
+            if (!authToken) {
+              ctaBarProps.onViewCart();
+              return;
+            }
+            setAutoPayType(payType || null);
+            setAutoStartPayment(true);
+            ctaBarProps.onViewCart();
+          }}
+          isPaying={autoStartPayment}
+          onCouponApplied={() =>
+            activeItineraryId && fetchPaymentData(activeItineraryId)
+          }
+          // Saving traveller details flips `traveler_details_verified` on the
+          // cart — refetch so the sheet's traveller card, and the drawer's pay
+          // gate behind it, both see the names that were just added.
+          onTravellersSaved={() =>
+            activeItineraryId && fetchPaymentData(activeItineraryId)
+          }
+          token={authToken}
+          // The cart PATCH behind the include/exclude checkboxes is addressed
+          // by ITINERARY id. `router.query.id` on /chat/<id> is the chat
+          // session, so it has to be passed explicitly — same trap as
+          // handleReprice.
+          itineraryId={activeItineraryId}
+          askKaira={handleItineraryContainerSendMessage}
+          onReprice={handleReprice}
+          isRepricing={isRepricing}
+          onUpdateDates={handleUpdateDates}
+        />
+      )}
+
       {/* ── Payment — mounts NewSummaryContainers which portals its own full-screen Drawer ── */}
 
       {showPaymentDrawer && activeItineraryId && itineraryRedux && (
@@ -5030,6 +5381,13 @@ Start Location: ${details.startLocation}`;
             payment={paymentData}
             plan={itineraryRedux}
             id={activeItineraryId}
+            // Every call the drawer makes authenticates with `props.token` —
+            // /payment/initiate/ for both sale types, the coupon endpoints, the
+            // reprice. Without it those went out as `Bearer undefined` and came
+            // back 401, so a pay CTA on this surface reached the API and never
+            // the gateway. The axios instances in services/sales/itinerary carry
+            // no interceptor to fall back on; the header is passed per call.
+            token={authToken}
             itinerary={itineraryRedux}
             mercuryItinerary={true}
             loadpricing={false}
@@ -5050,6 +5408,15 @@ Start Location: ${details.startLocation}`;
             social_title={itineraryRedux?.social_title}
             social_description={itineraryRedux?.social_description}
             openPaymentDrawer={true}
+            // Straight-to-gateway. On this flag the drawer paints nothing at
+            // all (`hideCartForAutoPay`) and acts purely as the payment engine,
+            // so the traveller is never handed back the cart they just
+            // reviewed in the sheet.
+            autoStartPayment={autoStartPayment}
+            // Which sale the sheet's tap asked for. Omitted by the footer bar,
+            // where the drawer's own `payNowType` is still the right answer.
+            autoPayType={autoPayType}
+            onAutoPayEnded={handleAutoPayEnded}
           />
         </div>
       )}
@@ -5080,6 +5447,20 @@ interface BottomCTABarProps {
   popupStyle: React.CSSProperties;
   onConfirm: () => void;
   onViewCart: () => void;
+  onReviewPay?: () => void;
+  /**
+   * The itinerary's start date, purely so the hold ribbon can tell whether the
+   * trip has already departed. The cart payload does not carry it — both carts
+   * read it off the itinerary in redux for the same test.
+   */
+  tripStartDate?: string | null;
+  /**
+   * The hold ribbon's "Hold · ₹999" button. Goes straight to the gateway for
+   * the lock-in fee rather than through the cart — the ribbon has already
+   * named the amount and what it buys, so a stop at the cart to press the
+   * same button again is one screen too many.
+   */
+  onHold?: () => void;
   onGetInTouch?: () => void;
   /** Archive-only: opens the clone popup from "Get this trip!". */
   onGetThisTrip?: () => void;
@@ -5131,7 +5512,11 @@ const ItineraryStepsLoader = ({
   const lastIdx = steps.length - 1;
 
   return (
-    <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4">
+    <div
+      data-bottom-cta-bar
+      style={barStyle}
+      className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4"
+    >
       <div>
         <div className="flex items-center gap-3">
           {/* Spinning ring with hourglass glyph — same chrome as the original loader */}
@@ -5212,6 +5597,312 @@ const ItineraryStepsLoader = ({
   );
 };
 
+// ── LockInHoldStrip ──────────────────────────────────────────────────────────
+// The "hold this price" offer, as a midnight ribbon capping the cart bar. It
+// used to be a one-line caption that only *named* the hold — the traveller then
+// had to open the cart to find the button. The ribbon carries the button
+// itself, so the offer and the way to take it are the same object.
+//
+// Kaira says it, in the first person and over her own portrait: the sentence is
+// a judgement about this trip's prices ("prices change often"), and attributing
+// it to the planner the traveller has been talking to all session is what makes
+// it advice rather than a upsell banner.
+//
+// It slides up out of the bar ten seconds in, not on arrival. The traveller
+// came to read the trip, and an offer thrown at them in the first beat is an
+// interruption of the thing they opened the page for; by ten seconds they have
+// scrolled the itinerary and the prices it quotes are what they are weighing,
+// which is the moment holding one is worth being asked about. One constant for
+// both breakpoints — the bar and this ribbon are a single component at every
+// width, so desktop and phone make the offer on the same clock.
+//
+// Only the transform animates: the clip wrapper's height is switched, not
+// transitioned, because two ResizeObservers watch this bar (to size the scroll
+// pane above it and to park the "Back to itinerary" pill) and a transitioned
+// height would re-measure and re-render the tree every frame. The switch is
+// invisible: at rest the band is parked a full height below the clip box, and
+// `translateY` is a percentage of the band's own height, so nothing here needs
+// a hardcoded pixel height to animate correctly at either breakpoint.
+const LOCK_IN_STRIP_DELAY_MS = 10_000;
+
+// The trip has already departed. Mirrors CartSheet's `tripHasStarted` and the
+// desktop cart's `isItineraryInFuture` — the same test all three have to make,
+// because a hold on a trip that has left is as empty an offer as a hold on a
+// lapsed price. Both ends floored to midnight: a trip starting TODAY has not
+// started too late to pay for. A missing date reads as "not loaded yet" and
+// never as departed — redux seeds the itinerary with a placeholder that carries
+// no `start_date`, and treating that as past would blank the ribbon on load.
+const tripHasDeparted = (startDate?: string | null) => {
+  if (!startDate) return false;
+  const start = new Date(startDate);
+  if (Number.isNaN(start.getTime())) return false;
+  const today = new Date();
+  start.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  return start < today;
+};
+
+// The quote's own deadline, as the design's zero-padded clock. This is
+// `price_valid_until` — how long today's PRICES stand — and not the hold
+// window, which only starts once the fee is paid. Two different clocks: the
+// ribbon is the offer to stop this one from running out.
+const formatExpiryClock = (msLeft: number) => {
+  const total = Math.max(0, Math.floor(msLeft / 1000));
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(Math.floor(total / 3600))}:${pad(
+    Math.floor((total % 3600) / 60),
+  )}:${pad(total % 60)}`;
+};
+
+// Ticks once a second while the quote is still live, and stops dead the moment
+// it lapses rather than counting on into negatives.
+const usePriceExpiryClock = (priceValidUntil?: string | null) => {
+  // Parsed as IST, not as browser-local: Mercury writes these without an
+  // offset, so `new Date` on the bare string slides the deadline by hours for
+  // anyone outside India. See helper/lockIn's parseCartTimestamp.
+  const deadlineMs = React.useMemo(() => {
+    const parsed = parseCartTimestamp(priceValidUntil);
+    return parsed ? parsed.getTime() : null;
+  }, [priceValidUntil]);
+
+  const [label, setLabel] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    if (!deadlineMs) {
+      setLabel(null);
+      return;
+    }
+    const tick = () => {
+      const left = deadlineMs - Date.now();
+      setLabel(left > 0 ? formatExpiryClock(left) : null);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [deadlineMs]);
+
+  return label;
+};
+
+// The padlock, drawn rather than the emoji: at this size the emoji lands at a
+// different weight, colour and baseline in every OS, and on a button face that
+// inconsistency is the whole control.
+const HoldLock = ({ size = 13 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden
+    className="shrink-0"
+  >
+    <path
+      d="M8 10V7.5a4 4 0 0 1 8 0V10"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+    />
+    <rect x="4.5" y="10" width="15" height="10.5" rx="2.2" fill="currentColor" />
+  </svg>
+);
+
+const LockInHoldStrip = ({
+  fee,
+  currencySymbol,
+  currencyCode,
+  priceValidUntil,
+  onHold,
+}: {
+  fee: number;
+  currencySymbol: string;
+  currencyCode?: string;
+  priceValidUntil?: string | null;
+  onHold?: () => void;
+}) => {
+  // Mounts only once the cart has resolved a required lock-in, so "after the
+  // page loads" is measured from here rather than from the bar's own mount:
+  // the ten seconds start when there is actually a hold to offer, and a slow
+  // cart pushes the ribbon later rather than firing it at an empty offer.
+  const [revealed, setRevealed] = React.useState(false);
+  React.useEffect(() => {
+    const t = setTimeout(() => setRevealed(true), LOCK_IN_STRIP_DELAY_MS);
+    return () => clearTimeout(t);
+  }, []);
+
+  const expiry = usePriceExpiryClock(priceValidUntil);
+  // The quote this ribbon offers to freeze has run out. The blank clock was
+  // only the visible half of that — the offer itself is the stale part, and a
+  // live "Hold · ₹999" against a price that no longer stands would be taking
+  // money to freeze nothing. So the whole ribbon stands down and the bar goes
+  // back to its plain state; View Cart still works, and the cart's own reprice
+  // flow is what picks the traveller up from there.
+  //
+  // Read off the clock rather than re-derived: `expiry` is null both when the
+  // cart states no deadline at all and when the one it states has passed, and
+  // only the second of those is a lapse.
+  const quoteLapsed = !!priceValidUntil && !expiry;
+  const holdDays = Math.max(1, Math.round(LOCK_IN_HOLD_HOURS / 24));
+  const feeLabel = `${currencySymbol}${formatCurrencyValue(
+    Math.round(fee),
+    currencyCode,
+  )}`;
+
+  // The quote's deadline, sat beside Kaira's byline under the sentence. Null
+  // while the cart states no `price_valid_until`, or once it has run out — the
+  // ribbon then makes its case without a clock rather than showing 00:00:00,
+  // which would argue against taking the offer it is making.
+  const expiryClock = expiry ? (
+    // The label sits back and the digits come forward — it is the number that
+    // is moving, and setting both at one weight made the whole thing read as a
+    // caption. `tabular-nums` so the seconds tick without the row jittering.
+    <span className="font-mono text-[9.5px] leading-[11px] tracking-[0.1em] text-[#7C8698] whitespace-nowrap">
+      EXPIRES IN{" "}
+      <span className="text-white/90 tabular-nums">{expiry}</span>
+    </span>
+  ) : null;
+
+  if (quoteLapsed) return null;
+
+  return (
+    <div
+      // Negative margins cancel the bar's own padding so the ribbon runs edge
+      // to edge and caps the bar — the bar drops its own top hairline while
+      // this is up, so the ribbon is the top edge.
+      //
+      // `auto`, not a pixel constant: the phone lays the sentence out over two
+      // lines and desktop over one, and a fixed height would clip one of them.
+      // Switched instantly either way, never transitioned — see the header.
+      // The corners live on the BAND, not on this clip box. Rounding only the
+      // box meant the band squared off against it on the way up: mid-slide its
+      // own top edge is below the box's, so the clip had nothing to round and
+      // the ribbon rose as a hard rectangle, snapping to rounded only once it
+      // landed. Rounded on the band it is rounded the whole way. The clip is
+      // still what hides it at rest, and is rounded to match so nothing of the
+      // band can paint outside the corners once it has arrived.
+      className="overflow-hidden rounded-t-[12px] -mx-[24px] max-ph:-mx-[10px] -mt-2 mb-1"
+      style={{ height: revealed ? "auto" : 0 }}
+      aria-hidden={!revealed}
+    >
+      <div
+        // Midnight, not the brand's `primary-indigo` (#07213A) — that is a blue
+        // navy and the design's ribbon is near-black. #0B1220 is the ink the
+        // rest of the checkout already sets its darkest type in.
+        className="ttw-hold-ribbon flex items-center gap-[10px] max-ph:gap-[9px] rounded-t-[12px] bg-[#0B1220] px-[20px] max-ph:px-[10px] py-[10px] max-ph:py-[8px] transition-transform duration-500 ease-out motion-reduce:transition-none"
+        style={{ transform: revealed ? "translateY(0)" : "translateY(100%)" }}
+      >
+        {/* Kaira, ringed in the brand yellow so she reads as the speaker rather
+            than as a stray thumbnail on a dark band. `margin`/`maxWidth` are
+            set inline because styles.css and Bootstrap both carry bare `img`
+            rules that otherwise break an <img> used as a flex child. */}
+        <span className="shrink-0 grid h-[30px] w-[30px] place-items-center overflow-hidden rounded-full border border-[#F7E700]/70 bg-[#16202F]">
+          <img
+            src="/KairaInsta.png"
+            alt=""
+            width={30}
+            height={30}
+            style={{
+              margin: 0,
+              maxWidth: "none",
+              width: 30,
+              height: 30,
+              objectFit: "cover",
+              borderRadius: "50%",
+            }}
+          />
+        </span>
+
+        {/* ── Phone: sentence over the clock, the byline dropped ────────────── */}
+        <div className="ph-up:hidden min-w-0 flex-1">
+          <div className="font-inter text-[12px] font-600 leading-[14px] text-white">
+            Prices are dynamic but I can hold them for you.
+          </div>
+          {/* Hard against the sentence, as the design has it. `flex` is doing
+              the work, not a margin: as a plain block this div laid the clock
+              out in a LINE BOX, and a line box is at least as tall as the
+              block's own strut — inherited here from the app's ~16px/1.5 body
+              metrics, so ~24px of it around a 9.5px span. The clock's own
+              `leading` could not touch that; the strut is the div's, not the
+              span's. A flex container has no line boxes at all, so the row is
+              exactly the clock's height and what is left between the two is
+              half-leading measured in their own type sizes — which left the two
+              almost touching, hence the 3px put back deliberately. With the
+              strut gone this margin is the whole gap and nothing else, so it
+              can be read off the design instead of guessed at. */}
+          {/* <div className="mt-[3px] flex">{expiryClock}</div> */}
+        </div>
+
+        {/* ── Desktop ───────────────────────────────────────────────────────
+            The design's row — sentence, byline, clock, button — wants about
+            1080px, and this bar is the itinerary panel at `md:w-[48%]`, so it
+            often has less. `flex-wrap` decides what happens then, off the real
+            text rather than a guessed breakpoint: flex breaks lines by each
+            item's MAX-CONTENT width, so the clock stays on the row while the
+            sentence's full single line plus the clock still fit, and drops to
+            the next line the moment they do not — which is the rule by eye
+            ("same row if there is room, next line if not") expressed exactly.
+            No resize listener either, on a bar two ResizeObservers already
+            watch.
+
+            The sentence and the Hold button never move. The byline is the one
+            piece that hides outright, since the portrait beside it already
+            says whose voice this is — see `.ttw-hold-byline` in globals.css.
+
+            `min-w-0` so a genuinely narrow panel wraps the sentence itself
+            rather than shoving the button off the bar. */}
+        <div className="max-ph:hidden min-w-0 flex-1 flex flex-wrap items-baseline gap-x-3 gap-y-[3px]">
+          {/* `grow` on the SENTENCE is what right-aligns the clock, rather than
+              anything on the clock itself. When both share a line the sentence
+              swells to fill the gap and the clock ends up against the Hold
+              button, as the design has it; when the sentence is too long to
+              share, it takes the line alone and the clock starts the next one
+              at the left. Growing the sentence cannot misplace the clock the
+              way a spacer or an `ml-auto` can — see the note below. */}
+          <span className="grow font-inter text-[13.5px] font-600 leading-[18px] text-white">
+            Prices change often. I can hold this one for you, for {holdDays}{" "}
+            full days.
+            {/* Her byline, in the bar's own label voice — small caps in mono is
+                how every other label on this bar reads ("Total Cost").
+                Deliberately INSIDE the sentence rather than a flex item beside
+                it: as a sibling it was the growing sentence that pushed it, so
+                it drifted across the bar and came to rest against the clock
+                instead of sitting at the end of the line it belongs to. As
+                inline text it simply follows the last word, wherever that
+                falls. Shown only where the row is wide enough to keep the
+                sentence on one line — see `.ttw-hold-byline` in globals.css. */}
+            <span className="ttw-hold-byline ml-3 font-mono text-[9.5px] font-400 tracking-[0.1em] text-[#7C8698] whitespace-nowrap">
+              KAIRA · YOUR TRIP PLANNER
+            </span>
+          </span>
+          {/* Nothing on the clock does the aligning — deliberately. `ml-auto`
+              right-aligns it on WHICHEVER line it lands, so once it wrapped it
+              hung off the right of line two. A zero-width growing spacer before
+              it fails the same way for a subtler reason: when the sentence is
+              wider than the bar it takes line one alone and the spacer is
+              pushed onto line two WITH the clock, where it grows and shoves it
+              right again. Only the sentence can be trusted to stay on line one,
+              so the sentence is what grows. */}
+          <span>{expiryClock}</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={onHold}
+          // The clip box is `aria-hidden` and zero-height for the first beat,
+          // and a focusable control inside that is the one thing that combination
+          // actually breaks — tab lands on a button nobody can see.
+          tabIndex={revealed ? undefined : -1}
+          // The one control on the ribbon, and the reason it exists. Same
+          // yellow, hover bloom and press as the cart's own hold CTA, so the
+          // two read as the same button in two places.
+          className="shrink-0 flex items-center gap-[6px] rounded-67br bg-primary-yellow px-[14px] max-ph:px-[12px] h-[33px] max-ph:h-[29px] font-inter text-[13px] max-ph:text-[12px] font-bold text-[#0B1220] whitespace-nowrap cursor-pointer transition-all duration-200 ease-out hover:bg-[#FFEE1A] hover:-translate-y-[1px] hover:shadow-[0_10px_22px_-12px_rgba(247,231,0,0.95)] active:translate-y-0 active:bg-[#EFDF00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F7E700]"
+        >
+          <HoldLock size={13} />
+          Hold · {feeLabel}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // Exported so the /trips leaf pages get the real bar rather than a lookalike —
 // they render the same V1 archive layout and need the same fixed price strip.
 export const BottomCTABar = React.memo(
@@ -5232,6 +5923,9 @@ export const BottomCTABar = React.memo(
     popupStyle,
     onConfirm,
     onViewCart,
+    onReviewPay,
+    onHold,
+    tripStartDate,
     onGetInTouch,
     onGetThisTrip,
     onRetryCart,
@@ -5289,7 +5983,11 @@ export const BottomCTABar = React.memo(
 
     if (isDraft) {
       return (
-        <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[47.5%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
+        <div
+          data-bottom-cta-bar
+          style={barStyle}
+          className="z-20 fixed w-full md:w-[47.5%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center"
+        >
           <button
             onClick={onConfirm}
             className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-bold"
@@ -5306,7 +6004,11 @@ export const BottomCTABar = React.memo(
 
     if (isPricingFailedWithEmptyNotes) {
       return (
-        <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between">
+        <div
+          data-bottom-cta-bar
+          style={barStyle}
+          className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between"
+        >
           <p className="text-red-600 ttw-type-body">
             Get in touch to finalize the pricing!
           </p>
@@ -5364,6 +6066,26 @@ export const BottomCTABar = React.memo(
       </span>
     );
 
+    // Lock-in hint. Same derivation as the cart drawer's pay CTA, so the bar
+    // never advertises a hold the cart will not actually offer. Rendered as the
+    // band across the top of the bar, not in the foot line.
+    const lockIn = getLockInState(cart);
+    // Whether the hold ribbon is actually going to paint. There are two ways
+    // the offer goes stale and BOTH have to stand it down, because the ribbon's
+    // Hold button charges immediately:
+    //   • the quote lapsed — `price_valid_until` has passed, so the price it
+    //     promises to freeze no longer stands;
+    //   • the trip departed — the cart behind View Cart has already swapped
+    //     every pay CTA for Update Dates, and a bar still selling a hold beside
+    //     it contradicts it.
+    // The bar also gives up its own top hairline only for a ribbon that is
+    // really there — otherwise these states left it with no top edge at all.
+    const quoteDeadline = parseCartTimestamp(cart?.price_valid_until);
+    const showHoldRibbon =
+      lockIn.required &&
+      !(quoteDeadline && quoteDeadline.getTime() <= Date.now()) &&
+      !tripHasDeparted(tripStartDate);
+
     // The price is what it is because of these bookings, so the count doubles as
     // the door into the Bookings view — it sits directly under the total it
     // explains. Hidden while the Bookings view is already open.
@@ -5402,89 +6124,118 @@ export const BottomCTABar = React.memo(
     // specificity silently loses. Arbitrary values don't collide. 24px is what
     // the bar has always rendered at — keep desktop as-is.
     return (
-      <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-[24px] max-ph:px-[10px] py-2 flex flex-col gap-1">
+      <div
+        data-bottom-cta-bar
+        style={barStyle}
+        // The grey hairline is the bar's separation from the content scrolling
+        // behind it. The hold band does that job itself when it is up, and the
+        // two stacked read as a stray line above it — so the border is dropped
+        // for as long as the band is there.
+        // `rounded-t-[12px]` so the hold ribbon capping it can round its own
+        // top corners without the bar's cornsilk showing square behind them.
+        // Top only — the bar is flush with the bottom of the viewport, so the
+        // design's card corners exist on this edge and nowhere else.
+        className={`z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] rounded-t-[12px] px-[24px] max-ph:px-[10px] py-2 flex flex-col gap-1 ${
+          showHoldRibbon ? "" : "border-t border-slate-100"
+        }`}
+      >
+        {showHoldRibbon && (
+          <LockInHoldStrip
+            fee={lockIn.fee}
+            currencySymbol={currencySymbol}
+            currencyCode={currency?.currency}
+            // How long today's PRICES stand — the clock the ribbon offers to
+            // stop. Not the hold window, which only starts once the fee is paid.
+            priceValidUntil={cart?.price_valid_until}
+            onHold={onHold}
+          />
+        )}
         <div className="flex items-center justify-between">
-        <div className="flex flex-col">
-          {cost !== null ? (
-            <>
-              <span className="font-mono text-[10px] md:text-[11px] font-semibold uppercase tracking-[0.06em] text-[#8A9099]">
-                {perPerson
-                  ? "Per Person"
-                  : cart?.is_estimated_price && cost > 0
-                    ? "Estimated Price"
-                    : "Total Cost"}
-              </span>
-              {/* The bookings count sits in the foot line below, on every
+          <div className="flex flex-col">
+            {cost !== null ? (
+              <>
+                <span className="font-mono text-[10px] md:text-[11px] font-semibold uppercase tracking-[0.06em] text-[#8A9099]">
+                  {perPerson
+                    ? "Per Person"
+                    : cart?.is_estimated_price && cost > 0
+                      ? "Estimated Price"
+                      : "Total Cost"}
+                </span>
+                {/* The bookings count sits in the foot line below, on every
                   breakpoint — see the foot line at the bottom of the bar. */}
-              <span className="font-sans text-[16px] md:text-[21px] font-bold leading-tight text-[#111827] whitespace-nowrap">
-                {currencySymbol}
-                {formatCurrencyValue(Math.round(cost), currency?.currency)}/-
-              </span>
-            </>
-          ) : cart?.error ? (
-            <div className="flex items-center gap-2">
-              <span className="text-[13px] text-[#6E757A]">
-                Couldn&apos;t load price.
-              </span>
-              {/* <button
+                <span className="font-sans text-[16px] md:text-[21px] font-bold leading-tight text-[#111827] whitespace-nowrap">
+                  {currencySymbol}
+                  {formatCurrencyValue(Math.round(cost), currency?.currency)}/-
+                </span>
+              </>
+            ) : cart?.error ? (
+              <div className="flex items-center gap-2">
+                <span className="text-[13px] text-[#6E757A]">
+                  Couldn&apos;t load price.
+                </span>
+                {/* <button
                 onClick={onRetryCart}
                 className="text-[13px] font-inter font-semibold text-[#AD5BE7] underline"
               >
                 Retry
               </button> */}
-            </div>
-          ) : (
-            <span className="ttw-type-small text-[#6E757A] italic">
-              Calculating price…
-            </span>
-          )}
-        </div>
-        <div className="flex gap-2 md:gap-3 items-center shrink-0">
-          <div
-            style={popupStyle}
-            className="z-50 absolute -top-11 ttw-type-body text-center flex flex-col gap-2 bg-white"
-          >
-            <div className="text-nowrap font-normal text-black ttw-type-body">
-              No Hidden Charges,
-              <br />
-              Includes taxes
-            </div>
+              </div>
+            ) : (
+              // Nothing while the cart is still resolving. The bar arrives
+              // before its price on every load, and a running commentary on
+              // that gap ("Calculating price…") drew the eye to the one part
+              // of the bar with nothing to say — the price simply appears in
+              // this slot the moment the cart lands. The error branch above
+              // still speaks, because that gap never resolves on its own.
+              null
+            )}
           </div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="23"
-            height="30"
-            viewBox="0 0 23 30"
-            fill="none"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            <path
-              d="M11.3333 29.75L1.13333 22.1C0.779167 21.8403 0.501736 21.5097 0.301042 21.1083C0.100347 20.7069 0 20.2819 0 19.8333V2.83333C0 2.05417 0.277431 1.38715 0.832292 0.832292C1.38715 0.277431 2.05417 0 2.83333 0H19.8333C20.6125 0 21.2795 0.277431 21.8344 0.832292C22.3892 1.38715 22.6667 2.05417 22.6667 2.83333V19.8333C22.6667 20.2819 22.5663 20.7069 22.3656 21.1083C22.1649 21.5097 21.8875 21.8403 21.5333 22.1L11.3333 29.75ZM11.3333 26.2083L19.8333 19.8333V2.83333H2.83333V19.8333L11.3333 26.2083ZM9.84583 18.4167L17.85 10.4125L15.8667 8.35833L9.84583 14.3792L6.87083 11.4042L4.81667 13.3875L9.84583 18.4167ZM11.3333 2.83333H2.83333H19.8333H11.3333Z"
-              fill="#AD5BE7"
-            />
-          </svg>
-          {cart?.error ? (
-            <button
-              onClick={onGetInTouch}
-              className="flex items-center gap-2 h-[42px] md:h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[14px] md:text-[15px] font-inter font-bold text-black whitespace-nowrap shrink-0"
+          <div className="flex gap-2 md:gap-3 items-center shrink-0">
+            <div
+              style={popupStyle}
+              className="z-50 absolute -top-11 ttw-type-body text-center flex flex-col gap-2 bg-white"
             >
-              Get in touch!
-            </button>
-          ) : (
-            <button
-              onClick={onViewCart}
-              className="flex items-center gap-2 h-[42px] md:h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[14px] md:text-[15px] font-inter font-bold text-black whitespace-nowrap shrink-0"
+              <div className="text-nowrap font-normal text-black ttw-type-body">
+                No Hidden Charges,
+                <br />
+                Includes taxes
+              </div>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="23"
+              height="30"
+              viewBox="0 0 23 30"
+              fill="none"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
             >
-              View Cart
-              {countCartItems > 0 && (
-                <span className="bg-[#111827] text-white text-[12px] font-bold rounded-full min-w-[24px] h-[22px] px-1.5 flex items-center justify-center">
-                  {countCartItems}
-                </span>
-              )}
-            </button>
-          )}
-        </div>
+              <path
+                d="M11.3333 29.75L1.13333 22.1C0.779167 21.8403 0.501736 21.5097 0.301042 21.1083C0.100347 20.7069 0 20.2819 0 19.8333V2.83333C0 2.05417 0.277431 1.38715 0.832292 0.832292C1.38715 0.277431 2.05417 0 2.83333 0H19.8333C20.6125 0 21.2795 0.277431 21.8344 0.832292C22.3892 1.38715 22.6667 2.05417 22.6667 2.83333V19.8333C22.6667 20.2819 22.5663 20.7069 22.3656 21.1083C22.1649 21.5097 21.8875 21.8403 21.5333 22.1L11.3333 29.75ZM11.3333 26.2083L19.8333 19.8333V2.83333H2.83333V19.8333L11.3333 26.2083ZM9.84583 18.4167L17.85 10.4125L15.8667 8.35833L9.84583 14.3792L6.87083 11.4042L4.81667 13.3875L9.84583 18.4167ZM11.3333 2.83333H2.83333H19.8333H11.3333Z"
+                fill="#AD5BE7"
+              />
+            </svg>
+            {cart?.error ? (
+              <button
+                onClick={onGetInTouch}
+                className="flex items-center gap-2 h-[42px] md:h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[14px] md:text-[15px] font-inter font-bold text-black whitespace-nowrap shrink-0"
+              >
+                Get in touch!
+              </button>
+            ) : (
+              <button
+                onClick={onReviewPay || onViewCart}
+                className="flex items-center gap-2 h-[42px] md:h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[14px] md:text-[15px] font-inter font-bold text-black whitespace-nowrap shrink-0"
+              >
+                View Cart
+                {countCartItems > 0 && (
+                  <span className="bg-[#111827] text-white text-[12px] font-bold rounded-full min-w-[24px] h-[22px] px-1.5 flex items-center justify-center">
+                    {countCartItems}
+                  </span>
+                )}
+              </button>
+            )}
+          </div>
         </div>
         {/* Foot line: the bookings count under the price it explains, and the
             coupon hint under the CTA it applies to. justify-end (not
@@ -5534,7 +6285,11 @@ export const MobileHeaderMenu = React.memo(
     onClose,
   }: {
     onNewChat: () => void;
-    onThreadSelect: (id: string, sessionId?: string, customerName?: string) => void;
+    onThreadSelect: (
+      id: string,
+      sessionId?: string,
+      customerName?: string,
+    ) => void;
     activeThreadId: string | null;
     isComplete?: boolean;
     onLoginSuccess?: () => void | Promise<void>;
@@ -5816,78 +6571,78 @@ export const MobileHeaderMenu = React.memo(
 
           {/* New chat — solid ink circle, matching the desktop collapsed rail. */}
           {!onClose && (
-          <button
-            onClick={onNewChat}
-            className="kaira-newchat-icon-btn is-sm"
-            aria-label="New chat"
-          >
-            <KairaPlusIcon size={18} />
-          </button>
+            <button
+              onClick={onNewChat}
+              className="kaira-newchat-icon-btn is-sm"
+              aria-label="New chat"
+            >
+              <KairaPlusIcon size={18} />
+            </button>
           )}
 
           {/* Profile avatar */}
           {!onClose && (
-          <div ref={profileRef} className="relative">
-            <button
-              onClick={() => setProfileOpen((v) => !v)}
-              className="kaira-avatar"
-              style={avatarColor ? { background: avatarColor } : undefined}
-              aria-label="Profile"
-            >
-              {avatarSrc ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={optimizedMediaUrl(avatarSrc, { width: 96 })}
-                  alt={name || "Profile"}
-                  className="w-full h-full object-cover"
-                />
-              ) : showColorAvatar ? (
-                getUserInitial(name)
-              ) : (
-                initials
-              )}
-            </button>
-            {profileOpen && (
-              <div
-                className="kaira-scope kaira-menu absolute right-0 top-11 z-[9999]"
-                style={{ minWidth: 190 }}
+            <div ref={profileRef} className="relative">
+              <button
+                onClick={() => setProfileOpen((v) => !v)}
+                className="kaira-avatar"
+                style={avatarColor ? { background: avatarColor } : undefined}
+                aria-label="Profile"
               >
-                {!token ? (
-                  <button
-                    className="kaira-menu-item"
-                    onClick={() => {
-                      setProfileOpen(false);
-                      setShowLogin(true);
-                    }}
-                  >
-                    <KairaUserIcon className="kaira-menu-icon" />
-                    Login / Signup
-                  </button>
+                {avatarSrc ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={optimizedMediaUrl(avatarSrc, { width: 96 })}
+                    alt={name || "Profile"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : showColorAvatar ? (
+                  getUserInitial(name)
                 ) : (
-                  <>
-                    <a href="/dashboard" className="kaira-menu-item">
-                      <span className="kaira-trips-tile">
-                        <KairaSuitcaseIcon />
-                      </span>
-                      My trips
-                      {tripsCount !== null && (
-                        <span className="kaira-count">{tripsCount}</span>
-                      )}
-                    </a>
-                    <button
-                      className="kaira-menu-item is-logout"
-                      onClick={handleLogout}
-                    >
-                      <span className="kaira-logout-tile">
-                        <KairaLogoutIcon size={15} />
-                      </span>
-                      Log out
-                    </button>
-                  </>
+                  initials
                 )}
-              </div>
-            )}
-          </div>
+              </button>
+              {profileOpen && (
+                <div
+                  className="kaira-scope kaira-menu absolute right-0 top-11 z-[9999]"
+                  style={{ minWidth: 190 }}
+                >
+                  {!token ? (
+                    <button
+                      className="kaira-menu-item"
+                      onClick={() => {
+                        setProfileOpen(false);
+                        setShowLogin(true);
+                      }}
+                    >
+                      <KairaUserIcon className="kaira-menu-icon" />
+                      Login / Signup
+                    </button>
+                  ) : (
+                    <>
+                      <a href="/dashboard" className="kaira-menu-item">
+                        <span className="kaira-trips-tile">
+                          <KairaSuitcaseIcon />
+                        </span>
+                        My trips
+                        {tripsCount !== null && (
+                          <span className="kaira-count">{tripsCount}</span>
+                        )}
+                      </a>
+                      <button
+                        className="kaira-menu-item is-logout"
+                        onClick={handleLogout}
+                      >
+                        <span className="kaira-logout-tile">
+                          <KairaLogoutIcon size={15} />
+                        </span>
+                        Log out
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           )}
 
           {/* Close — black circle out to whatever this chat produced: the
@@ -5946,7 +6701,11 @@ const MobileHeader = React.memo(
     onLoginSuccess,
   }: {
     onNewChat: () => void;
-    onThreadSelect: (id: string, sessionId?: string, customerName?: string) => void;
+    onThreadSelect: (
+      id: string,
+      sessionId?: string,
+      customerName?: string,
+    ) => void;
     activeThreadId: string | null;
     isComplete?: boolean;
     onLoginSuccess?: () => void | Promise<void>;
@@ -5984,7 +6743,11 @@ interface MobileLayoutProps {
   mobilePanel: MobilePanel;
   setMobilePanel: (p: MobilePanel) => void;
   onNewChat: () => void;
-  onThreadSelect: (id: string, sessionId?: string, customerName?: string) => void;
+  onThreadSelect: (
+    id: string,
+    sessionId?: string,
+    customerName?: string,
+  ) => void;
   activeThreadId: string | null;
   onRegisterTabSwitch: (fn: ((tab: string) => void) | null) => void;
   mapContent: React.ReactNode;
@@ -6033,7 +6796,9 @@ const MobileLayout = React.memo(
     // the chat tab first while the async thread restore resolves. Chat-only
     // threads (no itinerary) are switched back to chat by the restore flow.
     const [activeTab, setActiveTab] = React.useState<MobileTab>(
-      mobilePanel === "itinerary" || hasItineraryActivity ? "itinerary" : "chat",
+      mobilePanel === "itinerary" || hasItineraryActivity
+        ? "itinerary"
+        : "chat",
     );
     const hasUnread = (useSelector as any)(
       (s: any) => !!s.chatState?.unreadMessages,
@@ -6069,7 +6834,11 @@ const MobileLayout = React.memo(
     // the CHAT tab too.
     React.useEffect(() => {
       setMobilePanel(
-        activeTab === "chat" ? "chat" : activeTab === "map" ? "map" : "itinerary",
+        activeTab === "chat"
+          ? "chat"
+          : activeTab === "map"
+            ? "map"
+            : "itinerary",
       );
     }, [activeTab, setMobilePanel]);
 
@@ -6408,10 +7177,10 @@ const MobileLayout = React.memo(
               // cannot.
               className={`overflow-y-auto bg-white ${
                 routeSheet
-                  // No rounded top and no inset: the sheet covers the screen
-                  // edge to edge, so nothing behind it shows through a corner
-                  // or a sliver at the top.
-                  ? "fixed inset-0 ttw-sheet-up"
+                  ? // No rounded top and no inset: the sheet covers the screen
+                    // edge to edge, so nothing behind it shows through a corner
+                    // or a sliver at the top.
+                    "fixed inset-0 ttw-sheet-up"
                   : "absolute inset-x-0 top-0"
               }`}
               style={{
@@ -6470,7 +7239,15 @@ const MobileLayout = React.memo(
                     onClick={() => handleTabClick("itinerary")}
                     className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full bg-[#0b1220] text-white"
                   >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                    >
                       <path d="M18 6 6 18M6 6l12 12" />
                     </svg>
                   </button>
@@ -6514,7 +7291,13 @@ const MobileLayout = React.memo(
           ["itinerary", "routes", "bookings"].includes(activeTab) && (
             <div
               className="fixed z-[100] flex flex-col items-end gap-2"
-              style={{ bottom: 80, right: 16 }}
+              // Measured off the bar rather than the old hardcoded 80px. The
+              // cart bar changes height — one-line confirm, steps loader,
+              // two-line cart row, and now the hold ribbon on top of it — and
+              // 80px was short enough that the ribbon put the bar straight
+              // under this button. Same `ctaBarHeight + 12` the Back to
+              // itinerary pill parks itself with.
+              style={{ bottom: ctaBarHeight + 12, right: 16 }}
             >
               {/* Chat Banner */}
               {showChatBanner && (
@@ -6537,9 +7320,7 @@ const MobileLayout = React.memo(
                       <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                   </button>
-                  <p className="ttw-type-body pr-1 mb-0">
-                    {kairaBannerText}
-                  </p>
+                  <p className="ttw-type-body pr-1 mb-0">{kairaBannerText}</p>
                   {/* Speech bubble arrow */}
                   <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]" />
                 </div>
@@ -6571,9 +7352,7 @@ const MobileLayout = React.memo(
 
         {/* ── Mobile chat pill — "View Map" on first focus_route, "View Itinerary"
              on first P2 finalized transition. Shown for 10s above the input. ── */}
-        {
-        mobileEffectPopup && activeTab === "chat" && 
-        (
+        {mobileEffectPopup && activeTab === "chat" && (
           <div
             className="fixed z-[300] left-0 right-0 flex justify-center px-4"
             style={{ bottom: 150 }}
@@ -6650,9 +7429,7 @@ const MobileLayout = React.memo(
                     <line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
                 </button>
-                <p className="ttw-type-body pr-3 mb-0">
-                  {kairaBannerText}
-                </p>
+                <p className="ttw-type-body pr-3 mb-0">{kairaBannerText}</p>
                 <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]" />
               </div>
             )}
