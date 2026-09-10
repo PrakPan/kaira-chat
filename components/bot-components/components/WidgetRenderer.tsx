@@ -5346,6 +5346,84 @@ function PaymentCard({
     symbol,
   )}`;
 
+  // ── Live money, not the snapshot the message was emitted with ─────────────
+  // The widget node is frozen at the moment the server sent it: it states the
+  // Total / Paid / Due of a cart as it stood then, and that message goes on
+  // sitting in the transcript while the trip changes underneath it. A hold gets
+  // paid, a booking is added, a coupon lands, and the card is still quoting the
+  // old figures — asking for a balance that is no longer owed, or offering a
+  // hold on a price that has moved.
+  //
+  // So the tiles read the cart in redux, which is the same object the cart bar
+  // and both carts render and which every surface that touches money already
+  // refreshes (ItineraryContainer's polling, the drawer after a payment, the
+  // coupon sheets). `useSelector` re-renders this card on each of those, so the
+  // widget moves with them instead of drifting from them.
+  //
+  // The server's own numbers stay as the fallback, for a cart that has not
+  // loaded yet, one that errored, and the `{}` a thread switch leaves behind:
+  // the message keeps saying what it said rather than blanking or zeroing.
+  const liveBalanceDue = Number(cart?.total_payable_amount);
+  const hasLiveCart = !!cart && !cart.error && Number.isFinite(liveBalanceDue);
+
+  // `discounted_cost` is the same "Total Cost" the bottom cart bar prints and
+  // the same gross the hold card freezes, so the widget cannot name a third
+  // total for one trip. Deliberately NOT the bar's per-person variant: these
+  // three tiles are a payment summary, and every figure in it has to be on the
+  // basis the gateway will actually charge.
+  const liveTotalCost = Number(cart?.discounted_cost);
+
+  // What has actually been collected. `lock_in_fee_paid` can land on the cart
+  // before `amount_paid` moves, so a hold paid minutes ago would otherwise
+  // still read as "AMOUNT PAID ₹0.00" here — the one update the traveller is
+  // most likely to be looking for. Taking the larger of the two states the fee
+  // as soon as either knows about it, and never adds it on twice once
+  // `amount_paid` catches up. Same reconciliation the drawer's PRICE DETAILS
+  // does when it splits the lock-in out of the amount paid.
+  const liveAmountPaid = Math.max(
+    Number(cart?.amount_paid) || 0,
+    lockIn.paidAmount || 0,
+  );
+
+  // Which live figure a server row is stating, by its own label. The balance is
+  // READ off `total_payable_amount` and never re-derived from the other two:
+  // that field is the only one that knows what the backend will charge, and a
+  // card that subtracts what it thinks was paid from what it thinks it costs is
+  // how it ends up asking for money the cart does not want. Same label order as
+  // `accentFor` below, so the figure and the colour can never disagree about
+  // which row this is.
+  // The hold's deadline as the cart card words it, and pinned to en-IN for the
+  // same reason: every figure beside it is rupees, and a US-ordered "Sep 13"
+  // next to "₹1,52,192.98" reads like two different documents. Absent on carts
+  // whose paid flag carries no `lock_in_fee_paid_at` behind it, where there is
+  // no window to name — the line then says the price is held without dating it,
+  // rather than printing an invented date.
+  const holdUntilLabel = lockIn.holdUntil
+    ? lockIn.holdUntil.toLocaleDateString("en-IN", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+      })
+    : null;
+
+  // What was actually collected for the hold, which is not always the current
+  // `lock_in_fee` — the fee is per itinerary and can be re-set after a hold was
+  // taken at the old one.
+  const holdPaidLabel = `${symbol}${formatPaymentAmount(
+    String(lockIn.paidAmount || lockIn.fee),
+    symbol,
+  )}`;
+
+  const liveAmountFor = (label: string): number | null => {
+    if (!hasLiveCart) return null;
+    const l = label.toLowerCase();
+    if (l.includes("due") || l.includes("balance")) return liveBalanceDue;
+    if (l.includes("paid")) return liveAmountPaid;
+    if (l.includes("total") || l.includes("cost"))
+      return Number.isFinite(liveTotalCost) ? liveTotalCost : null;
+    return null;
+  };
+
   const titleNode = findNodesByType(node, "Title")[0];
   const title = ((titleNode?.value as string) ?? "Complete Your Booking").trim();
   const buttonLabel = (button.label as string) ?? "Make Payment";
@@ -5445,8 +5523,20 @@ function PaymentCard({
         }}
       >
         {rows.map((r, i) => {
+          const live = liveAmountFor(r.label);
           const parsed = splitCurrencyAmount(r.amount);
-          const formattedAmount = formatPaymentAmount(parsed.amount, symbol);
+          // A live figure prints to the precision the server's own row used, so
+          // a cart landing mid-conversation cannot flip the tiles from "0.00"
+          // to "0" — three tiles side by side at two different precisions read
+          // as three different kinds of number.
+          const decimals = Math.min(
+            (parsed.amount.split(".")[1] || "").length,
+            2,
+          );
+          const formattedAmount =
+            live === null
+              ? formatPaymentAmount(parsed.amount, symbol)
+              : formatPaymentAmount(live.toFixed(decimals), symbol);
           return (
             <div
               key={i}
@@ -5637,6 +5727,94 @@ function PaymentCard({
               </svg>
               Hold · {holdFeeLabel}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── The hold, once it has been taken ─────────────────────────────────
+          The offer strip above disappears the moment the fee lands, because
+          `lockIn.required` goes false — and on its own that reads as the offer
+          being WITHDRAWN rather than accepted. So the same slot states what
+          happened instead: the price is held, and the fee is not a charge on
+          top of the trip but a part payment of it, which is the thing a
+          traveller asks about first.
+
+          Only while the window is actually open. Once it has run out the hold
+          is no longer a promise this card can make, and the cart drawer's own
+          expired-hold card is where that gets explained, with the balance and
+          the pay CTA beside it. */}
+      {lockIn.paid && !lockIn.holdExpired && (
+        <div style={{ padding: "0 18px 16px" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              background: "#ffffff",
+              border: "1px solid #FDE68A",
+              borderRadius: 12,
+              padding: "12px 14px",
+              boxSizing: "border-box",
+            }}
+          >
+            <span
+              aria-hidden
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 24,
+                height: 24,
+                borderRadius: 999,
+                background: "#FDE68A",
+                color: "#92400E",
+                flexShrink: 0,
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M8 10V7.5a4 4 0 0 1 8 0V10"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                />
+                <rect
+                  x="4.5"
+                  y="10"
+                  width="15"
+                  height="10.5"
+                  rx="2.2"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            <div style={{ minWidth: 0 }}>
+              <div
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "#0b1220",
+                  lineHeight: 1.35,
+                }}
+              >
+                {holdUntilLabel
+                  ? `This price is held till ${holdUntilLabel}.`
+                  : "This price is held."}
+              </div>
+              <div
+                style={{
+                  marginTop: 3,
+                  fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                  fontSize: 10,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "#8A7B4A",
+                  lineHeight: 1.2,
+                }}
+              >
+                {holdPaidLabel} paid · Adjusts against your trip
+              </div>
+            </div>
           </div>
         </div>
       )}
