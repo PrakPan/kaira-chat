@@ -2607,6 +2607,7 @@ const Details = (props) => {
         convertDFormat={convertDFormat}
         showPhoneView={true}
         handleCloseDrawer={handleCloseDrawer}
+        clearDatesOnOpen
         cartValue={true}
         ctaClassName="w-full text-center px-6 py-2"
       />
@@ -2823,6 +2824,7 @@ const Details = (props) => {
                                 convertDFormat={convertDFormat}
                                 showPhoneView={true}
                                 handleCloseDrawer={handleCloseDrawer}
+                                clearDatesOnOpen
                                 cartValue={true}
                                 ctaClassName="max-ph:w-full text-center"
                               />

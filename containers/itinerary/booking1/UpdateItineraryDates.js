@@ -280,16 +280,26 @@ const UpdateItineraryDates = ({
   // CTA (the cart's pay-button slots) instead of the inline chip. Applied to
   // the clickable element itself so the whole button stays tappable.
   ctaClassName = "",
+  // Opens the calendar with nothing selected instead of pre-filling the
+  // itinerary's existing range. Used where the whole point of the popup is to
+  // pick a new range (the cart's past-dates flow) — seeing the old dates
+  // already highlighted reads as "these are still your dates" and the first
+  // tap then edits that range instead of starting a fresh one.
+  clearDatesOnOpen = false,
   setShowSettings,
   isHotelsPresent,
   setIsHotelsPresent,
 }) => {
   const dispatch = useDispatch();
   const [startDate, setStartDate] = useState(
-    itinerary?.start_date ? moment(itinerary.start_date) : null,
+    clearDatesOnOpen || !itinerary?.start_date
+      ? null
+      : moment(itinerary.start_date),
   );
   const [endDate, setEndDate] = useState(
-    itinerary?.end_date ? moment(itinerary.end_date) : null,
+    clearDatesOnOpen || !itinerary?.end_date
+      ? null
+      : moment(itinerary.end_date),
   );
   const ItineraryId = useSelector((state) => state.ItineraryId);
   const [isLoading, setIsLoading] = useState(false);
@@ -316,11 +326,36 @@ const UpdateItineraryDates = ({
   };
 
   const [momentStartDate, setMomentStartDate] = useState(
-    itinerary?.start_date ? moment(itinerary.start_date) : null,
+    clearDatesOnOpen || !itinerary?.start_date
+      ? null
+      : moment(itinerary.start_date),
   );
   const [momentEndDate, setMomentEndDate] = useState(
-    itinerary?.end_date ? moment(itinerary.end_date) : null,
+    clearDatesOnOpen || !itinerary?.end_date
+      ? null
+      : moment(itinerary.end_date),
   );
+
+  // What the calendar opens on. When `clearDatesOnOpen` is set, nothing is
+  // preselected and the duration counter starts at zero, so the user reselects
+  // both ends of the range.
+  const calendarValueStart =
+    clearDatesOnOpen || !itinerary?.start_date
+      ? null
+      : new Date(itinerary.start_date);
+  const calendarValueEnd =
+    clearDatesOnOpen || !itinerary?.end_date
+      ? null
+      : new Date(itinerary.end_date);
+  const calendarDate = clearDatesOnOpen
+    ? {
+        type: "fixed",
+        start_date: null,
+        end_date: null,
+        month: "",
+        duration: 0,
+      }
+    : date;
   const [showCalendar, setShowCalendar] = useState(false);
   const [isEditing, setIsEditing] = useState(autoOpenCalendar);
 
@@ -392,6 +427,14 @@ const UpdateItineraryDates = ({
           setIsHotelsPresent(false);
         });
       setShowSettings(true);
+    } else if (clearDatesOnOpen) {
+      setStartDate(null);
+      setEndDate(null);
+      setMomentStartDate(null);
+      setMomentEndDate(null);
+      setShowCalendar(true);
+      setIsEditing(true);
+      setFocusedInput("startDate");
     } else {
       setStartDate(formatDateForInput(itinerary?.start_date));
       setEndDate(formatDateForInput(itinerary?.end_date));
@@ -639,14 +682,14 @@ const UpdateItineraryDates = ({
               paddingY="20px"
             >
               <AirbnbCalendar
-                valueStart={new Date(itinerary?.start_date)}
-                valueEnd={new Date(itinerary?.end_date)}
+                valueStart={calendarValueStart}
+                valueEnd={calendarValueEnd}
                 onChangeDate={handleOnCalenderApplyDates}
                 isLoading={isLoading}
                 setShowCalendar={() => closeModal(false)}
                 dateType={dateType}
                 setDateType={setDateType}
-                date={date}
+                date={calendarDate}
                 isNotForm={true}
                 duration={duration}
               />
@@ -664,15 +707,15 @@ const UpdateItineraryDates = ({
               showPhoneView={true}
             >
               <AirbnbCalendarMobile
-                valueStart={new Date(itinerary?.start_date)}
-                valueEnd={new Date(itinerary?.end_date)}
+                valueStart={calendarValueStart}
+                valueEnd={calendarValueEnd}
                 onChangeDate={handleOnCalenderApplyDates}
                 setShowCalendar={() => closeModal(false)}
                 setDateType={setDateType}
                 isLoading={isLoading}
                 dateType={dateType}
                 duration={duration}
-                date={date}
+                date={calendarDate}
                 isNotForm={true}
               />
             </ModalWithBackdrop>
@@ -686,14 +729,14 @@ const UpdateItineraryDates = ({
               paddingY="20px"
             >
               <AirbnbCalendarMobile
-                valueStart={new Date(itinerary?.start_date)}
-                valueEnd={new Date(itinerary?.end_date)}
+                valueStart={calendarValueStart}
+                valueEnd={calendarValueEnd}
                 onChangeDate={handleOnCalenderApplyDates}
                 setShowCalendar={() => closeModal(false)}
                 setDateType={setDateType}
                 dateType={dateType}
                 duration={duration}
-                date={date}
+                date={calendarDate}
                 isNotForm={true}
               />
             </BottomModal>
