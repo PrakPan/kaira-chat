@@ -2688,7 +2688,7 @@ export default function BotApp({
           // restoreItineraryDirectly has already cleared it and
           // ItineraryContainer's polling may race ahead and call
           // getPaymentInfo — wiping again would clobber that fetch and
-          // leave the CTA stuck on "Calculating price…" until the user
+          // leave the bar with no price on it at all until the user
           // reopens the cart. On thread switch, ItineraryContainer
           // remounts and its mount effect dispatches pricing_status =
           // PENDING, so the stale cart isn't visible during the gap.
@@ -5608,15 +5608,22 @@ const ItineraryStepsLoader = ({
 // it to the planner the traveller has been talking to all session is what makes
 // it advice rather than a upsell banner.
 //
-// It slides up out of the bar a beat after the bar has settled. Only the
-// transform animates: the clip wrapper's height is switched, not transitioned,
-// because two ResizeObservers watch this bar (to size the scroll pane above it
-// and to park the "Back to itinerary" pill) and a transitioned height would
-// re-measure and re-render the tree every frame. The switch is invisible — at
-// rest the band is parked a full height below the clip box, and `translateY`
-// is a percentage of the band's own height, so nothing here needs a hardcoded
-// pixel height to animate correctly at either breakpoint.
-const LOCK_IN_STRIP_DELAY_MS = 450;
+// It slides up out of the bar ten seconds in, not on arrival. The traveller
+// came to read the trip, and an offer thrown at them in the first beat is an
+// interruption of the thing they opened the page for; by ten seconds they have
+// scrolled the itinerary and the prices it quotes are what they are weighing,
+// which is the moment holding one is worth being asked about. One constant for
+// both breakpoints — the bar and this ribbon are a single component at every
+// width, so desktop and phone make the offer on the same clock.
+//
+// Only the transform animates: the clip wrapper's height is switched, not
+// transitioned, because two ResizeObservers watch this bar (to size the scroll
+// pane above it and to park the "Back to itinerary" pill) and a transitioned
+// height would re-measure and re-render the tree every frame. The switch is
+// invisible: at rest the band is parked a full height below the clip box, and
+// `translateY` is a percentage of the band's own height, so nothing here needs
+// a hardcoded pixel height to animate correctly at either breakpoint.
+const LOCK_IN_STRIP_DELAY_MS = 10_000;
 
 // The trip has already departed. Mirrors CartSheet's `tripHasStarted` and the
 // desktop cart's `isItineraryInFuture` — the same test all three have to make,
@@ -5712,7 +5719,9 @@ const LockInHoldStrip = ({
   onHold?: () => void;
 }) => {
   // Mounts only once the cart has resolved a required lock-in, so "after the
-  // page loads" is measured from here rather than from the bar's own mount.
+  // page loads" is measured from here rather than from the bar's own mount:
+  // the ten seconds start when there is actually a hold to offer, and a slow
+  // cart pushes the ribbon later rather than firing it at an empty offer.
   const [revealed, setRevealed] = React.useState(false);
   React.useEffect(() => {
     const t = setTimeout(() => setRevealed(true), LOCK_IN_STRIP_DELAY_MS);
@@ -5804,7 +5813,7 @@ const LockInHoldStrip = ({
         {/* ── Phone: sentence over the clock, the byline dropped ────────────── */}
         <div className="ph-up:hidden min-w-0 flex-1">
           <div className="font-inter text-[12px] font-600 leading-[14px] text-white">
-            Prices are dynamic but i can hold them for you.
+            Prices are dynamic but I can hold them for you.
           </div>
           {/* Hard against the sentence, as the design has it. `flex` is doing
               the work, not a margin: as a plain block this div laid the clock
@@ -6172,9 +6181,13 @@ export const BottomCTABar = React.memo(
               </button> */}
               </div>
             ) : (
-              <span className="ttw-type-small text-[#6E757A] italic">
-                Calculating price…
-              </span>
+              // Nothing while the cart is still resolving. The bar arrives
+              // before its price on every load, and a running commentary on
+              // that gap ("Calculating price…") drew the eye to the one part
+              // of the bar with nothing to say — the price simply appears in
+              // this slot the moment the cart lands. The error branch above
+              // still speaks, because that gap never resolves on its own.
+              null
             )}
           </div>
           <div className="flex gap-2 md:gap-3 items-center shrink-0">

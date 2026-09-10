@@ -1530,7 +1530,7 @@ export const LockInNotice = ({
         </div>
 
         <div className="mt-xs text-md-lg font-700 leading-xl-sm text-[#0B1220]">
-          Done this price is{" "}
+          Done. This price is{" "}
           <span className="font-serif font-400 italic text-[#6E757A]">
             yours.
           </span>
@@ -1539,7 +1539,7 @@ export const LockInNotice = ({
         <div className="mt-xs text-sm-md font-400 leading-lg text-text-spacegrey">
           I&apos;ve frozen {money(frozenTotal)}
           {holdDateLabel ? ` till ${holdDateLabel}` : ""}. Chat, tweak, or sleep
-          on it the price won&apos;t move. Your {money(lockInPaidAmount)}{" "}
+          on it. The price won&apos;t move. Your {money(lockInPaidAmount)}{" "}
           adjusts when you book.
         </div>
 
@@ -1597,15 +1597,15 @@ export const LockInNotice = ({
       </div>
 
       <div className="mt-sm text-sm-md font-400 leading-lg text-text-spacegrey">
-        {money(lockInFee)} freezes this trip for {HOLD_DAYS} days and it
+        {money(lockInFee)} freezes this trip for {HOLD_DAYS} days, and it
         adjusts against your trip, so you lose nothing.
       </div>
 
       <div className="mt-md flex flex-col gap-sm">
         <HoldBenefit icon={LuClock4}>
           Price locked till{" "}
-          <span className="font-600 text-[#0B1220]">{holdDateLabel}</span> {" "}
-          {HOLD_DAYS} full days, not 24 hours
+          <span className="font-600 text-[#0B1220]">{holdDateLabel}</span>{" "}
+          ({HOLD_DAYS} full days, not 24 hours)
         </HoldBenefit>
         <HoldBenefit icon={LuMessageCircle}>
           Unlimited itinerary changes &amp; chats with Kaira
@@ -1614,7 +1614,7 @@ export const LockInNotice = ({
           A human travel expert on WhatsApp, whenever you want
         </HoldBenefit>
         <HoldBenefit icon={LuShieldCheck}>
-          Best price guarantee if it drops, you pay the lower one
+          Best price guarantee. If it drops, you pay the lower one
         </HoldBenefit>
       </div>
 
@@ -1644,7 +1644,7 @@ export const LockInNotice = ({
         >
           {isPaying && pending === "full"
             ? "Opening payment…"
-            : `or pay in full . ${money(balanceDue)}`}
+            : `or pay in full · ${money(balanceDue)}`}
         </button>
       </div>
     </div>
