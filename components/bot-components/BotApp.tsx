@@ -6320,6 +6320,30 @@ export const BottomCTABar = React.memo(
     kairaHints,
     changeBar,
   }: BottomCTABarProps) => {
+    // Has this bar ever actually carried a price? Opening the page is not an
+    // update: pricing starts PENDING with no cart behind it, and that is the
+    // arrival everyone sees, not work the traveller asked for. The stepped
+    // loader is for repricing, so it waits until a price has been on screen
+    // once — see the pricing branch below.
+    //
+    // The test is the cart's own amount, not `pricingStatus === "SUCCESS"`.
+    // That status flips back and forth during a single load: the status
+    // endpoint reports PRICING SUCCESS, then ItineraryContainer's mount effect
+    // re-dispatches PENDING, and latching on the first SUCCESS would arm the
+    // loader for the PENDING that follows it — the same flash, one step later.
+    // A cart with an amount on it only happens once pricing has really landed.
+    //
+    // Set during render rather than in an effect: an effect lands a frame
+    // late, which is exactly one frame of the loader flashing up.
+    const hasPricedOnceRef = React.useRef(false);
+    if (
+      pricingStatus === "SUCCESS" &&
+      (Number.isFinite(cart?.discounted_cost) ||
+        Number.isFinite(cart?.per_person_discounted_cost))
+    ) {
+      hasPricedOnceRef.current = true;
+    }
+
     if (
       !["itinerary", "bookings"].includes(viewMode) ||
       (!activeItineraryId && !showItineraryShimmer)
@@ -6410,23 +6434,35 @@ export const BottomCTABar = React.memo(
     }
 
     if (!hasFreshPricing) {
-      // Only show the pricing loader when there's a rolling display_text to
-      // surface as a step. Notes are intentionally not rendered as steps.
-      //
-      // The mobile itinerary is the exception. Its footer is the page's floor —
-      // it carries the only price and the only way to pay — so returning null
-      // deletes it mid-update and the trip reads as broken rather than busy.
-      // A reprice in particular emits no display_text at all, which is exactly
-      // when the user most needs to see that something is happening.
-      if (!loaderDisplayText && variant !== "mobileItinerary") return null;
-      // Stepped progress card rendered in the bottom bar space (same place
-      // the cart row sits), replacing the old centered overlay.
-      return (
-        <ItineraryStepsLoader
-          displayText={loaderDisplayText || "Updating your itinerary…"}
-          barStyle={barStyle}
-        />
-      );
+      const isMobileFooter = variant === "mobileItinerary";
+
+      // Loading the page is not an update, so the mobile footer narrates
+      // nothing until it has carried a price once — it just shows the cart bar
+      // below, em-dash and all, until the price lands. `loaderDisplayText` is
+      // no help in telling the two apart here: the status endpoint replays the
+      // LAST operation's display_text into redux on load, so on arrival the
+      // steps card would flash up narrating work that finished before the
+      // traveller ever opened the trip.
+      if (!isMobileFooter || hasPricedOnceRef.current) {
+        // Only show the pricing loader when there's a rolling display_text to
+        // surface as a step. Notes are intentionally not rendered as steps.
+        //
+        // The mobile itinerary is the exception. Its footer is the page's
+        // floor — it carries the only price and the only way to pay — so
+        // returning null deletes it mid-update and the trip reads as broken
+        // rather than busy. A reprice in particular emits no display_text at
+        // all, which is exactly when the user most needs to see that something
+        // is happening.
+        if (!loaderDisplayText && !isMobileFooter) return null;
+        // Stepped progress card rendered in the bottom bar space (same place
+        // the cart row sits), replacing the old centered overlay.
+        return (
+          <ItineraryStepsLoader
+            displayText={loaderDisplayText || "Updating your itinerary…"}
+            barStyle={barStyle}
+          />
+        );
+      }
     }
 
     const perPerson = cart?.pay_only_for_one || cart?.show_per_person_cost;
@@ -6610,14 +6646,11 @@ export const BottomCTABar = React.memo(
               onClick={onReviewPay || onViewCart}
             />
           </div>
-          {/* The price is the one number on this surface; when it isn't there
-              yet, say so rather than letting the chip's em-dash stand in for an
-              answer. */}
-          {totalStr === null && (
-            <div className="px-[8px] text-[11px] italic text-[#6E757A]">
-              Calculating price…
-            </div>
-          )}
+          {/* No running commentary while the cart resolves — the bar arrives
+              before its price on every load, and a line saying so drew the eye
+              to the one part of the bar with nothing to say. The chip's
+              em-dash holds the slot until the price lands. Same call as the
+              desktop bar below. */}
         </div>
       );
     }
