@@ -9,15 +9,8 @@ import Head from "next/head";
 import Layout from "../../components/Layout";
 import TripsHub from "../../components/trips/TripsHub";
 import { SITE_ORIGIN } from "../../lib/seo/tripsIndexed";
-// Commented out with the data fetching below: tripsCache requires `fs`, and it
-// is dropped from the client bundle only while getStaticProps still references
-// it. With that body disabled the import is dead but still emitted, and webpack
-// fails the client build with "Can't resolve 'fs'".
-// import { readDestinations } from "../../lib/seo/tripsCache";
-// Commented out for the same reason: tripsCards requires tripsCache, so it
-// drags `fs` into the client bundle once the getStaticProps that used it is
-// disabled.
-// import { tripCard } from "../../lib/seo/tripsCards";
+import { readDestinations } from "../../lib/seo/tripsCache";
+import { tripCard } from "../../lib/seo/tripsCards";
 import { breadcrumbSchema } from "../../lib/seo/tripsJsonLd";
 import { destinationLabel } from "../../lib/seo/tripsFormat";
 import { THEMES, tripTheme } from "../../lib/seo/tripTheme";
@@ -59,24 +52,7 @@ const TripsIndex = ({
 
 export default TripsIndex;
 
-// ---------------------------------------------------------------------------
-// TRIPS ARE NOT DEPLOYED FROM THIS BRANCH (feature/lockin → Vercel).
-//
-// The trips pages are built from the .seo-cache snapshot that
-// `scripts/tripsSeoCache.js` crawls (~3 min, 1,865 pages), and that crawl is
-// commented out of package.json's `prebuild` for the Vercel build — so
-// readDestinations() would throw here and take the whole build down.
-// Returning notFound keeps the route compiled but unpublished.
-//
-// To restore: put tripsSeoCache.js back in `prebuild`, then delete the early
-// return below and uncomment the body — same in pages/trips/[destination]/
-// index.js and pages/trips/[destination]/[slug].js.
-// ---------------------------------------------------------------------------
 export async function getStaticProps() {
-  return { notFound: true };
-
-  /* eslint-disable no-unreachable */
-  /*
   const byDestination = readDestinations();
 
   const destinations = [...byDestination.entries()]
@@ -137,5 +113,4 @@ export async function getStaticProps() {
       schema: breadcrumbSchema([{ name: "Trips", href: "/trips" }]),
     },
   };
-  */
 }
