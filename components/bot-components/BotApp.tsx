@@ -5804,7 +5804,7 @@ const LockInHoldStrip = ({
         {/* ── Phone: sentence over the clock, the byline dropped ────────────── */}
         <div className="ph-up:hidden min-w-0 flex-1">
           <div className="font-inter text-[12px] font-600 leading-[14px] text-white">
-            I can hold this price for you, {holdDays} full days.
+            Prices are dynamic but i can hold them for you.
           </div>
           {/* Hard against the sentence, as the design has it. `flex` is doing
               the work, not a margin: as a plain block this div laid the clock
@@ -5818,7 +5818,7 @@ const LockInHoldStrip = ({
               almost touching, hence the 3px put back deliberately. With the
               strut gone this margin is the whole gap and nothing else, so it
               can be read off the design instead of guessed at. */}
-          <div className="mt-[3px] flex">{expiryClock}</div>
+          {/* <div className="mt-[3px] flex">{expiryClock}</div> */}
         </div>
 
         {/* ── Desktop ───────────────────────────────────────────────────────
