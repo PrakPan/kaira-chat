@@ -19,7 +19,7 @@
 // name for a departure city, a photo tile and a country for a destination) —
 // so they come in as children and this component only owns the chrome.
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { IconArrowLeft, IconSearch, IconX } from "./icons";
 
@@ -41,6 +41,24 @@ const SearchSheet = ({
   // history.back() then closed the sheet the moment anyone typed.
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+
+  // The list refuses taps for a moment after the sheet appears.
+  //
+  // Belt and braces behind the caller opening this on `click` rather than
+  // `pointerdown`: a full-screen overlay that materialises under a finger is
+  // one stray synthetic event away from picking a row nobody chose, and in-app
+  // webviews are inconsistent about which events a tap still has left. A
+  // quarter-second is under the time it takes to read the first result, so it
+  // costs nothing and cannot be felt.
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (!open) {
+      setArmed(false);
+      return undefined;
+    }
+    const t = setTimeout(() => setArmed(true), 250);
+    return () => clearTimeout(t);
+  }, [open]);
 
   // Escape closes, and so does the hardware/gesture back on Android — the
   // history entry means "back" dismisses the search rather than leaving the
@@ -112,7 +130,7 @@ const SearchSheet = ({
         ) : null}
       </div>
 
-      <div className="ksheet-list">
+      <div className={`ksheet-list${armed ? " is-armed" : ""}`}>
         {label ? <div className="ksheet-label">{label}</div> : null}
         {children}
         {loading ? <div className="ksheet-empty">Searching…</div> : null}

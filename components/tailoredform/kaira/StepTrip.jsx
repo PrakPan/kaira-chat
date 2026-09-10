@@ -230,9 +230,19 @@ const StepTrip = ({
                 // preventDefault stops the field taking focus, so the keyboard
                 // comes up against the sheet's own input rather than flashing
                 // here first.
+                // Two handlers on purpose. pointerdown only blocks the
+                // default — that stops the field taking focus, so the keyboard
+                // never comes up against this input. The sheet is opened on
+                // CLICK, the last event of the tap: mounting a full-screen
+                // overlay at pointerdown put a fresh result row under a finger
+                // that had not lifted yet, and the tap's own click then landed
+                // on it, picking a suggestion nobody chose.
                 onPointerDown={(e) => {
                   if (!isNarrow()) return;
                   e.preventDefault();
+                }}
+                onClick={() => {
+                  if (!isNarrow()) return;
                   openSheet("from");
                 }}
               >
@@ -372,9 +382,19 @@ const StepTrip = ({
                 className={`kform-field${destOpen ? " is-open" : ""}${
                   errors?.destination1 ? " has-error" : ""
                 }`}
+                // Two handlers on purpose. pointerdown only blocks the
+                // default — that stops the field taking focus, so the keyboard
+                // never comes up against this input. The sheet is opened on
+                // CLICK, the last event of the tap: mounting a full-screen
+                // overlay at pointerdown put a fresh result row under a finger
+                // that had not lifted yet, and the tap's own click then landed
+                // on it, picking a suggestion nobody chose.
                 onPointerDown={(e) => {
                   if (!isNarrow()) return;
                   e.preventDefault();
+                }}
+                onClick={() => {
+                  if (!isNarrow()) return;
                   openSheet("dest");
                 }}
               >

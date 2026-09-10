@@ -25,7 +25,9 @@ const asLabel = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
  * them (see ChatKitPanel).
  *
  * Picks are stored in slideFour.vibePreferences and sent to /complete as
- * `preferences`; the note stays `special_request`.
+ * `preferences`, together with whatever is typed into the note — see
+ * completeItineraryCreate in Index.js. Both are the same instruction to the
+ * planner, so they travel in the same field.
  */
 const StepVibe = ({ destNames = [], destName, startDate, groupType, dateShort }) => {
   const dispatch = useDispatch();

@@ -360,18 +360,18 @@
   -webkit-overflow-scrolling: touch;
   padding: 16px 48px 24px 48px;
   scrollbar-width: thin;
-  /* Column + `margin: auto` on the step is the scroll-safe way to centre:
-     unlike `justify-content: center`, it still lets you reach the top when the
-     content is taller than the box. */
   display: flex;
   flex-direction: column;
 }
 .kform-step {
   max-width: 720px;
   width: 100%;
-  /* Vertical half centres a short step in the card's fixed height; horizontal
-     half is the measure. See the note on .kform-body. */
-  margin: auto;
+  /* Top-aligned, as in the design: the heading sits just under the step nav.
+     This was briefly `margin: auto` to centre a short step in the card's fixed
+     height, which spread the slack evenly — but it put ~90px above the heading
+     and the gap under the nav is the thing that reads as wrong. The slack goes
+     below the last field instead, where the design puts it too. */
+  margin: 0 auto;
   animation: kfFadeUp 0.35s var(--kf-ease);
 }
 .kform-step--wide {
@@ -1329,6 +1329,11 @@
   padding: 4px 0;
   transition: color 0.15s;
   white-space: nowrap;
+  /* Hard right. On desktop the rule line already eats the free space, so this
+     changes nothing there; on a phone the line is hidden and this is what keeps
+     the button off the label's shoulder and against the edge. */
+  margin-left: auto;
+  flex-shrink: 0;
 }
 .kform-more:hover {
   color: var(--kf-ink);
@@ -1771,6 +1776,21 @@
   .kform-map {
     display: none;
   }
+
+  /* "More ideas" is a quiet text button on desktop, where it sits at the end of
+     a rule line and is obviously a control. On a phone that line is hidden and
+     it was 12px of grey text with a 4px hit area — easy to miss and hard to
+     hit. Same action, drawn as a pill big enough to tap. */
+  .kform-more {
+    padding: 8px 14px;
+    min-height: 36px;
+    border: 1px solid var(--kf-line);
+    border-radius: 999px;
+    background: var(--kf-white);
+    color: var(--kf-ink);
+    font-weight: 600;
+  }
+
   .kform-map-caption {
     top: 12px;
     left: 12px;
@@ -2093,12 +2113,18 @@
 }
 
 .ksheet-list {
+  /* Inert until the sheet arms itself — see the note in SearchSheet. Guards
+     against a tap that opened the sheet also landing on a result. */
+  pointer-events: none;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   padding: 4px 0 24px;
+}
+.ksheet-list.is-armed {
+  pointer-events: auto;
 }
 .ksheet-label {
   font-size: 11.5px;

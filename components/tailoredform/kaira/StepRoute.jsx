@@ -330,9 +330,16 @@ const StepRoute = ({
                   // opening a list inside a panel that is already low in a
                   // scrolling step. preventDefault keeps focus (and so the
                   // keyboard) off this input; the sheet's own input takes it.
+                  // pointerdown blocks focus (so no keyboard here); the sheet
+                  // opens on click, the last event of the tap. Opening it at
+                  // pointerdown left a result row under a finger that had not
+                  // lifted, and the same tap's click selected it. See StepTrip.
                   onPointerDown={(e) => {
                     if (!isNarrow()) return;
                     e.preventDefault();
+                  }}
+                  onClick={() => {
+                    if (!isNarrow()) return;
                     setAddSheet(true);
                   }}
                 />

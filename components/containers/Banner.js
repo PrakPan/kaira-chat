@@ -78,8 +78,11 @@ const Field = styled.input`
 `;
 
 /* Yellow, because this is the one action on the bar. Ink text on yellow is the
-   pairing the rest of the Kaira surfaces use for a primary CTA on paper. */
+   pairing the rest of the Kaira surfaces use for a primary CTA on paper.
+   `position: relative; overflow: hidden` is what clips the sheen below. */
 const Cta = styled.button`
+  position: relative;
+  overflow: hidden;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -109,6 +112,40 @@ const Cta = styled.button`
     font-size: 14px;
     padding: 14px 24px;
     min-width: 190px;
+  }
+`;
+
+/* The askBar's slow shine, which keeps the button alive without animating its
+   colour. `.ctl-sheen` itself is declared inside CinematicThemeLanding's own
+   <style> block, so it does not exist on the pages this bar appears on — the
+   class name alone was a no-op here. Same gradient and timing, declared where
+   it is used. */
+const Sheen = styled.span`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.28),
+    transparent
+  );
+  background-size: 64px 100%;
+  background-repeat: no-repeat;
+  background-position: left center;
+  animation: ttwBannerSheen 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+
+  @keyframes ttwBannerSheen {
+    0% {
+      background-position: -80px center;
+    }
+    100% {
+      background-position: calc(100% + 80px) center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
 `;
 
@@ -204,20 +241,13 @@ const Banner = (props) => {
           aria-label={placeholder}
         />
         <Cta type="button" onClick={openChat}>
-          {draft.trim() ? "Send" : props.cta || "Start planning"}
-          <svg
-            viewBox="0 0 12 12"
-            height="14"
-            width="14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M2 10L10 2M10 2H4M10 2V8"></path>
-          </svg>
+          <Sheen aria-hidden="true" />
+          {/* One text run, exactly as the askBar writes it (`{buildLabel} →`):
+              the arrow sits at the label's own size and weight, a single space
+              away. A separate element would take the button's flex `gap` and
+              could be sized independently — which is what made it read as a
+              different arrow. */}
+          {`${draft.trim() ? "Send" : props.cta || "Start planning"} →`}
         </Cta>
         <Avatar type="button" onClick={openChat} aria-label="Chat with Kaira">
           <img src="/KairaInsta.jpg" alt="" width={46} height={46} />

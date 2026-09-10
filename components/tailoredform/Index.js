@@ -770,9 +770,19 @@ const EnquiryForm = (props) => {
       return;
     }
 
-    const vibePreferences = Array.isArray(slideFourData?.vibePreferences)
+    // Everything the reader told us on the vibe step goes to the backend as
+    // `preferences`: the chips they tapped, plus whatever they typed into
+    // "Anything else? I read it all" as one more string on the end.
+    //
+    // The note used to travel as `special_request`, which split one answer
+    // across two fields — the chips said "temple mornings" under preferences
+    // while "we're vegetarian" sat somewhere else. They are the same
+    // instruction to the planner, so they arrive together.
+    const vibeChips = Array.isArray(slideFourData?.vibePreferences)
       ? slideFourData.vibePreferences.filter(Boolean)
       : [];
+    const vibeNote = (slideFourData?.specialRequests || "").trim();
+    const vibePreferences = vibeNote ? [...vibeChips, vibeNote] : vibeChips;
 
     const data = {
       itinerary_id: finalItineraryId,
@@ -785,8 +795,11 @@ const EnquiryForm = (props) => {
       add_hotels: slideThreeData.addHotels,
       add_transfers_and_activities: slideThreeData.addInclusions,
       meal_preferences: slideFourData.mealPreferences,
-      special_request: slideFourData.specialRequests,
-      // Chips picked on the vibe step. Only sent when the user picked some.
+      // Kept as an empty string rather than dropped: every caller of this
+      // endpoint has always sent the key (see OldForm), and the note it used to
+      // carry now rides in `preferences`.
+      special_request: "",
+      // Chips + the typed note. Only sent when there is something to send.
       ...(vibePreferences.length > 0 && { preferences: vibePreferences }),
     };
 
@@ -811,10 +824,13 @@ const EnquiryForm = (props) => {
         reportFormStage("itinerary_creation_completed", {
           platform,
           currency: currency?.currency || "INR",
+          // What was actually sent, note included.
           preferences: vibePreferences,
           hotel_types: slideFourData?.hotelType ?? null,
           meal_preferences: slideFourData?.mealPreferences ?? null,
-          special_request: slideFourData?.specialRequests ?? null,
+          // The note on its own as well, so the existing dashboard field keeps
+          // reporting what the reader typed.
+          special_request: vibeNote || null,
           // Terminal funnel event and the next line navigates away — get it out
           // of the batch queue now rather than relying on the pagehide drain.
           immediate: true,
