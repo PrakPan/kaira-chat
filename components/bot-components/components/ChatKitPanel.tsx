@@ -279,6 +279,8 @@ fromTailored?: boolean;
 itineraryCompleted?: boolean;
 /** Fired when a Make Payment CTA is clicked inside a chat widget. */
 onPaymentStart?: () => void;
+/** The payment widget's hold bar — charges the lock-in fee straight away. */
+onHoldStart?: () => void;
 /** Static traveller-story intro rendered inside the chat. When present, the
  *  detail card is shown above real messages and its CTAs send the
  *  corresponding prompt through the /chatkit p1 API. Not posted to the bot. */
@@ -887,6 +889,7 @@ isItineraryCompleting = false,
 fromTailored = false,
 itineraryCompleted = false,
 onPaymentStart,
+onHoldStart,
 travellerStory = null,
 onTravellerStoryDismiss,
 mobileMenu,
@@ -4730,6 +4733,17 @@ const handleShowLogin = useCallback(() => {
                   if (action.type === "payment.start") {
                     reportChatStage("chat_cart_viewed");
                     onPaymentStart?.();
+                    return;
+                  }
+
+                  // ── Hold the price ────────────────────────────────────
+                  // The bar at the foot of the same widget. Unlike
+                  // payment.start this does NOT stop at the cart: the bar has
+                  // already named the fee and what it buys, so the host takes
+                  // it straight to the gateway.
+                  if (action.type === "payment.hold") {
+                    reportChatStage("chat_cart_viewed");
+                    onHoldStart?.();
                     return;
                   }
 

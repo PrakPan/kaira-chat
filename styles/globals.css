@@ -1358,3 +1358,41 @@ a.termsnavunderlinelink {
 .ttw-nav-mobile-sidebar {
   display: none;
 }
+
+/* Kaira's byline on the cart bar's hold ribbon ("KAIRA · YOUR TRIP PLANNER").
+
+   Shown only when the ribbon is wide enough to carry it on the sentence's line,
+   hidden when it is not. The measurement is a CONTAINER query, on the ribbon
+   itself — the bar is the itinerary panel at `md:w-[48%]`, so a viewport
+   breakpoint is only a proxy for its width and a poor one: it left the byline
+   hidden on bars that had room to spare.
+
+   The threshold is what the full row actually costs, added up off a rendered
+   ribbon rather than estimated: portrait and its gap 40px, sentence 440px, the
+   byline's own lead-in and width 12 + 165px, gap 12px, expiry clock 115px, gap
+   10px, Hold button 120px — 914px of content box. 920 leaves a few pixels of
+   slack on top of that and no more, because every pixel of headroom here is a
+   width where the byline hides with room going spare, which is the bug this
+   replaced.
+
+   Erring low is cheap: if it ever is too tight, the clock simply wraps to the
+   second line, which is a state the ribbon is built for anyway.
+
+   Keep this in step with the ribbon's type sizes — shrinking the text buys room
+   and the number should come down with it.
+
+   A browser without container queries keeps the `display: none` default and
+   simply never shows the byline, which is the same place this started. */
+.ttw-hold-ribbon {
+  container: ttwHoldRibbon / inline-size;
+}
+
+.ttw-hold-byline {
+  display: none;
+}
+
+@container ttwHoldRibbon (min-width: 920px) {
+  .ttw-hold-byline {
+    display: inline;
+  }
+}
