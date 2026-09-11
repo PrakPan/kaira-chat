@@ -8,6 +8,7 @@ import {
 } from "../../services/leads/tailored";
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import {
+  deleteSelectedCity,
   resetSelectedCity,
   setAnytimeDate,
   setDateType,
@@ -34,7 +35,7 @@ import {
 import getPlatform from "../../utils/getPlatform";
 import RoutePreparationLoader from "./RoutePreparationLoader";
 import BotLoginModal from "../bot-components/components/BotLoginModal";
-import StepTrip from "./kaira/StepTrip";
+import StepTrip, { joinNames } from "./kaira/StepTrip";
 import StepRoute, { cityName } from "./kaira/StepRoute";
 import StepGroup, { travellerSummary } from "./kaira/StepGroup";
 import StepVibe from "./kaira/StepVibe";
@@ -352,22 +353,33 @@ const EnquiryForm = (props) => {
     setStartingLocation(null);
   };
 
+  // ── Destinations ──────────────────────────────────────────────────────────
+  // `selectedCities` is the same list the old multi-destination form used: one
+  // entry per destination, keyed by `input_id`, with `id` null on an entry
+  // nobody has picked yet (the store starts with one of those). The picked
+  // ones, in the order they were added, are the trip's destinations — and what
+  // buildItineraryPayload sorts into cities / states / countries for /initiate.
   const selectedCities = slideOneData.selectedCities || [];
-  const dest = selectedCities.find((c) => c?.id) || null;
-  const primaryInputId = selectedCities[0]?.input_id;
+  const dests = selectedCities.filter((c) => c?.id);
 
   const handlePickDest = (r) => {
     const id = r.resource_id || r.id;
-    const inputId = primaryInputId || Date.now();
+    if (!id || dests.some((c) => c.id === id)) return;
+    // The store's empty starter entry takes the first destination; every later
+    // one gets an entry of its own, so the list stays in the order picked.
+    const emptySlot = selectedCities.find((c) => !c?.id);
+    const inputId =
+      dests.length === 0 && emptySlot?.input_id ? emptySlot.input_id : Date.now();
     dispatch(setSelectedCities(id, inputId, { ...r, id }));
     setErrors((e) => ({ ...e, destination1: null }));
     setError(null);
   };
 
-  const handleClearDest = () => {
-    selectedCities.forEach((c) => {
-      if (c?.input_id) dispatch(resetSelectedCity(c.input_id));
-    });
+  const handleRemoveDest = (inputId) => {
+    // The last destination is emptied rather than dropped, so the list keeps
+    // the one entry the rest of the form expects to find.
+    if (dests.length <= 1) dispatch(resetSelectedCity(inputId));
+    else dispatch(deleteSelectedCity(inputId));
   };
 
   // ── Dates ─────────────────────────────────────────────────────────────────
@@ -453,10 +465,10 @@ const EnquiryForm = (props) => {
     typeof window !== "undefined" && !!localStorage.getItem("access_token");
 
   // ── Step submits ──────────────────────────────────────────────────────────
-  const canFindRoute = !!dest?.id && dateInfo.ok;
+  const canFindRoute = dests.length > 0 && dateInfo.ok;
 
   const _SlideOneSubmitHandler = () => {
-    if (!dest?.id) {
+    if (dests.length === 0) {
       setErrors({
         startLocation: null,
         destination1: "Pick a destination to continue",
@@ -957,7 +969,7 @@ const EnquiryForm = (props) => {
   // ── Derived copy ──────────────────────────────────────────────────────────
   const fetching = isLoading && slideIndex === 0 && !isRecalculatingRoute;
   const fromName = startingLocation?.name || "";
-  const destName = dest?.name || "";
+  const destName = joinNames(dests.map((c) => c.name).filter(Boolean));
   const startName = itineraryInititateData?.start_city?.name || fromName;
   const firstCity = locationsLatLong.length ? cityName(locationsLatLong[0]) : "";
   const travSummary = travellerSummary(slideThreeData);
@@ -1086,9 +1098,9 @@ const EnquiryForm = (props) => {
             startingLocation={startingLocation}
             onPickStart={handlePickStart}
             onClearStart={handleClearStart}
-            dest={dest}
+            dests={dests}
             onPickDest={handlePickDest}
-            onClearDest={handleClearDest}
+            onRemoveDest={handleRemoveDest}
             date={slideOneData.date}
             dateInfo={dateInfo}
             onFixed={onFixed}

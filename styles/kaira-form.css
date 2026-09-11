@@ -630,6 +630,33 @@
   grid-area: dest;
   margin-top: 4px;
 }
+/* One row per picked destination (StepTrip). The same card the single
+   destination always used, now repeated; the field-wrap's 8px gap spaces
+   them. */
+.kform-dest-row {
+  padding: 12px 16px;
+  gap: 14px;
+  cursor: default;
+}
+.kform-dest-row:hover {
+  border-color: var(--kf-ink-6);
+}
+.kform-dest-name {
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kform-dest-sub {
+  font-size: 12px;
+  margin-top: 2px;
+}
+/* "Add another destination" sits under the rows, left-aligned, instead of
+   stretching across the column like the flex children around it. */
+.kform-dashed-btn.kform-dest-add {
+  align-self: flex-start;
+  margin-top: 0;
+}
 
 .kform-note {
   display: flex;

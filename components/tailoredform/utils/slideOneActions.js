@@ -143,10 +143,14 @@ export function classifyLocations(selectedCities) {
   let continentIds = [];
   let pageIds = [];
   let locations = [];
+  // Every picked destination once, whatever its type — the check used to
+  // cover cities only, so a state or country picked twice went out twice.
+  const seen = new Set();
 
   for (let city of selectedCities) {
     if (!city?.id) continue;
-    if (cityids.includes(city.id)) continue;
+    if (seen.has(city.id)) continue;
+    seen.add(city.id);
 
     switch (city.type?.toLowerCase()) {
       case "page":
