@@ -2251,103 +2251,143 @@
 
 /* ============ PLANNING (LITE) ============
    Condensed, light-on-white sibling of the dark `.fromIndia` planning block.
-   Defined after `.block` so its tighter padding wins on equal specificity. */
+   Uses the shared `.sectionHead` / `.itinPill` / `.lede` for its head and the
+   standard `.block` padding, so it sits in the page's rhythm like any other
+   section. The cards follow the `.season` cards in "When to go" right below:
+   white, 22px corners, lift on hover. */
 .planLite {
-  padding: 44px 0 12px;
-  background: var(--ttw-bg);
-  @media (max-width: 640px) {
-    padding: 32px 0 8px;
-  }
-}
-.planLiteHead {
-  max-width: 720px;
-  margin-bottom: 22px;
-}
-.planLiteKicker {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ttw-ink-4);
-  margin-bottom: 10px;
-}
-.planLiteHead h2 {
-  font-size: clamp(24px, 2.4vw, 32px);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-  margin-bottom: 8px;
-  color: var(--ttw-ink);
-}
-.planLiteHead h2 .serif {
-  font-weight: 400;
-}
-.planLiteHead .lede {
-  font-size: 15px;
+  background:
+    radial-gradient(ellipse 720px 340px at 96% 12%, var(--ttw-peach) 0%, transparent 62%),
+    radial-gradient(ellipse 520px 280px at 0% 100%, var(--ttw-yellow-wash) 0%, transparent 60%),
+    var(--ttw-bg-2);
 }
 .planLiteGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  gap: 18px;
   @media (max-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
   }
-  @media (max-width: 520px) {
+  @media (max-width: 640px) {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+/* Fewer than four facts: let the ones there are share the row. */
+.planLiteGrid3 {
+  @media (min-width: 1025px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.planLiteGrid2 {
+  @media (min-width: 641px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.planLiteGrid1 {
+  @media (min-width: 641px) {
+    grid-template-columns: minmax(0, 520px);
   }
 }
 .planLiteCard {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px 16px 18px;
-  background: var(--ttw-bg-2);
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px 22px 22px;
+  background: white;
   border: 1px solid var(--ttw-line);
-  border-radius: 14px;
-  transition: border-color 0.2s, background 0.2s;
+  border-radius: 22px;
+  transition: all 0.25s cubic-bezier(0.2, 0.7, 0.3, 1);
+  @media (max-width: 640px) {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 18px 18px 16px;
+    border-radius: 18px;
+  }
 }
 .planLiteCard:hover {
-  border-color: var(--ttw-ink-4);
-  background: var(--ttw-bg);
+  transform: translateY(-3px);
+  box-shadow: 0 22px 44px -16px rgba(11, 18, 32, 0.18);
+  border-color: transparent;
 }
 .planLiteIcon {
   flex: 0 0 auto;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
-  background: var(--ttw-yellow);
+  background: var(--ttw-peach);
   color: var(--ttw-ink);
+  @media (max-width: 640px) {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+  }
+}
+/* Same pastel run as the `.why` tiles, so no two neighbours match. */
+.planLiteCard:nth-child(4n + 2) .planLiteIcon {
+  background: var(--ttw-mint);
+}
+.planLiteCard:nth-child(4n + 3) .planLiteIcon {
+  background: var(--ttw-lavender);
+}
+.planLiteCard:nth-child(4n + 4) .planLiteIcon {
+  background: var(--ttw-yellow-soft);
 }
 /* The shared icons carry their own width/height attributes (24px, sized for
    the dark block). CSS beats presentation attributes, so this scales them
-   down for the smaller tile — see the note on `.indiaCardIcon svg`. */
+   down for the tile — see the note on `.indiaCardIcon svg`. */
 .planLiteIcon svg {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
 }
 .planLiteBody {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
-.planLiteLabel {
-  display: block;
-  font-size: 12px;
+.planLiteTitle {
+  font-size: 19px;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--ttw-ink-4);
-  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ttw-ink);
+  margin: 0 0 8px;
+  @media (max-width: 640px) {
+    font-size: 17px;
+    margin-bottom: 6px;
+  }
+}
+.planLiteTitle .serif {
+  font-weight: 400;
+}
+/* A short answer or the figure pulled out of a longer one ("7-10 days"). */
+.planLiteFigure {
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+  font-size: 24px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--ttw-coral-deep);
+  margin-bottom: 8px;
+  @media (max-width: 640px) {
+    font-size: 21px;
+    margin-bottom: 4px;
+  }
 }
 .planLiteValue {
   font-size: 13.5px;
-  line-height: 1.45;
-  color: var(--ttw-ink-2);
+  line-height: 1.55;
+  color: var(--ttw-ink-3);
   margin: 0;
   /* Backstop for the copy `condense()` couldn't shorten. */
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  @media (max-width: 640px) {
+    font-size: 13px;
+  }
 }

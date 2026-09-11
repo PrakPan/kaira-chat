@@ -15,12 +15,7 @@ import moment from "moment";
 import styled from "styled-components";
 import { openNotification } from "../../../store/actions/notification";
 import { useDispatch, useSelector } from "react-redux";
-import AirbnbCalendar from "../../../components/calendar";
-import Modal from "../../../components/ui/Modal";
-import ModalWithBackdrop from "../../../components/ui/ModalWithBackdrop";
-import AirbnbCalendarMobile from "../../../components/calendar/MobileCalendar";
-import BottomModal from "../../../components/ui/LowerModal";
-import { set } from "nprogress";
+import DateRangeSheet from "../../../components/settings/DateRangeSheet";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 
@@ -271,7 +266,6 @@ const UpdateItineraryDates = ({
   showEditDate,
   showAsModal = true, // Default to current behavior
   autoOpenCalendar = false, // Default to current behavior
-  showPhoneView,
   duration,
   resetRef,
   handleCloseDrawer,
@@ -303,27 +297,13 @@ const UpdateItineraryDates = ({
   );
   const ItineraryId = useSelector((state) => state.ItineraryId);
   const [isLoading, setIsLoading] = useState(false);
+  // Only the update-dates POST itself, not the status poll that follows it.
+  // The calendar is locked while this is true; `isLoading` stays up for the
+  // whole poll (minutes), long after the calendar has closed, and reopening
+  // the calendar must not find it still locked.
+  const [isSaving, setIsSaving] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
   const router = useRouter();
-  const [dateType, setDateType] = useState("fixed");
-  const start = startDate ? new Date(startDate) : null;
-  const end = endDate ? new Date(endDate) : null;
-  const startValid = start && !isNaN(start.getTime());
-  const endValid = end && !isNaN(end.getTime());
-
-  if (startValid) start.setHours(0, 0, 0, 0);
-  if (endValid) end.setHours(0, 0, 0, 0);
-
-  const date = {
-    type: "fixed",
-    start_date: startValid ? start.toISOString() : null,
-    end_date: endValid ? end.toISOString() : null,
-    month: "",
-    duration:
-      startValid && endValid
-        ? Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1
-        : 0,
-  };
 
   const [momentStartDate, setMomentStartDate] = useState(
     clearDatesOnOpen || !itinerary?.start_date
@@ -337,29 +317,11 @@ const UpdateItineraryDates = ({
   );
 
   // What the calendar opens on. When `clearDatesOnOpen` is set, nothing is
-  // preselected and the duration counter starts at zero, so the user reselects
-  // both ends of the range.
-  const calendarValueStart =
-    clearDatesOnOpen || !itinerary?.start_date
-      ? null
-      : new Date(itinerary.start_date);
-  const calendarValueEnd =
-    clearDatesOnOpen || !itinerary?.end_date
-      ? null
-      : new Date(itinerary.end_date);
-  const calendarDate = clearDatesOnOpen
-    ? {
-        type: "fixed",
-        start_date: null,
-        end_date: null,
-        month: "",
-        duration: 0,
-      }
-    : date;
+  // preselected, so the user picks both ends of a fresh range.
+  const calendarValueStart = clearDatesOnOpen ? null : itinerary?.start_date;
+  const calendarValueEnd = clearDatesOnOpen ? null : itinerary?.end_date;
   const [showCalendar, setShowCalendar] = useState(false);
   const [isEditing, setIsEditing] = useState(autoOpenCalendar);
-
-  const [isMobile, setIsMobile] = useState(false);
 
   // REPLACE the existing useEffect that sets showCalendar
   useEffect(() => {
@@ -368,19 +330,6 @@ const UpdateItineraryDates = ({
       setFocusedInput("startDate");
     }
   }, [autoOpenCalendar]);
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      if (showPhoneView) {
-        setIsMobile(true);
-      } else setIsMobile(window.innerWidth < 768);
-    };
-
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-
-    return () => window.removeEventListener("resize", checkScreenSize);
-  }, []);
 
   const calculateDurationMoment = (startMoment, endMoment) => {
     if (!startMoment || !endMoment) return 0;
@@ -469,10 +418,6 @@ const UpdateItineraryDates = ({
     setFocusedInput(null);
   };
 
-  const handleOnCalenderApplyDates = async (values) => {
-    await handleUpdateDates(values);
-  };
-
   const POLL_KEYS = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"];
   const TERMINAL_STATUSES = new Set(["SUCCESS", "FAILURE"]);
   const POLL_INTERVAL_MS = 5000;
@@ -538,6 +483,7 @@ const UpdateItineraryDates = ({
     }
 
     setIsLoading(true);
+    setIsSaving(true);
     // Reset statuses to PENDING and lock the chat composer until the local
     // status poll below resolves them all back to SUCCESS/FAILURE.
     dispatch(setItineraryStatus("itinerary_status", "PENDING"));
@@ -570,6 +516,7 @@ const UpdateItineraryDates = ({
 
       // Close UI immediately so the user isn't stuck on "Applying..." while
       // the celery tasks run on the backend.
+      setIsSaving(false);
       setShowCalendar(false);
       setIsEditing(false);
       setFocusedInput(null);
@@ -584,6 +531,9 @@ const UpdateItineraryDates = ({
 
       if (onUpdateSuccess) onUpdateSuccess(true);
     } catch (error) {
+      // The calendar is still open with the picked range — unlocking it lets
+      // the user retry or change the dates.
+      setIsSaving(false);
       dispatch(setItineraryStatus("is_polling", false));
       let errorMsg =
         error.response?.data?.errors?.[0]?.detail?.[0] ||
@@ -667,81 +617,22 @@ const UpdateItineraryDates = ({
         </button>
       )}
 
-      {/* Calendar overlay - positioned absolutely but relative to this container */}
+      {/* The same two-month range calendar as Settings and the tailored form.
+          It portals itself to <body> and picks dialog vs bottom sheet in CSS,
+          so it no longer needs a desktop / phone / phone-view branch — and it
+          escapes the cart drawer these CTAs sit inside. Done saves straight
+          away: the sheet stays locked with a spinner while the POST runs,
+          closes on success (handleUpdateDates), and stays open with the picked
+          range on an error. */}
       {showCalendar && (
-        <div>
-          {!isMobile ? (
-            <ModalWithBackdrop
-              centered
-              closeIcon={true}
-              backdrop
-              show={showCalendar}
-              onHide={() => closeModal(false)}
-              borderRadius="20px"
-              paddingX="20px"
-              paddingY="20px"
-            >
-              <AirbnbCalendar
-                valueStart={calendarValueStart}
-                valueEnd={calendarValueEnd}
-                onChangeDate={handleOnCalenderApplyDates}
-                isLoading={isLoading}
-                setShowCalendar={() => closeModal(false)}
-                dateType={dateType}
-                setDateType={setDateType}
-                date={calendarDate}
-                isNotForm={true}
-                duration={duration}
-              />
-            </ModalWithBackdrop>
-          ) : showPhoneView ? (
-            <ModalWithBackdrop
-              centered
-              closeIcon={true}
-              backdrop
-              show={showCalendar}
-              onHide={() => closeModal(false)}
-              borderRadius="20px"
-              paddingX="20px"
-              paddingY="20px"
-              showPhoneView={true}
-            >
-              <AirbnbCalendarMobile
-                valueStart={calendarValueStart}
-                valueEnd={calendarValueEnd}
-                onChangeDate={handleOnCalenderApplyDates}
-                setShowCalendar={() => closeModal(false)}
-                setDateType={setDateType}
-                isLoading={isLoading}
-                dateType={dateType}
-                duration={duration}
-                date={calendarDate}
-                isNotForm={true}
-              />
-            </ModalWithBackdrop>
-          ) : (
-            <BottomModal
-              show={showCalendar}
-              onHide={() => closeModal(false)}
-              width="100%"
-              height="max-content"
-              paddingX="20px"
-              paddingY="20px"
-            >
-              <AirbnbCalendarMobile
-                valueStart={calendarValueStart}
-                valueEnd={calendarValueEnd}
-                onChangeDate={handleOnCalenderApplyDates}
-                setShowCalendar={() => closeModal(false)}
-                setDateType={setDateType}
-                dateType={dateType}
-                duration={duration}
-                date={calendarDate}
-                isNotForm={true}
-              />
-            </BottomModal>
-          )}
-        </div>
+        <DateRangeSheet
+          start={calendarValueStart}
+          end={calendarValueEnd}
+          onApply={handleUpdateDates}
+          onClose={closeModal}
+          busy={isSaving}
+          closeOnApply={false}
+        />
       )}
     </div>
   );

@@ -881,6 +881,151 @@
 .kform-btn-ink:hover {
   background: var(--kf-ink-2);
 }
+.kform-btn-ink:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.kform-btn-ink:disabled:hover {
+  background: var(--kf-ink);
+}
+.kform-linkbtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.kform-linkbtn:disabled:hover {
+  color: var(--kf-ink-4);
+}
+
+/* ── Date sheet (components/settings/DateRangeSheet.jsx) ──────────────────
+   The range calendar on its own, outside the form: a centred dialog here and
+   a bottom sheet on a phone (see the 767.98px block below). The dialog is a
+   capped flex column so, on a short screen, only the months scroll — the
+   month navigation above them and Clear / Done below always stay on screen. */
+.kform-datesheet {
+  position: fixed;
+  inset: 0;
+  z-index: 3200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(11, 18, 32, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  overscroll-behavior: contain;
+}
+.kform-datesheet-dialog {
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  max-width: 100%;
+  max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 40px);
+}
+.kform-datesheet .kform-panel {
+  min-height: 0;
+  border: 0;
+  box-shadow: var(--kf-shadow-xl);
+  padding: 18px 20px 16px;
+}
+.kform-datesheet .kform-panel-scroll {
+  flex: 0 1 auto;
+}
+/* The month arrows live inside the scrolling area with the grids; pin them to
+   its top so a short screen scrolls the days, never the navigation. */
+.kform-datesheet .kform-cal-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--kf-white);
+  margin-bottom: 0;
+  padding-bottom: 12px;
+}
+.kform-datesheet-grab {
+  display: none;
+}
+.kform-datesheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+.kform-datesheet-title {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--kf-ink);
+}
+.kform-datesheet-title .kform-serif {
+  font-size: 19px;
+}
+.kform-datesheet .kform-panel-foot {
+  flex-shrink: 0;
+}
+.kform-datesheet .kform-btn-ink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.kform-datesheet .kform-btn-ink .kform-spin {
+  border-color: rgba(250, 250, 245, 0.3);
+  border-top-color: var(--kf-paper);
+}
+/* Saving: the range is locked in and Done reads as working, not disabled. */
+.kform-datesheet.is-busy .kform-panel-scroll {
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+.kform-datesheet.is-busy .kform-btn-ink:disabled {
+  opacity: 1;
+  cursor: progress;
+}
+
+@media (max-width: 767.98px) {
+  .kform-datesheet {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .kform-datesheet-dialog {
+    width: 100%;
+    max-height: 92vh;
+    max-height: 92dvh;
+  }
+  .kform-datesheet .kform-panel {
+    border-radius: 20px 20px 0 0;
+    padding: 8px 16px calc(14px + env(safe-area-inset-bottom));
+    animation: kfSheetUp 0.25s var(--kf-ease);
+  }
+  .kform-datesheet-grab {
+    display: block;
+    width: 38px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--kf-ink-6);
+    margin: 0 auto 10px;
+    flex-shrink: 0;
+  }
+  .kform-datesheet-head {
+    margin-bottom: 12px;
+  }
+  .kform-datesheet .kform-btn-ink {
+    padding: 10px 22px;
+    font-size: 13px;
+  }
+}
+@keyframes kfSheetUp {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
 
 /* ── Stepper (− n +) ───────────────────────────────────────────────────── */
 .kform-stepper {

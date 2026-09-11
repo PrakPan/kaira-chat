@@ -1,12 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Stepper from "./Stepper";
+import RangeCalendar from "./RangeCalendar";
+import { IconTarget } from "./icons";
 import {
-  IconChevronLeft,
-  IconChevronRight,
-  IconTarget,
-} from "./icons";
-import {
-  DOW,
   MONF,
   addDays,
   diffDays,
@@ -56,18 +52,6 @@ const WhenPanel = ({
       : 7,
   );
   const now = today();
-  // The first date anyone can pick is tomorrow. A trip that departs today
-  // cannot be planned, sourced and booked in the hours that are left, so today
-  // is disabled in the calendar rather than offered and then rejected later.
-  //
-  // Everything that used to key off `now` for "how far back can you go" keys
-  // off this instead — otherwise, on the last day of a month, the calendar
-  // would open on a month with no selectable day in it and let you page back
-  // into it.
-  const earliest = addDays(now, 1);
-  const initialCal = ds || earliest;
-  const [calY, setCalY] = useState(initialCal.getFullYear());
-  const [calM, setCalM] = useState(initialCal.getMonth());
 
   // The panel floats below the When field. Cap it to the space actually left
   // inside the card so Clear / Done never fall past the bottom edge — a
@@ -106,16 +90,9 @@ const WhenPanel = ({
 
   const switchMode = (next) => setMode(next);
 
-  const pickDay = (d) => {
-    // Restart the range on the first tap, on a tap before the current start,
-    // and on the tap after a complete range — so a second pass over the
-    // calendar just picks a new trip rather than extending the old one.
-    if (!ds || (ds && de) || d <= ds) {
-      setDs(d);
-      setDe(null);
-      return;
-    }
-    setDe(d);
+  const pickRange = ({ start, end }) => {
+    setDs(start);
+    setDe(end);
   };
 
   const changeNights = (n) => setNights(n);
@@ -144,45 +121,6 @@ const WhenPanel = ({
     onDone?.();
   };
 
-  const prevMonth = () => {
-    if (calM === 0) {
-      setCalM(11);
-      setCalY(calY - 1);
-    } else setCalM(calM - 1);
-  };
-  const nextMonth = () => {
-    if (calM === 11) {
-      setCalM(0);
-      setCalY(calY + 1);
-    } else setCalM(calM + 1);
-  };
-  const atCurrentMonth =
-    calY < earliest.getFullYear() ||
-    (calY === earliest.getFullYear() && calM <= earliest.getMonth());
-
-  const y2 = calM === 11 ? calY + 1 : calY;
-  const m2 = (calM + 1) % 12;
-
-  const monthCells = (y, m) => {
-    const first = new Date(y, m, 1).getDay();
-    const dim = new Date(y, m + 1, 0).getDate();
-    const cells = [];
-    for (let i = 0; i < first; i++) cells.push({ blank: true, key: `b${i}` });
-    for (let day = 1; day <= dim; day++) {
-      const d = new Date(y, m, day);
-      const t = d.getTime();
-      cells.push({
-        key: `d${day}`,
-        d,
-        label: day,
-        past: d < earliest,
-        sel: (ds && t === ds.getTime()) || (de && t === de.getTime()),
-        range: ds && de && t > ds.getTime() && t < de.getTime(),
-      });
-    }
-    return cells;
-  };
-
   const flexMonths = [];
   for (let i = 0; i < 8; i++) {
     const y = now.getFullYear() + Math.floor((now.getMonth() + i) / 12);
@@ -203,39 +141,6 @@ const WhenPanel = ({
           ? `${nights} nights · around ${MONF[flexSel.m]} ${flexSel.y}`
           : "Pick a rough month"
         : `${nights} nights · I'll suggest the window`;
-
-  const renderMonth = (y, m) => (
-    <div className="kform-cal-month" key={`${y}-${m}`}>
-      <div className="kform-cal-dow">
-        {DOW.map((d) => (
-          <div key={d}>{d}</div>
-        ))}
-      </div>
-      <div className="kform-cal-grid">
-        {monthCells(y, m).map((c) =>
-          c.blank ? (
-            <button
-              key={c.key}
-              type="button"
-              className="kform-day is-blank"
-              disabled
-              tabIndex={-1}
-            />
-          ) : (
-            <button
-              key={c.key}
-              type="button"
-              className={`kform-day${c.sel ? " is-sel" : ""}${c.range ? " is-range" : ""}`}
-              disabled={c.past}
-              onClick={() => pickDay(c.d)}
-            >
-              {c.label}
-            </button>
-          ),
-        )}
-      </div>
-    </div>
-  );
 
   const howLong = (sub) => (
     <div className="kform-soft">
@@ -285,37 +190,7 @@ const WhenPanel = ({
 
       <div className="kform-panel-scroll">
         {mode === "dates" && (
-          <>
-            <div className="kform-cal-nav">
-              <button
-                type="button"
-                className="kform-iconbtn kform-iconbtn--cal"
-                onClick={prevMonth}
-                disabled={atCurrentMonth}
-                aria-label="previous month"
-              >
-                <IconChevronLeft />
-              </button>
-              <div className="kform-cal-title">
-                {MONF[calM]} {calY}
-              </div>
-              <div className="kform-cal-title kform-cal-title--second">
-                {MONF[m2]} {y2}
-              </div>
-              <button
-                type="button"
-                className="kform-iconbtn kform-iconbtn--cal"
-                onClick={nextMonth}
-                aria-label="next month"
-              >
-                <IconChevronRight />
-              </button>
-            </div>
-            <div className="kform-cal-months">
-              {renderMonth(calY, calM)}
-              {renderMonth(y2, m2)}
-            </div>
-          </>
+          <RangeCalendar start={ds} end={de} onChange={pickRange} />
         )}
 
         {mode === "flexible" && (
