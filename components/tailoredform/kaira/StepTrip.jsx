@@ -10,6 +10,7 @@ import {
   IconCalendar,
   IconMoon,
   IconPin,
+  IconPlus,
   IconSearch,
   IconTarget,
   IconX,
@@ -77,18 +78,34 @@ export const DestTile = ({ dest, className = "" }) => (
   </div>
 );
 
+// The id a destination is known by: search rows carry `resource_id`, picked
+// destinations (and hot locations) carry `id`.
+const destId = (d) => d?.resource_id || d?.id;
+
+// "Oman", "Oman & UAE", "Oman, UAE & Qatar" — how a trip with several
+// destinations is named in running copy.
+export const joinNames = (names) =>
+  names.length <= 1
+    ? names[0] || ""
+    : `${names.slice(0, -1).join(", ")} & ${names[names.length - 1]}`;
+
 /**
- * Step 1 — "Where are you going?": starting point, dates, destination.
+ * Step 1 — "Where are you going?": starting point, dates, destinations.
  * Search results come from Mercury's geo search; the selected values live in
- * the parent (starting location in Index state, destination + dates in Redux).
+ * the parent (starting location in Index state, destinations + dates in Redux).
+ *
+ * A trip can have several destinations (Oman and the UAE, or Kerala and
+ * Goa). Each picked one is a row of its own with a remove button; the search
+ * field is only on screen while there is none yet, or while the traveller is
+ * adding another.
  */
 const StepTrip = ({
   startingLocation,
   onPickStart,
   onClearStart,
-  dest,
+  dests = [],
   onPickDest,
-  onClearDest,
+  onRemoveDest, // (input_id) => void
   date,
   dateInfo,
   onFixed,
@@ -112,6 +129,11 @@ const StepTrip = ({
   const [destResults, setDestResults] = useState([]);
   const [destLoading, setDestLoading] = useState(false);
   const debouncedDest = useDebounce(destQuery, 350);
+  // "Add another destination" was pressed and the search field is showing
+  // under the picked ones. Wide screens only — a phone opens the sheet.
+  const [destAdding, setDestAdding] = useState(false);
+  const destInputRef = useRef(null);
+  const showDestInput = dests.length === 0 || destAdding;
 
   const [calOpen, setCalOpen] = useState(false);
   // Which field, if any, has taken over the screen: "from" | "dest" | null.
@@ -220,12 +242,51 @@ const StepTrip = ({
     });
   }, [hotImages]);
 
+  // Bring the destination field into focus whenever it comes up to be typed
+  // into — "Add another destination", or the last destination removed — on
+  // wide screens only; a phone does its typing in the sheet.
+  const [destFocusTick, setDestFocusTick] = useState(0);
+  useEffect(() => {
+    if (destFocusTick && !isNarrow()) destInputRef.current?.focus();
+  }, [destFocusTick]);
+
   const closeAll = () => {
     setFromOpen(false);
     setDestOpen(false);
     setCalOpen(false);
+    // An "add another" field left empty folds back into its button; one with
+    // text in it stays, so nothing typed is thrown away.
+    if (!destQuery.trim()) setDestAdding(false);
   };
-  const anyPop = (fromOpen && !startingLocation) || (destOpen && !dest) || calOpen;
+  const anyPop =
+    (fromOpen && !startingLocation) || (destOpen && showDestInput) || calOpen;
+
+  const startAddingDest = () => {
+    setDestQuery("");
+    if (isNarrow()) {
+      openSheet("dest");
+      return;
+    }
+    setDestAdding(true);
+    setDestOpen(true);
+    setFromOpen(false);
+    setCalOpen(false);
+    setDestFocusTick((t) => t + 1);
+  };
+
+  const pickDest = (d) => {
+    onPickDest(d);
+    setDestOpen(false);
+    setDestQuery("");
+    setDestAdding(false);
+  };
+
+  const removeDest = (d) => {
+    onRemoveDest(d.input_id);
+    // Removing the only destination leaves the field empty; reopen the search
+    // right away, the way the old single-destination "change" button did.
+    if (dests.length === 1) startAddingDest();
+  };
 
   // Dismiss an open popover by listening for a press outside it, rather than by
   // laying a full-screen scrim over the page.
@@ -261,7 +322,22 @@ const StepTrip = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [anyPop]);
 
-  const destList = destQuery.trim().length >= 2 ? destResults : hotLocations.slice(0, 6);
+  // Places already on the trip aren't offered again.
+  const pickedIds = new Set(dests.map(destId).filter(Boolean));
+  const searching = destQuery.trim().length >= 2;
+  const destList = (searching ? destResults : hotLocations)
+    .filter((d) => !pickedIds.has(destId(d)))
+    .slice(0, 6);
+  // When every match is somewhere already picked, say so — "Nothing yet, I'm
+  // adding places every week" would read as if the place didn't exist.
+  const alreadyPicked = searching
+    ? destResults.filter((d) => pickedIds.has(destId(d))).map((d) => d.name)
+    : [];
+  const destEmptyText = searching
+    ? alreadyPicked.length
+      ? `${joinNames(alreadyPicked)} ${alreadyPicked.length > 1 ? "are" : "is"} already on your trip.`
+      : "Nothing yet. I'm adding places every week. Try Japan, Vietnam, Bali, Thailand or Italy."
+    : "Start typing a country or a city.";
   const destListLabel =
     destQuery.trim().length >= 2
       ? destLoading
@@ -428,39 +504,42 @@ const StepTrip = ({
           )}
         </div>
 
-        {/* Destination */}
+        {/* Destinations */}
         <div className="kform-field-wrap kform-area-dest">
-          <div className="kform-label">Destination</div>
-          {dest ? (
-            <div className="kform-field" style={{ padding: "12px 16px", gap: 14 }}>
-              <DestTile dest={dest} />
+          <div className="kform-label">
+            {dests.length > 1 ? "Destinations" : "Destination"}
+          </div>
+          {dests.map((d) => (
+            <div
+              key={d.input_id || destId(d)}
+              className="kform-field kform-dest-row"
+            >
+              <DestTile dest={d} />
               <div className="kform-opt-body">
-                <div className="kform-opt-name" style={{ fontSize: 15 }}>
-                  {dest.name}
-                </div>
-                <div className="kform-opt-sub" style={{ fontSize: 12, marginTop: 2 }}>
-                  {destSubtitle(dest)}
+                <div className="kform-opt-name kform-dest-name">{d.name}</div>
+                <div className="kform-opt-sub kform-dest-sub">
+                  {destSubtitle(d)}
                 </div>
               </div>
               <button
                 type="button"
                 className="kform-clear"
-                aria-label="change destination"
-                onClick={() => {
-                  onClearDest();
-                  setDestQuery("");
-                  if (isNarrow()) {
-                    openSheet("dest");
-                    return;
-                  }
-                  setDestOpen(true);
-                  setFromOpen(false);
-                  setCalOpen(false);
-                }}
+                aria-label={`remove ${d.name}`}
+                onClick={() => removeDest(d)}
               >
                 <IconX />
               </button>
             </div>
+          ))}
+          {!showDestInput ? (
+            <button
+              type="button"
+              className="kform-dashed-btn kform-dest-add"
+              onClick={startAddingDest}
+            >
+              <IconPlus />
+              Add another destination
+            </button>
           ) : (
             <>
               <div
@@ -487,9 +566,14 @@ const StepTrip = ({
                   <IconSearch />
                 </span>
                 <input
+                  ref={destInputRef}
                   className="kform-input"
                   value={destQuery}
-                  placeholder="A country, a coastline, a city, anywhere"
+                  placeholder={
+                    dests.length
+                      ? "Add another country or city"
+                      : "A country, a coastline, a city, anywhere"
+                  }
                   onChange={(e) => {
                     setDestQuery(e.target.value);
                     setDestOpen(true);
@@ -510,11 +594,7 @@ const StepTrip = ({
                       key={d.resource_id || d.id || `${d.name}-${i}`}
                       type="button"
                       className="kform-opt"
-                      onClick={() => {
-                        onPickDest(d);
-                        setDestOpen(false);
-                        setDestQuery("");
-                      }}
+                      onClick={() => pickDest(d)}
                     >
                       <DestTile dest={d} className="kform-tile--sm" />
                       <div className="kform-opt-body">
@@ -525,11 +605,7 @@ const StepTrip = ({
                     </button>
                   ))}
                   {destList.length === 0 && !destLoading && (
-                    <div className="kform-pop-empty">
-                      {destQuery.trim().length >= 2
-                        ? "Nothing yet. I'm adding places every week. Try Japan, Vietnam, Bali, Thailand or Italy."
-                        : "Start typing a country or a city."}
-                    </div>
+                    <div className="kform-pop-empty">{destEmptyText}</div>
                   )}
                 </div>
               )}
@@ -605,19 +681,17 @@ const StepTrip = ({
       <SearchSheet
         open={sheet === "dest"}
         onClose={() => setSheet(null)}
-        placeholder="A country, a coastline, a city, anywhere"
+        placeholder={
+          dests.length
+            ? "Add another country or city"
+            : "A country, a coastline, a city, anywhere"
+        }
         value={destQuery}
         onChange={(e) => setDestQuery(e.target.value)}
         onClear={() => setDestQuery("")}
         label={destListLabel}
         loading={destLoading && destList.length === 0}
-        empty={
-          destList.length === 0 && !destLoading
-            ? destQuery.trim().length >= 2
-              ? "Nothing yet. I'm adding places every week. Try Japan, Vietnam, Bali, Thailand or Italy."
-              : "Start typing a country or a city."
-            : null
-        }
+        empty={destList.length === 0 && !destLoading ? destEmptyText : null}
       >
         {destList.map((d, i) => (
           <button
@@ -625,8 +699,7 @@ const StepTrip = ({
             type="button"
             className="kform-opt"
             onClick={() => {
-              onPickDest(d);
-              setDestQuery("");
+              pickDest(d);
               setSheet(null);
             }}
           >
