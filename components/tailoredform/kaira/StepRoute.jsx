@@ -28,15 +28,53 @@ const TripMap = dynamic(() => import("../../bot-components/Map"), {
   ssr: false,
 });
 
-const GRADS = [
-  "linear-gradient(135deg,#7a8fb5,#4a5d80)",
-  "linear-gradient(135deg,#d98d6b,#b05f42)",
-  "linear-gradient(135deg,#6ba883,#3d7a58)",
-  "linear-gradient(135deg,#7ab8e8,#4a7fb5)",
-  "linear-gradient(135deg,#c9a86b,#96753d)",
-  "linear-gradient(135deg,#d4a5c9,#9c6b91)",
-  "linear-gradient(135deg,#e8a87c,#c96f4a)",
+// One colour per stop, cycled. These are the map's own accent hexes
+// (ACCENT_COLORS in bot-components/Map.tsx), starting on the brand coral the map
+// falls back to — the same value passed through `color` on each map location, so
+// stop 3 in the list and pin 3 on the map are the same colour.
+const PIN_COLORS = [
+  "#FD6D6C",
+  "#3b82f6",
+  "#22c55e",
+  "#f97316",
+  "#a855f7",
+  "#06b6d4",
+  "#ec4899",
+  "#eab308",
 ];
+const pinColor = (i) => PIN_COLORS[i % PIN_COLORS.length];
+
+// The map's numbered teardrop, drawn inline in the list.
+//
+// Same path data as getNumberedPin() so the two read as one set: coloured
+// teardrop, white centre, the stop number in the pin's own colour. The number
+// stays — it is what ties a row to its pin — it has just moved inside the pin
+// and out of the square tile it used to sit in.
+const RoutePin = ({ index }) => {
+  const color = pinColor(index);
+  return (
+    <span className="kform-pin" aria-hidden="true">
+      <svg viewBox="0 0 48 61" width="28" height="36" fill="none">
+        <path
+          d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0ZM24 32.523C19.2686 32.523 15.4286 28.6887 15.4286 23.9643C15.4286 19.2399 19.2686 15.4056 24 15.4056C28.7314 15.4056 32.5714 19.2399 32.5714 23.9643C32.5714 28.6887 28.7314 32.523 24 32.523Z"
+          fill={color}
+        />
+        <circle cx="24" cy="23.9643" r="11.5" fill="#fff" />
+        <text
+          x="24"
+          y="28.5"
+          textAnchor="middle"
+          fontFamily="Inter, Arial, sans-serif"
+          fontSize="15"
+          fontWeight="700"
+          fill={color}
+        >
+          {index + 1}
+        </text>
+      </svg>
+    </span>
+  );
+};
 
 const MAX_NIGHTS = 14;
 
@@ -174,6 +212,9 @@ const StepRoute = ({
           lng: Number(cityLng(c)),
           duration: cityNights(c),
           image: c?.image || c?.city?.image?.[0]?.image,
+          // Read by the map's resolvePinColor — this is what keeps pin 3 on the
+          // map the same colour as stop 3 in the list.
+          color: pinColor(i),
         }))
         .filter((l) => Number.isFinite(l.lat) && Number.isFinite(l.lng)),
     [cities],
@@ -238,19 +279,9 @@ const StepRoute = ({
                           <span className="kform-grip" {...drag.dragHandleProps} aria-label="drag to reorder">
                             <IconGrip />
                           </span>
-                          {c?.image || c?.city?.image?.[0]?.image ? (
-                            <DestTile
-                              dest={{ image: c.image || c.city.image[0].image }}
-                              className="kform-tile--sm kform-tile--city"
-                            />
-                          ) : (
-                            <div
-                              className="kform-tile kform-tile--sm kform-tile--city"
-                              style={{ background: GRADS[i % GRADS.length] }}
-                            >
-                              <span className="kform-tile-num">{i + 1}</span>
-                            </div>
-                          )}
+                          {/* The pin, not a photo tile: this is the row's
+                              handle on the map beside it. */}
+                          <RoutePin index={i} />
                           <div className="kform-city-body">
                             <div className="kform-city-name">{cityName(c)}</div>
                             <div className="kform-city-sub">{dateSub(c)}</div>

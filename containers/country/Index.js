@@ -15,6 +15,7 @@ import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.j
 import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
 import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
 import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
+import PlanningSectionLite from "../../components/revamp/destination/PlanningSectionLite.jsx";
 import VisaSection from "../../components/revamp/destination/VisaSection.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
@@ -319,6 +320,13 @@ const Index = (props) => {
         />
         </div>
       ) : null}
+
+      {/* Condensed planning strip. The full dark <PlanningSection /> still runs
+          near the bottom of the page; this is the at-a-glance version. */}
+      <PlanningSectionLite
+        destinationInfo={props.data?.destination_info}
+        destinationName={destinationName}
+      />
 
       <WhenToGoSection
         seasonalInfo={props.data?.seasonal_info}

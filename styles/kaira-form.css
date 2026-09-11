@@ -588,6 +588,21 @@
   border-radius: 9px;
   font-size: 16px;
 }
+/* The route row's leading element: the map's teardrop pin, drawn inline.
+   Same 36px footprint the photo tile used to take, so the rows keep their
+   rhythm; `flex: none` because the row is a flex line and the pin must not be
+   squeezed by a long city name. */
+.kform-pin {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+.kform-pin svg {
+  display: block;
+}
 .kform-tile-num {
   font-family: var(--kf-mono);
   font-size: 13px;
@@ -665,6 +680,12 @@
   padding: 3px;
   gap: 2px;
   margin-bottom: 16px;
+  /* The panel is a flex column, which blockifies `inline-flex` and stretches
+     this to the panel's full width — so the rounded track ran edge to edge with
+     the three tabs bunched at the left. `align-self` is what actually opts out
+     of that stretch: the strip goes back to hugging its three buttons, and
+     centres over the calendar below it. */
+  align-self: center;
 }
 .kform-tab {
   padding: 8px 18px;
@@ -1686,6 +1707,8 @@
   .kform-tabs {
     display: flex;
     margin-bottom: 14px;
+    /* Full width on a phone: the three tabs share the row (see .kform-tab). */
+    align-self: stretch;
   }
   .kform-tab {
     flex: 1;
@@ -1810,6 +1833,14 @@
   .kform-tile--city {
     width: 40px;
     height: 40px;
+  }
+  .kform-pin {
+    width: 32px;
+    height: 40px;
+  }
+  .kform-pin svg {
+    width: 26px;
+    height: 33px;
   }
   .kform-trash {
     width: 36px;

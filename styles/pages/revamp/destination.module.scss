@@ -2248,3 +2248,106 @@
     font-size: 15px;
   }
 }
+
+/* ============ PLANNING (LITE) ============
+   Condensed, light-on-white sibling of the dark `.fromIndia` planning block.
+   Defined after `.block` so its tighter padding wins on equal specificity. */
+.planLite {
+  padding: 44px 0 12px;
+  background: var(--ttw-bg);
+  @media (max-width: 640px) {
+    padding: 32px 0 8px;
+  }
+}
+.planLiteHead {
+  max-width: 720px;
+  margin-bottom: 22px;
+}
+.planLiteKicker {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ttw-ink-4);
+  margin-bottom: 10px;
+}
+.planLiteHead h2 {
+  font-size: clamp(24px, 2.4vw, 32px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 8px;
+  color: var(--ttw-ink);
+}
+.planLiteHead h2 .serif {
+  font-weight: 400;
+}
+.planLiteHead .lede {
+  font-size: 15px;
+}
+.planLiteGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+}
+.planLiteCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 16px 18px;
+  background: var(--ttw-bg-2);
+  border: 1px solid var(--ttw-line);
+  border-radius: 14px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.planLiteCard:hover {
+  border-color: var(--ttw-ink-4);
+  background: var(--ttw-bg);
+}
+.planLiteIcon {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: var(--ttw-yellow);
+  color: var(--ttw-ink);
+}
+/* The shared icons carry their own width/height attributes (24px, sized for
+   the dark block). CSS beats presentation attributes, so this scales them
+   down for the smaller tile — see the note on `.indiaCardIcon svg`. */
+.planLiteIcon svg {
+  width: 16px;
+  height: 16px;
+}
+.planLiteBody {
+  min-width: 0;
+}
+.planLiteLabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ttw-ink-4);
+  margin-bottom: 4px;
+}
+.planLiteValue {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--ttw-ink-2);
+  margin: 0;
+  /* Backstop for the copy `condense()` couldn't shorten. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

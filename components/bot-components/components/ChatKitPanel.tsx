@@ -50,7 +50,7 @@ import { updateIntakeForm } from "../../../store/actions/intakeForm";
 import { updatePricingForm } from "../../../store/actions/pricingForm";
 import IntakeFormCard from "./IntakeForm";
 import ThemeIntakeForm from "./ThemeIntakeForm/ThemeIntakeForm";
-import { WidgetThemeProvider } from "./WidgetRenderer";
+import { WidgetThemeProvider, resolveSupplierHotelId } from "./WidgetRenderer";
 import type {
   ThemeForm,
   ThemeFormSubmission,
@@ -1443,7 +1443,11 @@ startEmptyIntake = false,
     occupancies?: Array<{ num_adults: number; child_ages: number[] }>;
     traceId?: string;
     travclan_hotel_id?: string;
-    currency?: string;  
+    currency?: string;
+    // Detail response the hotel card already fetched before opening the
+    // drawer. Present only on that path; the drawer fetches for itself when
+    // it's absent.
+    prefetchedDetail?: any;
   }>({ show: false });
 
   // POI / Restaurant detail drawer — opened by place.view / place.detail /
@@ -4954,8 +4958,12 @@ const handleShowLogin = useCallback(() => {
                       source:
                         ((payload.source ?? payload.provider) as string) ??
                         "Travclan",
-                      travclan_hotel_id: (payload.travclan_hotel_id ?? payload.travclanHotelId ??
-                        payload.hotel_id) as string | undefined,
+                      // Supplier hotel id the detail API expects — Travclan
+                      // payloads fill travclan_hotel_id, Nuitee ones fill
+                      // nuitee_hotel_id (the other arrives as "").
+                      travclan_hotel_id:
+                        resolveSupplierHotelId(payload as Record<string, any>) ||
+                        undefined,
                       currency: payload.currency as string | undefined,
                       occupancies: (payload.occupancies ??
                         payload.occupancy) as
@@ -4963,6 +4971,7 @@ const handleShowLogin = useCallback(() => {
                         | undefined,
                       traceId: (payload.traceId ??
                         payload.trace_id) as string | undefined,
+                      prefetchedDetail: payload.prefetchedDetail,
                     });
                     return;
                   }
@@ -5614,6 +5623,9 @@ const handleShowLogin = useCallback(() => {
                 ]
           }
           traceId={hotelDrawer.traceId}
+          // The hotel card probes /hotels/detail/ before it opens this drawer;
+          // reuse that response so the same POST doesn't run twice.
+          initialData={hotelDrawer.prefetchedDetail}
           setShowLoginModal={setShowLoginModal}
           // Authoritative itinerary id for this chat. The drawer would
           // otherwise fall through to Redux Itinerary.id, which can lag

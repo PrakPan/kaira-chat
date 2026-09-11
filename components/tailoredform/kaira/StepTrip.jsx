@@ -28,13 +28,49 @@ const NARROW = "(max-width: 767.98px)";
 const isNarrow = () =>
   typeof window !== "undefined" && window.matchMedia(NARROW).matches;
 
+// Split a start-location label into a name and a region.
+//
+// /geos/search/start_locations/ returns one flat string per row — "Delft,
+// Netherlands", "Bengaluru, Karnataka, India" — and no image, so this is the
+// only material the "from" rows have to build the same two-line row the
+// destination sheet shows. Everything before the first comma is the place;
+// the rest is where it is.
+const startParts = (text) => {
+  const raw = String(text || "");
+  const at = raw.indexOf(",");
+  if (at === -1) return { name: raw, region: "" };
+  return { name: raw.slice(0, at).trim(), region: raw.slice(at + 1).trim() };
+};
+
+// The trailing chip on a start-location row — the destination rows' type chip,
+// said in the same voice.
+//
+// Google's `types` are machine words ("locality", "administrative_area_level_1")
+// and several of them are on every row ("geocode", "political"), so only the
+// ones that tell the traveller something get a label. No match, no chip — the
+// destination rows drop theirs the same way when a result has no type.
+const START_TYPES = [
+  ["airport", "AIRPORT"],
+  ["locality", "CITY"],
+  ["administrative_area_level_1", "REGION"],
+  ["country", "COUNTRY"],
+];
+const startType = (types) => {
+  const list = Array.isArray(types) ? types : [];
+  const hit = START_TYPES.find(([key]) => list.includes(key));
+  return hit ? hit[1] : "";
+};
+
 export const destSubtitle = (d) =>
   d?.country || getParent(d?.path) || d?.type || "";
 
+// Eager, not lazy: these lists are six rows of 36px thumbnails, already warmed
+// by the prefetch in StepTrip, and `loading="lazy"` only delays the paint of a
+// picture the browser is already holding in cache.
 export const DestTile = ({ dest, className = "" }) => (
   <div className={`kform-tile ${className}`}>
     {dest?.image ? (
-      <img src={CDN + dest.image} alt="" loading="lazy" />
+      <img src={CDN + dest.image} alt="" decoding="async" />
     ) : (
       <IconPin size={18} />
     )}
@@ -135,6 +171,31 @@ const StepTrip = ({
       cancelled = true;
     };
   }, [debouncedDest]);
+
+  // Warm the hot-destination thumbnails as soon as the form opens.
+  //
+  // Those tiles are the first thing in the destination list, but nothing
+  // requests them until the traveller taps the field — so the list opened onto a
+  // row of empty tiles that filled in one by one. Fetching them here means they
+  // are already in the HTTP cache by then and the list paints complete.
+  //
+  // `new Image()` and not a <link rel="preload">: the same request the <img>
+  // will make, so the cache entry matches, and no markup to clean up. The
+  // browser drops the objects once they have loaded; failures are silent by
+  // design — a warm cache is an optimisation, never a dependency.
+  const hotImages = hotLocations
+    .slice(0, 8)
+    .map((d) => d?.image)
+    .filter(Boolean)
+    .join("|");
+
+  useEffect(() => {
+    if (!hotImages || typeof window === "undefined") return;
+    hotImages.split("|").forEach((src) => {
+      const img = new window.Image();
+      img.src = CDN + src;
+    });
+  }, [hotImages]);
 
   const closeAll = () => {
     setFromOpen(false);
@@ -470,6 +531,13 @@ const StepTrip = ({
         value={fromQuery}
         onChange={(e) => setFromQuery(e.target.value)}
         onClear={() => setFromQuery("")}
+        label={
+          fromQuery.trim().length >= 2
+            ? fromLoading
+              ? "Searching…"
+              : "Matches"
+            : null
+        }
         loading={fromLoading && fromResults.length === 0}
         empty={
           fromQuery.trim().length < 2
@@ -480,25 +548,33 @@ const StepTrip = ({
         }
       >
         {fromQuery.trim().length >= 2 &&
-          fromResults.map((r) => (
-            <button
-              key={r.place_id}
-              type="button"
-              className="kform-opt"
-              onClick={() => {
-                onPickStart({ name: r.text, place_id: r.place_id });
-                setFromQuery("");
-                setSheet(null);
-              }}
-            >
-              <span className="kform-field-icon kform-field-icon--muted">
-                <IconPin />
-              </span>
-              <span className="kform-opt-name" style={{ fontWeight: 600, flex: 1 }}>
-                {r.text}
-              </span>
-            </button>
-          ))}
+          fromResults.map((r) => {
+            const { name, region } = startParts(r.text);
+            return (
+              <button
+                key={r.place_id}
+                type="button"
+                className="kform-opt"
+                onClick={() => {
+                  onPickStart({ name: r.text, place_id: r.place_id });
+                  setFromQuery("");
+                  setSheet(null);
+                }}
+              >
+                {/* Same tile as the destination rows. Start locations carry no
+                    image, so DestTile draws its pin fallback — which is the
+                    point: the two sheets differ in content, not in shape. */}
+                <DestTile dest={r} className="kform-tile--sm" />
+                <div className="kform-opt-body">
+                  <div className="kform-opt-name">{name}</div>
+                  <div className="kform-opt-sub">{region}</div>
+                </div>
+                {startType(r.types) && (
+                  <span className="kform-mono">{startType(r.types)}</span>
+                )}
+              </button>
+            );
+          })}
       </SearchSheet>
 
       <SearchSheet

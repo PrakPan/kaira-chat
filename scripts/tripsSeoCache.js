@@ -21,7 +21,9 @@ const {
   fetchIndexedList,
   fetchIndexedDetail,
   fetchItineraryContent,
+  fetchItineraryGallery,
   toPublicTrip,
+  toPublicGallery,
 } = require("../lib/seo/tripsIndexed");
 
 const CACHE_DIR = path.join(process.cwd(), ".seo-cache");
@@ -96,12 +98,23 @@ const buildPage = async (row) => {
   // cities, price and FAQs, which is a real page. It just loses the day-by-day.
   const content = raw ? toPublicTrip(raw) : null;
 
+  // The trip's photographs. A third upstream call per slug, and worth it: the
+  // SEO payload's `images` is null on four rows in five, so the page was left
+  // building a strip out of city keys — five pictures, three of them the same
+  // city twice. The gallery is what the live itinerary shows and it runs to
+  // dozens. Never fatal either: no gallery just means the page falls back to
+  // those city shots.
+  const gallery = await withRetry(`gallery ${row.slug}`, () =>
+    fetchItineraryGallery(detail.id)
+  );
+
   fs.writeFileSync(
     path.join(PAGES_DIR, `${row.slug}.json`),
     JSON.stringify({
       ...detail,
       days: content?.days || [],
       stays: content?.stays || [],
+      gallery: toPublicGallery(gallery),
       // Stamped so the next crawl can tell whether this file is still current.
       // Prefixed because everything else in here is the API's own shape and
       // reaches the page as props.
@@ -122,7 +135,12 @@ const reusable = (row) => {
 
   try {
     const cached = JSON.parse(fs.readFileSync(file, "utf8"));
-    return cached._cached_modified_at === row.modified_at ? cached : null;
+    if (cached._cached_modified_at !== row.modified_at) return null;
+    // A file written before the gallery existed is stale even at the right
+    // stamp — the trip has not changed, but what we store about it has. One
+    // full re-crawl, then stamps take over again.
+    if (!Array.isArray(cached.gallery)) return null;
+    return cached;
   } catch (err) {
     return null;
   }

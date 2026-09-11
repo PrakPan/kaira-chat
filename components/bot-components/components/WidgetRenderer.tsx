@@ -92,6 +92,28 @@ function buildBookingPayload(itinerary: any, id: string) {
   };
 }
 
+// Supplier-specific hotel id for the hotels detail API. A hotel.view payload
+// carries BOTH `travclan_hotel_id` and `nuitee_hotel_id`, with only the one
+// belonging to `source` filled in — the other arrives as "". Pick the id that
+// matches the source, then fall back to whichever id is actually populated so
+// older payloads (source-less, or hotel_id only) keep working.
+export function resolveSupplierHotelId(
+  payload: Record<string, any> | undefined | null,
+): string {
+  const p = (payload ?? {}) as Record<string, any>;
+  const source = String(p.source ?? p.provider ?? "").toLowerCase();
+  const travclan = String(p.travclan_hotel_id ?? p.travclanHotelId ?? "").trim();
+  const nuitee = String(p.nuitee_hotel_id ?? p.nuiteeHotelId ?? "").trim();
+  const preferred = source.includes("nuitee")
+    ? nuitee
+    : source.includes("travclan")
+      ? travclan
+      : "";
+  // Deliberately no fall back to `id` — that's the accommodation UUID, not a
+  // supplier id, and callers that can use it substitute it themselves.
+  return String(preferred || travclan || nuitee || p.hotel_id || p.hotelId || "");
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface WidgetNode {
@@ -1777,6 +1799,235 @@ const STAR_TAG_STYLES: Record<number, { bg: string; color: string; border: strin
   1: { bg: "#F1EFE8", color: "#444441", border: "#B4B2A9" }, // gray
 };
 
+// The widget JSON ships every gallery image the supplier has (100+ on some
+// properties). A card-sized carousel only ever needs a handful, so we cap the
+// slide set — the full gallery lives in the detail drawer.
+const MAX_HOTEL_CAROUSEL_IMAGES = 12;
+
+// Card-sized image carousel, mirroring the room carousel in the hotel detail
+// drawer (cross-fading slides, windowed dots, hover arrows) but built on plain
+// <img> + optimizedMediaUrl so it matches the rest of the widget cards. Falls
+// back to the placeholder hero when the hotel ships no usable image, and per
+// slide when a CDN link is broken.
+function HotelImageCarousel({ images, alt }: { images: string[]; alt: string }) {
+  const slides = useMemo(() => {
+    const list = Array.from(new Set(images.filter(Boolean))).slice(
+      0,
+      MAX_HOTEL_CAROUSEL_IMAGES,
+    );
+    return list.length ? list : [HOTEL_PLACEHOLDER_IMAGE];
+  }, [images]);
+
+  const count = slides.length;
+  const [index, setIndex] = useState(0);
+  const [hovered, setHovered] = useState(false);
+
+  // A shrinking slide set (new widget in the same slot) must not leave the
+  // index pointing past the end.
+  useEffect(() => {
+    setIndex((i) => (i < count ? i : 0));
+  }, [count]);
+
+  const step = (e: React.MouseEvent, delta: number) => {
+    e.stopPropagation();
+    setIndex((i) => (i + delta + count) % count);
+  };
+
+  // At most five dots: the active one plus two on either side, wrapping.
+  const visibleDots = useMemo(() => {
+    if (count <= 5) return slides.map((_, i) => i);
+    let dots = [index];
+    let before = index;
+    let after = index;
+    for (let i = 0; i < 2; i++) {
+      before = before - 1 < 0 ? count - 1 : before - 1;
+      after = after + 1 >= count ? 0 : after + 1;
+      dots = [before, ...dots, after];
+    }
+    return dots.sort((a, b) => a - b);
+  }, [count, index, slides]);
+
+  const arrowStyle: React.CSSProperties = {
+    position: "absolute",
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: 22,
+    height: 22,
+    borderRadius: 9999,
+    border: "none",
+    background: "rgba(11,18,32,0.65)",
+    color: "#ffffff",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    padding: 0,
+    zIndex: 2,
+  };
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "100%",
+        borderRadius: 12,
+        overflow: "hidden",
+        background: "#f1f1ef",
+      }}
+    >
+      {slides.map((src, i) => {
+        // Only the active slide and its immediate neighbours stay mounted —
+        // enough for the cross-fade, without 12 concurrent image requests.
+        const isNear =
+          i === index ||
+          i === (index + 1) % count ||
+          i === (index - 1 + count) % count;
+        if (!isNear) return null;
+        return (
+          <img
+            key={`${i}-${src}`}
+            src={optimizedMediaUrl(src, { width: 700 })}
+            alt={alt || "Hotel"}
+            loading="lazy"
+            onError={(e) => {
+              const el = e.currentTarget;
+              if (el.src !== HOTEL_PLACEHOLDER_IMAGE) el.src = HOTEL_PLACEHOLDER_IMAGE;
+            }}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              opacity: i === index ? 1 : 0,
+              transition: "opacity 0.35s ease-in-out",
+            }}
+          />
+        );
+      })}
+
+      {count > 1 && (
+        <>
+          {hovered && (
+            <>
+              <button
+                type="button"
+                aria-label="Previous photo"
+                onClick={(e) => step(e, -1)}
+                style={{ ...arrowStyle, left: 4 }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                aria-label="Next photo"
+                onClick={(e) => step(e, 1)}
+                style={{ ...arrowStyle, right: 4 }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </>
+          )}
+
+          <div
+            style={{
+              position: "absolute",
+              bottom: 6,
+              left: "50%",
+              transform: "translateX(-50%)",
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              zIndex: 2,
+            }}
+          >
+            {visibleDots.map((dot) => {
+              const isCurrent = dot === index;
+              return (
+                <span
+                  key={dot}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIndex(dot);
+                  }}
+                  style={{
+                    width: isCurrent ? 7 : 5,
+                    height: isCurrent ? 7 : 5,
+                    borderRadius: 9999,
+                    cursor: "pointer",
+                    background: isCurrent ? "#F7E700" : "rgba(255,255,255,0.75)",
+                    border: isCurrent ? "1px solid #0b1220" : "none",
+                    boxShadow: "0 0 2px rgba(11,18,32,0.5)",
+                    transition: "all 0.25s ease-in-out",
+                  }}
+                />
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// Distance (km) between the hotel and the city center. The backend can express
+// it as a payload field, a POI-style numeric Badge, or a plain "1.8 km …"
+// caption — accept all three and return "" when none is present so the card
+// simply omits the row.
+function extractHotelDistanceKm(
+  node: WidgetNode,
+  payload: Record<string, any>,
+): string {
+  const fromPayload =
+    payload.distance_from_city_centre ??
+    payload.distance_from_city_center ??
+    payload.distanceFromCityCentre ??
+    payload.distanceFromCityCenter ??
+    payload.distance;
+  const payloadNum = parseFloat(String(fromPayload ?? ""));
+  if (!isNaN(payloadNum) && payloadNum > 0) return String(Number(payloadNum.toFixed(1)));
+
+  const badge = findNodesByType(node, "Badge").find((b) =>
+    /^[\d.]+$/.test(String(b.label ?? b.value ?? "").trim()),
+  );
+  if (badge) {
+    const n = parseFloat(String(badge.label ?? badge.value));
+    if (!isNaN(n) && n > 0) return String(Number(n.toFixed(1)));
+  }
+
+  const texts = extractAllTexts(node);
+  // An explicit "1.8 km from the city centre" wins outright. Otherwise take a
+  // short standalone "1.8 km" caption — the length guard keeps a description
+  // that happens to mention "20 km from the airport" from being mistaken for
+  // the distance we want.
+  const kmText =
+    texts.find((t) => DISTANCE_FROM_CENTER_RE.test(t)) ??
+    texts.find((t) => t.trim().length <= 40 && /\d[\d.]*\s*km\b/i.test(t));
+  const kmMatch = kmText?.match(/(\d[\d.]*)\s*km\b/i);
+  if (kmMatch) {
+    const n = parseFloat(kmMatch[1]);
+    if (!isNaN(n) && n > 0) return String(Number(n.toFixed(1)));
+  }
+
+  return "";
+}
+
+// "1.8 km from city centre" / "2 km from the city center" — the caption the
+// server sends for hotel distance. Also used to keep that caption out of the
+// card's address slot and tag row.
+const DISTANCE_FROM_CENTER_RE =
+  /\d[\d.]*\s*km\b[^]*\bcity\s*cent(?:re|er)\b/i;
+
 function StarRatingTag({ label, starCount }: { label: string; starCount: number }) {
   const s = STAR_TAG_STYLES[starCount] ?? STAR_TAG_STYLES[1];
   return (
@@ -1809,26 +2060,19 @@ function MiniSpinner({ size = 12 }: { size?: number }) {
   );
 }
 
-// Primary CTA for the HotelCard footer. Drives the detail-fetch flow:
-//   • idle / post-error dismiss  →  "Check Availability"  (probe call only)
-//   • detail success             →  "Select Rooms"        (re-probes, then
-//                                                          opens the drawer)
-// Loading copy adapts to which variant fired the in-flight call.
+// Primary CTA for the HotelCard footer. One click fires the hotels detail
+// call (source-aware: Travclan or Nuitee id) and, once it resolves, opens the
+// room-selection drawer through the card's hotel.view action.
 function HotelPrimaryActionButton({
-  mode,
   loading,
-  loadingMode,
   disabled,
   onClick,
 }: {
-  mode: "check" | "select";
   loading: boolean;
-  loadingMode: "check" | "select";
   disabled: boolean;
   onClick: (e: React.MouseEvent) => void;
 }) {
   const interactive = !disabled && !loading;
-  const isSelect = mode === "select";
   // Yellow CTA with black border + black text — matches the booking-action
   // accent used elsewhere in the chat surface.
   const baseBg = "#f7e700";
@@ -1869,18 +2113,17 @@ function HotelPrimaryActionButton({
       {loading ? (
         <>
           <DarkMiniSpinner />
-          {loadingMode === "select" ? "Loading rooms…" : "Checking…"}
-        </>
-      ) : isSelect ? (
-        <>
-          Select Rooms
-          {/* <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg> */}
+          Loading rooms…
         </>
       ) : (
-        "Check Availability"
+        <>
+          Add to Itinerary
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </>
       )}
     </button>
   );
@@ -2031,12 +2274,16 @@ function HotelCard({
   );
   const hotelType = (typeCaption?.value as string) ?? "";
 
+  // The street address is no longer rendered (the card shows distance from the
+  // city center instead), but it's still resolved so the tag pass below can
+  // recognise and skip it.
   const addressCaption = captionNodes.find((c) => {
     const v = ((c.value as string) ?? "").trim();
     if (!v) return false;
     if (v === starsText || v === hotelType) return false;
     if (/^\(/.test(v)) return false; // rating/unit captions
     if (/★/.test(v)) return false;
+    if (/\d[\d.]*\s*km\b/i.test(v)) return false; // distance caption
     return v.length > 10;
   });
   const address = (addressCaption?.value as string) ?? "";
@@ -2051,14 +2298,12 @@ function HotelCard({
   const priceRaw = (priceNode?.value as string) ?? "";
   const priceFormatted = priceRaw ? formatPriceString(priceRaw, symbol) : "";
 
-  const allTextValues: string[] = [
-    ...captionNodes.map((n) => (n.value as string) ?? ""),
-    ...textNodes.map((n) => (n.value as string) ?? ""),
-  ];
-  const unitLabel = extractUnitLabel(allTextValues);
-
-  const imgSrc = (imageNodes[0]?.src as string) ?? "";
-  const imgAlt = (imageNodes[0]?.alt as string) ?? "";
+  // Every Image node on the card feeds the carousel; HotelImageCarousel caps
+  // the slide count and substitutes the placeholder when the list is empty.
+  const images = imageNodes
+    .map((n) => (n.src as string) ?? "")
+    .filter((src) => !!src);
+  const imgAlt = ((imageNodes[0]?.alt as string) ?? name) || "Hotel";
 
   const clickAction = node.onClickAction as
     | { type: string; payload?: Record<string, unknown> }
@@ -2071,8 +2316,9 @@ function HotelCard({
     ((clickPayload as any).itinerary_city_id as string | undefined);
   const cityName = useCityNameById(itineraryCityId);
 
-  const ratingCaption = captionNodes.find((c) => /\([\d.]+\)/.test((c.value as string) ?? ""));
-  const ratingMatch = ((ratingCaption?.value as string) ?? "").match(/[\d.]+/);
+  // Distance from the city center replaces the street address on the card.
+  const distanceKm = extractHotelDistanceKm(node, clickPayload as Record<string, any>);
+
   const rating = starsText ? starsText.trim().length : 0;
 
 const starIcons = Array.from({ length: 5 }, (_, i) =>
@@ -2099,22 +2345,29 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
     if (v === starsText || v === hotelType || v === address) continue;
     if (/★/.test(v)) continue;
     if (/^\(/.test(v)) continue; // unit / rating captions like "(Per Night)"
+    // Guest-review captions — "4.3 (483)" or a bare "4.3". The card no longer
+    // surfaces review scores or counts.
+    if (/^\d+(?:\.\d+)?\s*(?:\(\s*[\d,]+\s*\))?$/.test(v)) continue;
+    // Distance captions have their own row below the description.
+    if (/\d[\d.]*\s*km\b/i.test(v)) continue;
     if (v.length > 30) continue; // too long to be a tag
     if (hotelTags.includes(v)) continue;
     hotelTags.push(v);
   }
 
   // ── Detail-fetch flow ────────────────────────────────────────────────────
-  // Card click and the Check Availability button both pre-flight the hotel
-  // detail endpoint. On success we open the drawer via the existing
-  // hotel.view action; on failure we surface a Raise Query CTA at the bottom
-  // of the card. The drawer's own fetch still runs after — this is just a
-  // gate so users see "raise a query" instead of a half-loaded drawer.
+  // Card click and the "Add to Itinerary" CTA both pre-flight the hotel detail
+  // endpoint. On success we open the room drawer via the existing hotel.view
+  // action; on failure we surface a Raise Query CTA at the bottom of the card.
+  // The drawer's own fetch still runs after — this is just a gate so users see
+  // "raise a query" instead of a half-loaded drawer.
   const accommodationId = ((clickPayload as any).id as string) ?? "";
-  const travclanHotelId =
-    ((clickPayload as any).travclan_hotel_id ??
-      (clickPayload as any).travclanHotelId ??
-      accommodationId) as string;
+  // Supplier hotel id — travclan_hotel_id for Travclan, nuitee_hotel_id for
+  // Nuitee. The payload always carries both keys with the unused one blank.
+  const supplierHotelId =
+    resolveSupplierHotelId(clickPayload as Record<string, any>) || accommodationId;
+  const hotelSource = (((clickPayload as any).source ??
+    (clickPayload as any).provider) as string) || "Travclan";
   const dbCityId = ((clickPayload as any).dbCityId ??
     (clickPayload as any).db_city_id) as string | undefined;
   const startDate = ((clickPayload as any).startDate ??
@@ -2150,9 +2403,6 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
   const [detailStatus, setDetailStatus] = useState<DetailStatus>("idle");
   const [detailError, setDetailError] = useState<string>("");
   const [raisingQuery, setRaisingQuery] = useState(false);
-  // Which CTA fired the in-flight detail call. "check" probes only; "select"
-  // re-probes and (on success) opens the hotel drawer via onAction.
-  const [pendingAction, setPendingAction] = useState<"check" | "select">("check");
 
   const getToken = (): string =>
     (typeof window !== "undefined" &&
@@ -2161,31 +2411,34 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
         localStorage.getItem("access_token"))) ||
     "";
 
-  const fetchDetail = async (action: "check" | "select" = "check") => {
+  const fetchDetail = async () => {
     if (!clickAction || !accommodationId || detailStatus === "loading") return;
-    setPendingAction(action);
     setDetailStatus("loading");
     setDetailError("");
     const token = getToken();
     try {
-      await axios.post(
+      const res = await axios.post(
         `${MERCURY_HOST}/api/v1/hotels/detail/?currency=${currencyCode}`,
         {
           trace_id: traceId,
           check_in: startDate,
           check_out: endDate,
-          hotel_id: travclanHotelId,
+          hotel_id: supplierHotelId,
           city_id: dbCityId,
           currency: currencyCode,
-          source: ((clickPayload as any).source as string) ?? "Travclan",
+          source: hotelSource,
           occupancies,
         },
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined,
       );
       setDetailStatus("success");
-      // Probe-only: stay on the card so the user can pick "Select Rooms".
-      // Drawer is only opened on the second (explicit) click.
-      if (action === "select") onAction?.(clickAction);
+      // Rooms are live — hand off to the drawer where the user picks one, and
+      // carry this response along so the drawer renders it instead of firing
+      // the identical POST a second time.
+      onAction?.({
+        ...clickAction,
+        payload: { ...(clickAction.payload ?? {}), prefetchedDetail: res.data },
+      });
     } catch (err: any) {
       const msg =
         err?.response?.data?.errors?.[0]?.message?.[0] ??
@@ -2241,12 +2494,11 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
   };
 
   const detailLoading = detailStatus === "loading";
-  const ctaMode: "check" | "select" = detailStatus === "success" ? "select" : "check";
   const cardClickable = !!clickAction && !!accommodationId;
 
   const handleCardClick = () => {
     if (!cardClickable || detailLoading) return;
-    fetchDetail(ctaMode);
+    fetchDetail();
   };
 
   return (
@@ -2347,68 +2599,48 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
             </p>
           )}
 
-          {/* Address — shown below the description only when present */}
-          {address && (
+          {/* Distance from the city center — replaces the street address, which
+              tells a traveller far less about where the hotel actually sits. */}
+          {distanceKm && (
             <div
               style={{
                 display: "flex",
-                alignItems: "flex-start",
+                alignItems: "center",
                 gap: 6,
                 marginTop: description ? 8 : 0,
               }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#8a93a6"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{ flexShrink: 0, marginTop: 2 }}
-              >
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
+              <MapPinIcon size={14} color="#445069" />
               <span
                 style={{
                   fontSize: 12,
-                  color: "var(--color-text-secondary)",
-                  lineHeight: 1.45,
+                  fontWeight: 500,
+                  color: "#0369a1",
+                  background: "#e0f2fe",
+                  padding: "2px 8px",
+                  borderRadius: 9999,
+                  border: "1px solid #BAE6FD",
                   fontFamily:
                     "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                 }}
               >
-                {address}
+                {distanceKm} km
+                {cityName ? ` from ${cityName} City Center` : " from City Center"}
               </span>
             </div>
           )}
         </div>
 
-        <div className="w-full sm:w-[140px] shrink-0 self-start">
-          <div className="w-full h-40 sm:h-[110px] rounded-xl overflow-hidden">
-            <img
-              src={optimizedMediaUrl(imgSrc || HOTEL_PLACEHOLDER_IMAGE, { width: 700 })}
-              alt={imgAlt || name || "Hotel"}
-              loading="lazy"
-              onError={(e) => {
-                const el = e.currentTarget;
-                if (el.src !== HOTEL_PLACEHOLDER_IMAGE) {
-                  el.src = HOTEL_PLACEHOLDER_IMAGE;
-                }
-              }}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
+        <div className="w-full sm:w-[160px] shrink-0 self-start">
+          <div className="w-full h-40 sm:h-[120px]">
+            <HotelImageCarousel images={images} alt={imgAlt} />
           </div>
         </div>
       </div>
 
-      {/* Footer row — price on the left, primary CTA on the right. Wraps to
-          two lines on narrow widths so the CTA never overlaps the price. The
-          CTA copy switches from "Check Availability" to "Select Rooms" after
-          a successful probe so users can explicitly open the room drawer. */}
+      {/* Footer row — "starting from <price> /person" on the left, the
+          Add to Itinerary CTA on the right. Wraps to two lines on narrow
+          widths so the CTA never overlaps the price. */}
       {(priceFormatted || (accommodationId && detailStatus !== "error")) && (
         <div
           style={{
@@ -2424,21 +2656,33 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
           }}
         >
           {priceFormatted ? (
-            <div style={{ display: "flex", flexDirection: "row", gap: 2, minWidth: 0 }}>
-              <PriceLabel />
-              <div style={{ display: "flex", alignItems: "baseline", gap: 4, flexWrap: "wrap" }}>
-                <span
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 700,
-                    color: "var(--color-text-primary)",
-                    fontFamily: "'Inter', sans-serif",
-                    lineHeight: 1.2,
-                  }}
-                >
-                  {priceFormatted}
-                </span>
-                {unitLabel && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: "0.02em",
+                  color: "var(--color-text-secondary)",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                  lineHeight: 1.2,
+                }}
+              >
+                Starting from
+              </span>
+              <div style={{ display: "flex", flexDirection: "row", gap: 6, alignItems: "center", minWidth: 0 }}>
+                <PriceLabel />
+                <div style={{ display: "flex", alignItems: "baseline", gap: 4, flexWrap: "wrap" }}>
+                  <span
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 700,
+                      color: "var(--color-text-primary)",
+                      fontFamily: "'Inter', sans-serif",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {priceFormatted}
+                  </span>
                   <span
                     style={{
                       fontSize: 12,
@@ -2446,9 +2690,9 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
                       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                     }}
                   >
-                    / {unitLabel.toLowerCase()}
+                    /person
                   </span>
-                )}
+                </div>
               </div>
             </div>
           ) : (
@@ -2457,13 +2701,11 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
 
           {accommodationId && detailStatus !== "error" && (
             <HotelPrimaryActionButton
-              mode={ctaMode}
               loading={detailLoading}
-              loadingMode={pendingAction}
               disabled={!cardClickable}
               onClick={(e) => {
                 e.stopPropagation();
-                fetchDetail(ctaMode);
+                fetchDetail();
               }}
             />
           )}

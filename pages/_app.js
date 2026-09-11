@@ -22,6 +22,7 @@ import { bootstrapUserLocation } from "../services/userLocationBootstrap";
 import { changeUserLocation } from "../store/actions/userLocation";
 import { usePathname } from "next/navigation";
 import JupyterAnalytics from "../components/JupyterAnalytics";
+import RouteLoader from "../components/revamp/common/components/loader/RouteLoader";
 import { captureAdParams, captureLandingPage } from "../helper/adAttribution";
 import { replaceUrl } from "../helper/historyUrl";
 
@@ -274,6 +275,11 @@ function MyApp({ Component, pageProps }) {
           404s, and its companion inline script called
           window.JupiterAnalytics.init(), a method the real tracker doesn't
           expose, so it threw and raced the real tracker for the same global. */}
+
+      {/* Site-wide navigation loader: a full-screen branded overlay for every
+          client-side route change. Renders nothing until a navigation actually
+          starts, and skips ones that finish inside 250ms. */}
+      <RouteLoader />
 
       <div id="modal-root"></div>
 

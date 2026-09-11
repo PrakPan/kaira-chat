@@ -6,7 +6,7 @@
 // /api/v1/hotels/detail/ endpoint (same payload shape as viewHotelDetails)
 // and routes "select room" through the same itinerary booking API.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
@@ -47,6 +47,10 @@ const AccommodationDetailDrawer = ({
   source = "Travclan",
   occupancies = undefined,
   traceId = undefined,
+  // A /api/v1/hotels/detail/ response the caller already fetched (the chat
+  // hotel card probes it before opening this drawer). When supplied we render
+  // it instead of repeating the identical POST.
+  initialData = undefined,
   // Optional hook fired after the booking POST succeeds. Receives the
   // booking payload so callers (e.g. the chat panel) can refresh derived
   // state on top of the Stays Redux update we already perform.
@@ -97,11 +101,24 @@ const AccommodationDetailDrawer = ({
     setInternalGalleryImages(images);
   };
 
+  // Each prefetched response is adopted exactly once. A later open always
+  // arrives with a fresh object (the card re-probes), so this only suppresses
+  // the duplicate fetch, never a genuine refresh.
+  const consumedInitialData = useRef(null);
+
   useEffect(() => {
     if (!show || !accommodationId) return;
+    if (initialData && consumedInitialData.current !== initialData) {
+      consumedInitialData.current = initialData;
+      setData(initialData);
+      setLoading(false);
+      setError(false);
+      setErrorMsg(null);
+      return;
+    }
     fetchDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [show, accommodationId, check_in, check_out]);
+  }, [show, accommodationId, check_in, check_out, initialData]);
 
   useEffect(() => {
     if (show) {
