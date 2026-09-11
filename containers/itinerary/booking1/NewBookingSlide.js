@@ -3221,11 +3221,16 @@ const Details = (props) => {
     // itinerary's `travellers` array cannot reflect. The array stays as the
     // fallback for carts that predate the flag. An UNDEFINED array is not "no
     // travellers", it is "not loaded yet", so it must not gate on its own.
+    //
+    // Only the full / balance payment is gated. The lock-in fee just holds the
+    // price — nothing is booked against names yet — so asking for everyone on
+    // the trip before a small hold fee is friction for nothing. The names are
+    // collected when the balance is paid, which is also "full" here.
     const travellersMissing =
       !travellerDetailsVerified &&
       Array.isArray(Itinerary?.travellers) &&
       Itinerary.travellers.length === 0;
-    if ((label === "full" || label === "lockin") && travellersMissing) {
+    if (label === "full" && travellersMissing) {
       setTravellerDetailsOpen(true);
       // An auto-started payment stops HERE rather than at the gateway. Tell the
       // caller so its button stops reading as busy — but the gate is rendered
@@ -4438,9 +4443,10 @@ const Details = (props) => {
         </div>
       </Drawer>
 
-      {/* Traveller details — the gate every pay CTA passes through, including
-          the ones outside this cart (the hold modal's two buttons auto-start a
-          payment and land here when the names are missing).
+      {/* Traveller details — the gate every full / balance payment passes
+          through, including the ones outside this cart (the hold modal's "pay
+          in full" auto-starts a payment and lands here when the names are
+          missing). Paying the lock-in fee is never gated — see handlePayNow.
 
           A bottom sheet on the phone and a right-anchored drawer on desktop,
           matching the surface each width already uses: as a right drawer at
@@ -4452,9 +4458,10 @@ const Details = (props) => {
           releasing `top` the sheet stretches to the full viewport whatever
           height it is given. */}
       {/* ── Traveller details ────────────────────────────────────────────────
-          The gate every pay CTA passes through, including the ones outside this
-          cart: the hold modal's two buttons auto-start a payment and land here
-          when the names are missing.
+          The gate every full / balance payment passes through, including the
+          ones outside this cart: the hold modal's "pay in full" auto-starts a
+          payment and lands here when the names are missing. The hold itself
+          goes straight to the gateway.
 
           On the phone this is the SAME sheet the cart raises — bottom-anchored,
           titled, with the save button pinned in a fixed footer — rather than a

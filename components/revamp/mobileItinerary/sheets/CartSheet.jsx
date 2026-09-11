@@ -638,8 +638,13 @@ export default function CartSheet({
   // "full" for the whole balance. The hold card offers both, so the choice has
   // to travel with the tap; the footer bar leaves it out and the drawer falls
   // back to its own `payNowType`, exactly as before.
+  //
+  // Only the full / balance payment needs the names — the drawer's gate skips
+  // the hold, so this one does too. The footer bar's untyped tap is resolved
+  // the way the drawer will resolve it (`payNowType` off the same cart).
   const handlePayNow = (type) => {
-    if (!traveller.verified) {
+    const saleType = type || (model.requiresLockIn ? "lockin" : "full");
+    if (saleType === "full" && !traveller.verified) {
       setTravellersOpen(true);
       return;
     }
