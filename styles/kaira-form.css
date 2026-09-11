@@ -1248,6 +1248,14 @@
   overflow: auto;
   max-height: 190px;
 }
+/* A phone searches in the full-screen sheet (SearchSheet), never here. The
+   query is shared with the sheet, so without this, backing out of the sheet
+   with text typed left this desktop list showing under the field. */
+@media (max-width: 767.98px) {
+  .kform-add-list {
+    display: none;
+  }
+}
 .kform-add-foot {
   display: flex;
   align-items: center;

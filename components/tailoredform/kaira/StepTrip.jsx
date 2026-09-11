@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import useDebounce from "../../../hooks/useDebounce";
 import axiossearchinstance from "../../../services/search/searchsuggest";
@@ -122,6 +122,29 @@ const StepTrip = ({
     setDestOpen(false);
     setCalOpen(false);
     setSheet(which);
+  };
+
+  // Focus "Starting from" whenever it comes up empty — on wide screens only.
+  //
+  // This was `autoFocus`, which fired on phones too: the keyboard came up on an
+  // inline field that was never tapped, so the tap handlers that open the
+  // full-screen search never ran, and typing got the desktop dropdown instead.
+  // Same bug as the route step's "Add a city" field.
+  const fromInputRef = useRef(null);
+  useEffect(() => {
+    if (!startingLocation && !isNarrow()) fromInputRef.current?.focus();
+    // Keyed on empty/filled only: a different picked place shouldn't refocus.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!startingLocation]);
+
+  // Backstop for focus that doesn't come from a tap (the keyboard's "next"
+  // key, assistive tech, a webview that ignores the pointerdown preventDefault):
+  // on a phone these fields are never typed into — the sheet is.
+  const redirectFocusToSheet = (e, which) => {
+    if (!isNarrow()) return false;
+    e.target.blur();
+    openSheet(which);
+    return true;
   };
 
   useEffect(() => {
@@ -311,15 +334,16 @@ const StepTrip = ({
                   <IconSearch />
                 </span>
                 <input
+                  ref={fromInputRef}
                   className="kform-input"
                   value={fromQuery}
                   placeholder="A city or region"
-                  autoFocus
                   onChange={(e) => {
                     setFromQuery(e.target.value);
                     setFromOpen(true);
                   }}
-                  onFocus={() => {
+                  onFocus={(e) => {
+                    if (redirectFocusToSheet(e, "from")) return;
                     setFromOpen(true);
                     setDestOpen(false);
                     setCalOpen(false);
@@ -470,7 +494,8 @@ const StepTrip = ({
                     setDestQuery(e.target.value);
                     setDestOpen(true);
                   }}
-                  onFocus={() => {
+                  onFocus={(e) => {
+                    if (redirectFocusToSheet(e, "dest")) return;
                     setDestOpen(true);
                     setFromOpen(false);
                     setCalOpen(false);

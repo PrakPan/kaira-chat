@@ -93,6 +93,18 @@ const cityNights = (c) => Number(c?.duration || c?.nights || 1);
 const rowKey = (c, i) =>
   String(c?.itinerary_city_id || c?.city_id || c?.id || `${cityName(c)}-${i}`);
 
+// A route can visit the same city twice (out to the coast and back through the
+// capital), and both stops carry the same city_id — so the id alone is not a
+// unique React key / draggableId. The second and later visits get a suffix.
+const rowKeys = (cities) => {
+  const seen = {};
+  return cities.map((c, i) => {
+    const k = rowKey(c, i);
+    seen[k] = (seen[k] || 0) + 1;
+    return seen[k] > 1 ? `${k}~${seen[k]}` : k;
+  });
+};
+
 /**
  * Step 2 — "Shape the route": reorder stops, trade nights, add or remove a
  * city. Works directly on `cities` (the /initiate basic_route), which the
@@ -126,6 +138,21 @@ const StepRoute = ({
   const [addResults, setAddResults] = useState([]);
   const [addLoading, setAddLoading] = useState(false);
   const debouncedAdd = useDebounce(addQuery, 350);
+  const addInputRef = useRef(null);
+
+  // Focus the "Where else?" field when the panel opens — on wide screens only.
+  //
+  // This used to be `autoFocus`, which also fired on phones: tapping "Add a
+  // city" focused the field and raised the keyboard without the field ever
+  // being tapped, so the pointerdown/click pair below — the only thing that
+  // opens the phone search sheet — never ran. The first thing typed went into
+  // the inline input and its desktop dropdown; only a second tap on the field
+  // opened the sheet. Once the panel had been opened it stayed mounted, so the
+  // field never auto-focused again and every later tap looked right, until the
+  // panel was closed and reopened.
+  useEffect(() => {
+    if (addOpen && !isNarrow()) addInputRef.current?.focus();
+  }, [addOpen]);
 
   useEffect(() => {
     let cancelled = false;
@@ -175,13 +202,12 @@ const StepRoute = ({
     commit(next);
   };
 
+  // A city already on the route can be added again, always as a stop of its
+  // own — a return visit is a real route shape. This used to bail out silently
+  // instead, and because the bail happened before the query was cleared, a
+  // phone was left with the search text in the field and the inline dropdown
+  // showing, where tapping the city again did nothing either.
   const addCity = (r) => {
-    const exists = cities.some(
-      (c) =>
-        (r.resource_id && (c.city_id === r.resource_id || c.resource_id === r.resource_id)) ||
-        cityName(c).toLowerCase() === String(r.name).toLowerCase(),
-    );
-    if (exists) return;
     commit([
       ...cities,
       {
@@ -201,6 +227,8 @@ const StepRoute = ({
 
   // The map matches a stop to its pin number by id, so every stop needs one of
   // its own even when the same city appears twice.
+  const keys = useMemo(() => rowKeys(cities), [cities]);
+
   const mapLocations = useMemo(
     () =>
       cities
@@ -269,7 +297,7 @@ const StepRoute = ({
               {(provided) => (
                 <div ref={provided.innerRef} {...provided.droppableProps}>
                   {cities.map((c, i) => (
-                    <Draggable key={rowKey(c, i)} draggableId={rowKey(c, i)} index={i}>
+                    <Draggable key={keys[i]} draggableId={keys[i]} index={i}>
                       {(drag, snapshot) => (
                         <div
                           ref={drag.innerRef}
@@ -351,12 +379,21 @@ const StepRoute = ({
                   <IconSearch size={15} />
                 </span>
                 <input
+                  ref={addInputRef}
                   className="kform-input"
                   style={{ fontSize: 14 }}
                   value={addQuery}
-                  autoFocus
                   placeholder="Where else?"
                   onChange={(e) => setAddQuery(e.target.value)}
+                  // Backstop for any focus that doesn't come from a tap (the
+                  // keyboard's "next" key, an assistive tech, a webview that
+                  // ignores the preventDefault below): on a phone this field
+                  // is never typed into — the sheet is.
+                  onFocus={(e) => {
+                    if (!isNarrow()) return;
+                    e.target.blur();
+                    setAddSheet(true);
+                  }}
                   // On a phone the search takes over the screen instead of
                   // opening a list inside a panel that is already low in a
                   // scrolling step. preventDefault keeps focus (and so the
