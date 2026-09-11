@@ -2298,6 +2298,16 @@ function HotelCard({
   const priceRaw = (priceNode?.value as string) ?? "";
   const priceFormatted = priceRaw ? formatPriceString(priceRaw, symbol) : "";
 
+  // Price unit as the server states it — "(Per Night)" → "night". Hotel rates
+  // are quoted per night, so we echo the widget's own unit rather than assume
+  // one; if the server sends none, the suffix is simply omitted.
+  const priceUnit = extractUnitLabel([
+    ...captionNodes.map((n) => (n.value as string) ?? ""),
+    ...textNodes.map((n) => (n.value as string) ?? ""),
+  ])
+    .replace(/^per\s+/i, "")
+    .toLowerCase();
+
   // Every Image node on the card feeds the carousel; HotelImageCarousel caps
   // the slide count and substitutes the placeholder when the list is empty.
   const images = imageNodes
@@ -2638,7 +2648,7 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
         </div>
       </div>
 
-      {/* Footer row — "starting from <price> /person" on the left, the
+      {/* Footer row — "Starting from <price> /<unit>" on the left, the
           Add to Itinerary CTA on the right. Wraps to two lines on narrow
           widths so the CTA never overlaps the price. */}
       {(priceFormatted || (accommodationId && detailStatus !== "error")) && (
@@ -2683,15 +2693,17 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
                   >
                     {priceFormatted}
                   </span>
-                  <span
-                    style={{
-                      fontSize: 12,
-                      color: "var(--color-text-secondary)",
-                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-                    }}
-                  >
-                    /person
-                  </span>
+                  {priceUnit && (
+                    <span
+                      style={{
+                        fontSize: 12,
+                        color: "var(--color-text-secondary)",
+                        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                      }}
+                    >
+                      /{priceUnit}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
