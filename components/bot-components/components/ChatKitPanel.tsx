@@ -24,6 +24,7 @@ import useMediaQuery from "../../../hooks/useMedia";
 import { MERCURY_HOST, CHATKIT_HOST, CHATKIT_API_URL } from "../../../services/constants";
 
 import { openNotification } from "../../../store/actions/notification";
+import { authLogout } from "../../../store/actions/auth";
 import setItinerary, {
   deletePoiFromItinerary,
   deleteActivityFromItinerary,
@@ -385,7 +386,33 @@ function getAuthToken(): string | null {
   );
 }
 
-const Spinner = ({ size = 16 }: { size?: number }) => (
+// Drops a session the backend has rejected. Clears every key getAuthToken reads
+// plus the profile keys the app's own logout clears, so nothing keeps treating
+// the dead token as a live login. Local only — the token is already invalid, so
+// there's nothing to revoke server-side.
+const STALE_SESSION_KEYS = [
+  "token",
+  "authToken",
+  "access_token",
+  "name",
+  "email",
+  "phone",
+  "user_id",
+  "expirationDate",
+  "MyPlans",
+  "user_image",
+  "is_new_user",
+];
+function clearStaleSessionStorage() {
+  if (typeof window === "undefined") return;
+  for (const key of STALE_SESSION_KEYS) localStorage.removeItem(key);
+}
+
+// `prompt_login` reasons meaning "the token you sent is no good" (as opposed to
+// "you're anonymous and this step needs an account").
+const REJECTED_TOKEN_REASONS = new Set(["invalid_token"]);
+
+const Spinner =({ size = 16 }: { size?: number }) => (
   <svg
     width={size}
     height={size}
@@ -2608,6 +2635,20 @@ case "prompt_login": {
   // re-inject the card (the backend replays this prompt on the opted-out
   // resume). Without this the card loops straight back and blocks the chat.
   if (loginOptedOutRef.current) break;
+  // Expired / rejected token: the backend couldn't authenticate the token we
+  // sent, but it's still sitting in Redux + localStorage, so the client keeps
+  // believing it's logged in. That hid the card entirely — OtpCard reads
+  // `auth.token` on mount, takes it as a just-completed verify and removes
+  // itself — and it would also stop the post-login replay, which only fires on
+  // a no-token → token transition. Drop the dead session first, before the
+  // card is added, so the card mounts logged-out and a fresh login replays.
+  if (
+    REJECTED_TOKEN_REASONS.has(String(data.reason ?? "")) &&
+    isLoggedInRef.current
+  ) {
+    clearStaleSessionStorage();
+    dispatch(authLogout());
+  }
   // Mid-chat login: remember what to replay, then drop an inline login card
   // into the thread (instead of the modal). The token-watch effect re-fires
   // `pendingPostLoginAction` automatically once auth succeeds.
