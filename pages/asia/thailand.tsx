@@ -16,6 +16,7 @@
 // Kaira, or saves the catalog element behind it into the trip tray; the docked
 // bar then builds a route around the selection.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect } from "react";
@@ -34,7 +35,7 @@ import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSe
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
-const SITE = "https://thetarzanway.com";
+const SITE = SITE_ORIGIN;
 const PAGE = "/asia/thailand";
 const THEME_SLUG = "thailand";
 // Thailand's visa desk. The country page links out rather than saving a visa to

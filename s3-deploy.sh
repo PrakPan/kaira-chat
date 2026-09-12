@@ -194,6 +194,16 @@ if ! $deploy_only; then
   trap 'node scripts/pageGroups.js restore || true' EXIT
 
   node scripts/pageGroups.js select "$groups"
+
+  # Tell the build which site it is building. Until now the deploy target and
+  # the URLs baked into the pages were independent facts: nothing compared the
+  # bucket being written to against NEXT_PUBLIC_NOINDEX or the origin in the
+  # canonicals, so a dev build with indexing on, or a prod build carrying dev
+  # URLs, produced a perfectly normal-looking artifact and was only caught weeks
+  # later in Search Console. `prebuild` runs scripts/assertBuildEnv.js, which
+  # reads this and refuses to build on a mismatch.
+  export DEPLOY_TARGET="$deploy_env"
+
   npm run build
   node scripts/pageGroups.js restore
   trap - EXIT
@@ -224,6 +234,25 @@ if ! $deploy_only; then
   if [ "$deploy_env" == 'dev' ]; then
     printf 'User-agent: *\nDisallow: /dashboard/\nDisallow: /itinerary/\nDisallow: /preview-travel-experience/\nDisallow: /test/\nDisallow: /500/\nDisallow: /404/\n' > out/robots.txt
     echo "Wrote dev out/robots.txt (crawlable, no sitemap — noindex meta does the deindexing)"
+  fi
+
+  # Only production publishes a sitemap.
+  #
+  # Removing the Sitemap: line from robots.txt above was never enough: the
+  # sitemap FILES were still exported to every bucket and still returned 200.
+  # dev.thetarzanway.com was serving a live sitemap index of 1,865 URLs, and
+  # your-trips.co.uk one of 2,884 thetarzanway.com URLs from a domain that is
+  # not verified to submit them. A sitemap does not need to be linked to be
+  # found — Search Console, a stray link, or a previous submission is enough —
+  # so the only reliable way to stop a host advertising a crawl list is not to
+  # put one there.
+  #
+  # Production keeps every file. This is also why the origin is identical in
+  # both env files (lib/seo/siteOrigin.js): with no sitemap shipping off
+  # production, there is nothing left that would ever want a staging hostname.
+  if [ "$deploy_env" != 'prod' ]; then
+    removed=$(find out -maxdepth 1 -name 'sitemap*.xml' -print -delete | wc -l | tr -d ' ')
+    echo "Removed $removed sitemap file(s) from the $deploy_env export (production only)"
   fi
 
   # Attribute every exported file to the group that owns it. Local only, no AWS
@@ -268,6 +297,18 @@ else
   # a stable URL, so a year-long TTL made every deploy depend on a full
   # invalidation landing before anyone saw the new build. Five minutes at the
   # edge costs a rounding error in origin requests and removes that cliff.
+  # Not exporting a file does not unpublish it. `aws s3 sync` never deletes
+  # (see the header), so the sitemaps already sitting in the dev and yourtrips
+  # buckets from earlier deploys would keep returning 200 forever no matter how
+  # many clean builds ran. They have to be removed explicitly, once, and this
+  # is idempotent so it costs nothing on every deploy after that.
+  if [ "$deploy_env" != 'prod' ]; then
+    for key in $(aws s3 ls "s3://$s3_bucket/" | awk '{print $4}' | grep -E '^sitemap.*\.xml$' || true); do
+      echo "Removing stale s3://$s3_bucket/$key (non-production host)"
+      aws s3 rm "s3://$s3_bucket/$key" --only-show-errors
+    done
+  fi
+
   aws s3 sync out/ s3://$s3_bucket \
     --exclude "_next/*" --exclude "*.DS_Store" \
     --cache-control "public,max-age=300,must-revalidate" \

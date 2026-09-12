@@ -1,3 +1,5 @@
+import { SITE_ORIGIN } from "../../../../lib/seo/siteOrigin";
+import { resolveTitle } from "../../../../lib/seo/cmsTitle";
 import Head from "next/head";
 import { useEffect } from "react";
 import { connect } from "react-redux";
@@ -80,7 +82,7 @@ const TravelPlanner = (props) => {
   // page has a complete, page-specific set of tags. Mirrors the city page.
   const stateName =
     props.Data?.name || convertDbNameToCapitalFirst(props.Data?.slug) || "";
-  const canonicalUrl = `https://thetarzanway.com/${props.path}`;
+  const canonicalUrl = `${SITE_ORIGIN}/${props.path}`;
   // Country display name for the title, derived from the URL path
   // (continent/country/state). Mirrors the city page so the destination title
   // template is consistent across depths (Ticket 3.2).
@@ -110,14 +112,11 @@ const TravelPlanner = (props) => {
   }
 
   // og:title: the CMS social_share_title is frequently the generic site default
-  // for states; fall back to the page-specific title in that case.
-  const GENERIC_SHARE_TITLE = "The Tarzan Way | Personalized Travel Experiences";
-  const ogTitle =
-    props.Data?.social_share_title &&
-    props.Data.social_share_title.trim() &&
-    props.Data.social_share_title.trim() !== GENERIC_SHARE_TITLE
-      ? props.Data.social_share_title
-      : pageTitle;
+  // for states; fall back to the page-specific title in that case. The default
+  // string used to be declared here as well as in the theme route; it now has a
+  // single definition in lib/seo/cmsTitle.js, so a change to it cannot leave one
+  // copy behind silently matching nothing.
+  const ogTitle = resolveTitle(props.Data?.social_share_title, pageTitle);
 
   // keywords: fall back to a name-derived set when the CMS field is empty.
   const rawKeywords = Array.isArray(props?.Data?.meta_keywords)
@@ -152,11 +151,11 @@ const TravelPlanner = (props) => {
         <meta name="description" content={metaDescription}></meta>
         <meta property="og:title" content={ogTitle} />
         <meta property="og:description" content={metaDescription} />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+        <meta name="twitter:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="keywords" content={metaKeywords}></meta>
 
         <script

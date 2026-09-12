@@ -13,6 +13,7 @@
 // while Bali is having its best months, so the season section and the theme
 // form both sort by coast rather than by country.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect } from "react";
@@ -32,7 +33,7 @@ import type { CinematicThemeConfig } from "../../components/theme/cinematic/type
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const VISA = "https://visa.thetarzanway.com/country";
-const SITE = "https://thetarzanway.com";
+const SITE = SITE_ORIGIN;
 const PAGE = "/theme/thailand-bali-offbeat";
 const THEME_SLUG = "thailand-bali-offbeat";
 
@@ -851,16 +852,16 @@ const ThailandBaliOffbeatThemePage = ({
         />
         <link
           rel="canonical"
-          href="https://thetarzanway.com/theme/thailand-bali-offbeat"
+          href={`${SITE_ORIGIN}/theme/thailand-bali-offbeat`}
         />
         <meta
           property="og:url"
-          content="https://thetarzanway.com/theme/thailand-bali-offbeat"
+          content={`${SITE_ORIGIN}/theme/thailand-bali-offbeat`}
         />
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="https://thetarzanway.com/og-image.png"
+          content={`${SITE_ORIGIN}/og-image.png`}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <script
@@ -874,12 +875,12 @@ const ThailandBaliOffbeatThemePage = ({
                   name: "Offbeat Thailand & Bali - Trip Planner",
                   description:
                     "Plan an offbeat Thailand and Bali trip with The Tarzan Way's AI itinerary - Krabi's quiet islands, Koh Yao Noi, East Bali, the Nusas and the Gilis, strung into one route with boats, ferries and visas handled, for Indian travellers.",
-                  url: "https://thetarzanway.com/theme/thailand-bali-offbeat",
-                  image: "https://thetarzanway.com/og-image.png",
+                  url: `${SITE_ORIGIN}/theme/thailand-bali-offbeat`,
+                  image: `${SITE_ORIGIN}/og-image.png`,
                   provider: {
                     "@type": "TravelAgency",
                     name: "The Tarzan Way",
-                    url: "https://thetarzanway.com",
+                    url: SITE_ORIGIN,
                   },
                 },
                 {
@@ -889,13 +890,13 @@ const ThailandBaliOffbeatThemePage = ({
                       "@type": "ListItem",
                       position: 1,
                       name: "Home",
-                      item: "https://thetarzanway.com",
+                      item: SITE_ORIGIN,
                     },
                     {
                       "@type": "ListItem",
                       position: 2,
                       name: "Offbeat Thailand & Bali",
-                      item: "https://thetarzanway.com/theme/thailand-bali-offbeat",
+                      item: `${SITE_ORIGIN}/theme/thailand-bali-offbeat`,
                     },
                   ],
                 },

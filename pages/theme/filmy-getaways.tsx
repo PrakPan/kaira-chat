@@ -5,6 +5,7 @@
 // seeds its prompt into a fresh /chat session with Kaira. The page is wrapped
 // in the shared site Layout so it keeps the standard header + footer.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect } from "react";
@@ -1056,16 +1057,16 @@ const FilmyGetawaysThemePage = ({
         />
         <link
           rel="canonical"
-          href="https://thetarzanway.com/theme/filmy-getaways"
+          href={`${SITE_ORIGIN}/theme/filmy-getaways`}
         />
         <meta
           property="og:url"
-          content="https://thetarzanway.com/theme/filmy-getaways"
+          content={`${SITE_ORIGIN}/theme/filmy-getaways`}
         />
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="https://thetarzanway.com/og-image.png"
+          content={`${SITE_ORIGIN}/og-image.png`}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <script
@@ -1079,12 +1080,12 @@ const FilmyGetawaysThemePage = ({
                   name: "Filmy Getaways - Film-Inspired Trip Planner",
                   description:
                     "Plan film-inspired getaways with The Tarzan Way's AI itinerary - ZNMD Spain, DDLJ Switzerland, Eat Pray Love Bali, Mamma Mia Greece, and more iconic Bollywood and Hollywood movie destinations for Indian travellers.",
-                  url: "https://thetarzanway.com/theme/filmy-getaways",
-                  image: "https://thetarzanway.com/og-image.png",
+                  url: `${SITE_ORIGIN}/theme/filmy-getaways`,
+                  image: `${SITE_ORIGIN}/og-image.png`,
                   provider: {
                     "@type": "TravelAgency",
                     name: "The Tarzan Way",
-                    url: "https://thetarzanway.com",
+                    url: SITE_ORIGIN,
                   },
                 },
                 {
@@ -1094,13 +1095,13 @@ const FilmyGetawaysThemePage = ({
                       "@type": "ListItem",
                       position: 1,
                       name: "Home",
-                      item: "https://thetarzanway.com",
+                      item: SITE_ORIGIN,
                     },
                     {
                       "@type": "ListItem",
                       position: 2,
                       name: "Filmy Getaways",
-                      item: "https://thetarzanway.com/theme/filmy-getaways",
+                      item: `${SITE_ORIGIN}/theme/filmy-getaways`,
                     },
                   ],
                 },

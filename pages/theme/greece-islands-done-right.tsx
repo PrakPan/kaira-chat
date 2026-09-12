@@ -6,6 +6,7 @@
 // the trip ("+ Add"); the "Greece themes" shapes seed a plan; "Build trip"
 // opens the themed mini-form on /chat (island-count payload → /chatkit).
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect } from "react";
@@ -348,7 +349,7 @@ const GreeceIslandsThemePage = ({
         />
         <link
           rel="canonical"
-          href="https://thetarzanway.com/theme/greece-islands-done-right"
+          href={`${SITE_ORIGIN}/theme/greece-islands-done-right`}
         />
       </Head>
       <CinematicThemeLanding

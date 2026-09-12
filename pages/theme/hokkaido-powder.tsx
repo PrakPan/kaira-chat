@@ -7,6 +7,7 @@
 // restaurant cards seed a fresh /chat prompt with Kaira; the "People who went"
 // stories open each traveller's real itinerary.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
@@ -851,16 +852,16 @@ const HokkaidoPowderThemePage = ({
         />
         <link
           rel="canonical"
-          href="https://thetarzanway.com/theme/hokkaido-powder"
+          href={`${SITE_ORIGIN}/theme/hokkaido-powder`}
         />
         <meta
           property="og:url"
-          content="https://thetarzanway.com/theme/hokkaido-powder"
+          content={`${SITE_ORIGIN}/theme/hokkaido-powder`}
         />
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="https://thetarzanway.com/og-image.png"
+          content={`${SITE_ORIGIN}/og-image.png`}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <script
@@ -874,12 +875,12 @@ const HokkaidoPowderThemePage = ({
                   name: "Hokkaido Powder & Sapporo Winter - Trip Planner",
                   description:
                     "Plan a Hokkaido winter trip with The Tarzan Way's AI itinerary - Niseko powder skiing, the Sapporo Snow Festival, onsens, the undersea Shinkansen from Tokyo, seafood and ramen, for Indian travellers.",
-                  url: "https://thetarzanway.com/theme/hokkaido-powder",
-                  image: "https://thetarzanway.com/og-image.png",
+                  url: `${SITE_ORIGIN}/theme/hokkaido-powder`,
+                  image: `${SITE_ORIGIN}/og-image.png`,
                   provider: {
                     "@type": "TravelAgency",
                     name: "The Tarzan Way",
-                    url: "https://thetarzanway.com",
+                    url: SITE_ORIGIN,
                   },
                 },
                 {
@@ -889,13 +890,13 @@ const HokkaidoPowderThemePage = ({
                       "@type": "ListItem",
                       position: 1,
                       name: "Home",
-                      item: "https://thetarzanway.com",
+                      item: SITE_ORIGIN,
                     },
                     {
                       "@type": "ListItem",
                       position: 2,
                       name: "Hokkaido Powder & Sapporo",
-                      item: "https://thetarzanway.com/theme/hokkaido-powder",
+                      item: `${SITE_ORIGIN}/theme/hokkaido-powder`,
                     },
                   ],
                 },

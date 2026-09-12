@@ -1,3 +1,4 @@
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import { useEffect } from "react";
 import Head from "next/head";
 import { connect, useSelector } from "react-redux";
@@ -25,7 +26,7 @@ const ChatPage = ({ checkAuthState }) => {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: "Kaira - AI Travel Agent",
-    url: "https://thetarzanway.com/chat",
+    url: `${SITE_ORIGIN}/chat`,
     applicationCategory: "TravelApplication",
     operatingSystem: "Web",
     description: CHAT_DESCRIPTION,
@@ -33,7 +34,7 @@ const ChatPage = ({ checkAuthState }) => {
     provider: {
       "@type": "TravelAgency",
       name: "The Tarzan Way",
-      url: "https://thetarzanway.com",
+      url: SITE_ORIGIN,
     },
   };
 
@@ -42,12 +43,12 @@ const ChatPage = ({ checkAuthState }) => {
       <Head>
         <title>{CHAT_TITLE}</title>
         <meta name="description" content={CHAT_DESCRIPTION} />
-        <link rel="canonical" href="https://thetarzanway.com/chat" />
+        <link rel="canonical" href={`${SITE_ORIGIN}/chat`} />
         <meta property="og:title" content={CHAT_TITLE} />
         <meta property="og:description" content={CHAT_DESCRIPTION} />
-        <meta property="og:url" content="https://thetarzanway.com/chat" />
+        <meta property="og:url" content={`${SITE_ORIGIN}/chat`} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta name="twitter:card" content="summary_large_image" />
         <script
           type="application/ld+json"

@@ -26,6 +26,7 @@ import EsimPackagesDrawer from "../../../drawers/esimDetails/EsimPackagesDrawer"
 import DetailSheet from "./DetailSheet";
 import getModeAccent from "../../common/components/bookingDetail/modeAccent";
 import prompts from "../kairaPrompts";
+import { SITE_ORIGIN } from "../../../../lib/seo/siteOrigin";
 import {
   deriveLockIn,
   ItineraryInclusions,
@@ -648,7 +649,7 @@ export default function CartSheet({
 
   const handleWhatsappChat = () => {
     const here =
-      typeof window !== "undefined" ? window.location.href : "https://www.thetarzanway.com";
+      typeof window !== "undefined" ? window.location.href : SITE_ORIGIN;
     window.open(
       `${urls.WHATSAPP}?text=${encodeURIComponent(
         `Hey TTW! I need some help with my tailored experience - ${here}`,

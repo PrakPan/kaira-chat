@@ -6,6 +6,7 @@
 // read-only catalog drawer for the element behind it. The page is wrapped in
 // the shared site Layout so it keeps the standard header + footer.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
@@ -27,7 +28,7 @@ import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const VISA = "https://visa.thetarzanway.com/country";
 const VISA_HOME = "https://visa.thetarzanway.com/";
-const CHAT = "https://thetarzanway.com/chat";
+const CHAT = `${SITE_ORIGIN}/chat`;
 const THEME_SLUG = "honeymoon";
 
 // Catalog activity ids for the evening and day-trip cards. Every one is a live
@@ -959,15 +960,15 @@ const HoneymoonThemePage = ({
           property="og:description"
           content="Plan your honeymoon with The Tarzan Way's AI itinerary - Maldives overwater villas, Bali pool villas, Santorini caldera suites and Seychelles beaches, with private dinners, visas and transfers handled for Indian couples."
         />
-        <link rel="canonical" href="https://thetarzanway.com/theme/honeymoon" />
+        <link rel="canonical" href={`${SITE_ORIGIN}/theme/honeymoon`} />
         <meta
           property="og:url"
-          content="https://thetarzanway.com/theme/honeymoon"
+          content={`${SITE_ORIGIN}/theme/honeymoon`}
         />
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="https://thetarzanway.com/og-image.png"
+          content={`${SITE_ORIGIN}/og-image.png`}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <script
@@ -981,12 +982,12 @@ const HoneymoonThemePage = ({
                   name: "Honeymoon - Trip Planner & Itineraries",
                   description:
                     "Plan your honeymoon with The Tarzan Way's AI itinerary - Maldives overwater villas, Bali pool villas, Santorini caldera suites and Seychelles beaches, with private dinners, visas and transfers handled for Indian couples.",
-                  url: "https://thetarzanway.com/theme/honeymoon",
-                  image: "https://thetarzanway.com/og-image.png",
+                  url: `${SITE_ORIGIN}/theme/honeymoon`,
+                  image: `${SITE_ORIGIN}/og-image.png`,
                   provider: {
                     "@type": "TravelAgency",
                     name: "The Tarzan Way",
-                    url: "https://thetarzanway.com",
+                    url: SITE_ORIGIN,
                   },
                 },
                 {
@@ -996,13 +997,13 @@ const HoneymoonThemePage = ({
                       "@type": "ListItem",
                       position: 1,
                       name: "Home",
-                      item: "https://thetarzanway.com",
+                      item: SITE_ORIGIN,
                     },
                     {
                       "@type": "ListItem",
                       position: 2,
                       name: "Honeymoon",
-                      item: "https://thetarzanway.com/theme/honeymoon",
+                      item: `${SITE_ORIGIN}/theme/honeymoon`,
                     },
                   ],
                 },
