@@ -1,3 +1,4 @@
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import CovidContainer from "../../containers/corporates[dev]/Index";
 import Head from "next/head";
 import Layout from "../../components/Layout";
@@ -23,11 +24,11 @@ const Covid = (props) => {
           property="og:description"
           content="Streamline corporate travel with our AI-powered planning and support. Enjoy personalized itineraries, cost savings, and 24/7 assistance for a hassle-free business travel experience."
         />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+        <meta name="twitter:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta
           name="keyword"
           content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, corporate trip, business trip, business travel,  large group, group trips, group travel package, travel allowance, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers, solo travel, family travel"
@@ -35,7 +36,7 @@ const Covid = (props) => {
 
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/corporates`}
+          href={`${SITE_ORIGIN}/corporates`}
         ></link>
       </Head>
 

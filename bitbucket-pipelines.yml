@@ -74,7 +74,23 @@ pipelines:
             - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
             - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
             - export AWS_DEFAULT_REGION=$AWS_REGION
-            - ./s3-deploy.sh dev --deploy-only
+            # --reconcile is the default on dev, and only on dev. The prune's
+            # normal mode removes what the PREVIOUS deploy of a group uploaded;
+            # reconcile also sweeps files inside a group's owned prefixes that
+            # no build emitted at all. Only the second one can reach an orphan:
+            # a page that has fallen out of the build is never rewritten, so it
+            # keeps serving whatever HTML it had when it was last exported.
+            #
+            # That is not theoretical. A legacy /trips/ leaf on dev was still
+            # serving pre-noindex HTML weeks after the noindex tag shipped,
+            # because every deploy since rebuilt only the pages it knew about.
+            # Google held it as an indexed dev URL the whole time.
+            #
+            # Dev only: on dev a wrong sweep costs a redeploy, and staging
+            # correctness is what protects production's rankings. Production
+            # keeps reconcile opt-in behind the deploy-prod pipeline variable,
+            # where a mistake would delete live pages.
+            - ./s3-deploy.sh dev --deploy-only --reconcile
             - echo "✅ Deployment to Development completed successfully!"
           after-script:
             - |

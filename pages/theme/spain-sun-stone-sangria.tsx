@@ -1,5 +1,6 @@
 // pages/theme/spain-sun-stone-sangria.tsx
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import { useEffect } from "react";
 import { connect } from "react-redux";
 import Head from "next/head";
@@ -242,16 +243,16 @@ const SpainSunStoneSangriaThemePage = ({
       <Head>
         <title>{"Spain Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"}</title>
         <meta name="description" content={"Plan your Spain trip with The Tarzan Way's AI itinerary - Barcelona, Madrid, Seville, Granada and the Costa del Sol. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
-        <link rel="canonical" href="https://thetarzanway.com/theme/spain-sun-stone-sangria" />
+        <link rel="canonical" href={`${SITE_ORIGIN}/theme/spain-sun-stone-sangria`} />
         <meta property="og:title" content={"Spain Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"} />
         <meta property="og:description" content={"Plan your Spain trip with The Tarzan Way's AI itinerary - Barcelona, Madrid, Seville, Granada and the Costa del Sol. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
-        <meta property="og:url" content="https://thetarzanway.com/theme/spain-sun-stone-sangria" />
+        <meta property="og:url" content={`${SITE_ORIGIN}/theme/spain-sun-stone-sangria`} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+        <meta name="twitter:image" content={`${SITE_ORIGIN}/og-image.png`} />
       </Head>
       <BotApp themeConfig={spainThemeConfig} />
     </>

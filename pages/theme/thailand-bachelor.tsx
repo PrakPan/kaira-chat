@@ -7,6 +7,7 @@
 // element behind it. The page is wrapped in the shared site Layout so it keeps
 // the standard header + footer.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
@@ -30,7 +31,7 @@ import type { CinematicThemeConfig } from "../../components/theme/cinematic/type
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const VISA = "https://visa.thetarzanway.com/country";
-const CHAT = "https://thetarzanway.com/chat";
+const CHAT = `${SITE_ORIGIN}/chat`;
 const PAGE = "/theme/thailand-bachelor";
 const THEME_SLUG = "thailand-bachelor";
 
@@ -855,16 +856,16 @@ const ThailandBachelorThemePage = ({
         />
         <link
           rel="canonical"
-          href="https://thetarzanway.com/theme/thailand-bachelor"
+          href={`${SITE_ORIGIN}/theme/thailand-bachelor`}
         />
         <meta
           property="og:url"
-          content="https://thetarzanway.com/theme/thailand-bachelor"
+          content={`${SITE_ORIGIN}/theme/thailand-bachelor`}
         />
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="https://thetarzanway.com/og-image.png"
+          content={`${SITE_ORIGIN}/og-image.png`}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <script
@@ -878,12 +879,12 @@ const ThailandBachelorThemePage = ({
                   name: "Thailand Bachelor & Bachelorette - Trip Planner",
                   description:
                     "Plan a Thailand bachelor or bachelorette trip with The Tarzan Way's AI itinerary - private pool villas in Phuket and Krabi, beach clubs, private island boats, Bangkok rooftops, e-Visas and group transfers handled for Indian travellers.",
-                  url: "https://thetarzanway.com/theme/thailand-bachelor",
-                  image: "https://thetarzanway.com/og-image.png",
+                  url: `${SITE_ORIGIN}/theme/thailand-bachelor`,
+                  image: `${SITE_ORIGIN}/og-image.png`,
                   provider: {
                     "@type": "TravelAgency",
                     name: "The Tarzan Way",
-                    url: "https://thetarzanway.com",
+                    url: SITE_ORIGIN,
                   },
                 },
                 {
@@ -893,13 +894,13 @@ const ThailandBachelorThemePage = ({
                       "@type": "ListItem",
                       position: 1,
                       name: "Home",
-                      item: "https://thetarzanway.com",
+                      item: SITE_ORIGIN,
                     },
                     {
                       "@type": "ListItem",
                       position: 2,
                       name: "Thailand Bachelor & Bachelorette",
-                      item: "https://thetarzanway.com/theme/thailand-bachelor",
+                      item: `${SITE_ORIGIN}/theme/thailand-bachelor`,
                     },
                   ],
                 },

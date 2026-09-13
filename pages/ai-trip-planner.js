@@ -1,3 +1,4 @@
+import { SITE_ORIGIN } from "../lib/seo/siteOrigin";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -114,11 +115,11 @@ const AITripPlanner = ({
               : `Plan your dream trip to ${Data.name} with The Tarzan Way's AI itinerary. Explore top attractions, local cuisine, and book your flights, accommodations, and transfers all in one go ${Data.name}.`
           }
         />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+        <meta name="twitter:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta
           property="keywords"
           content={
@@ -130,7 +131,7 @@ const AITripPlanner = ({
 
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/theme/${slug}`}
+          href={`${SITE_ORIGIN}/theme/${slug}`}
         ></link>
       </Head>
       
