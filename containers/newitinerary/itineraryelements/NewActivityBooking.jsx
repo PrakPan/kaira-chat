@@ -558,6 +558,7 @@ export default function NewActivityBooking(props) {
         setShowDetails={setShowDetails}
         activityId={props.data?.id}
         source={props.data?.source}
+        fallbackData={props.data}
         handleCloseDrawer={handleCloseDrawer}
         Topheading={"Select Our Activity"}
         getAccommodationAndActivitiesHandler={

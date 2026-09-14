@@ -124,6 +124,9 @@ export default function ActivityDetails(props) {
   // hide the date picker and time-of-day chips since the itinerary is not
   // yet pinned to specific dates/slots.
   const hideSchedule = isDraft || finalized_status === "PENDING";
+  // Supplier rejected the chosen date (see ActivityDetailsDrawer). Details
+  // stay visible, but there's nothing to price or book for this day.
+  const isDateUnavailable = !!props?.unavailableMessage;
 
   const pad = (n) => (n < 10 ? `0${n}` : n);
 
@@ -368,6 +371,7 @@ export default function ActivityDetails(props) {
   };
 
   const handleUpdate = (e) => {
+    if (isDateUnavailable) return;
     setLoading(true);
     if (!token) {
       setLoading(false);
@@ -635,7 +639,11 @@ export default function ActivityDetails(props) {
               <h1 className="text-[24px] font-bold leading-[29px] tracking-[-0.02em] text-[#0b1220]">
                 {props.data?.display_name || props.data?.name}
               </h1>
-              {props.data?.one_liner_description && (
+              {/* Some suppliers send the full description as the one-liner too;
+                  skip it here when it would just repeat short_description. */}
+              {props.data?.one_liner_description &&
+                props.data.one_liner_description.trim() !==
+                  props.data?.short_description?.trim() && (
                 <p className="font-serif text-[18px] italic leading-[24px] text-[#445069]">
                   {props.data.one_liner_description}
                 </p>
@@ -806,7 +814,9 @@ export default function ActivityDetails(props) {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {props?.hotel_pickup_included ? (
+            {/* Only when the response actually says — a missing field
+                shouldn't read as "not included". */}
+            {props?.hotel_pickup_included == null ? null : props?.hotel_pickup_included ? (
               <FactPill
                 tone="green"
                 icon={
@@ -981,7 +991,10 @@ export default function ActivityDetails(props) {
             </section>
           ) : null}
 
-          {!isDraft && props?.data?.prices && props?.data?.prices?.length ? (
+          {!isDraft &&
+          !isDateUnavailable &&
+          props?.data?.prices &&
+          props?.data?.prices?.length ? (
             <section className="flex flex-col gap-3">
               <SectionTitle>Package Options</SectionTitle>
               <Divider />
@@ -1084,7 +1097,16 @@ export default function ActivityDetails(props) {
         <div className="scroll-none fixed bottom-0 right-0 left-0 z-[9] border-t border-[#ececec] bg-[#fafaf5] px-5 py-3 shadow-[0_-4px_20px_rgba(11,18,32,0.06)]">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 flex-col">
-              {selectedPackage?.total_price ? (
+              {isDateUnavailable ? (
+                <span className="flex items-center gap-1.5 text-[16px] font-semibold leading-tight text-[#b84034]">
+                  {/* Drawn circle rather than IoCloseCircle: that glyph has
+                      viewBox padding, so its edge sat inset from the line below. */}
+                  <span className="grid h-[16px] w-[16px] shrink-0 place-items-center rounded-full bg-[#b84034] text-white">
+                    <IoMdClose className="text-[11px]" />
+                  </span>
+                  <span className="truncate">Not available on this date</span>
+                </span>
+              ) : selectedPackage?.total_price ? (
                 <span className="font-sans text-[24px] font-semibold leading-none text-[#0b1220]">
                   {`${
                     currency?.currency
@@ -1108,8 +1130,8 @@ export default function ActivityDetails(props) {
 
             <button
               onClick={handleUpdate}
-              disabled={loading}
-              className="ttw-btn-fill-yellow shrink-0 !rounded-xl !px-6 !py-3 !text-[15px] disabled:opacity-60"
+              disabled={loading || isDateUnavailable}
+              className="ttw-btn-fill-yellow shrink-0 !rounded-xl !px-6 !py-3 !text-[15px] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Adding…" : "Add to Itinerary"}
             </button>

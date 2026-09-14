@@ -16,6 +16,11 @@ import ActivityDetailsSkeleton from "./ActivityDetailsSkeleton";
 import setItinerary from "../../../store/actions/itinerary";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 
+// Some suppliers (Linktivity) list an activity in search but reject the detail
+// call for the requested day. That's not a broken activity — the drawer keeps
+// showing its details and flags the date as unavailable in the bottom bar.
+const DATE_UNAVAILABLE_RE = /not available for the selected date/i;
+
 const ActivityDetailsDrawer = (props) => {
   const router = useRouter();
   const [data, setData] = useState(null);
@@ -25,7 +30,9 @@ const ActivityDetailsDrawer = (props) => {
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
   const itinerary = useSelector((state) => state.Itinerary);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
-  const [hotelPickupIncluded, setHotelPickupIncluded] = useState(false);
+  // null = the response didn't say; the pickup pill only renders for an
+  // explicit true/false.
+  const [hotelPickupIncluded, setHotelPickupIncluded] = useState(null);
   const currency = useSelector((state) => state.currency);
 
   // Default to 1 adult / 0 children when no pax prop is supplied (chat-opened
@@ -47,6 +54,9 @@ const ActivityDetailsDrawer = (props) => {
   });
 
   const [error, setError] = useState(null);
+  // Set when the detail API says the activity can't be booked on the chosen
+  // date. Cleared by the next successful fetch (e.g. after picking another day).
+  const [unavailableMessage, setUnavailableMessage] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -64,15 +74,17 @@ const ActivityDetailsDrawer = (props) => {
     };
   }, [props.show]);
 
-  const fetchData = (data) => {
-    const paxSource = data?._paxOverride || filterState;
-    const dateSource = data?._dateOverride || props.date;
+  const fetchData = (overrides) => {
+    const paxSource = overrides?._paxOverride || filterState;
+    const dateSource = overrides?._dateOverride || props.date;
     // Day / time / amenity refetches re-render in place via the inline
     // "Updating" overlay. Routing them through setLoading would swap the
     // drawer for ActivityDetailsSkeleton, unmounting ActivityDetails and
     // resetting the user's day + time-of-day picks back to defaults.
     const isInlineUpdate = !!(
-      data?.amenities || data?._dateOverride || data?._timeOverride
+      overrides?.amenities ||
+      overrides?._dateOverride ||
+      overrides?._timeOverride
     );
 
     // Clear any error from a previous (failed) fetch so reopening the drawer —
@@ -96,17 +108,17 @@ const ActivityDetailsDrawer = (props) => {
     // Source identifies which provider the activity came from (passed down
     // from the search-result item). The detail endpoint needs it to resolve
     // the correct upstream provider.
-    const sourceValue = data?._sourceOverride || props.source;
+    const sourceValue = overrides?._sourceOverride || props.source;
     if (sourceValue) {
       requestData.source = sourceValue;
     }
 
-    if (data?._timeOverride) {
-      requestData.time_of_day = data._timeOverride;
+    if (overrides?._timeOverride) {
+      requestData.time_of_day = overrides._timeOverride;
     }
 
-    if (data?.amenities) {
-      requestData.amenities = data.amenities;
+    if (overrides?.amenities) {
+      requestData.amenities = overrides.amenities;
     }
 
     activityDetail
@@ -120,7 +132,8 @@ const ActivityDetailsDrawer = (props) => {
         if (res.data?.data?.activity.name) {
           const activity = res.data?.data?.activity;
           setData(activity);
-          setHotelPickupIncluded(activity?.hotel_pickup_included);
+          setUnavailableMessage(null);
+          setHotelPickupIncluded(activity?.hotel_pickup_included ?? null);
           // Sync filterState with the pax the API actually priced for
           // (prices[0].pax_details). Keeps the Travellers pill and the
           // bottom-bar price in lockstep — important on the chat-opened
@@ -141,7 +154,24 @@ const ActivityDetailsDrawer = (props) => {
         setUpdateAmenities(false);
       })
       .catch((err) => {
-        setError(err.response?.data?.errors[0]?.message[0]);
+        const message = err.response?.data?.errors?.[0]?.message?.[0];
+        // Date-unavailable is recoverable as long as there's something to
+        // show: details from an earlier fetch (the user just switched day), or
+        // the search-result item the drawer was opened from. Without either,
+        // fall through to the plain error view.
+        const fallback = data || props.fallbackData;
+        if (DATE_UNAVAILABLE_RE.test(message || "") && fallback) {
+          if (!data) {
+            setData(fallback);
+            setHotelPickupIncluded(fallback?.hotel_pickup_included ?? null);
+          }
+          // No bookable trace for this date — don't let a stale one leak
+          // into an Add-to-itinerary call.
+          setTraceId(null);
+          setUnavailableMessage(message);
+        } else {
+          setError(message);
+        }
         setLoading(false);
         setUpdateAmenities(false);
       });
@@ -336,6 +366,7 @@ const ActivityDetailsDrawer = (props) => {
               traceId={traceId}
               fromChat={props?.fromChat}
               hideCta={props?.hideCta}
+              unavailableMessage={unavailableMessage}
             />
           ) : (
             <ActivityDetailsSkeleton
