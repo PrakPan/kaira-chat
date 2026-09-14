@@ -9,6 +9,7 @@
 //   3. A "Get Inspired" surface (mobile pinned bar + desktop inline section)
 //      exposes the same themed cards / traveller stories.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect } from "react";
@@ -291,9 +292,9 @@ const GreeceThemePage = (props: any) => {
       page={"Country Page"}
     >
       <Head>
-        <title>
-          {props?.Data?.name} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
-        </title>
+        {/* Single expression: see the note in the [city] route. Split across two
+            JSX children this shipped `Greece<!-- --> | AI Trip Planner & …`. */}
+        <title>{`${props?.Data?.name ?? ""} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way`}</title>
         <meta
           name="description"
           content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
@@ -316,7 +317,7 @@ const GreeceThemePage = (props: any) => {
 
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/theme/greece`}
+          href={`${SITE_ORIGIN}/theme/greece`}
         ></link>
         <script
           type="module"

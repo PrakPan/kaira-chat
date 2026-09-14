@@ -1,3 +1,4 @@
+import { SITE_ORIGIN } from "../../../../../lib/seo/siteOrigin";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { connect } from "react-redux";
@@ -31,7 +32,7 @@ const Experience = (props) => {
     name: props.cityData.name,
     description:
       props.cityData.short_description || props.cityData.meta_description,
-    url: `https://thetarzanway.com/${props.path}`,
+    url: `${SITE_ORIGIN}/${props.path}`,
   };
 
   // Country display name for the title, derived from the URL path
@@ -67,15 +68,19 @@ const Experience = (props) => {
           property="og:description"
           content={`${props.cityData.meta_description}`}
         />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
-        <title>
-          Plan Your Trip to {props.cityData.name}
-          {countryName ? `, ${countryName}` : ""} | Itineraries & Packages | The Tarzan Way
-        </title>
+        <meta name="twitter:image" content={`${SITE_ORIGIN}/og-image.png`} />
+        {/* One expression, one text node. Written as several JSX children this
+            shipped `Plan Your Trip to <!-- -->Jaipur<!-- -->, India<!-- --> | …`
+            to Google on every city page: React emits a comment to separate
+            adjacent text nodes so it can re-find the boundaries when hydrating,
+            and title content is parsed as RCDATA, where a comment is not markup
+            but literal characters. Nothing renders it visibly, so it survived in
+            the indexed title of the highest-volume route on the site. */}
+        <title>{`Plan Your Trip to ${props.cityData.name}${countryName ? `, ${countryName}` : ""} | Itineraries & Packages | The Tarzan Way`}</title>
         <meta
           property="keywords"
           content={`${Array.isArray(props?.cityData?.meta_keywords)
@@ -96,11 +101,11 @@ const Experience = (props) => {
 
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/${props.path}`}
+          href={`${SITE_ORIGIN}/${props.path}`}
         ></link>
         <meta
           property="og:url"
-          content={`https://thetarzanway.com/${props.path}`}
+          content={`${SITE_ORIGIN}/${props.path}`}
         />
         <meta property="og:type" content="website" />
         <script

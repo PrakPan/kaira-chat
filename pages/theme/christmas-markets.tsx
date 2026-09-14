@@ -5,6 +5,7 @@
 // card seeds its prompt into a fresh /chat session with Kaira. The page is wrapped
 // in the shared site Layout so it keeps the standard header + footer.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
@@ -31,7 +32,7 @@ import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 const U = "https://images.unsplash.com";
 const VISA = "https://visa.thetarzanway.com/country";
 const VISA_HOME = "https://visa.thetarzanway.com/";
-const CHAT = "https://thetarzanway.com/chat";
+const CHAT = `${SITE_ORIGIN}/chat`;
 const PAGE = "/theme/christmas-markets";
 const THEME_SLUG = "christmas-markets";
 
@@ -801,16 +802,16 @@ const ChristmasMarketsThemePage = ({
         />
         <link
           rel="canonical"
-          href="https://thetarzanway.com/theme/christmas-markets"
+          href={`${SITE_ORIGIN}/theme/christmas-markets`}
         />
         <meta
           property="og:url"
-          content="https://thetarzanway.com/theme/christmas-markets"
+          content={`${SITE_ORIGIN}/theme/christmas-markets`}
         />
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="https://thetarzanway.com/og-image.png"
+          content={`${SITE_ORIGIN}/og-image.png`}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <script
@@ -824,12 +825,12 @@ const ChristmasMarketsThemePage = ({
                   name: "Christmas Markets & New Year in Europe - Trip Planner",
                   description:
                     "Plan a European Christmas markets and New Year's Eve trip with The Tarzan Way's AI itinerary - Vienna, Strasbourg, Nuremberg, Prague and more, strung into one festive multi-city route with rail included, for Indian travellers.",
-                  url: "https://thetarzanway.com/theme/christmas-markets",
-                  image: "https://thetarzanway.com/og-image.png",
+                  url: `${SITE_ORIGIN}/theme/christmas-markets`,
+                  image: `${SITE_ORIGIN}/og-image.png`,
                   provider: {
                     "@type": "TravelAgency",
                     name: "The Tarzan Way",
-                    url: "https://thetarzanway.com",
+                    url: SITE_ORIGIN,
                   },
                 },
                 {
@@ -839,13 +840,13 @@ const ChristmasMarketsThemePage = ({
                       "@type": "ListItem",
                       position: 1,
                       name: "Home",
-                      item: "https://thetarzanway.com",
+                      item: SITE_ORIGIN,
                     },
                     {
                       "@type": "ListItem",
                       position: 2,
                       name: "Christmas Markets & NYE",
-                      item: "https://thetarzanway.com/theme/christmas-markets",
+                      item: `${SITE_ORIGIN}/theme/christmas-markets`,
                     },
                   ],
                 },

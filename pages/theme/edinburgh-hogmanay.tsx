@@ -7,6 +7,7 @@
 // (optimizedMediaUrl). Cards seed a fresh /chat prompt with Kaira, except the
 // "Which new year is yours?" trips, which open their existing itineraries.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
@@ -70,7 +71,7 @@ const TICKET_IMG = {
   ceilidh: PIC.beyond,
 };
 
-const CHAT = "https://thetarzanway.com/chat";
+const CHAT = `${SITE_ORIGIN}/chat`;
 const CDN = "https://d31aoa0ehgvjdi.cloudfront.net";
 
 // Other-theme page images (each theme's own hero/first-card photo). The
@@ -649,16 +650,16 @@ const EdinburghHogmanayThemePage = ({
         />
         <link
           rel="canonical"
-          href="https://thetarzanway.com/theme/edinburgh-hogmanay"
+          href={`${SITE_ORIGIN}/theme/edinburgh-hogmanay`}
         />
         <meta
           property="og:url"
-          content="https://thetarzanway.com/theme/edinburgh-hogmanay"
+          content={`${SITE_ORIGIN}/theme/edinburgh-hogmanay`}
         />
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="https://thetarzanway.com/og-image.png"
+          content={`${SITE_ORIGIN}/og-image.png`}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <script
@@ -672,12 +673,12 @@ const EdinburghHogmanayThemePage = ({
                   name: "Edinburgh Hogmanay 2026/27 - Trip Planner",
                   description:
                     "Plan your Edinburgh Hogmanay 2026/27 trip with The Tarzan Way's AI itinerary. Torchlight Procession, Street Party, midnight fireworks, and January 1 First Footin - plus the Highlands, London, and Scotland for Indian travellers.",
-                  url: "https://thetarzanway.com/theme/edinburgh-hogmanay",
-                  image: "https://thetarzanway.com/og-image.png",
+                  url: `${SITE_ORIGIN}/theme/edinburgh-hogmanay`,
+                  image: `${SITE_ORIGIN}/og-image.png`,
                   provider: {
                     "@type": "TravelAgency",
                     name: "The Tarzan Way",
-                    url: "https://thetarzanway.com",
+                    url: SITE_ORIGIN,
                   },
                 },
                 {
@@ -687,13 +688,13 @@ const EdinburghHogmanayThemePage = ({
                       "@type": "ListItem",
                       position: 1,
                       name: "Home",
-                      item: "https://thetarzanway.com",
+                      item: SITE_ORIGIN,
                     },
                     {
                       "@type": "ListItem",
                       position: 2,
                       name: "Edinburgh Hogmanay",
-                      item: "https://thetarzanway.com/theme/edinburgh-hogmanay",
+                      item: `${SITE_ORIGIN}/theme/edinburgh-hogmanay`,
                     },
                   ],
                 },

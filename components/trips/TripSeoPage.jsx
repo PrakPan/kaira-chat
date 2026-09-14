@@ -17,6 +17,7 @@
 // customer's booking. lib/seo/tripsIndexed.js strips them; days arrive here
 // already numbered.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import TripItineraryView from "./TripItineraryView";
 import {
   TripMasthead,
@@ -44,7 +45,7 @@ const CHAT_SEED = "/chat?seed=";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-const DEFAULT_HERO = "https://thetarzanway.com/og-image.png";
+const DEFAULT_HERO = `${SITE_ORIGIN}/og-image.png`;
 
 /**
  * The trip's own photographs.

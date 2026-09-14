@@ -12,6 +12,7 @@
 // here needs a separate media upload and nothing can drift from what the
 // activity drawer shows when the reader opens it.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
@@ -822,16 +823,16 @@ const AustraliaNewZealandThemePage = ({
         />
         <link
           rel="canonical"
-          href="https://thetarzanway.com/theme/australia-newzealand"
+          href={`${SITE_ORIGIN}/theme/australia-newzealand`}
         />
         <meta
           property="og:url"
-          content="https://thetarzanway.com/theme/australia-newzealand"
+          content={`${SITE_ORIGIN}/theme/australia-newzealand`}
         />
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="https://thetarzanway.com/og-image.png"
+          content={`${SITE_ORIGIN}/og-image.png`}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <script
@@ -845,12 +846,12 @@ const AustraliaNewZealandThemePage = ({
                   name: "Australia & New Zealand Summer - Trip Planner",
                   description:
                     "Plan an Australia and New Zealand summer trip with The Tarzan Way's AI itinerary - the Boxing Day Test at the MCG, Sydney New Year's Eve fireworks, the Great Ocean Road, Queenstown and the South Island, for Indian travellers.",
-                  url: "https://thetarzanway.com/theme/australia-newzealand",
-                  image: "https://thetarzanway.com/og-image.png",
+                  url: `${SITE_ORIGIN}/theme/australia-newzealand`,
+                  image: `${SITE_ORIGIN}/og-image.png`,
                   provider: {
                     "@type": "TravelAgency",
                     name: "The Tarzan Way",
-                    url: "https://thetarzanway.com",
+                    url: SITE_ORIGIN,
                   },
                 },
                 {
@@ -860,13 +861,13 @@ const AustraliaNewZealandThemePage = ({
                       "@type": "ListItem",
                       position: 1,
                       name: "Home",
-                      item: "https://thetarzanway.com",
+                      item: SITE_ORIGIN,
                     },
                     {
                       "@type": "ListItem",
                       position: 2,
                       name: "Australia & New Zealand",
-                      item: "https://thetarzanway.com/theme/australia-newzealand",
+                      item: `${SITE_ORIGIN}/theme/australia-newzealand`,
                     },
                   ],
                 },

@@ -1,3 +1,4 @@
+import { SITE_ORIGIN } from "../../../lib/seo/siteOrigin";
 import React, {
   createContext,
   useContext,
@@ -39,7 +40,7 @@ export const ChatProvider = ({ itinearyId, children, initialBotMessage }) => {
   const itinerary = useSelector((state) => state.Itinerary);
   const stays = useSelector((state) => state.Stays);
   const dispatch = useDispatch();
-  const origin = " https://thetarzanway.com";
+  const origin = SITE_ORIGIN;
   const [isOpenChatHistoryDrawer, setOpenChatHistoryDrawer] = useState(false);
   const chatBotContainerRef = useRef(null);
   const [chatHistoryList, setChatHistoryList] = useState([]);
