@@ -2365,6 +2365,12 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
     hotelTags.push(v);
   }
 
+  // The "N-Star Hotel" label gets its own "N ★" row under the heading; any
+  // remaining tags stay inline with the name.
+  const starTag = hotelTags.find((t) => /^\d\s*-\s*Star/i.test(t)) ?? "";
+  const starCategory = starTag ? Math.min(parseInt(starTag, 10) || 0, 5) : 0;
+  const otherTags = hotelTags.filter((t) => t !== starTag);
+
   // ── Detail-fetch flow ────────────────────────────────────────────────────
   // Card click and the "Add to Itinerary" CTA both pre-flight the hotel detail
   // endpoint. On success we open the room drawer via the existing hotel.view
@@ -2545,7 +2551,7 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
               name's line and wrap naturally when the name spills onto another
               line — they behave like trailing words rather than a separate
               row beneath the title. */}
-          {(name || hotelTags.length > 0) && (
+          {(name || otherTags.length > 0) && (
             <div
               style={{
                 fontFamily: "'Inter', sans-serif",
@@ -2559,14 +2565,14 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
                     fontSize: 16,
                     fontWeight: 600,
                     color: "var(--color-text-primary)",
-                    marginRight: hotelTags.length > 0 ? 8 : 0,
+                    marginRight: otherTags.length > 0 ? 8 : 0,
                     verticalAlign: "middle",
                   }}
                 >
                   {name}
                 </span>
               )}
-              {hotelTags.map((t, i) => {
+              {otherTags.map((t, i) => {
                 const starMatch = t.match(/^(\d)/);
                 const starCount = starMatch ? parseInt(starMatch[1], 10) : 0;
                 return (
@@ -2582,6 +2588,26 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
                   </span>
                 );
               })}
+            </div>
+          )}
+
+          {/* Star category below the heading — one yellow star per star (the
+              itinerary city header's star icon), no number, no pill background. */}
+          {starCategory > 0 && (
+            <div
+              role="img"
+              aria-label={starTag}
+              title={starTag}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                marginTop: -4,
+              }}
+            >
+              {Array.from({ length: starCategory }, (_, s) => (
+                <StarFilledIcon key={s} />
+              ))}
             </div>
           )}
 
