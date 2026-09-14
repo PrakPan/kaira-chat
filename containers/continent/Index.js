@@ -40,6 +40,7 @@ import PartnersSection from "../../components/theme/PartnersSection.jsx";
 import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
 import DesktopBanner from "../../components/containers/Banner.js";
 import styles from "../../styles/pages/revamp/destination.module.scss";
+import TripsHubCta from "../../components/trips/TripsHubCta.jsx";
 import SectionCta from "../../components/revamp/home/SectionCta.jsx";
 
 const carouselBreakpoints = {
@@ -55,7 +56,13 @@ const wideCarouselBreakpoints = {
 };
 
 const Index = (props) => {
-  const [userItineraries, setUserItineraries] = useState([]);
+  // Seeded from props so the itinerary section and its /trips hub link are in
+  // the exported HTML; the effect below only ever set the same value after mount.
+  const [userItineraries, setUserItineraries] = useState(
+    () =>
+      props?.data?.components?.find((item) => item.carousel == "itinerary-1")
+        ?.itineraries || []
+  );
   const [hotLocations, setHotLocations] = useState([]);
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [destination, setDestination] = useState(null);
@@ -382,6 +389,10 @@ const Index = (props) => {
                   dates, hotels, duration.
                 </p>
               </div>
+              <TripsHubCta
+                hubs={props.tripsHubs}
+                className={`${styles.sectionLink} ${styles.sectionLinkTop}`}
+              />
             </div>
             <div className={styles.itinGrid}>
               {userItineraries.slice(0, 4).map((it, i) => (

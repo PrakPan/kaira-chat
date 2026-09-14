@@ -35,6 +35,7 @@ import PartnersSection from "../../components/theme/PartnersSection.jsx";
 import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
 import styles from "../../styles/pages/revamp/destination.module.scss";
+import TripsHubCta from "../../components/trips/TripsHubCta.jsx";
 import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
 import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial.jsx";
 import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta.jsx";
@@ -55,8 +56,15 @@ const carouselBreakpoints = {
 
 const Homepage = (props) => {
   const router = useRouter();
-  const [userItineraries, setUserItineraries] = useState([]);
-  const [TTWItineraries, setTTWItineraries] = useState([]);
+  // Seeded from props with the same owner split as the effect below, so the
+  // itinerary section and its /trips hub link are in the exported HTML instead
+  // of appearing only after hydration.
+  const [userItineraries, setUserItineraries] = useState(() =>
+    (props.experienceData?.itineraries || []).filter((e) => e.owner !== "TTW")
+  );
+  const [TTWItineraries, setTTWItineraries] = useState(() =>
+    (props.experienceData?.itineraries || []).filter((e) => e.owner === "TTW")
+  );
   const [showMore, setShowMore] = useState(false);
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [overviewHeading, setOverviewHeading] = useState(null);
@@ -348,6 +356,10 @@ const Homepage = (props) => {
                   dates, hotels, duration.
                 </p>
               </div>
+              <TripsHubCta
+                hubs={props.tripsHubs}
+                className={`${styles.sectionLink} ${styles.sectionLinkTop}`}
+              />
             </div>
             <div className={styles.itinGrid}>
               {userItineraries.slice(0, 4).map((it, i) => (

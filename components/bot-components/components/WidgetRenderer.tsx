@@ -2369,6 +2369,10 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
   // remaining tags stay inline with the name.
   const starTag = hotelTags.find((t) => /^\d\s*-\s*Star/i.test(t)) ?? "";
   const starCategory = starTag ? Math.min(parseInt(starTag, 10) || 0, 5) : 0;
+  // Whatever follows "N-Star" in the label ("Hotel", "Resort", …).
+  const starPropertyType = (
+    starTag.replace(/^\d\s*-\s*Star\s*/i, "").trim() || "hotel"
+  );
   const otherTags = hotelTags.filter((t) => t !== starTag);
 
   // ── Detail-fetch flow ────────────────────────────────────────────────────
@@ -2551,11 +2555,16 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
               name's line and wrap naturally when the name spills onto another
               line — they behave like trailing words rather than a separate
               row beneath the title. */}
+          {/* Heading group — name (+ any extra tags) and the "4 ★ hotel" row sit
+              together with a fixed 6px gap; the column's 8px gap then spaces the
+              divider and description evenly below. */}
+          {(name || otherTags.length > 0 || starCategory > 0) && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           {(name || otherTags.length > 0) && (
             <div
               style={{
                 fontFamily: "'Inter', sans-serif",
-                lineHeight: 1.5,
+                lineHeight: 1.35,
                 wordBreak: "break-word",
               }}
             >
@@ -2591,8 +2600,9 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
             </div>
           )}
 
-          {/* Star category below the heading — one yellow star per star (the
-              itinerary city header's star icon), no number, no pill background. */}
+          {/* Star category below the heading as "4 ★ hotel" — the number, the
+              itinerary city header's yellow star, then the property type from
+              the server label. No pill background. */}
           {starCategory > 0 && (
             <div
               role="img"
@@ -2601,14 +2611,20 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 2,
-                marginTop: -4,
+                gap: 4,
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#111827",
+                lineHeight: 1,
               }}
             >
-              {Array.from({ length: starCategory }, (_, s) => (
-                <StarFilledIcon key={s} />
-              ))}
+              <span>{starCategory}</span>
+              <StarFilledIcon />
+              <span>{starPropertyType}</span>
             </div>
+          )}
+          </div>
           )}
 
           {/* Divider */}

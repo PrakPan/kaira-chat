@@ -148,6 +148,12 @@
   width: 14px;
   height: 14px;
 }
+/* Pins a header link to the top-right corner. .sectionHead aligns its children
+   to the bottom, which puts a link level with the lede instead of the heading. */
+.sectionLinkTop {
+  align-self: flex-start;
+  margin-top: 4px;
+}
 
 /* ============ BREADCRUMB ============ */
 .crumb {

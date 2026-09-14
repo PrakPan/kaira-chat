@@ -22,6 +22,7 @@
 // Design tokens live in the scoped <CinematicStyles/> block so nothing leaks.
 
 import React from "react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 // Resize/re-encode our own media at the edge (see lib/mediaImage.js). These
 // scene stills are 1–4 MB PNGs shown in small cards; this cuts them ~30-100×
@@ -1265,7 +1266,20 @@ const TripsSection: React.FC<{
       style={band ? { background: palette.accentSoft } : undefined}
     >
       <Container>
-        <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+        {section.headingLink ? (
+          <div className="flex items-start justify-between gap-[16px] flex-wrap">
+            <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+            <Link
+              href={section.headingLink.href}
+              className="ctl-press shrink-0 rounded-full bg-white px-[18px] py-[10px] text-[13px] font-semibold no-underline"
+              style={{ color: INK }}
+            >
+              {section.headingLink.label} →
+            </Link>
+          </div>
+        ) : (
+          <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+        )}
         <div
           className={`gap-[10px] md:gap-[16px] mt-[14px] md:mt-[24px] ${
             stacked

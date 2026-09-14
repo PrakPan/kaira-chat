@@ -1,4 +1,5 @@
 import { SITE_ORIGIN } from "../../../lib/seo/siteOrigin";
+import { tripsHubsForPath } from "../../../lib/seo/tripsHubs";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect } from "react";
@@ -101,6 +102,7 @@ const TravelPlanner = (props) => {
         locations={props?.locations}
         page_id={props.page_id || ""}
         type={props?.Type}
+        tripsHubs={props.tripsHubs}
       ></CountryPage>
       {/* )} */}
     </Layout>
@@ -224,6 +226,7 @@ export async function getStaticProps(context) {
       page_id: PagesToIdMapping[path],
       Type,
       pageData: isThemePage,
+      tripsHubs: tripsHubsForPath(path),
     },
   };
 }

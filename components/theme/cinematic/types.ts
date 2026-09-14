@@ -353,6 +353,10 @@ type CinematicSectionBlock =
       type: "trips";
       heading: CinematicHeading;
       cards: CinematicTripCard[];
+      // Optional crawlable link in the heading row's top-right corner, e.g.
+      // "Thailand itineraries →" to the /trips hub. Rendered as a real
+      // anchor, unlike SectionCta, which navigates from a click handler.
+      headingLink?: { href: string; label: string };
       // Full-width yellow CTA under each trip (e.g. "Book this itinerary →").
       ctaLabel?: string;
       // "row" (default) is the side-thumbnail card every other theme page

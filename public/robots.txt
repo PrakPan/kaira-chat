@@ -5,5 +5,7 @@ Disallow: /preview-travel-experience/
 Disallow: /test/
 Disallow: /500/
 Disallow: /404/
+Disallow: /chat?
+Disallow: /chat/?
 
 Sitemap: https://thetarzanway.com/sitemap.xml

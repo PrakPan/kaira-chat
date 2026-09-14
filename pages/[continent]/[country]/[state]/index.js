@@ -1,4 +1,5 @@
 import { SITE_ORIGIN } from "../../../../lib/seo/siteOrigin";
+import { tripsHubsForPath } from "../../../../lib/seo/tripsHubs";
 import { resolveTitle } from "../../../../lib/seo/cmsTitle";
 import Head from "next/head";
 import { useEffect } from "react";
@@ -186,6 +187,7 @@ const TravelPlanner = (props) => {
       locations={props.locations}
       page_id={props.page_id || ""}
       type={props?.Type}
+      tripsHubs={props.tripsHubs}
     />
   {/* )} */}
     </Layout>
@@ -311,6 +313,7 @@ export async function getStaticProps(context) {
       page_id: PagesToIdMapping[path] || "",
       Type,
       pageData: isThemePage,
+      tripsHubs: tripsHubsForPath(path),
     },
   };
 }
