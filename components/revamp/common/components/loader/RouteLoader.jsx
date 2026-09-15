@@ -27,10 +27,10 @@ const RouteLoader = ({
   active,
   title = (
     <>
-      Just a <span className={styles.serif}>moment.</span>
+      Just a <span className={styles.serif}>moment...</span>
     </>
   ),
-  subtitle = "Getting your page ready.",
+  subtitle = "",
 }) => {
   const router = useRouter();
   const [visible, setVisible] = useState(false);

@@ -992,7 +992,7 @@ const EnquiryForm = (props) => {
 
   const readNote = isUnsure
     ? `Next I'll read ${destName || "your destination"} across the year and suggest when to go. The route and vibe ideas follow from that.`
-    : `Next I'll read ${destName || "your destination"} in your dates. The route and vibe suggestions come from what's actually on in ${monthPhrase}.`;
+    : `Next I'll read the ${destName || "destination"} and dates you select. The route and vibe suggestions come from what's actually on in ${monthPhrase}.`;
 
   const fetchLabels = [
     `Searching ${destName || "your destination"} · ${dateInfo.header || "your best window"}`,

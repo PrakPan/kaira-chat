@@ -21,7 +21,7 @@
 // `.seo-cache` rather than a runtime fetch, so the whole itinerary is in the
 // statically exported HTML. That is the point of these 1,718 pages.
 //
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 
@@ -34,6 +34,7 @@ import setItineraryDaybyDay from "../../store/actions/itineraryDaybyDay";
 import { setStays } from "../../store/actions/StayBookings";
 import setItineraryStatus from "../../store/actions/itineraryStatus";
 import { Wrap, Main, Article, Side } from "./TripBlogChrome";
+import { roundedPerPerson } from "../../lib/seo/tripsFormat";
 
 const TripItineraryView = ({
   itinerary,
@@ -59,6 +60,46 @@ const TripItineraryView = ({
   // overlay rather than by reflowing the row, so the two columns beside it keep
   // their widths in both states.
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+
+  // ── Desktop bottom bar: under the article column only ──────────────────────
+  // From 1024px the page is two columns (TripBlogChrome's Main), and the bar
+  // should run under the itinerary, not under the sticky sidebar beside it. A
+  // `position: fixed` bar can't track a grid column in CSS, so the article's
+  // left edge and width are measured and handed to the bar as `barStyle`.
+  // Below 1024px the grid is one column and the CSS rule in the render below
+  // lays the bar across the full width instead.
+  const articleRef = useRef(null);
+  const [desktopBarStyle, setDesktopBarStyle] = useState(null);
+
+  useEffect(() => {
+    const el = articleRef.current;
+    if (!el || typeof window === "undefined") return undefined;
+
+    const measure = () => {
+      if (window.innerWidth < 1024) {
+        setDesktopBarStyle(null);
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      setDesktopBarStyle((prev) =>
+        prev && prev.left === rect.left && prev.width === rect.width
+          ? prev
+          : { left: rect.left, width: rect.width, visibility: "visible" },
+      );
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    // The column also changes width without a window resize — fonts loading,
+    // the gallery settling — so the element itself is observed too.
+    const observer =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    observer?.observe(el);
+    return () => {
+      window.removeEventListener("resize", measure);
+      observer?.disconnect();
+    };
+  }, []);
   // The bar's CTA opens the clone popup. The state lives here rather than being
   // passed in: the bar and the popup are both this component's, so a caller
   // that forgets to wire a handler (which is what left "Get this trip!" doing
@@ -126,15 +167,18 @@ const TripItineraryView = ({
 
   const price = itinerary.trip_price;
   // The snapshot's price is already in rupees (the V1 archive's is in paise),
-  // so it is passed through rather than divided.
-  const archivePrice =
-    price?.per_person > 0
-      ? {
-          amount: price.per_person,
-          perPerson: true,
-          code: price.currency || "INR",
-        }
-      : null;
+  // so it is not divided — but it IS rounded the same way as every other price
+  // on the page. The sidebar, the standfirst and the JSON-LD all go through
+  // roundedPerPerson (nearest ₹100); the bar used the raw figure, so a
+  // ₹2,08,333.28 trip read ₹2,08,300 in the sidebar and ₹2,08,333 in the bar.
+  const perPerson = roundedPerPerson(price);
+  const archivePrice = perPerson
+    ? {
+        amount: perPerson,
+        perPerson: true,
+        code: price?.currency || "INR",
+      }
+    : null;
 
   return (
     <>
@@ -146,19 +190,22 @@ const TripItineraryView = ({
         itineraryId={itinerary.id}
       />
 
-      {/* The pinned price bar is the phone CTA. From 1024px the sticky sidebar
-          carries "Get my trip" beside the article, so a second fixed bar across
-          the bottom is the same offer twice; below that width the sidebar has
-          stacked under the itinerary and the bar is the only CTA in reach.
-          1024 is where TripBlogChrome's Main grid collapses to one column.
+      {/* The pinned price bar shows at every width — phone, tablet and desktop —
+          so "Get this trip!" stays in reach however far down the day-by-day the
+          reader is.
 
-          Done in CSS rather than by unmounting so the markup stays one tree at
-          every width, and the bar clears the 76px nav rail wherever it shows. */}
+          The bar's own classes size it for the /chat split pane (`md:w-[48%]`):
+            • 768–1023px (one column, nav rail showing): re-laid across the full
+              width beside the 76px rail.
+            • 1024px+ (two columns): sized to the article column only, via the
+              measured `barStyle` above, so it never runs under the sidebar.
+              Hidden until that first measurement lands, so it can't flash
+              full-width; the inline `visibility` then wins over this rule. */}
       <style
         dangerouslySetInnerHTML={{
           __html: [
-            `@media (min-width:1024px){[data-bottom-cta-bar]{display:none!important;}}`,
             `@media (min-width:768.02px) and (max-width:1023.98px){[data-bottom-cta-bar]{left:76px!important;width:calc(100% - 76px)!important;}}`,
+            `@media (min-width:1024px){[data-bottom-cta-bar]{visibility:hidden;}}`,
           ].join(""),
         }}
       />
@@ -199,7 +246,7 @@ const TripItineraryView = ({
             {masthead}
 
             <Main>
-              <Article>
+              <Article ref={articleRef}>
                 {/* The photographs open the column, so the price panel beside
                     them starts level with the first picture rather than a
                     screen further down. */}
@@ -224,7 +271,7 @@ const TripItineraryView = ({
             </Main>
           </Wrap>
 
-          {/* Phone and tablet only — see the style block above. */}
+          {/* Every width — see the style block above. */}
           <BottomCTABar
             viewMode="itinerary"
             activeItineraryId={itinerary.id}
@@ -243,10 +290,11 @@ const TripItineraryView = ({
             onConfirm={() => {}}
             onViewCart={() => {}}
             onGetThisTrip={() => setShowCloneModal(true)}
+            barStyle={desktopBarStyle || undefined}
           />
 
-          {/* Clears the fixed bar wherever it still shows. */}
-          <div className="lg:hidden h-[92px]" aria-hidden />
+          {/* Clears the fixed bar, which now shows at every width. */}
+          <div className="h-[92px]" aria-hidden />
         </div>
       </div>
     </>

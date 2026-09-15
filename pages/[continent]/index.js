@@ -1,4 +1,5 @@
 import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
+import { tripsHubsForPath } from "../../lib/seo/tripsHubs";
 import Head from "next/head";
 import { useEffect } from "react";
 import { connect } from "react-redux";
@@ -84,6 +85,7 @@ const TravelPlanner = (props) => {
         continetCarousel={props.continetCarousel}
         destination={convertDbNameToCapitalFirst(props.Data?.slug)}
         type={props.Type}
+        tripsHubs={props.tripsHubs}
       ></ContinentPage>
     </Layout>
   );
@@ -200,7 +202,8 @@ export async function getStaticProps(context) {
       path,
       hotLocationSearch,
       destination:continent,
-      Type:"Page"
+      Type:"Page",
+      tripsHubs: tripsHubsForPath(path),
     },
   };
 }

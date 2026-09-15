@@ -1,4 +1,5 @@
 import { SITE_ORIGIN } from "../../../../../lib/seo/siteOrigin";
+import { tripsHubsForPath } from "../../../../../lib/seo/tripsHubs";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { connect } from "react-redux";
@@ -130,9 +131,9 @@ const Experience = (props) => {
     id={router.query.city}
     page_id={props.page_id}
     type={props?.Type}
+    tripsHubs={props.tripsHubs}
   />
 {/* )} */}
-
     </Layout>
   );
 };
@@ -261,6 +262,7 @@ if (data.page_data && Object.keys(data.page_data).length > 0) {
       page_id:Id,
       Type,
       pageData: isThemePage,
+      tripsHubs: tripsHubsForPath(path),
     },
   };
 }

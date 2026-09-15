@@ -22,8 +22,10 @@ const {
   fetchIndexedDetail,
   fetchItineraryContent,
   fetchItineraryGallery,
+  fetchItineraryTransfers,
   toPublicTrip,
   toPublicGallery,
+  toPublicTransfers,
 } = require("../lib/seo/tripsIndexed");
 
 const CACHE_DIR = path.join(process.cwd(), ".seo-cache");
@@ -108,6 +110,13 @@ const buildPage = async (row) => {
     fetchItineraryGallery(detail.id)
   );
 
+  // The flights, trains and road legs between the stops. The itinerary body
+  // doesn't carry them — see fetchItineraryTransfers. Not fatal: without them
+  // the page just has no transfers list.
+  const transfers = await withRetry(`transfers ${row.slug}`, () =>
+    fetchItineraryTransfers(detail.id)
+  );
+
   fs.writeFileSync(
     path.join(PAGES_DIR, `${row.slug}.json`),
     JSON.stringify({
@@ -115,6 +124,7 @@ const buildPage = async (row) => {
       days: content?.days || [],
       stays: content?.stays || [],
       gallery: toPublicGallery(gallery),
+      transfers: toPublicTransfers(transfers),
       // Stamped so the next crawl can tell whether this file is still current.
       // Prefixed because everything else in here is the API's own shape and
       // reaches the page as props.
@@ -140,6 +150,8 @@ const reusable = (row) => {
     // stamp — the trip has not changed, but what we store about it has. One
     // full re-crawl, then stamps take over again.
     if (!Array.isArray(cached.gallery)) return null;
+    // Same for transfers, added after the gallery.
+    if (!Array.isArray(cached.transfers)) return null;
     return cached;
   } catch (err) {
     return null;
@@ -160,6 +172,19 @@ const run = async () => {
 
   fs.writeFileSync(INDEX_FILE, JSON.stringify(rows), "utf8");
   console.log(`[trips-seo] indexed list: ${rows.length} trips`);
+
+  // A hub with no entry in lib/seo/tripsHubs.js still builds, but no
+  // destination page links to it, so Google only finds it through /trips and
+  // the sitemap. Warn rather than fail: it is a missed link, not a broken page.
+  const { HUB_PAGES } = require("../lib/seo/tripsHubs");
+  const unmapped = [...new Set(rows.map((row) => row.destination))]
+    .filter((hub) => hub && !HUB_PAGES[hub])
+    .sort();
+  if (unmapped.length) {
+    console.warn(
+      `[trips-seo] ${unmapped.length} trips hub(s) not linked from any destination page — add to HUB_PAGES in lib/seo/tripsHubs.js: ${unmapped.join(", ")}`
+    );
+  }
 
   if (!TRIPS_IN_BUILD) {
     console.log("[trips-seo] pages/trips is not in this build — skipping page bodies");

@@ -197,6 +197,61 @@ const getStaticThemeSlugs = () => {
     .filter((name) => !name.startsWith("[") && !name.startsWith("_"));
 };
 
+// Drop theme slugs that production answers with a redirect.
+//
+// Theme redirects live only in the production CloudFront function, not in this
+// repo: `/theme/japan-in-summer*` 301s to `/theme/japan-in-autumn` while the CMS
+// still lists `japan-in-summer-2026`. So the sitemap submitted a URL that is not
+// a page, which Search Console reports as "Page with redirect", and the
+// destination appeared twice under one title. Asking production is the only
+// check that cannot drift from a console-edited redirect list.
+//
+// Redirects only, never 404: this runs in prebuild, BEFORE the upload, so a
+// theme being published for the first time is still a 404 on production at this
+// moment and would be left out of the sitemap on exactly the deploy that adds it.
+// A network failure keeps the slug too: an unreachable check must never silently
+// remove live pages from the sitemap. Themes only — they are the one section
+// with edge redirects — and ~40 HEAD requests, so it adds seconds to prebuild.
+async function dropRedirectedThemes(slugs) {
+  const kept = [];
+  const dropped = [];
+  const CONCURRENCY = 8;
+
+  for (let i = 0; i < slugs.length; i += CONCURRENCY) {
+    const batch = slugs.slice(i, i + CONCURRENCY);
+    const results = await Promise.all(
+      batch.map(async (slug) => {
+        try {
+          const res = await axios.head(`${SITE_ORIGIN}/theme/${slug}`, {
+            maxRedirects: 0,
+            timeout: 10000,
+            validateStatus: () => true,
+          });
+          return { slug, status: res.status };
+        } catch (err) {
+          return { slug, status: null, error: err.message };
+        }
+      })
+    );
+
+    for (const r of results) {
+      if (r.status && r.status >= 300 && r.status < 400) {
+        dropped.push(`${r.slug} (${r.status})`);
+      } else {
+        if (r.status === null) {
+          console.warn(`[sitemap] theme check failed for ${r.slug}, keeping it: ${r.error}`);
+        }
+        kept.push(r.slug);
+      }
+    }
+  }
+
+  if (dropped.length) {
+    console.log(`[sitemap] themes not listed because production redirects them: ${dropped.join(", ")}`);
+  }
+  return kept;
+}
+
 const generateSitemap = async () => {
   const BASE_URL =
     // process.env.NEXT_PUBLIC_MERCURY_HOST || 
@@ -361,9 +416,10 @@ const generateSitemap = async () => {
     console.error("[sitemap] failed to fetch CMS themes:", err.message);
   }
 
-  const allThemeSlugs = Array.from(
+  const liveThemeSlugs = Array.from(
     new Set([...staticThemeSlugs, ...cmsThemeSlugs])
   );
+  const allThemeSlugs = await dropRedirectedThemes(liveThemeSlugs);
   let themePaths = allThemeSlugs.map((slug) => {
     return {
       title: "Theme Page",
