@@ -137,6 +137,14 @@ const DARK_CARD: React.CSSProperties = {
   border: "1px solid rgba(255,255,255,0.08)",
 };
 
+// Compact light rail cards: white, a hairline and soft shadow in the page's
+// accent (a 6-digit hex, so the alpha suffix is valid).
+const compactCardChrome = (palette: { accent: string }): React.CSSProperties => ({
+  background: "#ffffff",
+  border: `1px solid ${palette.accent}33`,
+  boxShadow: `0 10px 24px -14px ${palette.accent}59`,
+});
+
 // The `tinted` ink panel's cards: a faint yellow wash and hairline.
 const DARK_CARD_TINTED: React.CSSProperties = {
   background: "rgba(247,231,0,0.07)",
@@ -678,6 +686,9 @@ const PromptCard: React.FC<{
   onDark?: boolean;
   // The ink panel opted into yellow-tinted card chrome (see section `tinted`).
   tinted?: boolean;
+  // Compact light rail card (see section `compact`) and whether to drop `line`.
+  compact?: "md" | "sm";
+  hideLine?: boolean;
   // The section keeps its rail from md up, so the card holds a fixed width
   // there instead of stretching to a grid track.
   inRail?: boolean;
@@ -694,10 +705,14 @@ const PromptCard: React.FC<{
   onSand,
   onDark,
   tinted,
+  compact: compactProp,
+  hideLine,
   inRail,
 }) => {
   const selection = useThemeSelection();
   const palette = usePalette();
+  const compact = onDark ? undefined : compactProp;
+  const sm = compact === "sm";
   // An ink card in a RAIL is a different object from an ink card in a grid.
   // The grid version (two or three cards filling the panel) carries a tall hero
   // image and headline type; a rail of ten has to stay scannable, so it takes
@@ -740,32 +755,42 @@ const PromptCard: React.FC<{
     }}
     aria-pressed={selectable ? selected : undefined}
     className={`ctl-card group flex flex-col rounded-[18px] overflow-hidden cursor-pointer shrink-0 ${
-      darkRail ? "text-center" : "text-left"
+      darkRail || compact ? "text-center" : "text-left"
     } ${
-      darkRail
-        ? "w-[272px] md:w-[292px]"
-        : inRail
-          ? "w-[262px] md:w-[288px]"
-          : "w-[262px] md:w-auto md:shrink"
+      compact
+        ? sm
+          ? "w-[210px]"
+          : "w-[244px]"
+        : darkRail
+          ? "w-[272px] md:w-[292px]"
+          : inRail
+            ? "w-[262px] md:w-[288px]"
+            : "w-[262px] md:w-auto md:shrink"
     }`}
     style={{
       ...(onDark
         ? tinted
           ? DARK_CARD_TINTED
           : DARK_CARD
-        : inRail
-          ? railCardChrome
-          : cardChrome(onSand)),
+        : compact
+          ? compactCardChrome(palette)
+          : inRail
+            ? railCardChrome
+            : cardChrome(onSand)),
       ...(selected ? { borderColor: palette.accent } : {}),
     }}
   >
     <div
       className={`relative overflow-hidden ${
-        darkRail
-          ? "h-[132px] md:h-[140px]"
-          : onDark
-            ? "h-[176px] md:h-[220px]"
-            : "h-[148px] md:h-[160px]"
+        compact
+          ? sm
+            ? "h-[118px]"
+            : "h-[136px]"
+          : darkRail
+            ? "h-[132px] md:h-[140px]"
+            : onDark
+              ? "h-[176px] md:h-[220px]"
+              : "h-[148px] md:h-[160px]"
       }`}
       style={{ background: onDark ? "rgba(255,255,255,0.04)" : SAND }}
     >
@@ -788,35 +813,60 @@ const PromptCard: React.FC<{
     </div>
     <div
       className={`flex flex-col flex-1 ${
-        darkRail
-          ? "px-[16px] py-[16px]"
-          : onDark
-            ? "px-[17px] py-[16px] md:px-[22px] md:py-[22px]"
-            : "px-[17px] py-[16px] md:px-[18px] md:py-[17px]"
+        compact
+          ? sm
+            ? "p-[15px]"
+            : "p-[16px]"
+          : darkRail
+            ? "px-[16px] py-[16px]"
+            : onDark
+              ? "px-[17px] py-[16px] md:px-[22px] md:py-[22px]"
+              : "px-[17px] py-[16px] md:px-[18px] md:py-[17px]"
       }`}
     >
       <div
         className={`font-bold leading-[1.3] ${
-          darkRail
-            ? "text-[13.5px] md:text-[14px]"
-            : onDark
-              ? "text-[16px] md:text-[18px]"
-              : "text-[15px] md:text-[16.5px]"
+          compact
+            ? sm
+              ? "text-[13.5px]"
+              : "text-[14px]"
+            : darkRail
+              ? "text-[13.5px] md:text-[14px]"
+              : onDark
+                ? "text-[16px] md:text-[18px]"
+                : "text-[15px] md:text-[16.5px]"
         }`}
         style={{ color: onDark ? PAPER : INK, letterSpacing: "-0.01em" }}
       >
         {card.name}
       </div>
-      {card.line && (
+      {card.line && !hideLine && (
         <div
-          className="text-[12.5px] md:text-[13.5px] leading-[1.5] mt-[8px] flex-1"
+          className={`leading-[1.5] flex-1 ${
+            compact
+              ? "text-[11.5px] mt-[6px]"
+              : "text-[12.5px] md:text-[13.5px] mt-[8px]"
+          }`}
           style={{ color: onDark ? FAINT : MUTED }}
         >
           {card.line}
         </div>
       )}
+      {compact && card.meta && (
+        <div
+          className={`ctl-mono ${hideLine ? "mt-[13px] flex-1" : "mt-[12px]"}`}
+          style={{ color: FAINT, fontSize: 9 }}
+        >
+          {card.meta.split("★").map((part, i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <span style={{ color: "#f5a623" }}>★</span>}
+              {part}
+            </React.Fragment>
+          ))}
+        </div>
+      )}
       {(ctaLabel || selectable) && (
-        <div className="mt-auto pt-[14px]">
+        <div className={`mt-auto ${compact ? "pt-[12px]" : "pt-[14px]"}`}>
           <span
             role={selectable ? "button" : undefined}
             onClick={
@@ -829,7 +879,13 @@ const PromptCard: React.FC<{
                   }
                 : undefined
             }
-            className="block w-full text-center rounded-full text-[12.5px] md:text-[13px] font-bold px-[14px] py-[10px]"
+            className={`block w-full text-center rounded-full font-bold px-[14px] ${
+              compact
+                ? sm
+                  ? "text-[11.5px] py-[9px]"
+                  : "text-[12px] py-[10px]"
+                : "text-[12.5px] md:text-[13px] py-[10px]"
+            }`}
             style={
               selectable
                 ? tinted && !selected
@@ -864,7 +920,7 @@ const CardsSection: React.FC<{
   // becomes a 3-up grid from md, which is right for a five-card row and wrong
   // for an eleven-card one — that stacks into four full-height bands and stops
   // reading as a set of options you scan across.
-  const rail = !!section.rail;
+  const rail = !!(section.rail || section.compact);
   const cards = (
     <div
       className={`ctl-scroll ctl-rail flex gap-[12px] overflow-x-auto pt-[4px] pb-[10px] ${
@@ -895,6 +951,8 @@ const CardsSection: React.FC<{
           onSand={section.tone === "sand"}
           onDark={onDark}
           tinted={onDark && section.tinted}
+          compact={section.compact}
+          hideLine={section.hideLines}
           inRail={rail}
           priority={first && i === 0}
         />

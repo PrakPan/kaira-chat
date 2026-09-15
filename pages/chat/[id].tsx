@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { connect, useSelector } from "react-redux";
-import BotApp from "../../components/bot-components/BotAppClient";
+import { BotAppSessionClient as BotApp } from "../../components/bot-components/BotAppClient";
+import BotAppSkeleton from "../../components/bot-components/components/BotAppSkeleton";
 import * as authaction from "../../store/actions/auth";
 
 const ChatSessionPage = ({ checkAuthState }: { checkAuthState: () => void }) => {
@@ -17,7 +18,9 @@ const ChatSessionPage = ({ checkAuthState }: { checkAuthState: () => void }) => 
     checkAuthState();
   }, []);
 
-  if (!router.isReady) return null;
+  // Skeleton, not null: a blank frame here was the first step of the
+  // refresh flash (blank → bare sidebar → empty panels → content).
+  if (!router.isReady) return <BotAppSkeleton />;
 
   const sessionId = router.query.id as string;
   const fromTailored = router.query.source === "tailored";

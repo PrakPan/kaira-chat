@@ -345,6 +345,10 @@ const hokkaidoConfig: CinematicThemeConfig = {
       type: "cards",
       selectable: true,
       itemKind: "activity",
+      // The design's single-row scroller: 244px centred cards, name + a
+      // price/duration line from the activity's catalog row, no description.
+      compact: "md",
+      hideLines: true,
       heading: { lead: "Activities worth the day" },
       cards: [
         {
@@ -353,6 +357,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "The historic port, then the night view from Mt. Hakodate.",
           tag: "Hakodate",
           activityId: ACTIVITY.hakodateRopeway,
+          meta: "On request · 2 hours",
           objectPosition: "center 50%",
         },
         {
@@ -361,6 +366,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Penguins in the snow and a woodland of little log cabins.",
           tag: "Furano",
           activityId: ACTIVITY.asahiyamaFurano,
+          meta: "₹6,227 · ★ 4.2 · Full day",
         },
         {
           image: IMG.actLakeToya,
@@ -368,6 +374,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "A caldera lake and the steaming Hell Valley.",
           tag: "Day tour",
           activityId: ACTIVITY.lakeToyaNoboribetsu,
+          meta: "On request · 10 hours",
         },
         {
           image: IMG.actBluePond,
@@ -375,6 +382,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "The famous cobalt-blue pond, frozen and lit in winter.",
           tag: "Biei",
           activityId: ACTIVITY.asahiyamaBluePond,
+          meta: "₹7,240 · 10 hours",
         },
         {
           image: IMG.actNoboribetsu,
@@ -382,6 +390,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Hokkaido's best onsen town and its volcanic scenery.",
           tag: "Day tour",
           activityId: ACTIVITY.lakeToyaNoboribetsu,
+          meta: "On request · 10 hours",
         },
       ],
     },
@@ -458,17 +467,20 @@ const hokkaidoConfig: CinematicThemeConfig = {
         },
       ],
     },
-    // ── When your legs need a day off (POIs, sand) ──
+    // ── When your legs need a day off (POIs) ──
+    // The design's single-row scroller of 210px centred cards on the plain
+    // page, each with its Google rating.
     {
       type: "cards",
-      tone: "sand",
       ctaLabel: "Add to trip →",
       ctaTone: "dark",
+      compact: "sm",
       heading: { lead: "When your legs need a day off" },
       cards: [
         {
           image: IMG.poiBeerMuseum,
           name: "Sapporo Beer Museum",
+          meta: "★ 4.2 · 10.5k",
           line: "Japan's only beer museum, with a tasting room to warm up in.",
           tag: "Sapporo",
           prompt: PROMPTS.beerMuseum,
@@ -478,6 +490,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
         {
           image: IMG.poiNijoMarket,
           name: "Nijo Fish Market",
+          meta: "★ 3.7 · 9.2k",
           line: "Uni, crab and a steaming seafood breakfast bowl.",
           tag: "Sapporo",
           prompt: PROMPTS.nijoMarket,
@@ -487,6 +500,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
         {
           image: IMG.poiTanukikoji,
           name: "Tanukikoji Arcade",
+          meta: "★ 4.1 · 14.3k",
           line: "A covered street of shops and izakayas for a snowy evening.",
           tag: "Sapporo",
           prompt: PROMPTS.tanukikoji,
@@ -496,6 +510,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
         {
           image: IMG.poiHokkaidoShrine,
           name: "Hokkaidō Shrine",
+          meta: "★ 4.5 · 9.1k",
           line: "A quiet, snow-covered shrine in Maruyama Park.",
           tag: "Sapporo",
           prompt: PROMPTS.hokkaidoShrine,
@@ -505,6 +520,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
         {
           image: IMG.poiKanemori,
           name: "Kanemori Red Brick Warehouse",
+          meta: "★ 4.1 · 15.8k",
           line: "Historic bayside warehouses, lit up over the winter harbour.",
           tag: "Hakodate",
           prompt: PROMPTS.kanemori,
@@ -514,6 +530,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
         {
           image: IMG.poiGoryokaku,
           name: "Goryōkaku Tower",
+          meta: "★ 4.3 · 16.3k",
           line: "The star-shaped fort, best seen under snow from above.",
           tag: "Hakodate",
           prompt: PROMPTS.goryokaku,

@@ -32,6 +32,10 @@ import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
 import BrandLockup from "../brand/BrandLockup";
 import ItineraryShimmer from "./components/ItineraryShimmer";
+import {
+  ChatPanelSkeleton,
+  ItineraryPanelSkeleton,
+} from "./components/BotAppSkeleton";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
 import { getPlatform, type ThemeSelectedItem } from "./hooks/useChat";
@@ -407,6 +411,24 @@ export default function BotApp({
     })(),
   );
   const isFreshP1Redirect = isFreshP1RedirectRef.current;
+
+  // ── Session-reload skeletons ──────────────────────────────────────────────
+  // Opening/refreshing /chat/{id} used to paint the sidebar beside two empty
+  // white panels for the whole restore (status API → archive check → threads
+  // list → get_by_id), and the itinerary panel stayed empty a while longer
+  // until ItineraryContainer's first fetch filled Redux.
+  //   isSessionRestoring  — the initial restoreLatestThread is in flight. Both
+  //                         panels show a skeleton over their (mounted) content.
+  //   awaitingItineraryPaint — restore done but a real itinerary's data hasn't
+  //                         landed yet; only the itinerary panel keeps its
+  //                         skeleton. Cleared by the effect further down.
+  // A fresh P1 redirect has nothing to restore, so it never starts in either.
+  const [isSessionRestoring, setIsSessionRestoring] = useState(
+    !!sessionId && !isFreshP1Redirect,
+  );
+  const [awaitingItineraryPaint, setAwaitingItineraryPaint] = useState(
+    !!sessionId && !isFreshP1Redirect,
+  );
 
   const [mapState, setMapState] = useState<MapState>({
     lat: 20,
@@ -1100,6 +1122,7 @@ export default function BotApp({
 
   // ── Refs for restore guards ──────────────────────────────────────────────
   const hasRestoredRef = useRef(false);
+  const initialRestoreInFlightRef = useRef(false);
   const userSelectedThreadRef = useRef(false);
   const chatBotInjectedMessageRef = useRef<string | null>(null);
   const isLoadingThreadRef = useRef(false);
@@ -2975,11 +2998,27 @@ export default function BotApp({
   // ── Only restore on initial mount ────────────────────────────────────────
   useEffect(() => {
     if (!sessionId) return;
-    if (hasRestoredRef.current) return;
-    if (userSelectedThreadRef.current) return;
+    if (hasRestoredRef.current || userSelectedThreadRef.current) {
+      // This effect re-runs whenever restoreLatestThread's identity changes, so
+      // only drop the reload skeletons when the restore was claimed elsewhere
+      // (pending seed prompt, thread select, popstate) — never while our own
+      // restore is still in flight; its .finally clears them.
+      if (!initialRestoreInFlightRef.current) {
+        setIsSessionRestoring(false);
+        setAwaitingItineraryPaint(false);
+      }
+      return;
+    }
     hasRestoredRef.current = true;
     if (window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/)) {
-      restoreLatestThread(sessionId);
+      initialRestoreInFlightRef.current = true;
+      restoreLatestThread(sessionId).finally(() => {
+        initialRestoreInFlightRef.current = false;
+        setIsSessionRestoring(false);
+      });
+    } else {
+      setIsSessionRestoring(false);
+      setAwaitingItineraryPaint(false);
     }
   }, [sessionId, restoreLatestThread]);
 
@@ -3958,6 +3997,38 @@ Start Location: ${details.startLocation}`;
     return activeItineraryId;
   }, [activeItineraryId]);
 
+  // Hold the itinerary skeleton past the restore only while a real itinerary
+  // is mounted but hasn't painted (no name in Redux yet). Chat-only / draft /
+  // map landings have nothing more to wait for, and the tailored flow has its
+  // own body shimmer. Capped so a fetch that never fills the name can't leave
+  // the panel stuck on a skeleton.
+  const hasItineraryName = !!(
+    itineraryReduxName || currentItineraryRef?.current?.name
+  );
+  useEffect(() => {
+    if (!awaitingItineraryPaint || isSessionRestoring) return;
+    if (
+      !itineraryContainerId ||
+      hasItineraryName ||
+      fromTailored ||
+      viewMode !== "itinerary"
+    ) {
+      setAwaitingItineraryPaint(false);
+      return;
+    }
+    const t = setTimeout(() => setAwaitingItineraryPaint(false), 15000);
+    return () => clearTimeout(t);
+  }, [
+    awaitingItineraryPaint,
+    isSessionRestoring,
+    itineraryContainerId,
+    hasItineraryName,
+    fromTailored,
+    viewMode,
+  ]);
+  const showItineraryReloadSkeleton =
+    isSessionRestoring || awaitingItineraryPaint;
+
   // ── Tailored-form skeleton gate ──────────────────────────────────────────
   // When the user lands on /chat/{id}?source=tailored, the itinerary panel's
   // body would otherwise be blank (header + cart loader visible, body empty)
@@ -4256,6 +4327,18 @@ Start Location: ${details.startLocation}`;
         overflow: isMobile ? "visible" : "hidden",
       }}
     >
+      {/* Session reload: skeleton in place of the header + body. The real
+          header and body stay mounted (display:none) so ItineraryContainer's
+          fetch/poll keeps running underneath — same trick as the tailored
+          shimmer below. */}
+      {showItineraryReloadSkeleton && <ItineraryPanelSkeleton />}
+      <div
+        style={
+          showItineraryReloadSkeleton
+            ? { display: "none" }
+            : { display: "contents" }
+        }
+      >
       {/* Header strip — full-width bar on desktop, compact rounded card on mobile
           (design's .trip strip).
           On mobile the card sticks to the top of the itinerary scroll pane. The
@@ -4784,6 +4867,7 @@ Start Location: ${details.startLocation}`;
           </div>
         ) : null}
       </div>
+      </div>
     </div>
   );
 
@@ -4999,6 +5083,13 @@ Start Location: ${details.startLocation}`;
               />
             )}
           </div>
+          {/* Session reload: cover the (mounted) chat until the thread restore
+              has filled it. */}
+          {isSessionRestoring && (
+            <div className="absolute inset-0 z-20">
+              <ChatPanelSkeleton />
+            </div>
+          )}
         </div>
       </div>
 
@@ -5102,6 +5193,11 @@ Start Location: ${details.startLocation}`;
                   />
                 )}
               </div>
+              {isSessionRestoring && (
+                <div className="absolute inset-0 z-10">
+                  <ChatPanelSkeleton />
+                </div>
+              )}
             </div>
           }
           itineraryContent={isMobile ? itineraryPanel : null}
