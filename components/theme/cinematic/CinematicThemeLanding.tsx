@@ -137,6 +137,12 @@ const DARK_CARD: React.CSSProperties = {
   border: "1px solid rgba(255,255,255,0.08)",
 };
 
+// The `tinted` ink panel's cards: a faint yellow wash and hairline.
+const DARK_CARD_TINTED: React.CSSProperties = {
+  background: "rgba(247,231,0,0.07)",
+  border: "1px solid rgba(247,231,0,0.22)",
+};
+
 // The mono badge over a card image on a DARK card — the frosted white one
 // below disappears against an ink panel, so this inverts it.
 const IMAGE_BADGE_DARK: React.CSSProperties = {
@@ -220,6 +226,7 @@ const CinematicStyles = () => (
       .ctl-h { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.03em; color: ${INK}; margin: 0; }
       .ctl-h-light { color: ${PAPER}; }
       .ctl-h-yellow { color: ${YELLOW}; }
+      .ctl-h-paper { color: ${PAPER}; }
       .ctl-eyebrow-yellow { color: ${YELLOW}; }
       /* Shared measure for every section. The gutter stays put; only the cap
          moves, so a wider page gains content width rather than losing padding. */
@@ -669,6 +676,8 @@ const PromptCard: React.FC<{
   // The card sits on the ink panel: translucent chrome, light type, an inverted
   // image badge and a yellow CTA, since the accent fill vanishes against ink.
   onDark?: boolean;
+  // The ink panel opted into yellow-tinted card chrome (see section `tinted`).
+  tinted?: boolean;
   // The section keeps its rail from md up, so the card holds a fixed width
   // there instead of stretching to a grid track.
   inRail?: boolean;
@@ -684,6 +693,7 @@ const PromptCard: React.FC<{
   addNoun,
   onSand,
   onDark,
+  tinted,
   inRail,
 }) => {
   const selection = useThemeSelection();
@@ -740,7 +750,9 @@ const PromptCard: React.FC<{
     }`}
     style={{
       ...(onDark
-        ? DARK_CARD
+        ? tinted
+          ? DARK_CARD_TINTED
+          : DARK_CARD
         : inRail
           ? railCardChrome
           : cardChrome(onSand)),
@@ -820,7 +832,9 @@ const PromptCard: React.FC<{
             className="block w-full text-center rounded-full text-[12.5px] md:text-[13px] font-bold px-[14px] py-[10px]"
             style={
               selectable
-                ? addCtaStyle(palette, selected, onDark)
+                ? tinted && !selected
+                  ? { background: YELLOW, color: INK, border: "none" }
+                  : addCtaStyle(palette, selected, onDark)
                 : onDark
                   ? { background: YELLOW, color: INK, border: "none" }
                   : ctaTone === "dark"
@@ -880,6 +894,7 @@ const CardsSection: React.FC<{
           addNoun={section.addNoun}
           onSand={section.tone === "sand"}
           onDark={onDark}
+          tinted={onDark && section.tinted}
           inRail={rail}
           priority={first && i === 0}
         />
@@ -892,7 +907,9 @@ const CardsSection: React.FC<{
       <div className="max-w-[620px]">
         <Heading
           heading={section.heading}
-          className={`text-[22px] md:text-[34px] ${onDark ? "ctl-h-yellow" : ""}`}
+          className={`text-[22px] md:text-[34px] ${
+            onDark ? (section.tinted ? "ctl-h-paper" : "ctl-h-yellow") : ""
+          }`}
           eyebrowClassName={onDark ? "ctl-eyebrow-yellow" : undefined}
         />
         {section.intro && (

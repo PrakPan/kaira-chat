@@ -323,6 +323,10 @@ type CinematicSectionBlock =
       // "dark" — the mockup's inset ink panel with a yellow heading and a
       // yellow-filled CTA, for a short row that has to stop the scroll.
       tone?: "paper" | "sand" | "dark";
+      // `dark` only: a paper heading and yellow-tinted card chrome instead of
+      // the yellow heading over neutral glass cards — the Hokkaido "New Year in
+      // Japan" panel. Leaves every other dark panel as it was.
+      tinted?: boolean;
       // Paragraph under the heading. The dark panel is the only tone that reads
       // with one; the light rows carry their explanation on the cards.
       intro?: string;
