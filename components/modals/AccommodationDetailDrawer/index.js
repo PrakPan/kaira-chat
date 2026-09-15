@@ -60,6 +60,9 @@ const AccommodationDetailDrawer = ({
   // (e.g. /chat/{sessionId}), where falling back to Redux can pick up a
   // stale id from a previously loaded itinerary.
   itineraryId: itineraryIdProp = undefined,
+  // Section the detail view opens on ("section-2" = Rooms). Omitted, it opens
+  // at the top on About as before.
+  initialSectionId = undefined,
 }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -298,6 +301,7 @@ const AccommodationDetailDrawer = ({
                 setShowLoginModal={setShowLoginModal}
                 onHide={onHide}
                 id={accommodationId}
+                initialSectionId={initialSectionId}
               />
             ) : null}
           </div>

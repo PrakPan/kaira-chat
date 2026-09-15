@@ -947,7 +947,7 @@ export const TripSideBoxes = ({
         </ul>
       )}
       <PillDark type="button" onClick={onGetThisTrip}>
-        Get my trip
+        Get this trip
       </PillDark>
       <small
         style={{

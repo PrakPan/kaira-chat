@@ -2600,28 +2600,35 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
             </div>
           )}
 
-          {/* Star category below the heading as "4 ★ hotel" — the number, the
-              itinerary city header's yellow star, then the property type from
-              the server label. No pill background. */}
+          {/* Star category below the heading as one yellow star per star
+              (a 3-Star Hotel shows three). The full label stays on the row
+              for screen readers and the hover title. No pill background. */}
           {starCategory > 0 && (
             <div
               role="img"
-              aria-label={starTag}
+              aria-label={`${starCategory}-star ${starPropertyType}`}
               title={starTag}
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 4,
-                fontFamily: "'Inter', sans-serif",
-                fontSize: 13,
-                fontWeight: 600,
-                color: "#111827",
+                gap: 2,
                 lineHeight: 1,
               }}
             >
-              <span>{starCategory}</span>
-              <StarFilledIcon />
-              <span>{starPropertyType}</span>
+              {Array.from({ length: starCategory }, (_, i) => (
+                <StarFilledIcon key={i} />
+              ))}
+              <span
+                style={{
+                  marginLeft: 4,
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: "#445069",
+                }}
+              >
+                ({starCategory} Star)
+              </span>
             </div>
           )}
           </div>

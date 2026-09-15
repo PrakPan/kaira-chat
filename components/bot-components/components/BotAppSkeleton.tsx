@@ -12,8 +12,8 @@ import ItineraryShimmer from "./ItineraryShimmer";
 //
 // It deliberately doesn't read as a dead grey page: the real chrome paints
 // straight away (brand mark, Kaira's avatar + "thinking…" status, the
-// composer pill), the placeholders rise in one after another, Kaira shows a
-// typing indicator, and a brand-coloured sweep runs across the itinerary
+// composer pill), the placeholders rise in one after another, and a
+// brand-coloured sweep runs across the itinerary
 // panel — so the page looks like it is already working, not stuck.
 //
 // The layout swap is pure CSS (`max-ph:` / `md:`), never a JS viewport check —
@@ -69,23 +69,12 @@ const skelStyles = `
     animation: botSkelProgress 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
 
-  /* Kaira's live status dot + typing dots. */
+  /* Kaira's live status dot. */
   @keyframes botSkelPulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50%      { opacity: 0.35; transform: scale(0.7); }
   }
   .bot-status-dot { animation: botSkelPulse 1.2s ease-in-out infinite; }
-  @keyframes botSkelTyping {
-    0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
-    30%           { transform: translateY(-4px); opacity: 1; }
-  }
-  .bot-typing span {
-    display: block; width: 6px; height: 6px; border-radius: 50%;
-    background: #445069;
-    animation: botSkelTyping 1.1s ease-in-out infinite;
-  }
-  .bot-typing span:nth-child(2) { animation-delay: 0.15s; }
-  .bot-typing span:nth-child(3) { animation-delay: 0.3s; }
 
   /* Remounted after a handoff — already on screen, don't fade in again. */
   .bot-no-rise .bot-rise,
@@ -94,7 +83,7 @@ const skelStyles = `
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .bot-skel, .bot-status-dot, .bot-typing span, .bot-progress::after {
+    .bot-skel, .bot-status-dot, .bot-progress::after {
       animation: none;
     }
     .bot-rise, .bot-stagger > div > :not(style) {
@@ -216,7 +205,7 @@ const BubbleSkel: React.FC<{ user?: boolean; lines?: number[]; d: number }> = ({
   );
 
 // Kaira chat panel — the real header and composer chrome, a short conversation
-// rising in, and Kaira "typing" at the end of it.
+// rising in.
 export const ChatPanelSkeleton: React.FC = () => (
   <div
     className={`${riseClass()} flex flex-col h-full w-full bg-white border-l-[0.5px] border-l-[#e5e5e5] max-ph:border-l-0 cursor-progress`}
@@ -248,18 +237,6 @@ export const ChatPanelSkeleton: React.FC = () => (
       <BubbleSkel user d={90} />
       <BubbleSkel lines={[76, 88, 58, 30]} d={180} />
       <BubbleSkel user d={270} />
-      {/* Kaira typing */}
-      <div className="bot-rise flex items-center gap-[10px]" style={rise(360)}>
-        <KairaAvatar size={30} />
-        <div
-          className="bot-typing flex items-center gap-[5px] px-4 py-[13px] bg-[#f4f5f7] rounded-[16px] rounded-bl-[5px]"
-          aria-hidden="true"
-        >
-          <span />
-          <span />
-          <span />
-        </div>
-      </div>
     </div>
 
     {/* Composer — MessageInputBox's pill, inert */}

@@ -5667,6 +5667,9 @@ const handleShowLogin = useCallback(() => {
           // The hotel card probes /hotels/detail/ before it opens this drawer;
           // reuse that response so the same POST doesn't run twice.
           initialData={hotelDrawer.prefetchedDetail}
+          // The hotel card's "Add to Itinerary" (and card tap) opens this to
+          // pick a room, so land on the Rooms tab rather than About.
+          initialSectionId="section-2"
           setShowLoginModal={setShowLoginModal}
           // Authoritative itinerary id for this chat. The drawer would
           // otherwise fall through to Redux Itinerary.id, which can lag
