@@ -51,6 +51,9 @@ const WhenPanel = ({
       ? Number(date.duration)
       : 7,
   );
+  // Set by Clear, unset by any pick. It is what lets Done stay pressable with
+  // nothing selected: see `canDone`, where an empty draft is normally refused.
+  const [cleared, setCleared] = useState(false);
   const now = today();
 
   // The panel floats below the When field. Cap it to the space actually left
@@ -97,12 +100,16 @@ const WhenPanel = ({
 
   const changeNights = (n) => setNights(n);
 
-  const pickFlex = (y, m) => setFlexSel({ y, m });
+  const pickFlex = (y, m) => {
+    setFlexSel({ y, m });
+    setCleared(false);
+  };
 
   const clear = () => {
     setDs(null);
     setDe(null);
     setFlexSel(null);
+    setCleared(true);
   };
 
   // Done is the only thing that writes. It commits whatever the draft says,
@@ -121,12 +128,22 @@ const WhenPanel = ({
     onDone?.();
   };
 
+  // From NEXT month on. The current one is not a rough month you can plan
+  // around — most of it is already gone by the time anyone reads this, and a
+  // "flexible in September" trip picked on 28 September has no window left to
+  // be flexible in.
   const flexMonths = [];
-  for (let i = 0; i < 8; i++) {
+  for (let i = 1; i <= 8; i++) {
     const y = now.getFullYear() + Math.floor((now.getMonth() + i) / 12);
     const m = (now.getMonth() + i) % 12;
     flexMonths.push({ y, m, on: flexSel && flexSel.y === y && flexSel.m === m });
   }
+
+  // Flexible writes a month, so Done needs one. Without this the reader could
+  // press it on an untouched month grid and land back on a field that still
+  // said "Pick your dates" — a button that looked like it had done something.
+  // Clear is the exception: there, committing nothing IS the intent.
+  const canDone = mode !== "flexible" || !!flexSel || cleared;
 
   const nightsWin = ds && de ? diffDays(ds, de) : null;
   const footer =
@@ -238,7 +255,12 @@ const WhenPanel = ({
         <button type="button" className="kform-linkbtn" onClick={clear}>
           Clear
         </button>
-        <button type="button" className="kform-btn-ink" onClick={commit}>
+        <button
+          type="button"
+          className="kform-btn-ink"
+          onClick={commit}
+          disabled={!canDone}
+        >
           Done
         </button>
       </div>

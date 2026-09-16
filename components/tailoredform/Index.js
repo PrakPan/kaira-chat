@@ -20,12 +20,12 @@ import {
   setSelectedCities,
 } from "../../store/actions/slideOneActions";
 import { changeUserLocation } from "../../store/actions/userLocation";
-import { authCloseLogin } from "../../store/actions/auth";
 import {
   buildItineraryPayload,
   divideTravellers,
   useSourceParams,
 } from "./utils/slideOneActions";
+import { authCloseLogin } from "../../store/actions/auth";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import { useAnalyticsSession } from "../../hooks/useAnalyticsSession";
 import {
@@ -34,11 +34,12 @@ import {
 } from "../../services/analyticsFunnel";
 import getPlatform from "../../utils/getPlatform";
 import RoutePreparationLoader from "./RoutePreparationLoader";
-import BotLoginModal from "../bot-components/components/BotLoginModal";
 import StepTrip, { joinNames } from "./kaira/StepTrip";
 import StepRoute, { cityName } from "./kaira/StepRoute";
 import StepGroup, { travellerSummary } from "./kaira/StepGroup";
 import StepVibe from "./kaira/StepVibe";
+import BotLoginModal from "../bot-components/components/BotLoginModal";
+import StepSignIn from "./kaira/StepSignIn";
 import { describeDate } from "./kaira/WhenPanel";
 import { IconArrowLeft, IconArrowRight, IconX } from "./kaira/icons";
 
@@ -54,8 +55,23 @@ const DELHI_FALLBACK = {
 // older cached cookies only carry `city`.
 const locationName = (loc) => loc?.text || loc?.city || "";
 
+// The vibe step is the last one. What follows it for a logged-out traveller
+// depends on the screen:
+//
+//   desktop — the sign-in popup opens over the form, as it always has. There is
+//     room for a dialog over a dialog there and it reads as one.
+//   phone — a fifth step (see StepSignIn). The form is already a bottom sheet,
+//     so a popup came up as a second sheet stacked on the first: two panels, two
+//     backdrops, two keyboard handlers, a close button on each.
+//
+// Which one is decided after mount and never during render — see `narrow`.
 const STEP_NAMES = ["The trip", "The route", "Who's going", "The vibe"];
-const TOTAL_STEPS = 4;
+const SIGNIN_STEP_NAME = "Sign in";
+const VIBE_STEP = 3;
+const SIGNIN_STEP = 4;
+
+// Phone widths, matching the breakpoint the stylesheet uses for the sheet.
+const NARROW = "(max-width: 767.98px)";
 
 // The same four marks as components/tailoredform/TrustFactor.js, so the form
 // footer and the rest of the site show one set of icons.
@@ -173,6 +189,24 @@ const EnquiryForm = (props) => {
   };
   const source = useSourceParams();
   const [showLoginForm, setShowLoginForm] = useState(false);
+  // See the note beside `steps`: decided after mount, never during render.
+  const [needsSignIn, setNeedsSignIn] = useState(false);
+  // Whether this is a phone. Held in state and fed by a matchMedia listener
+  // rather than read during render: a media query answered while rendering is
+  // how a layout ends up deciding itself at hydration, which this codebase has
+  // been bitten by before. Starts false, so the first render is always the
+  // desktop one — the four-step strip — and the phone learns better a beat
+  // later, long before anyone reaches the vibe step.
+  const [narrow, setNarrow] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return undefined;
+    const mq = window.matchMedia(NARROW);
+    const sync = () => setNarrow(mq.matches);
+    sync();
+    mq.addEventListener?.("change", sync);
+    return () => mq.removeEventListener?.("change", sync);
+  }, []);
 
   // ── The on-screen keyboard ────────────────────────────────────────────────
   // The form is a full-height sheet whose body scrolls inside it, so it has to
@@ -464,9 +498,24 @@ const EnquiryForm = (props) => {
   const hasAccessToken = () =>
     typeof window !== "undefined" && !!localStorage.getItem("access_token");
 
-  // ── Step submits ──────────────────────────────────────────────────────────
-  const canFindRoute = dests.length > 0 && dateInfo.ok;
+  // Whether this run carries the fifth step. Phones only — desktop keeps the
+  // popup (see the note by STEP_NAMES).
+  //
+  // Re-checked whenever the reader moves between steps rather than once on
+  // mount: they can sign in elsewhere on the page — or the token can expire and
+  // be cleared — while the form is open, and the step list has to follow.
+  //
+  // Except once they are ON the sign-in step. Verifying puts a token in state,
+  // which would answer "no sign-in step needed" and swap the card out for the
+  // vibe screen in the same beat that completeItineraryCreate is running —
+  // the reader would watch the form jump backwards as it submits. The step
+  // stays until the flow leaves it.
+  useEffect(() => {
+    if (slideIndex >= SIGNIN_STEP) return;
+    setNeedsSignIn(narrow && !hasAccessToken());
+  }, [slideIndex, props.token, narrow]);
 
+  // ── Step submits ──────────────────────────────────────────────────────────
   const _SlideOneSubmitHandler = () => {
     if (dests.length === 0) {
       setErrors({
@@ -476,13 +525,27 @@ const EnquiryForm = (props) => {
       });
       return;
     }
+    // Named, because the reason is the point: the dates are what the route and
+    // the vibe suggestions are read against, so "available in Japan" says why
+    // it is being asked rather than just that something is missing. There is
+    // always a destination to name by here — the check above returned if not.
+    const where = joinNames(dests.map((c) => c.name).filter(Boolean));
+
     const d = slideOneData.date;
     if (d.type === "fixed" && !(d.start_date && d.end_date)) {
-      setErrors({ startLocation: null, destination1: null, when: "Pick your dates to continue" });
+      setErrors({
+        startLocation: null,
+        destination1: null,
+        when: `Please select your dates, so that I can see what's available in ${where}`,
+      });
       return;
     }
     if (d.type === "flexible" && !(d.month && d.duration)) {
-      setErrors({ startLocation: null, destination1: null, when: "Pick a rough month and how long" });
+      setErrors({
+        startLocation: null,
+        destination1: null,
+        when: `Pick a rough month and how long, so that I can see what's available in ${where}`,
+      });
       return;
     }
     if (d.type === "anytime" && !d.duration) {
@@ -535,16 +598,60 @@ const EnquiryForm = (props) => {
 
   const _VibeSubmitHandler = () => {
     if (isSubmitting) return;
-    // Final slide — raise the sign-in gate before completing.
+    // Last slide for a signed-in traveller. A signed-out one hits the gate:
+    // a fifth step on a phone, the popup on desktop.
     if (!hasAccessToken()) {
       markLoginStage("user_login_initiated", "gate_shown");
-      setShowLoginForm(true);
-    } else {
-      markLoginStage("user_login_initiated", "already_authenticated");
-      markLoginStage("user_login_completed", "already_authenticated");
-      setIsSubmitting(true);
-      completeItineraryCreate();
+      if (narrow) {
+        setNeedsSignIn(true);
+        goTo(SIGNIN_STEP);
+      } else {
+        setShowLoginForm(true);
+      }
+      return;
     }
+    markLoginStage("user_login_initiated", "already_authenticated");
+    markLoginStage("user_login_completed", "already_authenticated");
+    setIsSubmitting(true);
+    completeItineraryCreate();
+  };
+
+  // ── The sign-in step's two outcomes ───────────────────────────────────────
+  // Both finish the itinerary; they differ only in what the funnel records.
+  const _SignInVerified = () => {
+    if (isSubmitting) return;
+    markLoginStage("user_login_completed", "logged_in");
+    setIsSubmitting(true);
+    // Hand the reader back to the vibe step while the itinerary is built.
+    //
+    // Leaving them on the sign-in step meant staring at an OTP card that had
+    // already done its job, with nothing moving and no CTA on that step to put
+    // a spinner in. Stepping back puts them in front of the button they
+    // pressed — "Get my itinerary", now spinning — which is where the wait
+    // belongs. The gate is satisfied, so the strip drops to four steps again.
+    //
+    // Both are set here rather than left to the effect above: that one reads
+    // the token out of localStorage, and whether the auth thunk has written it
+    // by the time this fires is a race we don't need to be in.
+    setNeedsSignIn(false);
+    if (narrow) goTo(VIBE_STEP);
+    completeItineraryCreate();
+  };
+
+  const _SignInSkipped = () => {
+    if (isSubmitting) return;
+    setNeedsSignIn(false);
+    if (narrow) goTo(VIBE_STEP);
+    // skip_login_completed is the branch metric; the funnel stage still has to
+    // fire (with the reason) or every skipper would look like a drop-off that
+    // then somehow reaches itinerary_creation_completed.
+    trackSkipLoginCompleted({
+      itinerary_id: latestItineraryIdRef.current || null,
+      surface: "tailored_form",
+    });
+    markLoginStage("user_login_completed", "skipped");
+    setIsSubmitting(true);
+    completeItineraryCreate();
   };
 
   const initiateItineraryCreate = async (slideOneData) => {
@@ -984,7 +1091,9 @@ const EnquiryForm = (props) => {
         ? "Here's the route I'd run. Trade nights, drag cities, make it yours."
         : slideIndex === 2
           ? "Who am I planning for? I'll size rooms and seats to match."
-          : "Last one. Tell me the vibe and I'll build the days around it.";
+          : slideIndex === VIBE_STEP
+            ? "Last one. Tell me the vibe and I'll build the days around it."
+            : "Your number, and I'll send the plan over. Nothing else needed.";
 
   const headerSummary = `${fromName || "…"} → ${destName || "…"} · ${
     dateInfo.header || "dates tbd"
@@ -992,7 +1101,7 @@ const EnquiryForm = (props) => {
 
   const readNote = isUnsure
     ? `Next I'll read ${destName || "your destination"} across the year and suggest when to go. The route and vibe ideas follow from that.`
-    : `Next I'll read the ${destName || "destination"} and dates you select. The route and vibe suggestions come from what's actually on in ${monthPhrase}.`;
+    : dateInfo.ok ? `Next I'll read ${destName || "your destination"} on the dates you have selected. The route and vibe suggestions come from what's actually on in ${monthPhrase}.` :  `Next I'll read ${destName || "your destination"} on the dates you select. The route and vibe suggestions come from what's actually on in ${monthPhrase}.`;
 
   const fetchLabels = [
     `Searching ${destName || "your destination"} · ${dateInfo.header || "your best window"}`,
@@ -1000,7 +1109,19 @@ const EnquiryForm = (props) => {
     isUnsure ? "Picking the best window to go" : `Picking what ${monthPhrase} is good for`,
   ];
 
-  const st = slideIndex + 1;
+  // Whether the flow carries the sign-in step. Read from localStorage in an
+  // effect, never during render: this component is server-rendered on /new-trip,
+  // and a token the server cannot see would make the first client render
+  // disagree with the markup. The strip starts at four steps and grows to five
+  // once we know — which happens long before anyone reaches the vibe step.
+  const steps = needsSignIn ? [...STEP_NAMES, SIGNIN_STEP_NAME] : STEP_NAMES;
+  const totalSteps = steps.length;
+  const onSignInStep = needsSignIn && slideIndex === SIGNIN_STEP;
+
+  // Clamped because the two can disagree for a frame: signing in drops the step
+  // count back to four in the same tick it asks the router for step four, and
+  // the router lands a beat later — without this the crumb flashes "Step 5 of 4".
+  const st = Math.min(slideIndex + 1, totalSteps);
   const segClass = (i) => {
     if (st >= i && !(i === st && fetching)) return "kform-seg is-done";
     if (fetching && i === st + 1) return "kform-seg is-next";
@@ -1016,11 +1137,18 @@ const EnquiryForm = (props) => {
   const ctaLabel =
     slideIndex === 0
       ? "Find my route"
-      : slideIndex === 3
+      : slideIndex === VIBE_STEP && !needsSignIn
         ? "Get my itinerary"
         : "Continue";
-  const ctaDisabled =
-    (slideIndex === 0 && !canFindRoute) || isSubmitting || (isLoading && slideIndex !== 0);
+  // Step 1's CTA stays pressable with the form incomplete, on purpose.
+  //
+  // It used to be disabled until `canFindRoute` — which meant the reader with
+  // no dates got a dead button and no reason, and every message
+  // _SlideOneSubmitHandler sets ("Please select your dates, so that I can see
+  // what's available in Japan") was unreachable, because the click that sets
+  // them never landed. Pressing it now runs the checks and says what is
+  // missing, which is the whole point of having written them.
+  const ctaDisabled = isSubmitting || (isLoading && slideIndex !== 0);
   const ctaBusy = isSubmitting || (isLoading && slideIndex === 1);
   const onCta = () => {
     if (slideIndex === 0) return _SlideOneSubmitHandler();
@@ -1064,7 +1192,7 @@ const EnquiryForm = (props) => {
 
       {/* progress */}
       <div className="kform-progress">
-        {STEP_NAMES.map((name, i) => (
+        {steps.map((name, i) => (
           <div className="kform-progress-item" key={name}>
             <div className={segClass(i + 1)} />
             <div className={segLabelClass(i + 1)}>
@@ -1076,7 +1204,7 @@ const EnquiryForm = (props) => {
       <div className="kform-crumb">
         {fetching
           ? "Reading your destination…"
-          : `Step ${st} of ${TOTAL_STEPS} · ${STEP_NAMES[slideIndex] || ""}`}
+          : `Step ${st} of ${totalSteps} · ${steps[st - 1] || ""}`}
       </div>
 
       {/* body */}
@@ -1120,6 +1248,14 @@ const EnquiryForm = (props) => {
           />
         ) : slideIndex === 2 ? (
           <StepGroup key="group" fromName={fromName} firstCity={firstCity} />
+        ) : onSignInStep ? (
+          <StepSignIn
+            key="signin"
+            destName={destName}
+            itineraryId={latestItineraryIdRef.current || undefined}
+            onVerified={_SignInVerified}
+            onSkip={_SignInSkipped}
+          />
         ) : (
           <StepVibe
             key="vibe"
@@ -1171,15 +1307,21 @@ const EnquiryForm = (props) => {
                   </button>
                 </>
               )}
-              <button
-                type="button"
-                className={`kform-cta${ctaDisabled ? " is-disabled" : ""}`}
-                onClick={onCta}
-                disabled={ctaDisabled}
-              >
-                {ctaLabel}
-                {ctaBusy ? <span className="kform-spin" /> : <IconArrowRight />}
-              </button>
+              {/* No footer CTA on the sign-in step: the OTP card owns its own
+                  buttons there (Send OTP, then Verify), and a second primary
+                  button in the footer would be a third thing to press that does
+                  something different from both. Back still works. */}
+              {!onSignInStep && (
+                <button
+                  type="button"
+                  className={`kform-cta${ctaDisabled ? " is-disabled" : ""}`}
+                  onClick={onCta}
+                  disabled={ctaDisabled}
+                >
+                  {ctaLabel}
+                  {ctaBusy ? <span className="kform-spin" /> : <IconArrowRight />}
+                </button>
+              )}
             </>
           )}
         </div>
@@ -1195,33 +1337,25 @@ const EnquiryForm = (props) => {
     <div className={`kform${embedded ? " kform--embedded" : ""}`}>
       {embedded ? card : <div className="kform-backdrop">{card}</div>}
 
+      {/* Desktop's sign-in gate. `showLoginForm` is only ever set from the
+          wide branch of _VibeSubmitHandler, so on a phone this never opens —
+          there the gate is step five instead. Both paths run the same two
+          handlers, so the funnel and the completion call can't drift apart. */}
       <BotLoginModal
         show={showLoginForm}
         onhide={onHide}
         zIndex={"3300"}
         onSuccess={() => {
-          markLoginStage("user_login_completed", "logged_in");
-          // Close the login modal explicitly on success. Its visibility is
-          // driven by local `showLoginForm`, so relying on the subsequent /chat
-          // navigation to unmount it leaves the modal stuck open whenever
-          // completion is slow, errors, or has no itinerary id to navigate to.
+          // Closed explicitly rather than left to unmount on the /chat
+          // navigation: visibility is local state, so a slow or failed
+          // completion would otherwise leave the modal stuck open.
           onHide();
-          setIsSubmitting(true);
-          completeItineraryCreate();
+          _SignInVerified();
         }}
         isTailored={true}
         onSkipLogin={() => {
-          // skip_login_completed is the branch metric; the funnel stage still
-          // has to fire (with the reason) or every skipper would look like a
-          // drop-off that then somehow reaches itinerary_creation_completed.
-          trackSkipLoginCompleted({
-            itinerary_id: latestItineraryIdRef.current || null,
-            surface: "tailored_form",
-          });
-          markLoginStage("user_login_completed", "skipped");
           onHide();
-          setIsSubmitting(true);
-          completeItineraryCreate();
+          _SignInSkipped();
         }}
         message={"Welcome to The Tarzan Way!"}
       />

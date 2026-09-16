@@ -301,7 +301,12 @@
 /* ── Progress ──────────────────────────────────────────────────────────── */
 .kform-progress {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* One track per step, however many there are. This was `repeat(4, 1fr)`, so
+     the fifth step a logged-out traveller gets (see StepSignIn) wrapped onto a
+     second row and the strip became two lines. Laying the tracks out along the
+     row instead means the count is the markup's business, not the stylesheet's. */
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: 10px;
   padding: 0 28px 6px 28px;
   flex-shrink: 0;
@@ -374,6 +379,19 @@
   margin: 0 auto;
   animation: kfFadeUp 0.35s var(--kf-ease);
 }
+/* The sign-in step's host. OtpCard is `bare` — no border, no max-width — so it
+   fills this box, and the box is what gives it a measure narrower than the step
+   (a phone-number field and an OTP field look absurd at 720px) and the space
+   between it and the step's lead paragraph. */
+.kform-signin {
+  max-width: 460px;
+}
+@media (max-width: 767.98px) {
+  .kform-signin {
+    max-width: none;
+  }
+}
+
 .kform-step--wide {
   max-width: none;
 }
