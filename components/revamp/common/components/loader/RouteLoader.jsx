@@ -23,6 +23,13 @@ const SHOW_DELAY = 250;
 const MIN_VISIBLE = 500;
 const FADE_OUT = 260;
 
+// Pathname of a router event URL, without query/hash or a trailing slash, so
+// "/chat/abc/?drawer=x" and "/chat/abc" compare equal.
+const pathOf = (url) => {
+  const path = String(url || "").split(/[?#]/)[0];
+  return path.length > 1 ? path.replace(/\/+$/, "") : path;
+};
+
 const RouteLoader = ({
   active,
   title = (
@@ -90,8 +97,29 @@ const RouteLoader = ({
     // `shallow` navigations only rewrite the URL — no data fetch, nothing to
     // wait for. The ad-param rewrite in _app.js does several of these per
     // visit, and an overlay for each would be pure noise.
-    const handleStart = (_url, options) => {
+    //
+    // Itinerary building (chat or the tailored form) must never be covered
+    // either, so two more cases are skipped:
+    //   - same-page navigations (only the query changes): the chat's drawer
+    //     params, ItineraryContainer's drawers, the form's slide steps. The
+    //     page stays mounted, so there is no new route to wait for.
+    //   - landing on a chat session (`/chat/{id}`, including the form's
+    //     `?source=tailored` hand-off): that page paints its own layout
+    //     skeleton immediately, and a full-screen overlay first would stack two
+    //     different loaders back to back.
+    const handleStart = (url, options) => {
       if (options?.shallow) return;
+      const nextPath = pathOf(url);
+      const currentPath = pathOf(window.location.pathname);
+      if (nextPath === currentPath) return;
+      if (/^\/chat\/[^/]+$/.test(nextPath)) return;
+      // Chat → chat. BotApp moves the address bar between /chat and
+      // /chat/{id} with history.pushState, which Next doesn't observe, so a
+      // drawer push from the chat can target a path that differs from the
+      // window's even though the page never changes.
+      if (/^\/chat(\/|$)/.test(nextPath) && /^\/chat(\/|$)/.test(currentPath)) {
+        return;
+      }
       start();
     };
 
