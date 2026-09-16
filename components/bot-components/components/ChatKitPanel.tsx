@@ -22,7 +22,9 @@ import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
 import BottomModal from "../../ui/LowerModal";
 import useMediaQuery from "../../../hooks/useMedia";
 import { MERCURY_HOST, CHATKIT_HOST, CHATKIT_API_URL } from "../../../services/constants";
+
 import { openNotification } from "../../../store/actions/notification";
+import { authLogout } from "../../../store/actions/auth";
 import setItinerary, {
   deletePoiFromItinerary,
   deleteActivityFromItinerary,
@@ -49,7 +51,7 @@ import { updateIntakeForm } from "../../../store/actions/intakeForm";
 import { updatePricingForm } from "../../../store/actions/pricingForm";
 import IntakeFormCard from "./IntakeForm";
 import ThemeIntakeForm from "./ThemeIntakeForm/ThemeIntakeForm";
-import { WidgetThemeProvider } from "./WidgetRenderer";
+import { WidgetThemeProvider, resolveSupplierHotelId } from "./WidgetRenderer";
 import type {
   ThemeForm,
   ThemeFormSubmission,
@@ -63,6 +65,12 @@ import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, i
 import ReleaseItineraryCta from "./ReleaseItineraryCta";
 import { isStaffEmail } from "../../../utils/staffUser";
 import { pushUrlDetached } from "../../../helper/historyUrl";
+
+// Caps on what rides along to the context-chips endpoint as `user_conversation`.
+// A long thread is mostly itinerary edits; the recent turns are what say what
+// kind of trip this is, and an unbounded payload would grow with every message.
+const MAX_CONTEXT_TURNS = 6;
+const MAX_TURN_CHARS = 1200;
 
 const PAGINATION_SCROLL_THRESHOLD = 80;
 const CHATKIT = CHATKIT_HOST;
@@ -414,7 +422,33 @@ function getAuthToken(): string | null {
   );
 }
 
-const Spinner = ({ size = 16 }: { size?: number }) => (
+// Drops a session the backend has rejected. Clears every key getAuthToken reads
+// plus the profile keys the app's own logout clears, so nothing keeps treating
+// the dead token as a live login. Local only — the token is already invalid, so
+// there's nothing to revoke server-side.
+const STALE_SESSION_KEYS = [
+  "token",
+  "authToken",
+  "access_token",
+  "name",
+  "email",
+  "phone",
+  "user_id",
+  "expirationDate",
+  "MyPlans",
+  "user_image",
+  "is_new_user",
+];
+function clearStaleSessionStorage() {
+  if (typeof window === "undefined") return;
+  for (const key of STALE_SESSION_KEYS) localStorage.removeItem(key);
+}
+
+// `prompt_login` reasons meaning "the token you sent is no good" (as opposed to
+// "you're anonymous and this step needs an account").
+const REJECTED_TOKEN_REASONS = new Set(["invalid_token"]);
+
+const Spinner =({ size = 16 }: { size?: number }) => (
   <svg
     width={size}
     height={size}
@@ -1541,7 +1575,11 @@ startEmptyIntake = false,
     occupancies?: Array<{ num_adults: number; child_ages: number[] }>;
     traceId?: string;
     travclan_hotel_id?: string;
-    currency?: string;  
+    currency?: string;
+    // Detail response the hotel card already fetched before opening the
+    // drawer. Present only on that path; the drawer fetches for itself when
+    // it's absent.
+    prefetchedDetail?: any;
   }>({ show: false });
 
   // POI / Restaurant detail drawer — opened by place.view / place.detail /
@@ -2005,7 +2043,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   // ── Context chips for the intake notes step ────────────────────────────────
   // Once the traveller reaches the final ("notes") step of the intake form with
   // the three prior steps (destination, when, who) filled, fetch context-aware
-  // suggestion chips from `/chatkit/context-chips`, built from what they picked.
+  // suggestion chips from `/api/v1/itinerary/onboarding/context-chips/`, built
+  // from what they picked plus whatever has already been said in the thread.
   // Works for restored threads (thread_id present) AND fresh new-chat /
   // `?intake=1&destination=…` sessions (thread_id null — the destination / date
   // / group drive the request). A shimmer loader shows on the notes step while
@@ -2032,6 +2071,43 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     .join(", ");
   const intakeStartDate = intakeFormSlice?.startDate || null;
   const intakeWho = intakeFormSlice?.who || "";
+  // The thread so far, as the {user, system} turns the chips endpoint takes.
+  // Read from the existing `messagesRef` at fetch time rather than being a
+  // dependency: the effect deliberately fires once per unique set of form
+  // answers, and keying it on the conversation as well would re-request chips
+  // on every new message. The ref is assigned during render, so by the time an
+  // effect runs it holds the current thread.
+  const buildIntakeConversation = useCallback(() => {
+    // Only real prose counts. Widgets, forms and login cards carry no text a
+    // model can use, and streaming messages are still half-written.
+    const turns = (messagesRef.current as any[]).filter(
+      (m) =>
+        (!m?.type || m.type === "text") &&
+        !m?.isStreaming &&
+        typeof m?.content === "string" &&
+        m.content.trim().length > 0,
+    );
+
+    const pairs: Array<{ user: string; system: string }> = [];
+    for (let i = 0; i < turns.length; i += 1) {
+      if (turns[i].role !== "user") continue;
+      // The reply is the next assistant message, if the thread got one — a
+      // question the user asked last, still unanswered, is worth sending too.
+      const reply = turns
+        .slice(i + 1)
+        .find((m) => m.role === "assistant" || m.role === "user");
+      pairs.push({
+        user: String(turns[i].content).trim().slice(0, MAX_TURN_CHARS),
+        system:
+          reply?.role === "assistant"
+            ? String(reply.content).trim().slice(0, MAX_TURN_CHARS)
+            : "",
+      });
+    }
+    // Only the tail matters for "what is this trip about", and the whole thread
+    // could be dozens of turns of itinerary edits.
+    return pairs.slice(-MAX_CONTEXT_TURNS);
+  }, []);
   const contextChipsSignatureRef = useRef<string | null>(null);
   useEffect(() => {
     if (!intakeFormActive) {
@@ -2048,31 +2124,47 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     if (contextChipsSignatureRef.current === signature) return;
     contextChipsSignatureRef.current = signature;
 
-    // Slice keeps dates as ISO (YYYY-MM-DD); the API expects DD-MM-YYYY.
-    const toDDMMYYYY = (iso: string | null): string => {
-      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || "").trim());
-      return m ? `${m[3]}-${m[2]}-${m[1]}` : "";
-    };
+    // The Mercury endpoint takes ISO (YYYY-MM-DD), which is what the slice
+    // already stores — the old chatkit one wanted DD-MM-YYYY, hence the
+    // converter that used to sit here. The date genuinely drives the answer
+    // (Goa in June returns "on a budget"; the same trip in December returns
+    // "splurge worthy"), so this is not a cosmetic difference.
+    const isoDate = /^\d{4}-\d{2}-\d{2}$/.test(String(intakeStartDate || "").trim())
+      ? String(intakeStartDate).trim()
+      : "";
+
+    const intakeConversation = buildIntakeConversation();
 
     const controller = new AbortController();
     dispatch(updateIntakeForm({ noteHintsLoading: true }));
     (async () => {
       try {
-        const res = await fetch(`${CHATKIT_API_URL}/context-chips`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+        const res = await fetch(
+          `${MERCURY_HOST}/api/v1/itinerary/onboarding/context-chips/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+            },
+            body: JSON.stringify({
+              destination: intakeDestinationName,
+              start_date: isoDate,
+              group_type: intakeWho,
+              max_chips: 6,
+              // What has already been said in this thread, so the chips answer
+              // the conversation rather than just the form. A traveller who has
+              // been talking about diving and avoiding nightlife gets "quiet
+              // south goa" and "grand island dive" instead of the generic set.
+              // Omitted entirely when there is nothing to send — a fresh
+              // `?intake=1` landing has no history at all.
+              ...(intakeConversation.length > 0 && {
+                user_conversation: intakeConversation,
+              }),
+            }),
+            signal: controller.signal,
           },
-          body: JSON.stringify({
-            thread_id: threadIdRef.current || null,
-            destination: intakeDestinationName,
-            start_date: toDDMMYYYY(intakeStartDate),
-            group_type: intakeWho,
-            max_chips: 6,
-          }),
-          signal: controller.signal,
-        });
+        );
         if (!res.ok) return;
         const data = await res.json();
         const chips = Array.isArray(data?.chips)
@@ -2098,7 +2190,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     intakeWho,
     authToken,
     dispatch,
-    threadIdRef,
+    buildIntakeConversation,
   ]);
 
   // Logged-out user viewing an existing thread (restored via threads.get_by_id)
@@ -2672,6 +2764,20 @@ case "prompt_login": {
   // re-inject the card (the backend replays this prompt on the opted-out
   // resume). Without this the card loops straight back and blocks the chat.
   if (loginOptedOutRef.current) break;
+  // Expired / rejected token: the backend couldn't authenticate the token we
+  // sent, but it's still sitting in Redux + localStorage, so the client keeps
+  // believing it's logged in. That hid the card entirely — OtpCard reads
+  // `auth.token` on mount, takes it as a just-completed verify and removes
+  // itself — and it would also stop the post-login replay, which only fires on
+  // a no-token → token transition. Drop the dead session first, before the
+  // card is added, so the card mounts logged-out and a fresh login replays.
+  if (
+    REJECTED_TOKEN_REASONS.has(String(data.reason ?? "")) &&
+    isLoggedInRef.current
+  ) {
+    clearStaleSessionStorage();
+    dispatch(authLogout());
+  }
   // Mid-chat login: remember what to replay, then drop an inline login card
   // into the thread (instead of the modal). The token-watch effect re-fires
   // `pendingPostLoginAction` automatically once auth succeeds.
@@ -5042,8 +5148,12 @@ const handleShowLogin = useCallback(() => {
                       source:
                         ((payload.source ?? payload.provider) as string) ??
                         "Travclan",
-                      travclan_hotel_id: (payload.travclan_hotel_id ?? payload.travclanHotelId ??
-                        payload.hotel_id) as string | undefined,
+                      // Supplier hotel id the detail API expects — Travclan
+                      // payloads fill travclan_hotel_id, Nuitee ones fill
+                      // nuitee_hotel_id (the other arrives as "").
+                      travclan_hotel_id:
+                        resolveSupplierHotelId(payload as Record<string, any>) ||
+                        undefined,
                       currency: payload.currency as string | undefined,
                       occupancies: (payload.occupancies ??
                         payload.occupancy) as
@@ -5051,6 +5161,7 @@ const handleShowLogin = useCallback(() => {
                         | undefined,
                       traceId: (payload.traceId ??
                         payload.trace_id) as string | undefined,
+                      prefetchedDetail: payload.prefetchedDetail,
                     });
                     return;
                   }
@@ -5738,6 +5849,12 @@ const handleShowLogin = useCallback(() => {
                 ]
           }
           traceId={hotelDrawer.traceId}
+          // The hotel card probes /hotels/detail/ before it opens this drawer;
+          // reuse that response so the same POST doesn't run twice.
+          initialData={hotelDrawer.prefetchedDetail}
+          // The hotel card's "Add to Itinerary" (and card tap) opens this to
+          // pick a room, so land on the Rooms tab rather than About.
+          initialSectionId="section-2"
           setShowLoginModal={setShowLoginModal}
           // Authoritative itinerary id for this chat. The drawer would
           // otherwise fall through to Redux Itinerary.id, which can lag

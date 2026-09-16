@@ -5,7 +5,7 @@ import styles from "../../../styles/pages/revamp/destination.module.scss";
 // viewBox has an intrinsic ratio but no intrinsic size, so without them the
 // browser falls back to the ~300px default object size — and `.indiaCardIcon`
 // has no `svg` rule to rein it back in, so the icon bursts out of its 36px tile.
-const ICONS = {
+export const ICONS = {
   visa: (
     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="4" width="18" height="16" rx="2" />

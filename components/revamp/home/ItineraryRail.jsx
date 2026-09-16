@@ -6,17 +6,22 @@
 // components/theme/Navigation.jsx still renders it on the CMS-driven theme
 // pages.
 //
-// One row at every breakpoint, scrolled horizontally with CSS scroll-snap — not
-// a wrapping grid, which stacked a dozen trips into four rows and stopped
-// reading as a carousel. It also keeps Swiper off the homepage's critical path.
+// A grid that opens with four trips and a "View more" CTA for the rest, rather
+// than a horizontal rail. Four is what fits above the fold as a block the eye
+// can compare — the rail put two in view and hid the other nine behind a
+// sideways scroll most visitors never tried. Everything after the first four is
+// one click away and stays in the DOM, so nothing is lazily fetched and the CTA
+// only toggles what is shown. Swiper stays off the homepage's critical path
+// either way.
 //
 // The card needs the `--ttw-*` custom properties, which are declared on
 // `.ttwRevamp` rather than :root. pages/home.js already wraps the whole page in
 // that class, so nothing extra is needed here — but a new caller outside it
 // would get a borderless, transparent card.
 
-import React from "react";
+import React, { useState } from "react";
 import ItineraryCardV2 from "../destination/ItineraryCardV2";
+import KairaCta from "./KairaCta";
 // The card's own stylesheet, for its opt-in modifiers.
 import cardStyles from "./LuxuryEuropeDestinations.module.scss";
 
@@ -62,50 +67,54 @@ const toCard = (itinerary) => {
   };
 };
 
+const INITIAL = 4;
+
 const ItineraryRail = ({ itineraries = [] }) => {
   const cards = (itineraries || []).filter((i) => i && i.name).map(toCard);
+  const [expanded, setExpanded] = useState(false);
   if (!cards.length) return null;
 
+  const remaining = Math.max(0, cards.length - INITIAL);
+
   return (
-    <div
-      // `items-stretch` (the flex default, stated for intent) is half of the
-      // equal-height behaviour — the other half is `fillHeight` on the card,
-      // which makes it fill the box the stretch gives it.
-      className="flex items-stretch gap-[16px] md:gap-[20px] overflow-x-auto pt-[4px] pb-[12px] px-2 sm:px-0"
-      style={{ scrollbarWidth: "none", scrollSnapType: "x mandatory" }}
-    >
-      {cards.map((card, index) => (
-        // Two cards per view from md up: each takes half the rail minus half
-        // the 20px gap, so exactly two land in the viewport and the third sits
-        // at the edge as the affordance that the row scrolls. A fixed px width
-        // fitted a different number of cards at every breakpoint.
-        //
-        // The card is an image-left/body-right layout with a fixed 240px image
-        // column, so it needs a real width here rather than the shrink it would
-        // take from a flex row.
-        <div
-          key={card.id || `${card.name}-${index}`}
-          // Fixed 330px on a phone, not a percentage. This card has a floor it
-          // cannot render below — `.img` pairs `min-height: 180px` with
-          // `aspect-ratio: 16/9`, which imposes a 320px minimum WIDTH on the
-          // whole grid — so a percentage width that dipped under it made the
-          // card's own contents overflow its rounded border box. 330px clears
-          // the floor and still leaves the next card peeking at 375px.
-          className="w-[330px] sm:w-[70%] md:w-[calc(50%-10px)] shrink-0 flex"
-          style={{ scrollSnapAlign: "start" }}
-        >
-          <ItineraryCardV2
-            itinerary={card}
-            currency={card.currency}
-            // noCtaMobile: the price row's phone spacing is tuned for a
-            // full-bleed card, so at rail width there is no room for the CTA
-            // beside it. The card is a link in its own right, so the CTA is
-            // what gives way.
-            className={`${cardStyles.noCtaMobile} ${cardStyles.fillHeight} w-full`}
-          />
+    <>
+      {/* Two up from md, one below. The card is an image-left/body-right layout
+          whose image column has a 320px floor (`.img` pairs min-height 180px
+          with aspect-ratio 16/9), so three across would push its contents out
+          of their own rounded border box on anything short of a very wide
+          screen. `items-stretch` plus `fillHeight` on the card is what keeps a
+          row of two the same height. */}
+      <div className="grid grid-cols-1 md:grid-cols-2 items-stretch gap-[16px] md:gap-[20px] pt-[4px] pb-[12px] px-2 sm:px-0">
+        {cards.map((card, index) => (
+          <div
+            key={card.id || `${card.name}-${index}`}
+            className="flex"
+            // Hidden rather than unmounted: the trips below the fold stay in
+            // the served HTML as real links, and expanding costs no re-render
+            // of the four already on screen.
+            hidden={!expanded && index >= INITIAL}
+          >
+            <ItineraryCardV2
+              itinerary={card}
+              currency={card.currency}
+              // noCtaMobile: the price row's phone spacing is tuned for a
+              // full-bleed card, so at this width there is no room for the CTA
+              // beside it. The card is a link in its own right, so the CTA is
+              // what gives way.
+              className={`${cardStyles.noCtaMobile} ${cardStyles.fillHeight} w-full`}
+            />
+          </div>
+        ))}
+      </div>
+
+      {remaining > 0 && !expanded && (
+        <div className="flex justify-center pt-[10px]">
+          <KairaCta tone="outline" onClick={() => setExpanded(true)}>
+            View {remaining} more {remaining === 1 ? "trip" : "trips"}
+          </KairaCta>
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 };
 

@@ -1,3 +1,5 @@
+import { SITE_ORIGIN } from "../../../lib/seo/siteOrigin";
+import { tripsHubsForPath } from "../../../lib/seo/tripsHubs";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect } from "react";
@@ -31,9 +33,9 @@ const TravelPlanner = (props) => {
       page={"Country Page"}
     >
       <Head>
-        <title>
-          {props?.Data?.name} Trip Packages & Itineraries from India | The Tarzan Way
-        </title>
+        {/* Single expression: see the note in the [city] route. Split across two
+            JSX children this shipped `Japan<!-- --> Trip Packages & …`. */}
+        <title>{`${props?.Data?.name ?? ""} Trip Packages & Itineraries from India | The Tarzan Way`}</title>
         <meta
           name="description"
           content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
@@ -48,11 +50,11 @@ const TravelPlanner = (props) => {
           property="og:description"
           content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
         />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+        <meta name="twitter:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta
           property="keywords"
           content={`${props?.Data?.name} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props?.Data?.name}, ${props?.Data?.name} tour package, experience ${props?.Data?.name} culture, ${props?.Data?.name} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props?.Data?.name}, places to visit in ${props?.Data?.name}, best activities in ${props?.Data?.name}, things to do in ${props?.Data?.name}, package for ${props?.Data?.name}, top places in ${props?.Data?.name}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
@@ -60,12 +62,12 @@ const TravelPlanner = (props) => {
 
         <meta
           property="og:url"
-          content={`https://thetarzanway.com/${props.path}`}
+          content={`${SITE_ORIGIN}/${props.path}`}
         />
         <meta property="og:type" content="website" />
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/${props.path}`}
+          href={`${SITE_ORIGIN}/${props.path}`}
         ></link>
         <script
           type="application/ld+json"
@@ -75,7 +77,7 @@ const TravelPlanner = (props) => {
               "@type": "TouristDestination",
               name: props?.Data?.name,
               description: `Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`,
-              url: `https://thetarzanway.com/${props.path}`,
+              url: `${SITE_ORIGIN}/${props.path}`,
             }),
           }}
         />
@@ -100,6 +102,7 @@ const TravelPlanner = (props) => {
         locations={props?.locations}
         page_id={props.page_id || ""}
         type={props?.Type}
+        tripsHubs={props.tripsHubs}
       ></CountryPage>
       {/* )} */}
     </Layout>
@@ -114,7 +117,7 @@ export async function getStaticPaths() {
       `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`
     );
     const data = res.data;
-    for (var i = 0; i < 1; i++) {
+    for (var i = 0; i < data?.length; i++) {
       const pathArr = data[i].path.split("/");
       var [continentSlug, countrySlug] = pathArr;
       paths.push({
@@ -223,6 +226,7 @@ export async function getStaticProps(context) {
       page_id: PagesToIdMapping[path],
       Type,
       pageData: isThemePage,
+      tripsHubs: tripsHubsForPath(path),
     },
   };
 }

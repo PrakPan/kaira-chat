@@ -18,9 +18,8 @@
   },
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next dev",
-    "_comment_prebuild": "trips are not deployed from feature/lockin — the tripsSeoCache.js crawl (~3 min, 1,865 pages) is commented out of prebuild below and parked in prebuild:with-trips. Restore by swapping the two back, and undo the early returns in pages/trips/**.",
-    "prebuild": "cross-env BUILD_NUMBER=330420252277 node scripts/sitemap.xml.js",
-    "prebuild:with-trips": "cross-env BUILD_NUMBER=330420252277 node scripts/tripsSeoCache.js && cross-env BUILD_NUMBER=330420252277 node scripts/sitemap.xml.js",
+    "prebuild": "node scripts/assertBuildEnv.js && cross-env BUILD_NUMBER=330420252277 node -r ./scripts/loadEnv.js scripts/tripsSeoCache.js && cross-env BUILD_NUMBER=330420252277 node -r ./scripts/loadEnv.js scripts/sitemap.xml.js",
+    "check-env": "node scripts/assertBuildEnv.js",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build",
     "start": "next start -p 3002",
     "lint": "next lint"

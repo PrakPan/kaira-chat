@@ -1120,9 +1120,27 @@ useEffect(() => {
           <div className="flex flex-col items-start gap-1.5 sm:gap-1 shrink-0">
             {/* 36px serif is too heavy once the columns stack — drop to 26px on
                 mobile so the number sits closer to the title's optical weight. */}
-            <span className="ttw-type-day-num !text-[26px] sm:!text-[36px] text-[#0B1220] m-0 whitespace-nowrap">
-              {String(props.index + 1).padStart(2, "0")}
-            </span>
+            {/* Trips (archive) itineraries show no date — see below — so the
+                bare "01" loses its context there; they read "Day 1", "Day 2", …
+                instead, set in the day heading's own type (Inter 500, 13px →
+                17px) so the label and the summary beside it read as one line
+                rather than a large serif numeral. Live itineraries keep the
+                padded serif number, which the date under it already explains. */}
+            {isV1Archive ? (
+              <span
+                // `sm:pt-[16px]` matches the heading row's own `sm:pt-4`, so both
+                // start on the same line. Arbitrary value, not `pt-4`: Bootstrap
+                // ships that one as 1.5rem !important.
+                className="ttw-type-h6 sm:!text-[17px] sm:!leading-[1.2] sm:!tracking-[-0.015em] sm:pt-[16px] text-[#0B1220] m-0 whitespace-nowrap"
+                style={{ fontWeight: 500 }}
+              >
+                {`Day ${props.index + 1}`}
+              </span>
+            ) : (
+              <span className="ttw-type-day-num !text-[26px] sm:!text-[36px] text-[#0B1220] m-0 whitespace-nowrap">
+                {String(props.index + 1).padStart(2, "0")}
+              </span>
+            )}
             {/* Archives don't show a date. These are the dates the trip was
                 originally travelled — years past for most of the export — so
                 next to a live "Get this trip!" they read as an offer for a date

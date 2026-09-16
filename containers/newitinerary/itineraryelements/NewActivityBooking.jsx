@@ -16,6 +16,30 @@ import { useSelector } from "react-redux";
 // Kaira soft semantic surfaces (retoned pastels) for the category tags.
 const colors = ["#e7f5ee", "#fff1ee", "#eef2fb", "#f0e9d6"];
 
+// Linktivity cards list every tag. Everything else shows at most 3 on a single
+// row: chips are a fixed 26px tall and the row is capped at 26px, so any chip
+// that wraps for lack of width is clipped instead of pushing onto a 2nd line.
+function ActivityTags({ tags, showAll, className = "" }) {
+  const visible = showAll ? tags : tags.slice(0, 3);
+  return (
+    <div
+      className={`flex flex-row flex-wrap items-center gap-1 ${
+        showAll ? "" : "max-h-[26px] overflow-hidden"
+      } ${className}`}
+    >
+      {visible.map((tag, i) => (
+        <span
+          key={i}
+          className="inline-block max-w-full truncate rounded-full px-2.5 py-[4px] text-[12px] leading-[18px] font-medium text-[#1a2436]"
+          style={{ backgroundColor: colors[i % colors.length] }}
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function NewActivityBooking(props) {
   const [stars, setStars] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -29,9 +53,9 @@ export default function NewActivityBooking(props) {
   // Ventrata and Linktivity prices are per-unit/lead-in rates, so the displayed
   // amount is a "starting from" figure rather than a fixed total. Prefix the
   // price label for activities sourced from these suppliers.
-  const isVentrata = ["ventrata", "linktivity"].includes(
-    String(props?.data?.source || "").toLowerCase(),
-  );
+  const source = String(props?.data?.source || "").toLowerCase();
+  const isVentrata = ["ventrata", "linktivity"].includes(source);
+  const isLinktivity = source === "linktivity";
 
   useEffect(() => {
     if (props?.data && props.data?.rating) {
@@ -199,35 +223,7 @@ export default function NewActivityBooking(props) {
               </div>
 
               {props.data?.tags?.length > 0 && (
-                <div className="ttw-type-body flex flex-row items-center gap-1 flex-wrap">
-                  {/* {props?.data?.category && (
-                    <div className="w-max items-center bg-gray-100 ttw-type-body text-gray-800 font-medium px-2 py-1 rounded-full border border-gray-300 shadow-sm">
-                      {props.data.category}
-                    </div>
-                  )} */}
-                  {
-                    // props.data.experience_filters
-                    props?.data?.tags
-                      ?.slice(0, props?.data?.tags?.length == 1 ? 1 : 2)
-                      ?.map((e, i) => (
-                        <span
-                          key={i}
-                          className={`rounded-full px-2.5 py-1 text-[12px] font-medium text-[#1a2436]`}
-                          style={{ backgroundColor: colors[i % colors.length] }}
-                        >
-                          {e}
-                        </span>
-                      ))}
-                  {props?.data?.tags?.length > 2 && (
-                    <span className={`rounded-full border border-[#ececec] px-2.5 py-1 text-[12px] text-[#445069]`}>
-                      +
-                      {props?.data?.tags?.length -
-                        2
-                      }{" "}
-                      more
-                    </span>
-                  )}
-                </div>
+                <ActivityTags tags={props.data.tags} showAll={isLinktivity} />
               )}
 
               {/* One-Liner Description — own line, below the tags */}
@@ -404,35 +400,11 @@ export default function NewActivityBooking(props) {
           )}
 
           {props.data?.tags?.length > 0 && (
-            <div className="ttw-type-body flex flex-row items-center gap-1 flex-wrap py-2">
-              {/* {props?.data?.category && (
-              <div className="w-max items-center bg-gray-100 ttw-type-body text-gray-800 font-medium px-2 py-1 rounded-full border border-gray-300 shadow-sm">
-                {props.data.category}
-              </div>
-            )} */}
-              {props.data.tags
-                ?.slice(0, props?.data?.tags.length < 2 ? props?.data?.tags.length : 2)
-                ?.map((e, i) => (
-                  <span
-                    key={i}
-                    className={`rounded-full px-2.5 py-1 text-[12px] font-medium text-[#1a2436]`}
-                    style={{ backgroundColor: colors[i % colors.length] }}
-                  >
-                    {e}
-                  </span>
-                ))}
-              {props?.data?.tags?.length > 2 && (
-                <span className={`rounded-full border border-[#ececec] px-2.5 py-1 text-[12px] text-[#445069]`}>
-                  +
-                  {props?.data?.tags?.length - 2
-                    ? 1
-                    : 2}{" "}
-                  more
-                </span>
-              )}
-
-
-            </div>
+            <ActivityTags
+              tags={props.data.tags}
+              showAll={isLinktivity}
+              className="my-2"
+            />
           )}
 
           {
@@ -558,6 +530,7 @@ export default function NewActivityBooking(props) {
         setShowDetails={setShowDetails}
         activityId={props.data?.id}
         source={props.data?.source}
+        fallbackData={props.data}
         handleCloseDrawer={handleCloseDrawer}
         Topheading={"Select Our Activity"}
         getAccommodationAndActivitiesHandler={

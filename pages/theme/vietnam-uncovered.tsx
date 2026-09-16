@@ -1,5 +1,6 @@
 // pages/theme/vietnam-uncovered.tsx
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import { useEffect } from "react";
 import { connect } from "react-redux";
 import Head from "next/head";
@@ -211,16 +212,16 @@ const VietnamUncoveredThemePage = ({
       <Head>
         <title>{"Vietnam Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"}</title>
         <meta name="description" content={"Plan your Vietnam trip with The Tarzan Way's AI itinerary - Hanoi, Ha Long Bay, Hoi An, Da Nang and Ho Chi Minh City. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
-        <link rel="canonical" href="https://thetarzanway.com/theme/vietnam-uncovered" />
+        <link rel="canonical" href={`${SITE_ORIGIN}/theme/vietnam-uncovered`} />
         <meta property="og:title" content={"Vietnam Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"} />
         <meta property="og:description" content={"Plan your Vietnam trip with The Tarzan Way's AI itinerary - Hanoi, Ha Long Bay, Hoi An, Da Nang and Ho Chi Minh City. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
-        <meta property="og:url" content="https://thetarzanway.com/theme/vietnam-uncovered" />
+        <meta property="og:url" content={`${SITE_ORIGIN}/theme/vietnam-uncovered`} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+        <meta name="twitter:image" content={`${SITE_ORIGIN}/og-image.png`} />
       </Head>
       <BotApp themeConfig={vietnamThemeConfig} />
     </>

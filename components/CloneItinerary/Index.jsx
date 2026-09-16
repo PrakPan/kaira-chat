@@ -516,6 +516,11 @@ const CloneItinerary = ({
           <SelectedDestination
             startingLocation={startingLocation}
             setStartingLocation={setStartingLocation}
+            // When the source trip's start details are deliberately not
+            // pre-filled (a V1 archive or a /trips itinerary — someone else's
+            // finished trip), the picker must not quietly substitute the
+            // viewer's own city either. The field opens blank and asks.
+            autoFillUserLocation={prefillStartDetails}
             showSearchStarting={showSearchStarting}
             setShowSearchStarting={setShowSearchStarting}
             setShowCities={setShowCities}

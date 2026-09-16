@@ -25,15 +25,10 @@ import { connect } from "react-redux";
 import * as authaction from "../../../store/actions/auth";
 import TripSeoPage, { heroImageUrl } from "../../../components/trips/TripSeoPage";
 import { SITE_ORIGIN } from "../../../lib/seo/tripsIndexed";
-// Commented out with the data fetching below — tripsCache requires `fs`, which
-// only stays out of the client bundle while getStaticProps/getStaticPaths
-// reference it. See the note in pages/trips/index.js.
-// import { readTripPage, readTripsIndex } from "../../../lib/seo/tripsCache";
-// Commented out for the same reason: tripsCards requires tripsCache, and so
-// pulls `fs` into the client bundle. pickSiblings below, its only remaining
-// caller, is commented out with it.
-// import { tripCard } from "../../../lib/seo/tripsCards";
+import { readTripPage, readTripsIndex } from "../../../lib/seo/tripsCache";
+import { tripCard } from "../../../lib/seo/tripsCards";
 import { tripItinerary } from "../../../lib/seo/tripItinerary";
+import { tripName } from "../../../lib/seo/tripName";
 import {
   breadcrumbSchema,
   faqSchema,
@@ -114,7 +109,6 @@ export default connect(null, mapDispatchToProps)(IndexedTrip);
  */
 const SIBLING_COUNT = 3;
 
-/*
 const pickSiblings = (rows, current) => {
   const pool = rows.filter(
     (row) => row.destination === current.destination && row.slug !== current.slug
@@ -135,24 +129,18 @@ const pickSiblings = (rows, current) => {
     if (!chosen.includes(row)) chosen.push(row);
   }
 
-  return chosen.map(tripCard).filter(Boolean);
+  // The card gets the same public name the page's own heading uses — the trip's
+  // short title with the customer credit stripped. Renamed before the filter, so
+  // a row tripCard rejects can't shift the titles onto the wrong cards.
+  return chosen
+    .map((row) => {
+      const card = tripCard(row);
+      return card && { ...card, name: tripName(row) || card.name };
+    })
+    .filter(Boolean);
 };
-*/
 
-// ---------------------------------------------------------------------------
-// TRIPS ARE NOT DEPLOYED FROM THIS BRANCH (feature/lockin → Vercel).
-//
-// The empty path list below is normally the failure mode this function's
-// comment warns about — it is deliberate here: scripts/tripsSeoCache.js is
-// commented out of package.json's `prebuild`, so the .seo-cache snapshot does
-// not exist in the Vercel build and readTripsIndex() would throw. Nothing under
-// /trips is published from this branch; see the note in pages/trips/index.js
-// for how to turn the group back on.
-// ---------------------------------------------------------------------------
 export async function getStaticPaths() {
-  return { paths: [], fallback: false };
-
-  /*
   // Unguarded on purpose: readTripsIndex throws when the prebuild snapshot is
   // missing. Swallowing that would return an empty path list, which Next builds
   // as zero trips pages while exiting 0 — a deploy that looks clean and 404s
@@ -165,14 +153,9 @@ export async function getStaticPaths() {
     })),
     fallback: false,
   };
-  */
 }
 
 export async function getStaticProps({ params }) {
-  return { notFound: true };
-
-  /* eslint-disable no-unreachable */
-  /*
   const page = readTripPage(params.slug);
 
   // A slug in the index with no cached page means the detail fetch failed or
@@ -186,9 +169,18 @@ export async function getStaticProps({ params }) {
   // first render. See components/trips/TripItineraryView.
   const view = tripItinerary(page) || { itinerary: null, stays: [] };
 
+  // The raw `name` is the customer's own title for the itinerary this page was
+  // cut from — it still credits them by first name on 700-odd of these trips.
+  // Props are serialised into the HTML as __NEXT_DATA__, so the raw value is
+  // replaced here rather than merely left unrendered: that is the difference
+  // between not showing it and not publishing it. What goes out is the public
+  // name (lib/seo/tripName), which is also what the page heads itself with.
+  const { name, ...rest } = page;
+  const publicPage = { ...rest, name: tripName(page) };
+
   return {
     props: {
-      page,
+      page: publicPage,
       itinerary: view.itinerary,
       stays: view.stays,
       siblings: pickSiblings(rows, page),
@@ -201,10 +193,9 @@ export async function getStaticProps({ params }) {
             name: destinationLabel(page.destination),
             href: `/trips/${page.destination}`,
           },
-          { name: page.name, href: page.url },
+          { name: tripName(page) || page.h1, href: page.url },
         ]),
       },
     },
   };
-  */
 }

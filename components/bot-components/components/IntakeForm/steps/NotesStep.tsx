@@ -17,7 +17,7 @@ const NotesStep: React.FC<StepProps> = ({ state, update }) => {
     update({ notes: next });
   };
 
-  // Prefer the context-aware chips fetched from `/chatkit/context-chips`; fall
+  // Prefer the context-aware chips fetched from the context-chips endpoint; fall
   // back to the static hints when the fetch hasn't resolved or failed.
   const hints = state.noteHints?.length ? state.noteHints : NOTE_HINTS;
   // Widths for the placeholder shimmer chips shown while the context-chips

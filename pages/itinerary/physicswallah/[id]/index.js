@@ -1,3 +1,4 @@
+import { SITE_ORIGIN } from "../../../../lib/seo/siteOrigin";
 import ItineraryContainer from "../../../../containers/itinerary/IndexsV2/Index";
 import { useRouter } from "next/router";
 import Layout from "../../../../components/Layout";
@@ -25,11 +26,11 @@ const Itinerary = (props) => {
           property="og:description"
           content="We envision to simplify travel and build immersive travel experiences."
         />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+        <meta name="twitter:image" content={`${SITE_ORIGIN}/og-image.png`} />
       </Head>
 
       <ItineraryContainer

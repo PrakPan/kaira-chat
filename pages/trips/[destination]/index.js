@@ -16,13 +16,8 @@ import Head from "next/head";
 import Layout from "../../../components/Layout";
 import TripsHub from "../../../components/trips/TripsHub";
 import { SITE_ORIGIN } from "../../../lib/seo/tripsIndexed";
-// Commented out with the data fetching below — tripsCache requires `fs`, which
-// only stays out of the client bundle while getStaticProps/getStaticPaths
-// reference it. See the note in pages/trips/index.js.
-// import { readDestinations, readTripPage } from "../../../lib/seo/tripsCache";
-// Commented out for the same reason: tripsCards requires tripsCache, and so
-// pulls `fs` into the client bundle.
-// import { tripCard } from "../../../lib/seo/tripsCards";
+import { readDestinations, readTripPage } from "../../../lib/seo/tripsCache";
+import { tripCard } from "../../../lib/seo/tripsCards";
 import { breadcrumbSchema } from "../../../lib/seo/tripsJsonLd";
 import {
   destinationLabel,
@@ -64,33 +59,16 @@ const DestinationHub = ({ label, url, title, description, sections, schema }) =>
 
 export default DestinationHub;
 
-// ---------------------------------------------------------------------------
-// TRIPS ARE NOT DEPLOYED FROM THIS BRANCH (feature/lockin → Vercel).
-//
-// scripts/tripsSeoCache.js is commented out of package.json's `prebuild`, so
-// the .seo-cache snapshot these pages read does not exist in the Vercel build
-// and readDestinations() would throw. An empty path list emits zero hubs; the
-// route stays compiled but unpublished. See the note in pages/trips/index.js
-// for how to turn the group back on.
-// ---------------------------------------------------------------------------
 export async function getStaticPaths() {
-  return { paths: [], fallback: false };
-
-  /*
   return {
     paths: [...readDestinations().keys()].map((destination) => ({
       params: { destination },
     })),
     fallback: false,
   };
-  */
 }
 
 export async function getStaticProps({ params }) {
-  return { notFound: true };
-
-  /* eslint-disable no-unreachable */
-  /*
   const rows = readDestinations().get(params.destination);
   if (!rows?.length) return { notFound: true };
 
@@ -150,5 +128,4 @@ export async function getStaticProps({ params }) {
       ]),
     },
   };
-  */
 }

@@ -15,6 +15,7 @@ import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.j
 import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
 import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
 import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
+import PlanningSectionLite from "../../components/revamp/destination/PlanningSectionLite.jsx";
 import VisaSection from "../../components/revamp/destination/VisaSection.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
@@ -40,6 +41,7 @@ import DesktopBanner from "../../components/containers/Banner.js";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
 import styles from "../../styles/pages/revamp/destination.module.scss";
+import TripsHubCta from "../../components/trips/TripsHubCta.jsx";
 import SectionCta from "../../components/revamp/home/SectionCta.jsx";
 import MobileCardCarousel from "../../components/revamp/destination/MobileCardCarousel.jsx";
 import HomeHeroSection from "../../components/revamp/home/legacy/HeroSection.jsx";
@@ -50,7 +52,12 @@ import HomeHeroSection from "../../components/revamp/home/legacy/HeroSection.jsx
 const THAILAND_PAGE_ID = "86c0051c-1e99-46cf-b59a-d425a067319b";
 
 const Index = (props) => {
-  const [userItineraries, setUserItineraries] = useState([]);
+  // Seeded from props, not only in the effect below: the itinerary section (and
+  // its link to the /trips hub) must be in the exported HTML. Starting from []
+  // meant the whole section only appeared after hydration, invisible to crawlers.
+  const [userItineraries, setUserItineraries] = useState(
+    () => props?.data?.itineraries || []
+  );
   const [hotLocations, setHotLocations] = useState([]);
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [showTailoredModal, setShowTailoredModal] = useState(false);
@@ -302,6 +309,10 @@ const Index = (props) => {
                   dates, hotels, duration.
                 </p>
               </div>
+              <TripsHubCta
+                hubs={props.tripsHubs}
+                className={`${styles.sectionLink} ${styles.sectionLinkTop}`}
+              />
             </div>
             <MobileCardCarousel gridClass={styles.itinGrid}>
               {userItineraries.slice(0, 4).map((it, i) => (
@@ -319,6 +330,13 @@ const Index = (props) => {
         />
         </div>
       ) : null}
+
+      {/* Condensed planning strip. The full dark <PlanningSection /> still runs
+          near the bottom of the page; this is the at-a-glance version. */}
+      <PlanningSectionLite
+        destinationInfo={props.data?.destination_info}
+        destinationName={destinationName}
+      />
 
       <WhenToGoSection
         seasonalInfo={props.data?.seasonal_info}

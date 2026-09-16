@@ -5,10 +5,12 @@
 // pages targeting the head terms ("bali tour packages"), and a grid that only
 // populates after hydration gives a crawler an empty <div> to index.
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import styled from "styled-components";
 
 import ItineraryCardV2 from "../revamp/destination/ItineraryCardV2";
+import KairaCta from "../revamp/home/KairaCta";
 // The card's stylesheet reads 35 `--ttw-*` custom properties, and they are
 // declared on `.ttwRevamp` rather than :root. Without this scope the card still
 // lays out but loses its border and background, because `var(--ttw-line)`
@@ -99,6 +101,19 @@ const CardSlot = styled.div`
   display: ${(p) => (p.$hidden ? "none" : "block")};
 `;
 
+const MoreRow = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 28px 0 4px;
+`;
+
+const MoreNote = styled.p`
+  font-size: 13px;
+  color: #7a828d;
+  text-align: center;
+  margin: 10px 0 0;
+`;
+
 const Empty = styled.p`
   font-size: 15px;
   color: #6b6b6b;
@@ -171,7 +186,77 @@ const DestinationList = styled.ul`
   }
 `;
 
-const TripsHub = ({ crumbs = [], title, intro, sections = [], chips = null }) => (
+// How many trips are on screen before the reader asks for more. The corpus is
+// 1,718 and a single theme is still several hundred, which is not a page anyone
+// reads top to bottom — but every card stays in the DOM either way (see the
+// note in TripsFilters), so this only governs what is shown, never what is
+// served.
+const PAGE_SIZE = 48;
+
+/**
+ * The card grid for one section.
+ *
+ * Its own component because it holds paging state, and the filter bar hands the
+ * verdict down through a render prop — hooks can't live in that callback.
+ */
+const CardsGrid = ({ cards, isVisible, visibleCount, selKey }) => {
+  const [shown, setShown] = useState(PAGE_SIZE);
+
+  // A new filter is a new set: start it at the top rather than carrying over
+  // however far the reader had paged through the previous one.
+  useEffect(() => {
+    setShown(PAGE_SIZE);
+  }, [selKey]);
+
+  // Position within the MATCHING cards, so the cap counts what the reader can
+  // actually see rather than where the card sits in the full corpus.
+  let matched = 0;
+  const rendered = cards.map((item) => {
+    const visible = isVisible(item);
+    const withinPage = visible && matched < shown;
+    if (visible) matched += 1;
+    return { item, hidden: !withinPage };
+  });
+
+  const remaining = Math.max(0, visibleCount - shown);
+
+  return (
+    <div className={revamp.ttwRevamp}>
+      {visibleCount === 0 && <Empty>No trips match those filters yet.</Empty>}
+      <Cards>
+        {rendered.map(({ item, hidden }) => (
+          <CardSlot key={item.path || item.name} $hidden={hidden}>
+            <ItineraryCardV2 itinerary={item} currency={item.currency} />
+          </CardSlot>
+        ))}
+      </Cards>
+
+      {remaining > 0 && (
+        <MoreRow>
+          <div>
+            <KairaCta tone="outline" onClick={() => setShown((n) => n + PAGE_SIZE)}>
+              View {Math.min(remaining, PAGE_SIZE)} more
+            </KairaCta>
+            <MoreNote>
+              Showing {Math.min(shown, visibleCount)} of {visibleCount}
+            </MoreNote>
+          </div>
+        </MoreRow>
+      )}
+    </div>
+  );
+};
+
+const TripsHub = ({
+  crumbs = [],
+  title,
+  intro,
+  sections = [],
+  chips = null,
+  // Which theme chip is pressed when the page opens. /trips passes one so the
+  // reader lands on a readable set rather than the whole corpus.
+  defaultTheme = null,
+}) => (
   <Wrapper>
     {crumbs.length > 0 && (
       <Crumbs aria-label="Breadcrumb">
@@ -195,26 +280,18 @@ const TripsHub = ({ crumbs = [], title, intro, sections = [], chips = null }) =>
             head terms, and a grid that only fills in after hydration would give
             a crawler an empty div. The filter hides non-matching cards rather
             than unmounting them, for the same reason. */}
-        <TripsFilters cards={section.items} lengthBuckets={LENGTH_BUCKETS}>
-          {(isVisible, visibleCount) => (
-            <div className={revamp.ttwRevamp}>
-              {visibleCount === 0 && (
-                <Empty>No trips match those filters yet.</Empty>
-              )}
-              <Cards>
-                {section.items.map((item) => (
-                  <CardSlot
-                    key={item.path || item.name}
-                    $hidden={!isVisible(item)}
-                  >
-                    <ItineraryCardV2
-                      itinerary={item}
-                      currency={item.currency}
-                    />
-                  </CardSlot>
-                ))}
-              </Cards>
-            </div>
+        <TripsFilters
+          cards={section.items}
+          lengthBuckets={LENGTH_BUCKETS}
+          defaultTheme={defaultTheme}
+        >
+          {(isVisible, visibleCount, selKey) => (
+            <CardsGrid
+              cards={section.items}
+              isVisible={isVisible}
+              visibleCount={visibleCount}
+              selKey={selKey}
+            />
           )}
         </TripsFilters>
       </section>

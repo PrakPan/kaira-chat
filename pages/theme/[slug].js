@@ -1,3 +1,5 @@
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
+import { resolveTitle } from "../../lib/seo/cmsTitle";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -77,11 +79,16 @@ const TravelPlanner = ({
       slug={slug}
     >
       <Head>
-        <title>
-          {Data.social_share_title
-            ? Data.social_share_title
-            : `${Data.name} Packages & Destinations for Indian Travellers | The Tarzan Way`}
-        </title>
+        {/* resolveTitle, not a bare truthiness check: social_share_title is SET
+            on all 39 themes, but on 16 of them it is still the CMS default, so
+            `Data.social_share_title ? … : …` took the branch that produced 16
+            identical titles. See lib/seo/cmsTitle.js.
+            Single expression child so React emits no comment separator into the
+            title's RCDATA — same reason as the [city] route. */}
+        <title>{resolveTitle(
+          Data.social_share_title,
+          `${Data.name} Packages & Destinations for Indian Travellers | The Tarzan Way`
+        )}</title>
         <meta
           name="description"
           content={
@@ -92,11 +99,10 @@ const TravelPlanner = ({
         ></meta>
         <meta
           property="og:title"
-          content={
-            Data.social_share_title
-              ? Data.social_share_title
-              : `Plan Your Trip to ${Data.name} | Trip Planner & Itinerary | The Tarzan Way`
-          }
+          content={resolveTitle(
+            Data.social_share_title,
+            `Plan Your Trip to ${Data.name} | Trip Planner & Itinerary | The Tarzan Way`
+          )}
         />
         <meta
           property="og:description"
@@ -106,11 +112,11 @@ const TravelPlanner = ({
               : `Plan your dream trip to ${Data.name} with The Tarzan Way's AI itinerary. Explore top attractions, local cuisine, and book your flights, accommodations, and transfers all in one go ${Data.name}.`
           }
         />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+        <meta name="twitter:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta
           property="keywords"
           content={
@@ -122,12 +128,12 @@ const TravelPlanner = ({
 
         <meta
           property="og:url"
-          content={`https://thetarzanway.com/theme/${slug}`}
+          content={`${SITE_ORIGIN}/theme/${slug}`}
         />
         <meta property="og:type" content="website" />
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/theme/${slug}`}
+          href={`${SITE_ORIGIN}/theme/${slug}`}
         ></link>
         <script
           type="application/ld+json"
@@ -139,7 +145,7 @@ const TravelPlanner = ({
               description:
                 Data.meta_description ||
                 `Plan your dream trip to ${Data.name} with The Tarzan Way's AI itinerary.`,
-              url: `https://thetarzanway.com/theme/${slug}`,
+              url: `${SITE_ORIGIN}/theme/${slug}`,
             }),
           }}
         />

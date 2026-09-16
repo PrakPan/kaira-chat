@@ -1391,7 +1391,7 @@ a.termsnavunderlinelink {
   display: none;
 }
 
-@container ttwHoldRibbon (min-width: 920px) {
+@container ttwHoldRibbon (min-width: 800px) {
   .ttw-hold-byline {
     display: inline;
   }

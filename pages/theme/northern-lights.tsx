@@ -6,6 +6,7 @@
 // and trip-shape cards seed a plan; "Build trip" opens the themed mini-form on
 // /chat, which submits the aurora country-branch payload to /chatkit.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect } from "react";
@@ -370,7 +371,7 @@ const NorthernLightsThemePage = ({
         />
         <link
           rel="canonical"
-          href="https://thetarzanway.com/theme/northern-lights"
+          href={`${SITE_ORIGIN}/theme/northern-lights`}
         />
       </Head>
       <CinematicThemeLanding

@@ -39,7 +39,17 @@ export const useNavigationMarker = (scrollContainerRef, sectionIds = [], onActiv
       const sectionRect = section.getBoundingClientRect();
       const relativeTop = sectionRect.top - containerRect.top - stickyOffset;
 
-      if (relativeTop <= 0 && Math.abs(relativeTop) < section.offsetHeight) {
+      // 1px tolerance on both edges. Scrolling a section exactly to the top
+      // leaves the previous section's bottom at a fractional offset
+      // (getBoundingClientRect is subpixel, offsetHeight is rounded), so a
+      // strict `< offsetHeight` still counted the previous section as on
+      // screen — and it wins because it's checked first. That kept "About"
+      // highlighted after jumping to "Rooms".
+      const TOLERANCE = 1;
+      if (
+        relativeTop <= TOLERANCE &&
+        relativeTop + section.offsetHeight > TOLERANCE
+      ) {
         onActiveTabChange && onActiveTabChange(i, sectionIds[i]);
         break;
       }

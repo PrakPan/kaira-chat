@@ -7,6 +7,7 @@
 // restaurant cards seed a fresh /chat prompt with Kaira; the "People who went"
 // stories open each traveller's real itinerary.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
@@ -92,6 +93,27 @@ const THEME_IMG = {
   lapland: `${CDN}/media/countries/168442263137298607826232910156.jpg`,
   northernLights: `${CDN}/media/website/northern-lights-2026/Sleep%20Beneath%20The%20Aurora.jpg`,
   edinburgh: `${CDN}/media/website/edinburgh-hogmanay-2026/Dec%2029%20--The%20Torchlight%20March.jpg`,
+  honeymoon: `${CDN}/media/website/honeymoon-theme-2026/Maldives%20%E2%80%94%20The%20Overwater%20Villa%20Fantasy.jpg`,
+};
+// Catalog imagery (Mercury POI / activity / restaurant photos) for the New Year
+// rail and the mountains added from the design handoff.
+const MEDIA = "https://images.thetarzanway.com";
+const CAT = {
+  nyMoiwa: `${MEDIA}/media/pois/168434804014323019981384277344.jpeg`,
+  nyShrine: `${MEDIA}/media/pois/168434812371978425979614257812.jpeg`,
+  nyHirafu: `${MEDIA}/media/pois/176081776748122525215148925781.jpg`,
+  nySoba: `${MEDIA}/media/restaurant/169106833046932458877563476562.jpeg`,
+  nyNoboribetsu: `${MEDIA}/media/activities/175990317647043538093566894531.jpg`,
+  mtnTeine: `${MEDIA}/media/activities/178636613230145478248596191406.webp`,
+};
+// Country covers from geos_country, for "Or somewhere else entirely".
+const COUNTRY = {
+  japan: `${CDN}/media/countries/175853838850662446022033691406.jpg`,
+  switzerland: `${CDN}/media/countries/175930905875495767593383789062.jpg`,
+  finland: `${CDN}/media/countries/168442263137298607826232910156.jpg`,
+  thailand: `${CDN}/media/countries/168442180095400023460388183594.jpg`,
+  newZealand: `${CDN}/media/countries/168500206870858645439147949219.jpg`,
+  southKorea: `${CDN}/media/countries/168442240474925684928894042969.jpg`,
 };
 
 // Catalog activity ids (from the Mercury BE links) — open the activity drawer.
@@ -117,6 +139,10 @@ const PROMPTS = {
     "We are 2 travellers going for 8 nights in February, and our travel dates are flexible. We want to experience Sapporo during winter. Include the Snow Festival (when available), local seafood markets, beer museum, winter illuminations, ramen alley, snowy city walks, and day trips to nearby attractions.",
   skiOnsen:
     "We are 2 travellers going for 9 nights in January, and our travel dates are flexible. We want to combine skiing with traditional Japanese onsen experiences. Balance ski days with relaxing hot springs, ryokan stays, mountain scenery, local cuisine, and slow winter evenings.",
+  newYearSapporo:
+    "We are 2 travellers going for 8 nights over New Year, starting 27 December. We want to see in the New Year in Hokkaido's snow - the Mt. Moiwa night view on New Year's Eve, toshikoshi soba before midnight, hatsumode at Hokkaido Shrine on 1 January, a quiet New Year's Day ski at Niseko, and the year's first onsen at Noboribetsu. Keep the pace relaxed around the holiday closures.",
+  firstTimeJapan:
+    "We are 2 travellers going for 10 nights in February, and it's our first time in Japan. Our dates are flexible. Build an easy first Japan winter trip - a few days in Tokyo, the Shinkansen north, then Sapporo and a little snow - with simple transfers, iconic sights, local food and no complicated logistics.",
   // "Pick a shape" routes (verbatim)
   powderCity:
     "We are 2 travellers, and our travel dates in January are flexible. We want a 9-night Hokkaido winter itinerary combining Sapporo and Niseko. Prioritize legendary powder snow, skiing or snowboarding (based on our experience level), cozy onsens, local seafood, ramen, winter cafés, scenic snowy landscapes, and enough time to explore Sapporo's city highlights. Balance adventure on the slopes with relaxed evenings and authentic Hokkaido experiences.",
@@ -131,6 +157,8 @@ const PROMPTS = {
     "On our 9-night February trip for two, tell me about the Okurayama Ski Jump Stadium in Sapporo - the Olympic ski jump, the observation deck views over the city, and the winter sports museum. Work a visit into my Sapporo days.",
   takino:
     "On a 9-night February Hokkaido trip for 2 adults and 2 children, tell me about Takino Suzuran Hillside Park near Sapporo in winter - the snow play, tubing and cross-country trails. Is it worth a half day with the family? Add it to my Hokkaido plan.",
+  teine:
+    "On our 9-night January trip for two, tell me about skiing Sapporo Teine - the 1972 Olympic runs above the bay, 40 minutes from the city. Is it worth a day trip from Sapporo? Add a ski day there to my Hokkaido plan.",
   // Rest days (POIs)
   beerMuseum:
     "On our 9-night February trip for two, tell me about the Sapporo Beer Museum - the history, the tasting room, and the beer garden next door. Add a relaxed afternoon there to my Sapporo plan.",
@@ -182,6 +210,9 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   underseaShinkansen: { nights: 11, month: 2, who: "Couple" },
   sapporoWinter: { nights: 8, month: 2, day: 4, who: "Couple" },
   skiOnsen: { nights: 9, month: 1, who: "Couple" },
+  newYearSapporo: { nights: 8, month: 12, day: 27, who: "Couple" },
+  firstTimeJapan: { nights: 10, month: 2, who: "Couple" },
+  teine: { nights: 9, month: 1, who: "Couple" },
   powderCity: { nights: 9, month: 1, who: "Couple" },
   underseaRun: { nights: 11, month: 2, who: "Couple" },
   snowFestivalWeek: { nights: 8, month: 2, day: 4, who: "Couple" },
@@ -219,10 +250,12 @@ const hokkaidoConfig: CinematicThemeConfig = {
     placeholder: "Try: Niseko powder week, Sapporo, 9 nights in February",
     prompt: PROMPTS.powderCity,
     chips: [
+      { label: "New Year in Sapporo", prompt: PROMPTS.newYearSapporo },
       { label: "Snow Festival & powder", prompt: PROMPTS.snowFestivalPowder },
       { label: "Undersea Shinkansen", prompt: PROMPTS.underseaShinkansen },
       { label: "Sapporo winter", prompt: PROMPTS.sapporoWinter },
       { label: "Ski & onsen", prompt: PROMPTS.skiOnsen },
+      { label: "First time in Japan", prompt: PROMPTS.firstTimeJapan },
     ],
     images: [
       { image: IMG.heroNiseko, caption: "Niseko, powder" },
@@ -232,11 +265,57 @@ const hokkaidoConfig: CinematicThemeConfig = {
     ],
   },
   sections: [
+    // ── New Year in Japan (dark, first under the hero) ──
+    // The design's inset ink panel: paper heading, yellow-tinted rail cards,
+    // each a "+ Add to trip" save-toggle. Explicit `item`s keep the saved-list
+    // chip readable — the date badges in `tag` would make poor labels.
+    {
+      type: "cards",
+      tone: "dark",
+      tinted: true,
+      selectable: true,
+      itemKind: "activity",
+      addNoun: "to trip",
+      rail: true,
+      heading: { lead: "New Year in Japan, done in the snow" },
+      cards: [
+        {
+          image: CAT.nyMoiwa,
+          tag: "31 Dec · Sapporo",
+          name: "New Year's first lights at Mt. Moiwa",
+          item: { kind: "activity", label: "New Year's Eve at Mt. Moiwa ropeway (Sapporo)", short: "NYE · Mt. Moiwa" },
+        },
+        {
+          image: CAT.nyShrine,
+          tag: "1 Jan · Hatsumode",
+          name: "First shrine visit at Hokkaidō Shrine",
+          item: { kind: "activity", label: "Hatsumode at Hokkaidō Shrine on 1 January (Sapporo)", short: "Hatsumode · Hokkaidō Shrine" },
+        },
+        {
+          image: CAT.nyHirafu,
+          tag: "1 Jan · Powder",
+          name: "New Year's Day on the mountain",
+          item: { kind: "activity", label: "New Year's Day ski at Niseko Grand Hirafu", short: "1 Jan · Grand Hirafu" },
+        },
+        {
+          image: CAT.nySoba,
+          tag: "NYE dinner",
+          name: "Toshikoshi soba, done right",
+          item: { kind: "activity", label: "Toshikoshi soba dinner on New Year's Eve (Sapporo)", short: "NYE · Toshikoshi soba" },
+        },
+        {
+          image: CAT.nyNoboribetsu,
+          tag: "2 Jan · Onsen",
+          name: "First bath of the year at Noboribetsu",
+          item: { kind: "activity", label: "Hatsuburo, first onsen of the year at Noboribetsu", short: "2 Jan · Noboribetsu onsen" },
+        },
+      ],
+    },
     // ── Pick a shape (routes) ──
     {
       type: "cards",
       ctaLabel: "Create this plan →",
-      heading: { lead: "Pick a shape,", accent: "I'll fill it in" },
+      heading: { lead: "Pick a shape, I'll fill it in" },
       cards: [
         {
           image: IMG.routePowderCity,
@@ -266,7 +345,11 @@ const hokkaidoConfig: CinematicThemeConfig = {
       type: "cards",
       selectable: true,
       itemKind: "activity",
-      heading: { lead: "Activities worth", accent: "the day" },
+      // The design's single-row scroller: 244px centred cards, name + a
+      // price/duration line from the activity's catalog row, no description.
+      compact: "md",
+      hideLines: true,
+      heading: { lead: "Activities worth the day" },
       cards: [
         {
           image: IMG.actHakodateRopeway,
@@ -274,6 +357,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "The historic port, then the night view from Mt. Hakodate.",
           tag: "Hakodate",
           activityId: ACTIVITY.hakodateRopeway,
+          meta: "On request · 2 hours",
           objectPosition: "center 50%",
         },
         {
@@ -282,6 +366,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Penguins in the snow and a woodland of little log cabins.",
           tag: "Furano",
           activityId: ACTIVITY.asahiyamaFurano,
+          meta: "₹6,227 · ★ 4.2 · Full day",
         },
         {
           image: IMG.actLakeToya,
@@ -289,6 +374,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "A caldera lake and the steaming Hell Valley.",
           tag: "Day tour",
           activityId: ACTIVITY.lakeToyaNoboribetsu,
+          meta: "On request · 10 hours",
         },
         {
           image: IMG.actBluePond,
@@ -296,6 +382,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "The famous cobalt-blue pond, frozen and lit in winter.",
           tag: "Biei",
           activityId: ACTIVITY.asahiyamaBluePond,
+          meta: "₹7,240 · 10 hours",
         },
         {
           image: IMG.actNoboribetsu,
@@ -303,6 +390,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Hokkaido's best onsen town and its volcanic scenery.",
           tag: "Day tour",
           activityId: ACTIVITY.lakeToyaNoboribetsu,
+          meta: "On request · 10 hours",
         },
       ],
     },
@@ -341,7 +429,9 @@ const hokkaidoConfig: CinematicThemeConfig = {
       tone: "sand",
       ctaLabel: "Add to trip →",
       ctaTone: "dark",
-      heading: { lead: "Which mountain", accent: "is yours" },
+      // Four mountains now, so a rail — the 3-up grid would strand Teine alone.
+      rail: true,
+      heading: { lead: "Which mountain is yours" },
       cards: [
         {
           image: IMG.mtnNiseko,
@@ -367,19 +457,30 @@ const hokkaidoConfig: CinematicThemeConfig = {
           prompt: PROMPTS.takino,
           item: { kind: "poi", label: "Takino Suzuran Hillside Park", short: "Takino Suzuran Park" },
         },
+        {
+          image: CAT.mtnTeine,
+          name: "Sapporo Teine",
+          line: "The 1972 Olympic downhill runs with the bay below, 40 minutes from the city.",
+          tag: "Sapporo",
+          prompt: PROMPTS.teine,
+          item: { kind: "poi", label: "Sapporo Teine", short: "Sapporo Teine" },
+        },
       ],
     },
-    // ── When your legs need a day off (POIs, sand) ──
+    // ── When your legs need a day off (POIs) ──
+    // The design's single-row scroller of 210px centred cards on the plain
+    // page, each with its Google rating.
     {
       type: "cards",
-      tone: "sand",
       ctaLabel: "Add to trip →",
       ctaTone: "dark",
-      heading: { lead: "When your legs need", accent: "a day off" },
+      compact: "sm",
+      heading: { lead: "When your legs need a day off" },
       cards: [
         {
           image: IMG.poiBeerMuseum,
           name: "Sapporo Beer Museum",
+          meta: "★ 4.2 · 10.5k",
           line: "Japan's only beer museum, with a tasting room to warm up in.",
           tag: "Sapporo",
           prompt: PROMPTS.beerMuseum,
@@ -389,6 +490,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
         {
           image: IMG.poiNijoMarket,
           name: "Nijo Fish Market",
+          meta: "★ 3.7 · 9.2k",
           line: "Uni, crab and a steaming seafood breakfast bowl.",
           tag: "Sapporo",
           prompt: PROMPTS.nijoMarket,
@@ -398,6 +500,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
         {
           image: IMG.poiTanukikoji,
           name: "Tanukikoji Arcade",
+          meta: "★ 4.1 · 14.3k",
           line: "A covered street of shops and izakayas for a snowy evening.",
           tag: "Sapporo",
           prompt: PROMPTS.tanukikoji,
@@ -407,6 +510,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
         {
           image: IMG.poiHokkaidoShrine,
           name: "Hokkaidō Shrine",
+          meta: "★ 4.5 · 9.1k",
           line: "A quiet, snow-covered shrine in Maruyama Park.",
           tag: "Sapporo",
           prompt: PROMPTS.hokkaidoShrine,
@@ -416,6 +520,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
         {
           image: IMG.poiKanemori,
           name: "Kanemori Red Brick Warehouse",
+          meta: "★ 4.1 · 15.8k",
           line: "Historic bayside warehouses, lit up over the winter harbour.",
           tag: "Hakodate",
           prompt: PROMPTS.kanemori,
@@ -425,6 +530,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
         {
           image: IMG.poiGoryokaku,
           name: "Goryōkaku Tower",
+          meta: "★ 4.3 · 16.3k",
           line: "The star-shaped fort, best seen under snow from above.",
           tag: "Hakodate",
           prompt: PROMPTS.goryokaku,
@@ -432,39 +538,52 @@ const hokkaidoConfig: CinematicThemeConfig = {
         },
       ],
     },
-    // ── Which winter is yours (trips) ──
+    // ── Which winter is yours (trips) — three finished itineraries, not
+    // prompts. Each card opens the real plan at /chat/{itinerary_id}, laid out
+    // as the honeymoon page's "Pick a plan" packaged-product cards.
+    //
+    // Route, nights and price all come from the itinerary itself: the price is
+    // its `per_person_discounted_cost` rounded to the rupee, and `includes` is
+    // what its own bookings carry (all three hold Delhi flights). Re-check
+    // whenever they're re-priced. None of the three is a "People who went"
+    // story below, so no plan appears twice on the page. ──
     {
       type: "trips",
+      layout: "stacked",
+      tone: "band",
       ctaLabel: "Book this itinerary →",
-      heading: {
-        lead: "Which winter is",
-        accent: "yours?",
-        note: "Priced from Delhi · flights and rail included",
-      },
+      heading: { lead: "Which winter is yours?" },
       cards: [
         {
           image: IMG.tripPowderWeek,
-          tag: "Powder · ski · 9N",
+          tag: "Couple · 9N",
           name: "Niseko powder week",
-          line: "Sapporo nights, Niseko days - the classic first-timer's Japow.",
-          nights: "9 nights",
-          prompt: PROMPTS.powderCity,
+          line: "Seven nights in a Hirafu chalet on the Niseko United pass, with a night in Sapporo either side.",
+          price: "₹3,86,482 / person",
+          nights: "9 nights · Sapporo + Niseko",
+          includes: ["Flights", "Hirafu chalet", "Lift pass", "Ski lesson"],
+          urgent: "Dec – Feb chalets in Hirafu book out months ahead",
+          href: "/chat/3e9b6830-7c02-47e7-8f5b-bb9c7f56938a",
         },
         {
           image: IMG.tripRail,
-          tag: "Rail · slow · 11N",
+          tag: "Couple · 9N",
           name: "Tokyo to Hokkaido by rail",
-          line: "The undersea Shinkansen, no flights, all the winter scenery.",
-          nights: "11 nights",
-          prompt: PROMPTS.underseaRun,
+          line: "Three nights in Tokyo, the Shinkansen under the strait to Hakodate, then four in Sapporo.",
+          price: "₹3,35,005 / person",
+          nights: "9 nights · Tokyo → Sapporo",
+          includes: ["Flights", "Shinkansen", "3 stays", "6 activities"],
+          href: "/chat/e68df188-c5c1-45d5-9456-f1bbb46d7c60",
         },
         {
           image: IMG.tripSnowFestival,
-          tag: "Festival · easy · 8N",
-          name: "Snow Festival & soft slopes",
-          line: "Ice sculptures, onsen towns, and gentler beginner runs.",
-          nights: "8 nights",
-          prompt: PROMPTS.snowFestivalWeek,
+          tag: "Couple · 7N",
+          name: "A Sapporo winter week",
+          line: "One Sapporo base for seven nights, a ski day at Teine, then Blue Pond and Noboribetsu's Hell Valley.",
+          price: "₹1,90,489 / person",
+          nights: "7 nights · Sapporo",
+          includes: ["Flights", "1 stay", "Teine ski day", "3 day trips"],
+          href: "/chat/c33be86b-feef-4ce8-aae1-00764823f5ff",
         },
       ],
     },
@@ -539,11 +658,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
     // ── When to go (months) ──
     {
       type: "months",
-      heading: {
-        eyebrow: "The season runs December to March",
-        lead: "When to",
-        accent: "actually go",
-      },
+      heading: { lead: "When to actually go" },
       rows: [
         {
           range: "Early Dec",
@@ -602,46 +717,11 @@ const hokkaidoConfig: CinematicThemeConfig = {
       note:
         "Applied through the Japanese embassy. We book the appointment, assemble the file, and hand it back to you ready to travel.",
     },
-    // ── Read this first (list compact) ──
-    // {
-    //   type: "list",
-    //   compact: true,
-    //   heading: {
-    //     eyebrow: "Four things people get wrong",
-    //     lead: "Read this",
-    //     accent: "first",
-    //   },
-    //   rows: [
-    //     {
-    //       emoji: "🎿",
-    //       gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
-    //       name: "Rent gear, don't fly with it",
-    //       line: "Hokkaido rental is excellent and cheap. Travel light.",
-    //     },
-    //     {
-    //       emoji: "🚄",
-    //       gradient: "linear-gradient(150deg, #1f8a5a, #f0e9d6 200%)",
-    //       name: "The JR Pass pays off on the long legs",
-    //       line: "Worth it for the Tokyo–Hokkaido run; less so if you only fly in.",
-    //     },
-    //     {
-    //       emoji: "🧴",
-    //       gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
-    //       name: "Onsens have rules",
-    //       line: "Wash first, no swimwear, and tattoos may need covering.",
-    //     },
-    //     {
-    //       emoji: "❄️",
-    //       gradient: "linear-gradient(150deg, #1a2436, #445069)",
-    //       name: "It's cold, but it's dry cold",
-    //       line: "Layers and waterproof boots beat a single heavy coat.",
-    //     },
-    //   ],
-    // },
+    
     // ── Stories (open each traveller's itinerary) ──
     {
       type: "stories",
-      heading: { eyebrow: "Came back · rated it", lead: "People who", accent: "went" },
+      heading: { lead: "People who went" },
       cards: [
         // These used to link three Japan trips with no Hokkaido winter in them
         // (a September Tokyo–Kyoto run, an April loop, a June one). They now
@@ -739,7 +819,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
     // ── Other themes ──
     {
       type: "gradient",
-      heading: { eyebrow: "Other themes", lead: "Winter elsewhere?", accent: "Try these" },
+      heading: { eyebrow: "Other themes", lead: "Winter elsewhere?" },
       columns: 4,
       cards: [
         {
@@ -774,7 +854,72 @@ const hokkaidoConfig: CinematicThemeConfig = {
           image: THEME_IMG.edinburgh,
           href: "/theme/edinburgh-hogmanay",
         },
+        {
+          name: "Honeymoon",
+          meta: "Slow · two of you",
+          emoji: "💗",
+          gradient: "linear-gradient(150deg, #16324f, #2f6f9e 150%)",
+          image: THEME_IMG.honeymoon,
+          href: "/theme/honeymoon",
+        },
       ],
+    },
+    // ── Other countries ──
+    {
+      type: "gradient",
+      heading: { eyebrow: "Other countries", lead: "Or somewhere else entirely" },
+      columns: 6,
+      cards: [
+        {
+          name: "Japan",
+          meta: "Tokyo · Kyoto · Hokkaido",
+          emoji: "⛩️",
+          gradient: "linear-gradient(150deg, #3d2b52, #b84034 180%)",
+          image: COUNTRY.japan,
+          href: "/asia/japan",
+        },
+        {
+          name: "Switzerland",
+          meta: "Trains · lakes · Alps",
+          emoji: "🏔️",
+          gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+          image: COUNTRY.switzerland,
+          href: "/europe/switzerland",
+        },
+        {
+          name: "Finland",
+          meta: "Lapland · aurora",
+          emoji: "🌌",
+          gradient: "linear-gradient(150deg, #1a2436, #445069)",
+          image: COUNTRY.finland,
+          href: "/europe/finland",
+        },
+        {
+          name: "Thailand",
+          meta: "Warm escape · Nov – Apr",
+          emoji: "🏝️",
+          gradient: "linear-gradient(150deg, #1f8a5a, #f0e9d6 200%)",
+          image: COUNTRY.thailand,
+          href: "/asia/thailand",
+        },
+        {
+          name: "New Zealand",
+          meta: "Queenstown · Fiordland",
+          emoji: "🥝",
+          gradient: "linear-gradient(150deg, #16324f, #1f8a5a 160%)",
+          image: COUNTRY.newZealand,
+          href: "/oceania/new_zealand",
+        },
+        {
+          name: "South Korea",
+          meta: "Seoul · ski · spring blossom",
+          emoji: "🏯",
+          gradient: "linear-gradient(150deg, #0e1530, #445069)",
+          image: COUNTRY.southKorea,
+          href: "/asia/south_korea",
+        },
+      ],
+      footerCta: { label: "View all destinations", href: "/destinations" },
     },
   ],
   askBar: {
@@ -851,16 +996,16 @@ const HokkaidoPowderThemePage = ({
         />
         <link
           rel="canonical"
-          href="https://thetarzanway.com/theme/hokkaido-powder"
+          href={`${SITE_ORIGIN}/theme/hokkaido-powder`}
         />
         <meta
           property="og:url"
-          content="https://thetarzanway.com/theme/hokkaido-powder"
+          content={`${SITE_ORIGIN}/theme/hokkaido-powder`}
         />
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="https://thetarzanway.com/og-image.png"
+          content={`${SITE_ORIGIN}/og-image.png`}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <script
@@ -874,12 +1019,12 @@ const HokkaidoPowderThemePage = ({
                   name: "Hokkaido Powder & Sapporo Winter - Trip Planner",
                   description:
                     "Plan a Hokkaido winter trip with The Tarzan Way's AI itinerary - Niseko powder skiing, the Sapporo Snow Festival, onsens, the undersea Shinkansen from Tokyo, seafood and ramen, for Indian travellers.",
-                  url: "https://thetarzanway.com/theme/hokkaido-powder",
-                  image: "https://thetarzanway.com/og-image.png",
+                  url: `${SITE_ORIGIN}/theme/hokkaido-powder`,
+                  image: `${SITE_ORIGIN}/og-image.png`,
                   provider: {
                     "@type": "TravelAgency",
                     name: "The Tarzan Way",
-                    url: "https://thetarzanway.com",
+                    url: SITE_ORIGIN,
                   },
                 },
                 {
@@ -889,13 +1034,13 @@ const HokkaidoPowderThemePage = ({
                       "@type": "ListItem",
                       position: 1,
                       name: "Home",
-                      item: "https://thetarzanway.com",
+                      item: SITE_ORIGIN,
                     },
                     {
                       "@type": "ListItem",
                       position: 2,
                       name: "Hokkaido Powder & Sapporo",
-                      item: "https://thetarzanway.com/theme/hokkaido-powder",
+                      item: `${SITE_ORIGIN}/theme/hokkaido-powder`,
                     },
                   ],
                 },

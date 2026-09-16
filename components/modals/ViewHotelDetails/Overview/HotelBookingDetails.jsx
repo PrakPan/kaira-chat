@@ -310,6 +310,52 @@ const HotelBookingDetails = (props) => {
     }
   }, [])
 
+  // Open on a given section (e.g. Rooms from the chat hotel card) instead of
+  // the top. The tabs are scroll-spy links, so "selected" means the scroller
+  // sits at that section: jump there without animation once laid out, and
+  // once more after the gallery above has had a moment to settle — unless the
+  // user has already started scrolling themselves.
+  const initialSectionId = props.initialSectionId;
+  const initialTabIndex = Math.max(
+    0,
+    defaultItems.findIndex((item) => item.id === initialSectionId),
+  );
+  useEffect(() => {
+    if (!initialSectionId) return undefined;
+    const container = scrollableTabRef.current;
+    if (!container) return undefined;
+    let userScrolled = false;
+    const markUserScroll = () => {
+      userScrolled = true;
+    };
+    const jump = () => {
+      const targetEl = document.getElementById(initialSectionId);
+      if (!targetEl || !container) return;
+      const relativeTop =
+        targetEl.getBoundingClientRect().top -
+        container.getBoundingClientRect().top;
+      const stickyOffset = stickyTabsRef.current?.offsetHeight || 0;
+      container.scrollTo({
+        top: Math.max(0, container.scrollTop + relativeTop - stickyOffset),
+        behavior: "auto",
+      });
+    };
+    container.addEventListener("wheel", markUserScroll, { passive: true });
+    container.addEventListener("touchstart", markUserScroll, { passive: true });
+    const raf = requestAnimationFrame(jump);
+    const settle = setTimeout(() => {
+      if (!userScrolled) jump();
+    }, 400);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(settle);
+      container.removeEventListener("wheel", markUserScroll);
+      container.removeEventListener("touchstart", markUserScroll);
+    };
+    // Once per open — the drawer remounts this view for each hotel.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const _handleMenuTabsChange = (tabName) => {
     const targetEl = document.getElementById(tabName);
     const container = scrollableTabRef.current;
@@ -1063,7 +1109,7 @@ const HotelBookingDetails = (props) => {
             <ScrollableMenuTabs
               classStyle="w-100"
               items={items}
-              defaultActiveIndex={0}
+              defaultActiveIndex={initialTabIndex}
               scrollContainerRef={scrollableTabRef}
               stickyRef={stickyTabsRef}
               handleActiveTab={_handleMenuTabsChange} />

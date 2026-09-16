@@ -1,3 +1,4 @@
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import React, { useState } from "react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
@@ -27,7 +28,7 @@ const BookingContainer = (props) => {
   }
 
   let message =
-    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com" +
+    `Hey TTW! I need some help with my tailored experience - ${SITE_ORIGIN}` +
     getURL();
 
   const handleSubmit = (e) => {

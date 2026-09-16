@@ -1,6 +1,5 @@
 import styles from "./HeadingContent.module.scss";
-import Link from "next/link";
-import Button from "../../common/components/button";
+import KairaCta from "../KairaCta";
 
 // Hero heading, subtitle and CTA.
 //
@@ -16,7 +15,12 @@ import Button from "../../common/components/button";
 // the painted state (e.g. a CSS transform on an already-opaque element) rather
 // than one that starts at opacity 0 — and it must not depend on JS to become
 // visible.
-const HeadingContent = ({ title, subtitle }) => {
+// `onCraftTrip` opens the planner over the page (see TailoredFormModal). Given
+// one, the CTA is a button rather than a link: the reader stays on the homepage
+// and the form comes to them. Without one it stays a plain link to /new-trip,
+// which is what every other surface using this hero still wants.
+const HeadingContent = ({ title, subtitle, onCraftTrip }) => {
+
   return (
     <div className={styles.headingContent}>
       <div>
@@ -30,33 +34,19 @@ const HeadingContent = ({ title, subtitle }) => {
           Solo? Couple? Group? We Plan Like It’s Just for You - Because It Is.
         </p>
       </div>
-      <div>
-        <Link href="/new-trip">
-          <Button
-            variant="filled"
-            color="default"
-            size="medium"
-            className="mt-6 !bg-primary-indigo !border-primary-indigo hover:!bg-primary-indigo/90"
-          >
-            <div className="flex items-center space-x-2">
-              {/* Inline SVG rather than <FontAwesomeIcon>: the icon sits in the
-                  hero, and pulling the Font Awesome React runtime in to draw a
-                  plus is JS the critical path doesn't need. */}
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2.5}
-                strokeLinecap="round"
-                aria-hidden="true"
-                className="w-4 h-4"
-              >
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              <span>Create a Trip in Seconds</span>
-            </div>
-          </Button>
-        </Link>
+      {/* The page's one CTA shape — see components/revamp/home/KairaCta. The
+          hero used to carry a squared indigo button of its own, which made it
+          the only control on the homepage that didn't look like the others. */}
+      <div style={{ marginTop: 24 }}>
+        {onCraftTrip ? (
+          <KairaCta size="lg" onClick={onCraftTrip}>
+            Craft a trip in seconds
+          </KairaCta>
+        ) : (
+          <KairaCta size="lg" href="/new-trip">
+            Craft a trip in seconds
+          </KairaCta>
+        )}
       </div>
     </div>
   );

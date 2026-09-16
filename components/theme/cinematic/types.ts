@@ -88,6 +88,10 @@ export interface CinematicPromptCard {
   name: string;
   line?: string;
   tag?: string; // yellow corner badge
+  // Mono line under the name/line, shown on `compact` cards only — a price and
+  // duration ("₹6,227 · Full day") or a rating ("★ 4.2 · 10.5k"). Any "★" is
+  // tinted.
+  meta?: string;
   // CSS object-position for the cover crop (e.g. "center", "top",
   // "center 35%"). Defaults to center. Use to keep a poster's subject in frame.
   objectPosition?: string;
@@ -323,6 +327,10 @@ type CinematicSectionBlock =
       // "dark" — the mockup's inset ink panel with a yellow heading and a
       // yellow-filled CTA, for a short row that has to stop the scroll.
       tone?: "paper" | "sand" | "dark";
+      // `dark` only: a paper heading and yellow-tinted card chrome instead of
+      // the yellow heading over neutral glass cards — the Hokkaido "New Year in
+      // Japan" panel. Leaves every other dark panel as it was.
+      tinted?: boolean;
       // Paragraph under the heading. The dark panel is the only tone that reads
       // with one; the light rows carry their explanation on the cards.
       intro?: string;
@@ -331,6 +339,12 @@ type CinematicSectionBlock =
       // worth booking" scrollers, where eleven cards in a grid become four
       // stacked rows and stop reading as a set of options.
       rail?: boolean;
+      // Light-tone rail only: smaller, centred cards with the card's `meta` line
+      // — the Hokkaido "Activities worth the day" (`md`, 244px) and "When your
+      // legs need a day off" (`sm`, 210px) scrollers. Implies `rail`.
+      compact?: "md" | "sm";
+      // Drop each card's `line` (the compact activities rail shows name + meta).
+      hideLines?: boolean;
       // When set, each card shows a pill CTA at its foot with this label
       // (e.g. "Create this plan →"). Clicking anywhere on the card still fires
       // the card action; the label is a visual affordance. Omit to keep the
@@ -353,6 +367,10 @@ type CinematicSectionBlock =
       type: "trips";
       heading: CinematicHeading;
       cards: CinematicTripCard[];
+      // Optional crawlable link in the heading row's top-right corner, e.g.
+      // "Thailand itineraries →" to the /trips hub. Rendered as a real
+      // anchor, unlike SectionCta, which navigates from a click handler.
+      headingLink?: { href: string; label: string };
       // Full-width yellow CTA under each trip (e.g. "Book this itinerary →").
       ctaLabel?: string;
       // "row" (default) is the side-thumbnail card every other theme page

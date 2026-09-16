@@ -14,6 +14,7 @@ import DesktopBanner from "../../components/containers/Banner.js";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 import styles from "../../styles/pages/revamp/destination.module.scss";
+import TripsHubCta from "../../components/trips/TripsHubCta.jsx";
 import SectionCta from "../../components/revamp/home/SectionCta.jsx";
 import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
 
@@ -219,6 +220,10 @@ const Experience = (props) => {
                   dates, hotels, duration.
                 </p>
               </div>
+              <TripsHubCta
+                hubs={props.tripsHubs}
+                className={`${styles.sectionLink} ${styles.sectionLinkTop}`}
+              />
             </div>
             <div className={styles.itinGrid}>
               {props.cityData.itineraries.slice(0, 4).map((it, i) => (

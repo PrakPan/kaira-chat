@@ -33,7 +33,8 @@ const initialReducer = {
     slideFour: {
         hotelType: ['3','4','5'],
         mealPreferences: [],
-        specialRequests: ""
+        specialRequests: "",
+        vibePreferences: []
     },
     itineraryCreated: false
 }
@@ -377,6 +378,14 @@ const reducer = (state = initialReducer, action) => {
                 slideFour: {
                     ...state.slideFour,
                     specialRequests: action.payload
+                }
+            };
+        case actionTypes.SET_VIBE_PREFERENCES:
+            return {
+                ...state,
+                slideFour: {
+                    ...state.slideFour,
+                    vibePreferences: action.payload
                 }
             };
         case actionTypes.SET_ITINERARY_CREATED:

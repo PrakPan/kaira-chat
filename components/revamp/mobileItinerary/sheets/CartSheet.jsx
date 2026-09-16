@@ -26,6 +26,7 @@ import EsimPackagesDrawer from "../../../drawers/esimDetails/EsimPackagesDrawer"
 import DetailSheet from "./DetailSheet";
 import getModeAccent from "../../common/components/bookingDetail/modeAccent";
 import prompts from "../kairaPrompts";
+import { SITE_ORIGIN } from "../../../../lib/seo/siteOrigin";
 import {
   deriveLockIn,
   ItineraryInclusions,
@@ -638,8 +639,13 @@ export default function CartSheet({
   // "full" for the whole balance. The hold card offers both, so the choice has
   // to travel with the tap; the footer bar leaves it out and the drawer falls
   // back to its own `payNowType`, exactly as before.
+  //
+  // Only the full / balance payment needs the names — the drawer's gate skips
+  // the hold, so this one does too. The footer bar's untyped tap is resolved
+  // the way the drawer will resolve it (`payNowType` off the same cart).
   const handlePayNow = (type) => {
-    if (!traveller.verified) {
+    const saleType = type || (model.requiresLockIn ? "lockin" : "full");
+    if (saleType === "full" && !traveller.verified) {
       setTravellersOpen(true);
       return;
     }
@@ -648,7 +654,7 @@ export default function CartSheet({
 
   const handleWhatsappChat = () => {
     const here =
-      typeof window !== "undefined" ? window.location.href : "https://www.thetarzanway.com";
+      typeof window !== "undefined" ? window.location.href : SITE_ORIGIN;
     window.open(
       `${urls.WHATSAPP}?text=${encodeURIComponent(
         `Hey TTW! I need some help with my tailored experience - ${here}`,

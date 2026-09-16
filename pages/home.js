@@ -1,3 +1,4 @@
+import { SITE_ORIGIN } from "../lib/seo/siteOrigin";
 import Head from "next/head";
 // import HomepageContainer from "../containers/homepage/Index";
 import HeroSection from "../components/revamp/home/legacy/HeroSection";
@@ -13,12 +14,14 @@ import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
 import FaqSection from "../components/revamp/home/FaqSection";
 import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
 import NewFooter from "../components/newfooter/Index";
+import FloatingBanner from "../components/containers/Banner";
 
 // import Layout from "../components/Layout";
+import dynamic from "next/dynamic";
 import { connect, useSelector } from "react-redux";
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import styles from "../styles/pages/revamp/home.module.scss";
 import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
@@ -36,6 +39,14 @@ import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDest
 import TrustFactors from "../components/revamp/home/TrustFactors";
 import ThemeHeadline from "../containers/travelplanner/ThemeHeadines";
 
+// The planner opens over the homepage rather than navigating to /new-trip
+// (which still renders the same form as a full page). Loaded on demand so the
+// form's bundle isn't part of the homepage's first paint.
+const TailoredFormModal = dynamic(
+  () => import("../components/tailoredform/TailoredFormModal"),
+  { ssr: false },
+);
+
 
 
 const Home = (props) => {
@@ -44,6 +55,7 @@ const Home = (props) => {
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
   const router = useRouter();
+  const [planning, setPlanning] = useState(false);
   return (
     <>
       <Head>
@@ -60,19 +72,19 @@ const Home = (props) => {
           property="og:description"
           content="Plan your trip with Kaira, an AI travel assistant backed by local human curators. Search hundreds of platforms, get a curator-reviewed itinerary, and pay only for what you book. No markups, no hidden fees."
         />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:url" content="https://thetarzanway.com/" />
+        <meta property="og:url" content={`${SITE_ORIGIN}/`} />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+        <meta name="twitter:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta
           property="keywords"
           content="ai trip planner,ai travel planner,travel itinerary planner,custom travel itineraries,personalized travel planning,smart trip planner,automated itinerary builder,online trip planner,digital travel planner,travel planning platform,customized holiday packages,personalized travel package,luxury travel planning,honeymoon travel packages,family travel packages,international travel planner,travel packages with itinerary,create travel itinerary online,plan my trip online,The Tarzan Way, hotels,flights,activities,transfers local travel experience"
         ></meta>
 
-        <link rel="canonical" href={`https://thetarzanway.com`}></link>
+        <link rel="canonical" href={SITE_ORIGIN}></link>
 
         <script
           type="application/ld+json"
@@ -82,9 +94,9 @@ const Home = (props) => {
               "@context": "https://schema.org",
               "@type": "TravelAgency",
               "name": "The Tarzan Way",
-              "image": "https://thetarzanway.com/logoblack.svg",
+              "image": "${SITE_ORIGIN}/logoblack.svg",
               "@id": "",
-              "url": "https://thetarzanway.com/",
+              "url": "${SITE_ORIGIN}/",
               "telephone": "+91 8448687703",
               "address": {
                 "@type": "PostalAddress",
@@ -132,7 +144,7 @@ const Home = (props) => {
       <div className={styles.ttwRevamp}>
         <NavigationMenu />
         {/* <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Dec 20`}/> */}
-        <HeroSection slug={'home'} />
+        <HeroSection slug={'home'} onCraftTrip={() => setPlanning(true)} />
         <TrustFactors/>
         {/* <JourneySimplified /> */}
         {props.token && <MyTripsSection className={'max-w-7xl'} />}
@@ -151,6 +163,14 @@ const Home = (props) => {
         <CtaBoardingSection ctaLabel="Plan my trip" ctaHref="/new-trip" />
       </div>
       <NewFooter page="Homepage" />
+
+      {/* The same docked ask-bar the destination and theme pages carry: it
+          appears once the page is scrolled past its first screen and hands
+          whatever is typed to /chat. No `destinationName` here, so it asks the
+          open question rather than a per-destination one. */}
+      <FloatingBanner />
+
+      <TailoredFormModal show={planning} onHide={() => setPlanning(false)} />
       {/* <div id="login" className="width-[100%] z-[1650]">
         <Login
           show={props.showLogin}

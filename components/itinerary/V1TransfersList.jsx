@@ -111,7 +111,12 @@ const V1TransfersList = ({ transfers }) => {
           design rather than two. */}
       <div className="flex flex-col gap-2">
         {items.map((transfer, index) => {
-          const modeKey = MODE_KEY[transfer.booking_type] || "taxi";
+          // Trips pages carry combo legs ("Bus, Train"); the icon follows the
+          // first mode, while the meta line below still names every one.
+          const firstMode = String(transfer.booking_type || "")
+            .split(",")[0]
+            .trim();
+          const modeKey = MODE_KEY[firstMode] || "taxi";
           const icon = TRANSPORT_ICONS[modeKey] ?? TRANSPORT_ICONS.taxi;
           const accent = getTransportBadgeStyle(modeKey);
 

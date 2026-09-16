@@ -2,12 +2,18 @@ const axios = require("axios");
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
-require('dotenv').config();
 // Ticket 2.1: only keep-listed states/cities go in the sitemap; the noindexed
 // long tail is excluded here (and carries <meta robots noindex,follow> in-page).
 const { isDestinationIndexable } = require("../lib/seo/indexableDestinations");
 
-const PROD_BASE_URL = "https://thetarzanway.com";
+// The origin every <loc> is written against. This was a hand-edited constant
+// whose value differed per branch: the dev hostname on `development`, the
+// production hostname on `main`. That made the sitemap's contents a property
+// of whichever branch the build was cut from rather than of the site, and a
+// merge in the wrong direction would have published 1,865 dev URLs to Google.
+// It is now read from NEXT_PUBLIC_SITE_ORIGIN via one module, and
+// scripts/assertBuildEnv.js refuses to build if that value is a staging host.
+const { SITE_ORIGIN } = require("../lib/seo/siteOrigin");
 const NOW = new Date().toISOString();
 
 // Child sitemaps written under public/ and referenced from the sitemap index at
@@ -47,7 +53,7 @@ const buildIndex = (children) => `<?xml version="1.0" encoding="UTF-8"?>
 ${children
   .map(
     ({ file, lastmod }) => `  <sitemap>
-    <loc>${PROD_BASE_URL}/${file}</loc>
+    <loc>${SITE_ORIGIN}/${file}</loc>
     <lastmod>${lastmod}</lastmod>
   </sitemap>`
   )
@@ -103,7 +109,7 @@ const tagValue = (block, name) => {
  */
 const readPublishedChild = async (file) => {
   try {
-    const { data } = await axios.get(`${PROD_BASE_URL}/${file}`, {
+    const { data } = await axios.get(`${SITE_ORIGIN}/${file}`, {
       timeout: 15000,
       responseType: "text",
     });
@@ -154,14 +160,97 @@ const writeSitemap = (file, xml) => {
 // These are real routes shipped in the static export but were never in the
 // sitemap, so Google reported them as "URL is unknown to Google". The dynamic
 // [slug].js route is excluded here; its slugs come from the CMS below.
+//
+// Read from wherever the directory currently is. scripts/pageGroups.js moves a
+// group that this deploy is not building out to .page-groups-backup/<group>/,
+// so on any deploy without the themes group pages/theme does not exist and this
+// used to throw ENOENT — taking the whole prebuild, and therefore the deploy,
+// down. That is why a core-only release could not be shipped at all.
+//
+// Falling back to the parked copy rather than returning []: the sitemap must
+// list what is LIVE, not what this particular build happened to compile. A
+// partial deploy leaves the other groups' pages untouched on S3, so dropping
+// their URLs here would publish a sitemap that silently deindexes every theme
+// page until the next themes build. Same reasoning as the trips index in
+// scripts/tripsSeoCache.js.
 const getStaticThemeSlugs = () => {
-  const themeDir = path.join(process.cwd(), "pages", "theme");
+  const candidates = [
+    path.join(process.cwd(), "pages", "theme"),
+    path.join(process.cwd(), ".page-groups-backup", "themes", "theme"),
+  ];
+
+  const themeDir = candidates.find((dir) => fs.existsSync(dir));
+
+  if (!themeDir) {
+    // Neither location exists. Better to fail loudly than to publish a sitemap
+    // that quietly lost a section.
+    throw new Error(
+      "[sitemap] pages/theme not found in the tree or in .page-groups-backup. " +
+        "If a build was interrupted, run `node scripts/pageGroups.js restore`."
+    );
+  }
+
   return fs
     .readdirSync(themeDir)
     .filter((f) => /\.(tsx|jsx|js)$/.test(f))
     .map((f) => f.replace(/\.(tsx|jsx|js)$/, ""))
     .filter((name) => !name.startsWith("[") && !name.startsWith("_"));
 };
+
+// Drop theme slugs that production answers with a redirect.
+//
+// Theme redirects live only in the production CloudFront function, not in this
+// repo: `/theme/japan-in-summer*` 301s to `/theme/japan-in-autumn` while the CMS
+// still lists `japan-in-summer-2026`. So the sitemap submitted a URL that is not
+// a page, which Search Console reports as "Page with redirect", and the
+// destination appeared twice under one title. Asking production is the only
+// check that cannot drift from a console-edited redirect list.
+//
+// Redirects only, never 404: this runs in prebuild, BEFORE the upload, so a
+// theme being published for the first time is still a 404 on production at this
+// moment and would be left out of the sitemap on exactly the deploy that adds it.
+// A network failure keeps the slug too: an unreachable check must never silently
+// remove live pages from the sitemap. Themes only — they are the one section
+// with edge redirects — and ~40 HEAD requests, so it adds seconds to prebuild.
+async function dropRedirectedThemes(slugs) {
+  const kept = [];
+  const dropped = [];
+  const CONCURRENCY = 8;
+
+  for (let i = 0; i < slugs.length; i += CONCURRENCY) {
+    const batch = slugs.slice(i, i + CONCURRENCY);
+    const results = await Promise.all(
+      batch.map(async (slug) => {
+        try {
+          const res = await axios.head(`${SITE_ORIGIN}/theme/${slug}`, {
+            maxRedirects: 0,
+            timeout: 10000,
+            validateStatus: () => true,
+          });
+          return { slug, status: res.status };
+        } catch (err) {
+          return { slug, status: null, error: err.message };
+        }
+      })
+    );
+
+    for (const r of results) {
+      if (r.status && r.status >= 300 && r.status < 400) {
+        dropped.push(`${r.slug} (${r.status})`);
+      } else {
+        if (r.status === null) {
+          console.warn(`[sitemap] theme check failed for ${r.slug}, keeping it: ${r.error}`);
+        }
+        kept.push(r.slug);
+      }
+    }
+  }
+
+  if (dropped.length) {
+    console.log(`[sitemap] themes not listed because production redirects them: ${dropped.join(", ")}`);
+  }
+  return kept;
+}
 
 const generateSitemap = async () => {
   const BASE_URL =
@@ -178,7 +267,7 @@ const generateSitemap = async () => {
     .map((object) => {
       return {
         title: "Continent Planner",
-        link: PROD_BASE_URL + "/" + object.slug,
+        link: SITE_ORIGIN + "/" + object.slug,
         priority: "0.8",
       };
     });
@@ -196,7 +285,7 @@ const generateSitemap = async () => {
     .map((object) => {
       return {
         title: "Country Planner",
-        link: PROD_BASE_URL + "/" + object.path,
+        link: SITE_ORIGIN + "/" + object.path,
         priority: "0.8",
       };
     });
@@ -216,7 +305,7 @@ const generateSitemap = async () => {
       return {
         title: "State Planner",
         link:
-          PROD_BASE_URL + "/" + object.path.replaceAll(" ", "_").toLowerCase(),
+          SITE_ORIGIN + "/" + object.path.replaceAll(" ", "_").toLowerCase(),
         priority: "0.7",
       };
     });
@@ -233,7 +322,7 @@ const generateSitemap = async () => {
     .map((object) => {
       return {
         title: "City Planner",
-        link: PROD_BASE_URL + "/" + object.path,
+        link: SITE_ORIGIN + "/" + object.path,
         priority: "0.7",
       };
     });
@@ -245,7 +334,7 @@ const generateSitemap = async () => {
   let subRegionsPaths = subRegionsData.map((object) => {
     return {
       title: "Subregion Planner",
-      link: PROD_BASE_URL + "/" + object.path,
+      link: SITE_ORIGIN + "/" + object.path,
       priority: "0.8",
     };
   });
@@ -275,7 +364,7 @@ const generateSitemap = async () => {
 
     tripsPaths = rows.map((trip) => ({
       title: "Trip",
-      link: `${PROD_BASE_URL}${trip.url}`,
+      link: `${SITE_ORIGIN}${trip.url}`,
       // Date-only W3C form. `modified_at` is the trip's own timestamp, which is
       // the point: 214 distinct dates across the set instead of one repeated
       // build time.
@@ -295,13 +384,13 @@ const generateSitemap = async () => {
     hubPaths = [
       {
         title: "Trips Index",
-        link: `${PROD_BASE_URL}/trips`,
+        link: `${SITE_ORIGIN}/trips`,
         lastmod: latestTripLastmod(rows) || undefined,
         priority: "0.8",
       },
       ...[...destinations.entries()].map(([destination, destinationTrips]) => ({
         title: "Trips Hub",
-        link: `${PROD_BASE_URL}/trips/${destination}`,
+        link: `${SITE_ORIGIN}/trips/${destination}`,
         lastmod: latestTripLastmod(destinationTrips) || undefined,
         priority: "0.7",
       })),
@@ -327,25 +416,26 @@ const generateSitemap = async () => {
     console.error("[sitemap] failed to fetch CMS themes:", err.message);
   }
 
-  const allThemeSlugs = Array.from(
+  const liveThemeSlugs = Array.from(
     new Set([...staticThemeSlugs, ...cmsThemeSlugs])
   );
+  const allThemeSlugs = await dropRedirectedThemes(liveThemeSlugs);
   let themePaths = allThemeSlugs.map((slug) => {
     return {
       title: "Theme Page",
-      link: `${PROD_BASE_URL}/theme/${slug}`,
+      link: `${SITE_ORIGIN}/theme/${slug}`,
       priority: "0.8",
     };
   });
 
   const StaticPaths = [
-    { title: "Home Page", link: PROD_BASE_URL, priority: "1.0" },
+    { title: "Home Page", link: SITE_ORIGIN, priority: "1.0" },
     // Ticket 2.4: the COVID-19 page is stale content and is being 301'd to the
     // homepage at the edge, so it is intentionally excluded from the sitemap.
-    { title: "All Destinations", link: PROD_BASE_URL + "/destinations", priority: "0.9" },
-    { title: "Corporates", link: PROD_BASE_URL + "/corporates", priority: "0.6" },
-    { title: "Chat with Kaira", link: PROD_BASE_URL + "/chat", priority: "0.7" },
-    { title: "About Us", link: PROD_BASE_URL + "/about-us", priority: "0.6" },
+    { title: "All Destinations", link: SITE_ORIGIN + "/destinations", priority: "0.9" },
+    { title: "Corporates", link: SITE_ORIGIN + "/corporates", priority: "0.6" },
+    { title: "Chat with Kaira", link: SITE_ORIGIN + "/chat", priority: "0.7" },
+    { title: "About Us", link: SITE_ORIGIN + "/about-us", priority: "0.6" },
   ];
 
   // Group paths into the four child sitemaps.

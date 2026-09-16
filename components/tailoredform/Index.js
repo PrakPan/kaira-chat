@@ -1,86 +1,93 @@
-import { useState, useEffect, useMemo, useRef } from "react";
-import Button from "../ui/button/Index";
-import media from "../media";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/router";
+import { connect, useDispatch, useSelector } from "react-redux";
+import Cookies from "js-cookie";
 import {
   itineraryInitiate,
   itineraryComplete,
 } from "../../services/leads/tailored";
-import { useRouter } from "next/router";
-import { connect, useDispatch, useSelector } from "react-redux";
-import { BiArrowBack } from "react-icons/bi";
-import Flickity from "./Flickity";
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
-import Popup from "../ErrorPopup";
-import usePageLoaded from "../custom hooks/usePageLoaded";
 import {
+  deleteSelectedCity,
+  resetSelectedCity,
+  setAnytimeDate,
+  setDateType,
   setFixedDate,
+  setFlexibleDate,
   setItineraryCreated,
   setItineraryInitiateData,
-  setItineraryNotCreated,
   setRoomConfiguration,
   setSelectedCities,
 } from "../../store/actions/slideOneActions";
+import { changeUserLocation } from "../../store/actions/userLocation";
+import { authCloseLogin } from "../../store/actions/auth";
 import {
-  BlackContainer,
   buildItineraryPayload,
-  Container,
   divideTravellers,
-  headings,
   useSourceParams,
 } from "./utils/slideOneActions";
-import useMediaQuery from "../media";
-import Modal from "../ui/Modal";
-import ModalWithBackdrop from "../ui/ModalWithBackdrop";
-import RouteOverviewModal from "./slideOne/RouteOverviewModal";
-import BottomModal from "../ui/LowerModal";
-import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useAnalytics } from "../../hooks/useAnalytics";
+import { useAnalyticsSession } from "../../hooks/useAnalyticsSession";
 import {
   FUNNELS,
   reportFunnelStage,
 } from "../../services/analyticsFunnel";
-import styled, { keyframes } from "styled-components";
-import { fadeIn } from "react-animations";
-import { authCloseLogin, authShowLogin } from "../../store/actions/auth";
-import Login from "../modals/Login";
-import StepsProgress from "./StepsProgress";
 import getPlatform from "../../utils/getPlatform";
-import { useAnalyticsSession } from "../../hooks/useAnalyticsSession";
-import Image from "next/image";
 import RoutePreparationLoader from "./RoutePreparationLoader";
 import BotLoginModal from "../bot-components/components/BotLoginModal";
-import { FaX } from "react-icons/fa6";
+import StepTrip, { joinNames } from "./kaira/StepTrip";
+import StepRoute, { cityName } from "./kaira/StepRoute";
+import StepGroup, { travellerSummary } from "./kaira/StepGroup";
+import StepVibe from "./kaira/StepVibe";
+import { describeDate } from "./kaira/WhenPanel";
+import { IconArrowLeft, IconArrowRight, IconX } from "./kaira/icons";
 
-{
-  /* <Login/> to see this itinerary's cost */
-}
-const ScrollContainer = styled.div`
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
+// Last-resort fallback, used only if the app-wide location bootstrap never
+// reports anything at all, so the field can't hang forever. The bootstrap
+// itself already falls back to New Delhi, so this almost never fires.
+const DELHI_FALLBACK = {
+  name: "New Delhi, IN",
+  place_id: "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
+};
 
+// A resolved location can name itself either way: the geo API returns `text`,
+// older cached cookies only carry `city`.
+const locationName = (loc) => loc?.text || loc?.city || "";
+
+const STEP_NAMES = ["The trip", "The route", "Who's going", "The vibe"];
+const TOTAL_STEPS = 4;
+
+// The same four marks as components/tailoredform/TrustFactor.js, so the form
+// footer and the rest of the site show one set of icons.
+const TRUST = [
+  { icon: "/assets/trustfactor/trust-factor-1.svg", label: "10,000+ travellers" },
+  { icon: "/assets/trustfactor/trust-factor-2.svg", label: "24/7 Support" },
+  { icon: "/assets/trustfactor/trust-factor-3.svg", label: "GST Invoice" },
+  { icon: "/assets/trustfactor/trust-factor-4.svg", label: "Secure Payments" },
+];
+
+// The router query drives the step; hooks below must not run until it is
+// ready, so the real component only mounts once it is.
 const Enquiry = (props) => {
   const router = useRouter();
-  if (!router.isReady) return;
+  if (!router.isReady) return null;
+  return <EnquiryForm {...props} router={router} />;
+};
 
+const EnquiryForm = (props) => {
+  const { router } = props;
   const dispatch = useDispatch();
-  const showLogin = useSelector((state) => state.auth.showLogin);
-  const onHide = () => { setShowLoginForm(false); dispatch(authCloseLogin())};
-  const isDesktop = useMediaQuery("(min-width:768px)");
-  const [route, setRoute] = useState([]);
+  const onHide = () => {
+    setShowLoginForm(false);
+    dispatch(authCloseLogin());
+  };
+
   const [locationsLatLong, setLocationsLatLong] = useState(
     useSelector(
       (state) => state.tailoredInfoReducer.itineraryInititateData?.basic_route,
     ) || [],
   );
-  const [showRouteOverview, setShowRouteOverview] = useState(false);
 
-  const routerquery = router.query;
-  const initialInputId = Date.now();
-  const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingItineraryId, setLoadingItineraryId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,30 +115,22 @@ const Enquiry = (props) => {
     (state) => state.tailoredInfoReducer.itineraryCreated,
   );
 
-  const [showCities, setShowCities] = useState(false);
-  const [showSearchStarting, setShowSearchStarting] = useState(false);
-  const [startingLocation, setStartingLocation] = useState(false);
-  const [selectedRoutes, setSelectedRoutes] = useState();
-  const isPageLoaded = usePageLoaded();
+  const [startingLocation, setStartingLocation] = useState(null);
+  const startingLocationRef = useRef(null);
+  startingLocationRef.current = startingLocation;
+  // Set once the user picks or clears the starting point by hand. Until then
+  // the field belongs to the app-wide location bootstrap and every later
+  // resolution is allowed to overwrite it — otherwise an early cookie or the
+  // Delhi safety net would win the race against the real lookup and the user
+  // would be departing from the wrong city.
+  const userTouchedStartRef = useRef(false);
+
   const [isRouteChanged, setIsRouteChanged] = useState(false);
   const [isManualNavigation, setIsManualNavigation] = useState(false);
-  const [destination, setDestination] = useState(
-    routerquery.destination || props.destination,
-  );
-  const popupObj = {
-    dateStart: false,
-    dateEnd: false,
-    group: false,
-    InputOne: false,
-  };
   const currency = useSelector((state) => state.UserLocation).location;
-  const [showPopup, setShowPopup] = useState(popupObj);
-  const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
   const [itineraryId, setItineraryId] = useState(null);
   const [apiSucceeded, setApiSucceeded] = useState(false);
   const [error, setError] = useState(null);
-  const [shouldNavigateToNextSlide, setShouldNavigateToNextSlide] =
-    useState(false);
   const [errors, setErrors] = useState({
     startLocation: null,
     destination1: null,
@@ -172,9 +171,42 @@ const Enquiry = (props) => {
         ),
     });
   };
-  let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
-  const [showLoginForm,setShowLoginForm] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
+
+  // ── The on-screen keyboard ────────────────────────────────────────────────
+  // The form is a full-height sheet whose body scrolls inside it, so it has to
+  // be sized to the part of the screen the reader can actually see. `100dvh`
+  // is not that: on iOS Safari and on the Instagram / Facebook in-app browsers
+  // the keyboard is an overlay — the layout viewport does not shrink — so the
+  // sheet kept its full height and the bottom of it, including the suggestion
+  // list under whichever field had focus, sat behind the keyboard. Android is
+  // better behaved but still varies by `windowSoftInputMode`.
+  //
+  // visualViewport is the one thing that reports the visible box on all three.
+  // Publish it as custom properties and let the stylesheet use them (see
+  // `--kf-vvh` in styles/kaira-form.css); `offsetTop` matters because iOS
+  // scrolls the layout viewport up under the keyboard rather than resizing it.
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const vv = window.visualViewport;
+    if (!vv) return undefined;
+    const root = document.documentElement;
+    const apply = () => {
+      root.style.setProperty("--kf-vvh", `${Math.round(vv.height)}px`);
+      root.style.setProperty("--kf-vvo", `${Math.round(vv.offsetTop)}px`);
+    };
+    apply();
+    vv.addEventListener("resize", apply);
+    vv.addEventListener("scroll", apply);
+    return () => {
+      vv.removeEventListener("resize", apply);
+      vv.removeEventListener("scroll", apply);
+      root.style.removeProperty("--kf-vvh");
+      root.style.removeProperty("--kf-vvo");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (slideIndex === 0) {
@@ -229,6 +261,7 @@ const Enquiry = (props) => {
       };
       dispatch(setSelectedCities(page_id, initialInputId, data));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady, router.query.page_id, router.query.destination]);
 
   useEffect(() => {
@@ -237,7 +270,6 @@ const Enquiry = (props) => {
       if (!itineraryInititateData)
         router.push(
           {
-            // pathname: "/new-trip",
             query: {
               ...router.query,
               slideIndex: 0,
@@ -247,37 +279,166 @@ const Enquiry = (props) => {
           { shallow: true },
         );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady, slideIndex]);
 
+  // ── Starting point ────────────────────────────────────────────────────────
+  // The visitor's city comes from the app-wide bootstrap in pages/_app.js
+  // (IP lookup, 3-day cache, New Delhi on failure), which lands in Redux as
+  // `UserLocation.location`. Show the cookie immediately so the field is
+  // filled on the first paint, then let the resolved location replace it —
+  // the lookup is a network round trip and regularly finishes after the first
+  // render.
   useEffect(() => {
-    if (props.userLocation) {
-      const userLocation = props.userLocation;
-      if (userLocation.text && userLocation.place_id)
-        setStartingLocation({
-          name: userLocation.text,
-          place_id: userLocation.place_id,
-        });
-    }
+    if (userTouchedStartRef.current || startingLocationRef.current) return;
+    try {
+      const raw = Cookies.get("userLocation");
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      const name = locationName(parsed);
+      if (name) setStartingLocation({ name, place_id: parsed.place_id });
+    } catch (e) {}
+  }, []);
+
+  useEffect(() => {
+    if (userTouchedStartRef.current) return;
+    const name = locationName(props.userLocation);
+    if (!name) return;
+    setStartingLocation({
+      name,
+      place_id: props.userLocation.place_id,
+    });
   }, [props.userLocation]);
 
-  const _handleHideBlack = () => {
-    setShowCities(false);
-    setShowSearchStarting(false);
+  // Safety net only: the bootstrap always resolves (New Delhi on failure), so
+  // this fires just when it never reported at all.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (!startingLocationRef.current && !userTouchedStartRef.current) {
+        setStartingLocation(DELHI_FALLBACK);
+      }
+    }, 8000);
+    return () => clearTimeout(t);
+  }, []);
+
+  const handlePickStart = (loc) => {
+    userTouchedStartRef.current = true;
+    setStartingLocation(loc);
+    setErrors((e) => ({ ...e, startLocation: null }));
+    try {
+      Cookies.set(
+        "userLocation",
+        JSON.stringify({
+          ...(props.userLocation || {}),
+          text: loc.name,
+          city: loc.name,
+          place_id: loc.place_id,
+        }),
+        { expires: 3 },
+      );
+    } catch (e) {}
+    dispatch(
+      changeUserLocation({
+        location: {
+          ...(props.userLocation || {}),
+          text: loc.name,
+          place_id: loc.place_id,
+        },
+      }),
+    );
   };
 
-  const _submitDataHandler = () => {
-    setIsSubmitting(true);
-    completeItineraryCreate();
+  const handleClearStart = () => {
+    userTouchedStartRef.current = true;
+    setStartingLocation(null);
+  };
+
+  // ── Destinations ──────────────────────────────────────────────────────────
+  // `selectedCities` is the same list the old multi-destination form used: one
+  // entry per destination, keyed by `input_id`, with `id` null on an entry
+  // nobody has picked yet (the store starts with one of those). The picked
+  // ones, in the order they were added, are the trip's destinations — and what
+  // buildItineraryPayload sorts into cities / states / countries for /initiate.
+  const selectedCities = slideOneData.selectedCities || [];
+  const dests = selectedCities.filter((c) => c?.id);
+
+  const handlePickDest = (r) => {
+    const id = r.resource_id || r.id;
+    if (!id || dests.some((c) => c.id === id)) return;
+    // The store's empty starter entry takes the first destination; every later
+    // one gets an entry of its own, so the list stays in the order picked.
+    const emptySlot = selectedCities.find((c) => !c?.id);
+    const inputId =
+      dests.length === 0 && emptySlot?.input_id ? emptySlot.input_id : Date.now();
+    dispatch(setSelectedCities(id, inputId, { ...r, id }));
+    setErrors((e) => ({ ...e, destination1: null }));
+    setError(null);
+  };
+
+  const handleRemoveDest = (inputId) => {
+    // The last destination is emptied rather than dropped, so the list keeps
+    // the one entry the rest of the form expects to find.
+    if (dests.length <= 1) dispatch(resetSelectedCity(inputId));
+    else dispatch(deleteSelectedCity(inputId));
+  };
+
+  // ── Dates ─────────────────────────────────────────────────────────────────
+  const dateInfo = describeDate(slideOneData.date);
+  const onFixed = (s, e) => {
+    dispatch(setFixedDate(s, e));
+    setErrors((er) => ({ ...er, when: null }));
+  };
+  const onFlexible = (month, year, nights) => {
+    dispatch(setFlexibleDate(month, year, nights));
+    setErrors((er) => ({ ...er, when: null }));
+  };
+  const onAnytime = (nights) => {
+    dispatch(setAnytimeDate(nights));
+    setErrors((er) => ({ ...er, when: null }));
+  };
+  const onResetType = (type) => dispatch(setDateType(type));
+
+  useEffect(() => {
+    setErrors({ startLocation: null, destination1: null, when: null });
+  }, [slideIndex]);
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+  const goTo = (index) =>
+    router.push(
+      {
+        query: {
+          ...router.query,
+          slideIndex: index,
+        },
+      },
+      undefined,
+      { shallow: true },
+    );
+
+  const _prevSlideHandler = () => {
+    if (slideIndex) {
+      if (slideIndex == 1) {
+        setIsRouteChanged(false);
+      }
+      setIsManualNavigation(true);
+      goTo(slideIndex - 1);
+    }
+  };
+
+  const close = () => {
+    if (props?.onHide) {
+      props.onHide();
+    } else router.push("/");
   };
 
   // Funnel steps 3 & 4 — the route slide is done.
   //
-  // The "preferences" in this funnel are slide 0's experience filters, which
-  // travel to the backend in the same /initiate payload as the route. That is
-  // why they are reported here rather than at the "Stay Preferences" screen,
-  // and why the funnel lists preferences immediately after route. Stay
-  // preferences (hotel type / meals / special requests) are not a funnel stage;
-  // they ride along on itinerary_creation_completed.
+  // The funnel's "preferences" stage historically meant slide 0's experience
+  // filters, which were submitted with the route in the same /initiate
+  // payload; the dashboard's FLOW still lists it right after route. The vibe
+  // step now captures preferences later, so this stage keeps firing here (to
+  // keep the funnel monotonic) and the actual picks ride along on
+  // itinerary_creation_completed as `preferences`.
   const markRouteCompleted = (route, routeEdited) => {
     reportFormStage("itinerary_route_completed", {
       route,
@@ -290,9 +451,9 @@ const Enquiry = (props) => {
 
   // Funnel steps 6 & 7 — the sign-in gate. `outcome` records how the gate was
   // passed, because it is genuinely optional here: an already-authenticated
-  // user never sees it, the 3-slide flow never raises it, and the modal itself
-  // offers a skip. Reporting the stage on every path (with the reason) is what
-  // keeps the funnel from showing more completions than logins.
+  // user never sees it, and the modal itself offers a skip. Reporting the
+  // stage on every path (with the reason) is what keeps the funnel from
+  // showing more completions than logins.
   const markLoginStage = (stage, outcome) => {
     reportFormStage(stage, {
       outcome,
@@ -303,83 +464,33 @@ const Enquiry = (props) => {
   const hasAccessToken = () =>
     typeof window !== "undefined" && !!localStorage.getItem("access_token");
 
-  const _prevSlideHandler = () => {
-    if (slideIndex) {
-      if (slideIndex == 1) {
-        setIsRouteChanged(false);
-      }
-      setIsManualNavigation(true);
-      router.push(
-        {
-          query: {
-            ...router.query,
-            slideIndex: slideIndex - 1,
-          },
-        },
-        undefined,
-        { shallow: true },
-      );
-    }
-  };
-
-  const selectedCities = slideOneData.selectedCities;
-
-  useEffect(() => {
-    setShowPopup(popupObj);
-  }, [
-    slideOneData.date.start_date,
-    slideOneData.date.end_date,
-    startingLocation,
-    destination,
-    showSearchStarting,
-    showCities,
-    selectedCities.length,
-    slideIndex,
-  ]);
+  // ── Step submits ──────────────────────────────────────────────────────────
+  const canFindRoute = dests.length > 0 && dateInfo.ok;
 
   const _SlideOneSubmitHandler = () => {
-    if (!slideOneData.selectedCities[0].id) {
+    if (dests.length === 0) {
       setErrors({
         startLocation: null,
-        destination1: "Select a destination to proceed",
+        destination1: "Pick a destination to continue",
         when: null,
       });
       return;
     }
-    if (
-      slideOneData.date.type === "fixed" &&
-      !(slideOneData.date.start_date && slideOneData.date.end_date)
-    ) {
-      setErrors({
-        startLocation: null,
-        destination1: null,
-        when: "Select a date to proceed",
-      });
+    const d = slideOneData.date;
+    if (d.type === "fixed" && !(d.start_date && d.end_date)) {
+      setErrors({ startLocation: null, destination1: null, when: "Pick your dates to continue" });
+      return;
+    }
+    if (d.type === "flexible" && !(d.month && d.duration)) {
+      setErrors({ startLocation: null, destination1: null, when: "Pick a rough month and how long" });
+      return;
+    }
+    if (d.type === "anytime" && !d.duration) {
+      setErrors({ startLocation: null, destination1: null, when: "Tell me roughly how long" });
       return;
     }
 
-    if (
-      slideOneData.date.type === "flexible" &&
-      !(slideOneData.date.month && slideOneData.date.duration)
-    ) {
-      setErrors({
-        startLocation: null,
-        destination1: null,
-        when: "month or duration can't be empty",
-      });
-      return;
-    }
-
-    if (slideOneData.date.type === "anytime" && !slideOneData.date.duration) {
-      setErrors({
-        startLocation: null,
-        when: "duration can't be empty",
-      });
-      return;
-    }
-
-    setShowPopup(popupObj);
-    if (props.HeroBanner && isPageWide) {
+    if (props.HeroBanner && typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -387,16 +498,26 @@ const Enquiry = (props) => {
     initiateItineraryCreate(slideOneData);
   };
 
-  const _SlideThreeSubmitHandler = () => {
-    if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
-    setShowPopup(popupObj);
+  const _RouteSubmitHandler = () => {
+    if (isLoading) return;
+    if (isRouteChanged) {
+      setIsLoading(true);
+      setApiSucceeded(false);
+      setIsRecalculatingRoute(true);
+      setIsManualNavigation(false);
+      initiateItineraryCreate(slideOneData);
+      return;
+    }
+    // Route slide finished untouched.
+    markRouteCompleted(locationsLatLong, false);
+    goTo(slideIndex + 1);
+  };
+
+  const _GroupSubmitHandler = () => {
     let dist = divideTravellers(slideThreeData);
     dispatch(setRoomConfiguration(dist));
 
-    // Funnel step 4 — "Who's Going & Inclusions" is done. This used to fire
-    // from completeItineraryCreate, i.e. one step too late and after the
-    // preferences event, which is why the dashboard showed more preferences
-    // than inclusions.
+    // Funnel step 5 — "Who's going & inclusions" is done.
     reportFormStage("itinerary_inclusions_completed", {
       inclusions: {
         add_flights: slideThreeData.addFlights,
@@ -409,32 +530,20 @@ const Enquiry = (props) => {
       number_of_infants: slideThreeData.numberOfInfants,
     });
 
-    // This is now the final slide — raise the sign-in gate before completing.
+    goTo(slideIndex + 1);
+  };
+
+  const _VibeSubmitHandler = () => {
+    if (isSubmitting) return;
+    // Final slide — raise the sign-in gate before completing.
     if (!hasAccessToken()) {
       markLoginStage("user_login_initiated", "gate_shown");
       setShowLoginForm(true);
     } else {
       markLoginStage("user_login_initiated", "already_authenticated");
       markLoginStage("user_login_completed", "already_authenticated");
-      _submitDataHandler();
-    }
-  };
-
-  const _slideTwoSkip = () => {
-    try {
-      router.push(
-        {
-          // pathname: "/new-trip",
-          query: {
-            ...router.query,
-            slideIndex: slideIndex + 1,
-          },
-        },
-        undefined,
-        { shallow: true },
-      );
-    } catch (error) {
-      console.log("new slide index is: ", error);
+      setIsSubmitting(true);
+      completeItineraryCreate();
     }
   };
 
@@ -564,7 +673,6 @@ const Enquiry = (props) => {
       setApiSucceeded(false);
       hasCompletedRef.current = false;
 
-      // setLoadingItineraryId(null);
       const res = await itineraryInitiate.post("", data, {
         headers: {
           ...(token && { Authorization: `Bearer ${token}` }),
@@ -580,7 +688,7 @@ const Enquiry = (props) => {
 
       const newItineraryId = resData?.itinerary_id ?? null;
 
-      if(resData){
+      if (resData) {
         setApiSucceeded(true);
       }
 
@@ -596,17 +704,13 @@ const Enquiry = (props) => {
       // render's value at this point and was null on the very first initiate.
       //
       // Only the route slide's own recalculate counts as completing the route
-      // step; a plain initiate from slide 0 does not. Firing
-      // itinerary_route_completed here on every initiate is what inflated that
-      // step above the ones after it.
+      // step; a plain initiate from slide 0 does not.
       reportFormStage("itinerary_initiate_completed", {
         route: routeToTrack || resData.basic_route || null,
         duration: totalDuration,
       });
       setItineraryId(newItineraryId);
       setLoadingItineraryId(newItineraryId);
-
-      setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
 
       setLocationsLatLong(resData.basic_route || []);
 
@@ -626,19 +730,10 @@ const Enquiry = (props) => {
       if (isRecalculating) {
         // The user edited the route on slide 1 and this recalculate is what
         // advances them off it, so the route step is done. (The unedited path
-        // fires the same stages from the slide-1 Continue button below.)
+        // fires the same stages from the slide-1 Continue button.)
         markRouteCompleted(routeToTrack || resData.basic_route || null, true);
 
-        router.push(
-          {
-            query: {
-              ...router.query,
-              slideIndex: slideIndex + 1,
-            },
-          },
-          undefined,
-          { shallow: true },
-        );
+        goTo(slideIndex + 1);
 
         setTimeout(() => {
           setIsLoading(false);
@@ -658,16 +753,13 @@ const Enquiry = (props) => {
       setIsLoading(false);
       setIsRecalculatingRoute(false);
     }
-    // finally {
-    //   setIsLoading(false);
-    // }
   };
 
   const completeItineraryCreate = () => {
     const platform = getPlatform();
 
-    // Prevent double / re-entrant completion (multiple entry points: slide 3
-    // button, login onSuccess/onSkipLogin, Flickity).
+    // Prevent double / re-entrant completion (multiple entry points: vibe
+    // step button, login onSuccess / onSkipLogin).
     if (hasCompletedRef.current) {
       return;
     }
@@ -686,20 +778,25 @@ const Enquiry = (props) => {
       );
       setIsSubmitting(false);
       setIsLoading(false);
-
-      router.push(
-        {
-          // pathname: "/new-trip",
-          query: { ...router.query, slideIndex: 0 },
-        },
-        undefined,
-        { shallow: true },
-      );
+      goTo(0);
       return;
     }
 
+    // Everything the reader told us on the vibe step goes to the backend as
+    // `preferences`: the chips they tapped, plus whatever they typed into
+    // "Anything else? I read it all" as one more string on the end.
+    //
+    // The note used to travel as `special_request`, which split one answer
+    // across two fields — the chips said "temple mornings" under preferences
+    // while "we're vegetarian" sat somewhere else. They are the same
+    // instruction to the planner, so they arrive together.
+    const vibeChips = Array.isArray(slideFourData?.vibePreferences)
+      ? slideFourData.vibePreferences.filter(Boolean)
+      : [];
+    const vibeNote = (slideFourData?.specialRequests || "").trim();
+    const vibePreferences = vibeNote ? [...vibeChips, vibeNote] : vibeChips;
+
     const data = {
-      // source,
       itinerary_id: finalItineraryId,
       group_type: slideThreeData.groupType || "Solo",
       number_of_adults: slideThreeData.numberOfAdults,
@@ -710,7 +807,12 @@ const Enquiry = (props) => {
       add_hotels: slideThreeData.addHotels,
       add_transfers_and_activities: slideThreeData.addInclusions,
       meal_preferences: slideFourData.mealPreferences,
-      special_request: slideFourData.specialRequests,
+      // Kept as an empty string rather than dropped: every caller of this
+      // endpoint has always sent the key (see OldForm), and the note it used to
+      // carry now rides in `preferences`.
+      special_request: "",
+      // Chips + the typed note. Only sent when there is something to send.
+      ...(vibePreferences.length > 0 && { preferences: vibePreferences }),
     };
 
     hasCompletedRef.current = true;
@@ -725,9 +827,8 @@ const Enquiry = (props) => {
           ...(token && { Authorization: `Bearer ${token}` }),
         },
       })
-      .then((response) => {
+      .then(() => {
         setError(null);
-        setSubmitted(true);
         // Funnel step 8 — /complete succeeded. `latestItineraryIdRef` is what
         // reportFormStage stamps events with, so make sure it holds the id we
         // actually completed against before reporting.
@@ -735,12 +836,13 @@ const Enquiry = (props) => {
         reportFormStage("itinerary_creation_completed", {
           platform,
           currency: currency?.currency || "INR",
-          // Stay preferences aren't a funnel stage of their own (the funnel's
-          // "preferences" are slide 0's experience filters), so carry them here
-          // rather than dropping them.
+          // What was actually sent, note included.
+          preferences: vibePreferences,
           hotel_types: slideFourData?.hotelType ?? null,
           meal_preferences: slideFourData?.mealPreferences ?? null,
-          special_request: slideFourData?.specialRequests ?? null,
+          // The note on its own as well, so the existing dashboard field keeps
+          // reporting what the reader typed.
+          special_request: vibeNote || null,
           // Terminal funnel event and the next line navigates away — get it out
           // of the batch queue now rather than relying on the pagehide drain.
           immediate: true,
@@ -770,9 +872,7 @@ const Enquiry = (props) => {
 
         // Fire analytics best-effort — navigation is NOT gated on them. The
         // route change to /chat is a client-side navigation (no page unload),
-        // so the gtag/dataLayer beacons still send. Gating navigation on
-        // gtag's event_callback previously left users stranded on the
-        // dashboard whenever the callback never fired.
+        // so the gtag/dataLayer beacons still send.
         // Only count the Google Ads conversion for new users. `is_new_user` is
         // persisted at signup (store/actions/auth.js) because the redux flag is
         // cleared by AUTH_SUCCESS before we reach itinerary completion. Consume
@@ -785,7 +885,6 @@ const Enquiry = (props) => {
 
         try {
           if (isNewUser && typeof window.gtag === "function") {
-            
             window.gtag("event", "conversion", {
               send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
               transaction_id: finalItineraryId,
@@ -832,53 +931,6 @@ const Enquiry = (props) => {
       });
   };
 
-  // Guard against SSR/prerender where localStorage is undefined. Runs in the
-  // render body (unlike the other localStorage reads, which are in handlers/
-  // effects), so it must be safe when window is absent.
-  const isLoggedIn =
-    typeof window !== "undefined" && !!localStorage.getItem("access_token");
-  const totalSlides = 3;
-
-  const [steps, setSteps] = useState([
-    "Introduction",
-    "Customize Route",
-    "Who’s Going & Inclusions",
-  ]);
-
-  useEffect(() => {
-    if (slideOneData) {
-      const hasDestination =
-        Array.isArray(slideOneData.selectedCities) &&
-        slideOneData.selectedCities.length > 0;
-
-      let duration = null;
-
-      if (
-        slideOneData?.date?.type === "fixed" &&
-        slideOneData?.date?.start_date &&
-        slideOneData?.date?.end_date
-      ) {
-        const start = new Date(slideOneData.date.start_date);
-        const end = new Date(slideOneData.date.end_date);
-        duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-      } else if (
-        slideOneData?.date?.type === "flexible" ||
-        slideOneData?.date?.type === "anytime"
-      ) {
-        duration = slideOneData.date.duration;
-      }
-
-      if (hasDestination && duration) {
-        const cityName = slideOneData.selectedCities[0]?.name;
-        const stepTitle = `Introduction: ${duration} Days, ${cityName}`;
-
-        setSteps((prev) =>
-          prev.map((title, index) => (index === 0 ? stepTitle : title)),
-        );
-      }
-    }
-  }, [slideOneData]);
-
   const handleLoadingComplete = () => {
     const MINIMUM_LOADING_TIME = 2000;
 
@@ -891,18 +943,7 @@ const Enquiry = (props) => {
         currentSlideIndex === 0 &&
         !isRecalculatingRoute
       ) {
-        const nextSlideIndex = currentSlideIndex + 1;
-
-        router.push(
-          {
-            query: {
-              ...router.query,
-              slideIndex: nextSlideIndex,
-            },
-          },
-          undefined,
-          { shallow: true },
-        );
+        goTo(currentSlideIndex + 1);
 
         setTimeout(() => {
           setIsLoading(false);
@@ -925,483 +966,266 @@ const Enquiry = (props) => {
     setApiSucceeded(false);
   };
 
-  if (isLoading && slideIndex === 0 && !isRecalculatingRoute) {
-    return (
-      <div className="container">
-        <div className="py-2xl">
-          <div className="text-md-lg font-600 leading-xl-sm mb-md">
-            Plan Your Trip
-          </div>
-          <StepsProgress
-            slideIndex={slideIndex}
-            totalSlides={totalSlides}
-            steps={steps}
-          />
-        </div>
+  // ── Derived copy ──────────────────────────────────────────────────────────
+  const fetching = isLoading && slideIndex === 0 && !isRecalculatingRoute;
+  const fromName = startingLocation?.name || "";
+  const destName = joinNames(dests.map((c) => c.name).filter(Boolean));
+  const startName = itineraryInititateData?.start_city?.name || fromName;
+  const firstCity = locationsLatLong.length ? cityName(locationsLatLong[0]) : "";
+  const travSummary = travellerSummary(slideThreeData);
+  const isUnsure = slideOneData.date?.type === "anytime";
+  const monthPhrase = dateInfo.monthPhrase || "season";
 
-        <RoutePreparationLoader
-          itineraryId={loadingItineraryId}
-          onComplete={handleLoadingComplete}
-          onError={handleLoadingError}
-          handleCompletion={handleLoadingComplete}
-          apiSucceeded={apiSucceeded}
-        />
+  const kairaLine = fetching
+    ? `Hold on, I'm reading ${destName || "your trip"} for you…`
+    : slideIndex === 0
+      ? "Hi, I'm Kaira, your travel agent. Tell me where and when, I'll do the rest."
+      : slideIndex === 1
+        ? "Here's the route I'd run. Trade nights, drag cities, make it yours."
+        : slideIndex === 2
+          ? "Who am I planning for? I'll size rooms and seats to match."
+          : "Last one. Tell me the vibe and I'll build the days around it.";
+
+  const headerSummary = `${fromName || "…"} → ${destName || "…"} · ${
+    dateInfo.header || "dates tbd"
+  } · ${travSummary}`;
+
+  const readNote = isUnsure
+    ? `Next I'll read ${destName || "your destination"} across the year and suggest when to go. The route and vibe ideas follow from that.`
+    : `Next I'll read the ${destName || "destination"} and dates you select. The route and vibe suggestions come from what's actually on in ${monthPhrase}.`;
+
+  const fetchLabels = [
+    `Searching ${destName || "your destination"} · ${dateInfo.header || "your best window"}`,
+    `Drafting your route`,
+    isUnsure ? "Picking the best window to go" : `Picking what ${monthPhrase} is good for`,
+  ];
+
+  const st = slideIndex + 1;
+  const segClass = (i) => {
+    if (st >= i && !(i === st && fetching)) return "kform-seg is-done";
+    if (fetching && i === st + 1) return "kform-seg is-next";
+    return "kform-seg";
+  };
+  const segLabelClass = (i) =>
+    st === i && !fetching
+      ? "kform-seg-label is-current"
+      : st > i
+        ? "kform-seg-label is-past"
+        : "kform-seg-label";
+
+  const ctaLabel =
+    slideIndex === 0
+      ? "Find my route"
+      : slideIndex === 3
+        ? "Get my itinerary"
+        : "Continue";
+  const ctaDisabled =
+    (slideIndex === 0 && !canFindRoute) || isSubmitting || (isLoading && slideIndex !== 0);
+  const ctaBusy = isSubmitting || (isLoading && slideIndex === 1);
+  const onCta = () => {
+    if (slideIndex === 0) return _SlideOneSubmitHandler();
+    if (slideIndex === 1) return _RouteSubmitHandler();
+    if (slideIndex === 2) return _GroupSubmitHandler();
+    return _VibeSubmitHandler();
+  };
+
+  const destNamesForChips = Array.from(
+    new Set(
+      [
+        ...selectedCities.filter((c) => c?.id).map((c) => c.name),
+        ...locationsLatLong.map((c) => cityName(c)),
+      ].filter(Boolean),
+    ),
+  );
+
+  const embedded = !!(props.tailoredFormModal || props.HeroBanner);
+
+  const card = (
+    <div className={`kform-card${embedded ? " kform-card--embedded" : ""}`}>
+      {/* header */}
+      <div className="kform-head">
+        <div className="kform-avatar">
+          <img src="/KairaInsta.png" alt="Kaira" />
+          <span className="kform-online" />
+        </div>
+        <div className="kform-head-text">
+          <div className="kform-title">
+            Plan your trip <span className="kform-serif">with Kaira</span>
+          </div>
+          <div className="kform-kline">{kairaLine}</div>
+        </div>
+        <div className="kform-summary" title={headerSummary}>
+          {headerSummary}
+        </div>
+        <button type="button" className="kform-iconbtn" onClick={close} aria-label="close">
+          <IconX size={15} />
+        </button>
       </div>
-    );
-  }
+
+      {/* progress */}
+      <div className="kform-progress">
+        {STEP_NAMES.map((name, i) => (
+          <div className="kform-progress-item" key={name}>
+            <div className={segClass(i + 1)} />
+            <div className={segLabelClass(i + 1)}>
+              0{i + 1} · {name}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="kform-crumb">
+        {fetching
+          ? "Reading your destination…"
+          : `Step ${st} of ${TOTAL_STEPS} · ${STEP_NAMES[slideIndex] || ""}`}
+      </div>
+
+      {/* body */}
+      <div className="kform-body">
+        {fetching ? (
+          <RoutePreparationLoader
+            itineraryId={loadingItineraryId}
+            onComplete={handleLoadingComplete}
+            onError={handleLoadingError}
+            handleCompletion={handleLoadingComplete}
+            apiSucceeded={apiSucceeded}
+            destName={destName}
+            monthPhrase={monthPhrase}
+            fetchLabels={fetchLabels}
+          />
+        ) : slideIndex === 0 ? (
+          <StepTrip
+            key="trip"
+            startingLocation={startingLocation}
+            onPickStart={handlePickStart}
+            onClearStart={handleClearStart}
+            dests={dests}
+            onPickDest={handlePickDest}
+            onRemoveDest={handleRemoveDest}
+            date={slideOneData.date}
+            dateInfo={dateInfo}
+            onFixed={onFixed}
+            onFlexible={onFlexible}
+            onAnytime={onAnytime}
+            onResetType={onResetType}
+            errors={errors}
+            readNote={readNote}
+          />
+        ) : slideIndex === 1 ? (
+          <StepRoute
+            key="route"
+            startName={startName}
+            cities={locationsLatLong}
+            setCities={setLocationsLatLong}
+            setIsRouteChanged={setIsRouteChanged}
+          />
+        ) : slideIndex === 2 ? (
+          <StepGroup key="group" fromName={fromName} firstCity={firstCity} />
+        ) : (
+          <StepVibe
+            key="vibe"
+            destNames={destNamesForChips}
+            destName={destName}
+            startDate={dateInfo.startYMD || null}
+            groupType={slideThreeData.groupType}
+            dateShort={dateInfo.short}
+          />
+        )}
+      </div>
+
+      {/* footer */}
+      <div className="kform-foot">
+        {error ? <div className="kform-error">{error}</div> : null}
+        <div className="kform-foot-row">
+          {!fetching ? (
+            <div className="kform-trust">
+              {TRUST.map((t) => (
+                <div className="kform-trust-item" key={t.label}>
+                  <img src={t.icon} alt="" aria-hidden="true" />
+                  {t.label}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="kform-foot-spacer" />
+          )}
+          {fetching ? (
+            <div className="kform-foot-note"></div>
+          ) : (
+            <>
+              {slideIndex > 0 && (
+                <>
+                  <button
+                    type="button"
+                    className="kform-back kform-back--text"
+                    onClick={_prevSlideHandler}
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    className="kform-back kform-back--icon"
+                    onClick={_prevSlideHandler}
+                    aria-label="back"
+                  >
+                    <IconArrowLeft />
+                  </button>
+                </>
+              )}
+              <button
+                type="button"
+                className={`kform-cta${ctaDisabled ? " is-disabled" : ""}`}
+                onClick={onCta}
+                disabled={ctaDisabled}
+              >
+                {ctaLabel}
+                {ctaBusy ? <span className="kform-spin" /> : <IconArrowRight />}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <>
-      <div className="container">
-        <div className="py-2xl">
-          <div className="text-md-lg font-600 leading-xl-sm mb-md">
-            <div className="flex justify-between">
-            <span>
-            Plan Your Trip
-            </span>
-            <FaX className="cursor-pointer" onClick={() => {
-                    if (props?.onHide) {
-                      props.onHide();
-                    } else router.push("/");
-                  }}/>
-            </div>
-          </div>
-          <StepsProgress
-            slideIndex={slideIndex}
-            totalSlides={totalSlides}
-            steps={steps}
-          ></StepsProgress>
-        </div>
-        {/*       
-              <div className=" ">
-                <svg width="64" height="64" viewBox="0 0 64 64">
-                  <circle
-                    cx="32"
-                    cy="32"
-                    r={radius}
-                    fill="none"
-                    stroke="#F0F0F0"
-                    strokeWidth="6"
-                  />
-                  <circle
-                    cx="32"
-                    cy="32"
-                    r={radius}
-                    fill="none"
-                    stroke="#5CBA66"
-                    strokeWidth="6"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={circumference - progress}
-                    strokeLinecap="round"
-                    transform="rotate(-90 32 32)"
-                  />
-                  <text
-                    x="32"
-                    y="32"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fill="black"
-                  >
-                    <tspan fontSize="16" fontWeight="500">
-                      {slideIndex + 1}
-                    </tspan>
-                    <tspan fontSize="16" fontWeight="500" dy={"1"}>
-                      /
-                    </tspan>
-                    <tspan fontSize="12" fontWeight="400" dy="2">
-                      {totalSlides}
-                    </tspan>
-                  </text>
-                </svg>
-              </div> */}
+    // Embedded, this root sits between the host modal and the card. It has to
+    // carry the host's height through, or the card's own `height: 100%`
+    // resolves against an auto-height parent, falls back to its content, and
+    // overflows the sheet — taking the footer's Continue button off screen.
+    <div className={`kform${embedded ? " kform--embedded" : ""}`}>
+      {embedded ? card : <div className="kform-backdrop">{card}</div>}
 
-        <div className="h-[calc(100vh-300px)] max-sm:h-[calc(100vh-100px)] overflow-y-auto no-scrollbar">
-          {!props.tailoredFormModal ? (
-            <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
-          ) : null}
-
-          <Container
-            tailoredFormModal={props.tailoredFormModal}
-            slideIndex={slideIndex}
-          >
-            {showPopup.InputOne && (
-              <Popup
-                setShowPopup={setShowPopup}
-                top={props.tailoredFormModal ? "17rem" : "12.6rem"}
-                mobileTop="14rem"
-                left="10px"
-                text="Please select your destination!"
-              />
-            )}
-
-            {showPopup.dateStart && (
-              <Popup
-                setShowPopup={setShowPopup}
-                bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
-                left="10px"
-                text="Please select starting date!"
-              />
-            )}
-
-            {showPopup.dateEnd && (
-              <Popup
-                setShowPopup={setShowPopup}
-                bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
-                left="170px"
-                mobileleft={"135px"}
-                text="Please select ending date!"
-              />
-            )}
-
-            <div className="flex flex-col items-center justify-center  h-full">
-              <div className="h-max  font-inter flex flex-col gap-[30px] w-100">
-                <div className="flex flex-col gap-[24px]">
-                  {/* {slideIndex && !isDesktop ? (
-              <div>
-                <BiArrowBack
-                  onClick={_prevSlideHandler}
-                  className="hover-pointer"
-                  style={{ marginTop: "2px", fontSize: "1.5rem" }}
-                ></BiArrowBack>
-              </div>
-            ) : (
-              <></>
-            )} */}
-                  <div className={`w-full flex items-center justify-center`}>
-                    {/* {isDesktop && (
-                <div
-                  style={{
-                    padding: props.tailoredFormModal
-                      ? "0rem 1rem"
-                      : "0.5rem 1rem",
-                    marginBottom: slideIndex === 2 ? "0rem" : "0rem",
-                  }}
-                  className="w-max flex flex-row items-center"
-                >
-                  {slideIndex ? (
-                    <div className="center-div">
-                      <BiArrowBack
-                        onClick={_prevSlideHandler}
-                        className="hover-pointer"
-                        style={{ marginTop: "2px", fontSize: "1.5rem" }}
-                      ></BiArrowBack>
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-                </div>
-              )} */}
-                    <div>
-                      {headings[slideIndex] && (
-                        <h1 className="text-xl-md font-600 leading-2xl-md max-pg:text-xl max-ph:text-center mb-zero">
-                          {headings[slideIndex]}
-                        </h1>
-                      )}
-                    </div>
-                    {/* 
-              <div className=" ">
-                <svg width="64" height="64" viewBox="0 0 64 64">
-                  <circle
-                    cx="32"
-                    cy="32"
-                    r={radius}
-                    fill="none"
-                    stroke="#F0F0F0"
-                    strokeWidth="6"
-                  />
-                  <circle
-                    cx="32"
-                    cy="32"
-                    r={radius}
-                    fill="none"
-                    stroke="#5CBA66"
-                    strokeWidth="6"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={circumference - progress}
-                    strokeLinecap="round"
-                    transform="rotate(-90 32 32)"
-                  />
-                  <text
-                    x="32"
-                    y="32"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fill="black"
-                  >
-                    <tspan fontSize="16" fontWeight="500">
-                      {slideIndex + 1}
-                    </tspan>
-                    <tspan fontSize="16" fontWeight="500" dy={"1"}>
-                      /
-                    </tspan>
-                    <tspan fontSize="12" fontWeight="400" dy="2">
-                      {totalSlides}
-                    </tspan>
-                  </text>
-                </svg>
-              </div> */}
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center">
-                  <div id="login" className="z-[1650]">
-                    <BotLoginModal
-                      show={showLoginForm}
-                      onhide={onHide}
-                      zIndex={"3300"}
-                      onSuccess={() => {
-                        markLoginStage("user_login_completed", "logged_in");
-                        // Close the login modal explicitly on success. Its
-                        // visibility is driven by local `showLoginForm`, so
-                        // relying on the subsequent /chat navigation to unmount
-                        // it leaves the modal stuck open whenever completion is
-                        // slow, errors, or has no itinerary id to navigate to.
-                        onHide();
-                        completeItineraryCreate();
-                      }}
-                      isTailored={true}
-                      onSkipLogin={() => {
-                        // skip_login_completed is the branch metric; the funnel
-                        // stage still has to fire (with the reason) or every
-                        // skipper would look like a drop-off that then somehow
-                        // reaches itinerary_creation_completed.
-                        trackSkipLoginCompleted({
-                          itinerary_id: latestItineraryIdRef.current || null,
-                          surface: "tailored_form",
-                        });
-                        markLoginStage("user_login_completed", "skipped");
-                        onHide();
-                        completeItineraryCreate();
-                      }}
-                      message={"Welcome to The Tarzan Way!"}
-                    />
-                  </div>
-                  <div
-                    className={`${
-                      slideIndex == 1
-                        ? "w-[100%]"
-                        : isDesktop
-                          ? `max-w-[600px] ${slideIndex == 0 ? (error ? "pb-[50px]" : "pb-[5px]") : ""}`
-                          : `w-full ${slideIndex == 0 ? (error ? "pb-[40px]" : "pb-[85px]") : ""}`
-                    }`}
-                  >
-                    <Flickity
-                      initialInputId={initialInputId}
-                      tailoredFormModal={props.tailoredFormModal}
-                      startingLocation={startingLocation}
-                      setStartingLocation={setStartingLocation}
-                      showSearchStarting={showSearchStarting}
-                      setShowSearchStarting={setShowSearchStarting}
-                      showCities={showCities}
-                      setShowCities={setShowCities}
-                      destination={destination}
-                      setDestination={setDestination}
-                      cities={props.cities}
-                      selectedCities={selectedCities}
-                      setSubmitSecondSlide={setSubmitSecondSlide}
-                      eventDates={props.eventDates}
-                      route={
-                        itineraryInititateData?.start_city
-                          ? [
-                              itineraryInititateData?.start_city,
-                              ...locationsLatLong,
-                              itineraryInititateData?.end_city,
-                            ]
-                          : route
-                      }
-                      _submitDataHandler={_submitDataHandler}
-                      setLocationsLatLong={setLocationsLatLong}
-                      locationsLatLong={
-                        locationsLatLong?.length > 0 ? locationsLatLong : route
-                      }
-                      errors={errors}
-                      completeItineraryCreate={completeItineraryCreate}
-                      setIsRouteChanged={setIsRouteChanged}
-                      isloading={isLoading}
-                    ></Flickity>
-                    {isDesktop ? (
-                      <ModalWithBackdrop
-                        centered
-                        show={showRouteOverview == true}
-                        mobileWidth="100%"
-                        backdrop
-                        closeIcon={true}
-                        onHide={() => setShowRouteOverview(false)}
-                        borderRadius={"12px"}
-                        animation={false}
-                        backdropStyle={{
-                          backgroundColor: "rgba(0,0,0,0.4)",
-                          backdropFilter: "blur(1px)",
-                        }} // <- add this
-                        paddingX="20px"
-                        paddingY="20px"
-                      >
-                        <RouteOverviewModal
-                          setShowRouteOverview={setShowRouteOverview}
-                        />
-                      </ModalWithBackdrop>
-                    ) : (
-                      <BottomModal
-                        show={showRouteOverview == true}
-                        onHide={() => setShowRouteOverview(false)}
-                        width="100%"
-                        height="max-content"
-                        paddingX="20px"
-                        paddingY="20px"
-                      >
-                        <RouteOverviewModal
-                          setShowRouteOverview={setShowRouteOverview}
-                        />
-                      </BottomModal>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Container>
-        </div>
-      </div>
-
-      <div className="fixed bottom-[70px] max-sm:bottom-0 w-100 bg-primary-cornsilk z-[22]">
-        {/* <div className="border-b-sm"></div> */}
-        <div className="container p-md">
-          {error ? (
-            <p className="text-sm text-red-600 text-center">{error}</p>
-          ) : null}
-          {slideIndex === 0 && (
-            <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
-              <div className="flex justify-between">
-                <button
-                  className={`LargeIndigoOutlinedButton `}
-                  onClick={() => {
-                    if (props?.onHide) {
-                      props.onHide();
-                    } else router.push("/");
-                  }}
-                >
-                  Cancel
-                </button>
-
-                <Button
-                  width={`${isPageWide ? "300px" : "50%"}`}
-                  fontSize="1rem"
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  borderRadius="8px"
-                  borderWidth="1px"
-                  bgColor="#07213A"
-                  onclick={_SlideOneSubmitHandler}
-                  loading={isLoading}
-                  disabled={isLoading}
-                  height="50px"
-                  color="white"
-                  className="whitespace-nowrap"
-                >
-                  Continue
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {slideIndex === 1 && (
-            <div
-              className={` bg-primary-cornsilk z-[15] flex justify-between w-full
-    ${!isDesktop && "flex items-center justify-between gap-2"}
-  `}
-            >
-              <button
-                className={`LargeIndigoOutlinedButton `}
-                onClick={_prevSlideHandler}
-                // disabled={isLoading}
-              >
-                Back
-              </button>
-
-              {isRouteChanged ? (
-                <Button
-                  width={`${isPageWide ? "300px" : "50%"}`}
-                  fontSize="1rem"
-                  padding="0.5rem 1rem"
-                  fontWeight="500"
-                  bgColor="#07213A"
-                  borderRadius="8px"
-                  color="white"
-                  height="50px"
-                  loading={isLoading}
-                  disabled={isLoading}
-                  onclick={() => {
-                    setIsLoading(true);
-                    setApiSucceeded(false);
-                    setIsRecalculatingRoute(true);
-                    setIsManualNavigation(false);
-                    initiateItineraryCreate(slideOneData);
-                  }}
-                >
-                  Continue
-                </Button>
-              ) : (
-                <button
-                  className={`LargeIndigoButton w-[50%] ${
-                    isDesktop && "w-[300px]"
-                  } `}
-                  style={{
-                    width: isPageWide ? "300px" : "50%",
-                  }}
-                  disabled={isLoading}
-                  onClick={() => {
-                    if (!isLoading) {
-                      // Route slide finished untouched.
-                      markRouteCompleted(locationsLatLong, false);
-                      router.push(
-                        {
-                          query: {
-                            ...router.query,
-                            slideIndex: slideIndex + 1,
-                          },
-                        },
-                        undefined,
-                        { shallow: true },
-                      );
-                    }
-                  }}
-                >
-                  Continue
-                </button>
-              )}
-            </div>
-          )}
-
-          {slideIndex === 2 && (
-            <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
-              <div className="flex justify-between items-center">
-                <button
-                  className={`LargeIndigoOutlinedButton`}
-                  onClick={_prevSlideHandler}
-                >
-                  Back
-                </button>
-
-                <Button
-                  width={`${isPageWide ? "300px" : "50%"}`}
-                  fontSize="1rem"
-                  padding="0.5rem 1rem"
-                  fontWeight="500"
-                  bgColor="#07213A"
-                  color="white"
-                  height="50px"
-                  onclick={_SlideThreeSubmitHandler}
-                  loading={isLoading}
-                  borderRadius="8px"
-                  className="whitespace-nowrap"
-                >
-                  Get Itinerary!
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </>
+      <BotLoginModal
+        show={showLoginForm}
+        onhide={onHide}
+        zIndex={"3300"}
+        onSuccess={() => {
+          markLoginStage("user_login_completed", "logged_in");
+          // Close the login modal explicitly on success. Its visibility is
+          // driven by local `showLoginForm`, so relying on the subsequent /chat
+          // navigation to unmount it leaves the modal stuck open whenever
+          // completion is slow, errors, or has no itinerary id to navigate to.
+          onHide();
+          setIsSubmitting(true);
+          completeItineraryCreate();
+        }}
+        isTailored={true}
+        onSkipLogin={() => {
+          // skip_login_completed is the branch metric; the funnel stage still
+          // has to fire (with the reason) or every skipper would look like a
+          // drop-off that then somehow reaches itinerary_creation_completed.
+          trackSkipLoginCompleted({
+            itinerary_id: latestItineraryIdRef.current || null,
+            surface: "tailored_form",
+          });
+          markLoginStage("user_login_completed", "skipped");
+          onHide();
+          setIsSubmitting(true);
+          completeItineraryCreate();
+        }}
+        message={"Welcome to The Tarzan Way!"}
+      />
+    </div>
   );
 };
 

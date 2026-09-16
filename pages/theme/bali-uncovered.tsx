@@ -1,5 +1,6 @@
 // pages/theme/bali-uncovered.tsx
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import { useEffect } from "react";
 import { connect } from "react-redux";
 import Head from "next/head";
@@ -263,16 +264,16 @@ const BaliUncoveredThemePage = ({
       <Head>
         <title>{"Bali Trip Packages & Honeymoon Itineraries for Indian Travellers | The Tarzan Way"}</title>
         <meta name="description" content={"Plan your Bali trip with The Tarzan Way's AI itinerary - Ubud, Seminyak, Uluwatu and Nusa Penida. Honeymoon villas, beaches, budgets in ₹, and a custom day-by-day plan for Indian travellers."} />
-        <link rel="canonical" href="https://thetarzanway.com/theme/bali-uncovered" />
+        <link rel="canonical" href={`${SITE_ORIGIN}/theme/bali-uncovered`} />
         <meta property="og:title" content={"Bali Trip Packages & Honeymoon Itineraries for Indian Travellers | The Tarzan Way"} />
         <meta property="og:description" content={"Plan your Bali trip with The Tarzan Way's AI itinerary - Ubud, Seminyak, Uluwatu and Nusa Penida. Honeymoon villas, beaches, budgets in ₹, and a custom day-by-day plan for Indian travellers."} />
-        <meta property="og:url" content="https://thetarzanway.com/theme/bali-uncovered" />
+        <meta property="og:url" content={`${SITE_ORIGIN}/theme/bali-uncovered`} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+        <meta name="twitter:image" content={`${SITE_ORIGIN}/og-image.png`} />
       </Head>
       <BotApp themeConfig={baliThemeConfig} />
     </>

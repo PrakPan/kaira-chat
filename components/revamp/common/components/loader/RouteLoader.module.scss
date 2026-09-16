@@ -1,0 +1,176 @@
+/* Between-pages loader — see RouteLoader.jsx.
+   Only in the DOM while a navigation is in flight.
+
+   Palette is hard-coded rather than taken from `--ttw-*`: those custom
+   properties are declared on `.destinationPage` / `.ttwRevamp` wrappers, and
+   this overlay renders above the whole app from _app.js, outside all of them. */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  /* Above every drawer, sheet and sticky header in the app (the highest
+     z-index in styles/ is 3400). */
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #fafaf5;
+  animation: ttwRouteLoaderIn 0.18s ease-out both;
+}
+
+.overlayLeaving {
+  animation: ttwRouteLoaderOut 0.26s ease-in both;
+}
+
+@keyframes ttwRouteLoaderIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ttwRouteLoaderOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+/* ---------- Brand mark ---------- */
+
+.markWrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+/* Yellow halo breathing out from behind the disc. */
+.pulse {
+  position: absolute;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: #f7e700;
+  opacity: 0.25;
+  animation: ttwRouteLoaderPulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes ttwRouteLoaderPulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.3;
+  }
+  70% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+.mark {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(15, 26, 46, 0.1);
+}
+
+.mark img {
+  width: 40px;
+  height: 40px;
+  display: block;
+}
+
+/* ---------- Copy ---------- */
+
+.copy {
+  max-width: 320px;
+}
+
+.title {
+  margin: 0;
+  font-family: "Inter", -apple-system, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: #0f1a2e;
+}
+
+/* Matches the `.serif` accent used across the revamp pages. */
+.serif {
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  font-family: "Inter", -apple-system, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #445069;
+}
+
+/* ---------- Sweep bar ---------- */
+
+.track {
+  width: 192px;
+  max-width: 60vw;
+  height: 3px;
+  border-radius: 999px;
+  background: #f0efe4;
+  overflow: hidden;
+}
+
+.sweep {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f7e700 0%, #0f1a2e 100%);
+  animation: ttwRouteLoaderSweep 1.6s ease-in-out infinite;
+}
+
+@keyframes ttwRouteLoaderSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .overlayLeaving,
+  .pulse,
+  .sweep {
+    animation: none;
+  }
+  .pulse {
+    opacity: 0.2;
+  }
+}

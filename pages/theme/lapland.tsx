@@ -6,6 +6,7 @@
 // to their country pages. The page is wrapped in the shared site Layout so it
 // keeps the standard header + footer.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
@@ -659,15 +660,15 @@ const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) =>
           property="og:description"
           content="Plan a magical Lapland winter trip with The Tarzan Way's AI itinerary - northern lights, Santa's village in Rovaniemi, husky safaris, glass igloos and the best time to go for aurora and Christmas."
         />
-        <link rel="canonical" href="https://thetarzanway.com/theme/lapland" />
+        <link rel="canonical" href={`${SITE_ORIGIN}/theme/lapland`} />
         <meta
           property="og:url"
-          content="https://thetarzanway.com/theme/lapland"
+          content={`${SITE_ORIGIN}/theme/lapland`}
         />
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="https://thetarzanway.com/og-image.png"
+          content={`${SITE_ORIGIN}/og-image.png`}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <script
@@ -681,12 +682,12 @@ const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) =>
                   name: "Lapland Trip Planner - Northern Lights, Santa & Aurora",
                   description:
                     "Plan a magical Lapland winter trip with The Tarzan Way's AI itinerary - northern lights, Santa's village in Rovaniemi, husky safaris, glass igloos and the best time to go for aurora and Christmas.",
-                  url: "https://thetarzanway.com/theme/lapland",
-                  image: "https://thetarzanway.com/og-image.png",
+                  url: `${SITE_ORIGIN}/theme/lapland`,
+                  image: `${SITE_ORIGIN}/og-image.png`,
                   provider: {
                     "@type": "TravelAgency",
                     name: "The Tarzan Way",
-                    url: "https://thetarzanway.com",
+                    url: SITE_ORIGIN,
                   },
                 },
                 {
@@ -696,13 +697,13 @@ const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) =>
                       "@type": "ListItem",
                       position: 1,
                       name: "Home",
-                      item: "https://thetarzanway.com",
+                      item: SITE_ORIGIN,
                     },
                     {
                       "@type": "ListItem",
                       position: 2,
                       name: "Lapland",
-                      item: "https://thetarzanway.com/theme/lapland",
+                      item: `${SITE_ORIGIN}/theme/lapland`,
                     },
                   ],
                 },

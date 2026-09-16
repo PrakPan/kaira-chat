@@ -16,6 +16,9 @@
 // Kaira, or saves the catalog element behind it into the trip tray; the docked
 // bar then builds a route around the selection.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
+import { primaryTripsHub, tripsHubCtaLabel } from "../../components/trips/TripsHubCta";
+import { tripsHubsForPath } from "../../lib/seo/tripsHubs";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect } from "react";
@@ -34,7 +37,7 @@ import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSe
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
-const SITE = "https://thetarzanway.com";
+const SITE = SITE_ORIGIN;
 const PAGE = "/asia/thailand";
 const THEME_SLUG = "thailand";
 // Thailand's visa desk. The country page links out rather than saving a visa to
@@ -957,12 +960,29 @@ const thailandConfig: CinematicThemeConfig = {
   },
 };
 
+type TripsHubLink = { slug: string; href: string; label: string; count: number };
+
 const ThailandCountryPage = ({
   checkAuthState,
+  tripsHubs,
 }: {
   checkAuthState: () => void;
+  tripsHubs?: TripsHubLink[];
 }) => {
   const seedChat = useSeedChat();
+  // "Thailand itineraries →" in the top-right of the "Pick a plan"
+  // section, linking to the /trips hub (lib/seo/tripsHubs.js).
+  const hub = primaryTripsHub(tripsHubs);
+  const config: CinematicThemeConfig = hub
+    ? {
+        ...thailandConfig,
+        sections: thailandConfig.sections.map((section) =>
+          section.type === "trips"
+            ? { ...section, headingLink: { href: hub.href, label: tripsHubCtaLabel(hub) } }
+            : section
+        ),
+      }
+    : thailandConfig;
   const selection = useThemeSelectionState();
   const openThemeForm = useOpenThemeForm();
   const handleSelectPrompt = (prompt: string, intent?: ThemePromptIntent) =>
@@ -1045,7 +1065,7 @@ const ThailandCountryPage = ({
         />
       </Head>
       <CinematicThemeLanding
-        config={thailandConfig}
+        config={config}
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
@@ -1053,6 +1073,13 @@ const ThailandCountryPage = ({
     </Layout>
   );
 };
+
+// Only here to hand the page its /trips hub links (lib/seo/tripsHubs.js). This
+// page is served at /asia/thailand in place of the generic country route, so it
+// needs the same link to /trips/thailand that every other country page gets.
+export async function getStaticProps() {
+  return { props: { tripsHubs: tripsHubsForPath("asia/thailand") } };
+}
 
 const mapDispatchToProps = (dispatch: any) => ({
   checkAuthState: () => dispatch(authaction.checkAuthState()),

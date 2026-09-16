@@ -30,10 +30,14 @@ import styles from "./HeroSection.module.scss";
 // Explicit width/height carry the intrinsic 16:9 ratio so the box is reserved
 // before the bytes land (no layout shift); the CSS above still governs the
 // painted size.
-const HeroSection = ({ title, subtitle }) => {
+const HeroSection = ({ title, subtitle, onCraftTrip }) => {
   return (
     <section className={styles.heroSection}>
-      <HeadingContent title={title} subtitle={subtitle} />
+      <HeadingContent
+        title={title}
+        subtitle={subtitle}
+        onCraftTrip={onCraftTrip}
+      />
       <div className={styles.backgroundWrapper}>
         {heroImages.map((image, index) => (
           <div key={index} className={styles.foregroundImage}>

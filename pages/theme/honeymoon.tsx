@@ -6,6 +6,7 @@
 // read-only catalog drawer for the element behind it. The page is wrapped in
 // the shared site Layout so it keeps the standard header + footer.
 
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
@@ -27,18 +28,36 @@ import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const VISA = "https://visa.thetarzanway.com/country";
 const VISA_HOME = "https://visa.thetarzanway.com/";
-const CHAT = "https://thetarzanway.com/chat";
+const CHAT = `${SITE_ORIGIN}/chat`;
 const THEME_SLUG = "honeymoon";
 
-// Catalog activity ids for the "Things to do around the world" cards (from the
-// Mercury BE links) — each opens the read-only activity details drawer.
+// Catalog activity ids for the evening and day-trip cards. Every one is a live
+// `ancillaries_activity` row, so the card and the element saved to the trip are
+// the same product.
+//
+// The old `baliWaterfalls` id (86b16fc4…) is gone: that row is is_live = false
+// in the catalog. `ubudWaterfalls` below is the live tour of the same sights.
 const ACTIVITY = {
   santoriniVolcano: "1d5aa440-d922-4045-8893-d10d12658ca1",
   santoriniScuba: "586c5cd1-eead-454c-bdcf-78bf1e20aa72",
-  baliWaterfalls: "86b16fc4-4534-4c57-9cb5-5cb2107f5b07",
   baliCooking: "903b1346-ad4d-4d13-872c-a3d0217d0a59",
   nusaPenida: "869561b9-4df3-4b11-b335-1286abd4e178",
   exploreMale: "7556e2cd-70e4-454f-a76b-410bdf4fa54a",
+  // Evenings
+  jimbaranSunset: "c3cfb1a5-c2fc-404f-b787-7091a9d1da67",
+  veniceGondola: "65febd05-493b-4555-9361-8aa39f70276d",
+  seineDinner: "7f7ec786-4d79-473f-bb51-8f9c854e99e8",
+  dubaiSky: "45540f89-bd44-47cf-8934-ec8569cd8bc9",
+  tokyoYakatabune: "2cc55e19-b1e3-4017-ae75-57ae0e070f27",
+  mykonosSunset: "bdd7f05a-62bc-46dd-a49f-de962cd2df27",
+  // Days
+  ubudWaterfalls: "9ff61c8a-c81a-4949-a2b8-9e218d84d9a5",
+  baliHighlights: "fc630af4-a673-45ce-946d-3065f44ae986",
+  phuketIslands: "24cdff2c-0ff8-4bde-bbb0-2e09c822eb2d",
+  lucerneHangGliding: "4ffd8a6b-ff0b-4a32-9448-22a76504532a",
+  pilatusGolden: "034d644a-332d-41ca-8b89-322d3aa92d09",
+  hoiAnAncientTown: "cef545a8-cb2f-4ec9-8ee4-d54090834fbf",
+  athensAcropolis: "fb8a1eee-a48e-4450-8931-c45d1f86941b",
 };
 
 // The private candlelit dinner isn't one product — it's one per destination.
@@ -69,7 +88,6 @@ const IMG = {
 const CAT = {
   santoriniVolcano: `${MEDIA}/media/activities/174643740258093547821044921875.jpg`,
   santoriniScuba: `${MEDIA}/media/activities/169089234938154792785644531250.jpg`,
-  baliWaterfalls: `${MEDIA}/media/activities/176199171326125335693359375000.jpg`,
   baliCooking: `${MEDIA}/media/activities/169089627862838149070739746094.jpg`,
   nusaPenida: `${MEDIA}/media/activities/169089299718673110008239746094.jpg`,
   exploreMale: `${MEDIA}/media/activities/178172587427999567985534667969.jpg`,
@@ -80,6 +98,34 @@ const CAT = {
   seychelles: `${MEDIA}/media/activities/171316515219507312774658203125.jpg`,
   seychellesBeach: `${MEDIA}/media/activities/171316515510504651069641113281.jpg`,
   thailandIslands: `${MEDIA}/media/activities/175672376581723809242248535156.jpeg`,
+  // Evenings
+  jimbaranSunset: `${MEDIA}/media/activities/169089287587730145454406738281.jpg`,
+  veniceGondola: `${MEDIA}/media/activities/169089717550199532508850097656.jpg`,
+  seineDinner: `${MEDIA}/media/activities/176224693046543216705322265625.jpg`,
+  dubaiSky: `${MEDIA}/media/activities/176786723916710710525512695312.webp`,
+  tokyoYakatabune: `${MEDIA}/media/activities/171315948289299941062927246094.jpg`,
+  mykonosSunset: `${MEDIA}/media/activities/169089677861731982231140136719.jpg`,
+  // Days
+  ubudWaterfalls: `${MEDIA}/media/activities/171326529611966514587402343750.jpg`,
+  baliHighlights: `${MEDIA}/media/activities/169089831035809040069580078125.jpg`,
+  phuketIslands: `${MEDIA}/media/activities/169089315990529751777648925781.jpg`,
+  phuketSunset: `${MEDIA}/media/activities/171328217966311955451965332031.jpg`,
+  lucerneHangGliding: `${MEDIA}/media/activities/177081241165963554382324218750.png`,
+  pilatusGolden: `${MEDIA}/media/activities/171328020515271735191345214844.jpg`,
+  pilatusCableCar: `${MEDIA}/media/activities/171328004974621701240539550781.jpg`,
+  // Stored with a stray "/" before the extension — that is the actual key in
+  // the catalog, and the CDN serves it, so it ships exactly as recorded.
+  hoiAnAncientTown: `${MEDIA}/media/activities/173156325334933853149414062500/.png`,
+  athensAcropolis: `${MEDIA}/media/activities/169089074913606834411621093750.jpg`,
+  krabiIslands: `${MEDIA}/media/activities/175646581281492352485656738281.jpg`,
+  halongCruise: `${MEDIA}/media/activities/169090226387135028839111328125.jpg`,
+};
+// Covers for the "Other themes" tiles that live on another theme page — each
+// is that page's own artwork, so the tile and the page it opens agree.
+const THEME_IMG = {
+  christmasMarkets: `${CDN}/media/website/christmas-markets-2026/market-vienna-hq.jpg`,
+  northernLights: `${CDN}/media/website/northern-lights-2026/Sleep%20Beneath%20The%20Aurora.jpg`,
+  filmy: `${CDN}/media/website/filmy-getaways-2026/DilChahtaHai.png`,
 };
 
 // ── Prompts ─────────────────────────────────────────────────────────────────
@@ -102,20 +148,20 @@ const PROMPTS = {
     "We are 2 travellers (a couple), and our travel dates in September are flexible. We want a 7-night honeymoon combining Bali and Santorini. Begin with Bali's tropical jungles, wellness experiences, waterfalls, private pool villas, and peaceful cafés before continuing to Santorini for whitewashed villages, caldera sunsets, wine tastings, romantic dinners, and boutique cave hotels. Balance relaxation, romance, and iconic experiences at a comfortable pace.",
   ruinsAndWine:
     "We are 2 travellers (a couple), and our travel dates in September are flexible. We want an 8-night romantic honeymoon through Santorini and Athens. Prioritize breathtaking sunsets, boutique cave hotels, scenic coastal walks, wine tastings, private sailing experiences, charming cafés, and romantic dinners in Santorini before exploring Athens' ancient landmarks, hidden neighborhoods, rooftop restaurants, and authentic Greek culture. Keep the itinerary relaxed with plenty of time to enjoy each destination together.",
-  // Which island is yours
-  islandMaldives:
-    "We are 2 travellers (a couple) going for 6 nights in November, and our travel dates are flexible. We want a romantic Maldives honeymoon focused on privacy and luxury. Prioritize an overwater villa, crystal-clear lagoons, floating breakfasts, snorkeling, sunset cruises, candlelight dinners, spa experiences, and uninterrupted time together. Build a slow-paced itinerary with minimal movement and maximum relaxation.",
-  islandBali:
-    "We are 2 travellers (a couple) going for 7 nights in September, and our travel dates are flexible. We want a romantic Bali honeymoon combining Uluwatu, Seminyak, and Ubud. Prioritize private pool villas, waterfalls, temples, beach clubs, scenic cafés, spa treatments, rice terraces, sunset dinners, and meaningful local experiences. Balance relaxation with exploration while keeping the pace comfortable.",
-  islandSantorini:
-    "We are 2 travellers (a couple) going for 6 nights in September, and our travel dates are flexible. We want a Santorini honeymoon built around romance and breathtaking sunsets. Include a caldera-view cave hotel, Oia and Fira, private sailing, wine tastings, seaside dinners, charming cafés, scenic coastal walks, and hidden viewpoints. Prioritize slow travel, beautiful stays, and unforgettable moments together.",
-  islandSeychelles:
-    "We are 2 travellers (a couple) going for 7 nights in October, and our travel dates are flexible. We want a peaceful Seychelles honeymoon with secluded beaches and luxury island experiences. Prioritize boutique beachfront resorts, granite boulder beaches, island hopping, snorkeling, sunset cruises, nature trails, Creole cuisine, and private beach picnics. Keep the itinerary relaxed with plenty of free time to enjoy the islands at an unhurried pace.",
-  // The "Which honeymoon is yours?" trips carry no prompt — each card opens a
-  // finished itinerary at /chat/{id} instead of seeding a fresh session.
-  // Evenings
-  privateDinner:
-    "We are 2 travellers on our 7-night honeymoon in November. Set up a private candlelit dinner for us - beach or cliffside - and tell me which destination does it best, what it costs, and how far ahead it has to be booked.",
+  villaThenCliffs:
+    "We are 2 travellers (a couple), and our travel dates in October are flexible. We want a 9-night honeymoon that starts in the Maldives and finishes in Bali. Begin with an overwater villa - lagoon swims, floating breakfasts, snorkeling and completely unscheduled mornings - then continue to Bali for a private pool villa, waterfalls, rice terraces, cliffside sunsets and beach clubs. Keep the first half empty and the second half easy-paced.",
+  seychellesThreeIslands:
+    "We are 2 travellers (a couple), and our travel dates in October are flexible. We want a 7-night Seychelles honeymoon across Mahé, Praslin and La Digue. Prioritize granite boulder beaches, a beachfront boutique stay on each island, inter-island ferries, snorkeling, nature trails, Creole dinners and a private beach picnic. Keep the pace unhurried with plenty of free time and minimal scheduling.",
+  alpsAndAegean:
+    "We are 2 travellers (a couple), and our travel dates in June are flexible. We want a 12-night honeymoon that starts in Switzerland and finishes in Santorini. Begin with scenic train journeys, lakeside towns, mountain excursions and Alpine villages, then fly south for caldera sunsets, a cave hotel, wine tastings, private sailing and seaside dinners. Two climates in one trip, at a comfortable pace with minimal repacking.",
+  slowJapan:
+    "We are 2 travellers (a couple), and our travel dates in November are flexible. We want a 10-night honeymoon through Tokyo, Hakone and Kyoto. Prioritize a Hakone ryokan with a private onsen, autumn colours, quiet temple mornings in Kyoto, neighbourhood food walks, a tea ceremony and easy rail travel between the three. Keep the pace slow with real downtime rather than a sightseeing checklist.",
+  europeByRail:
+    "We are 2 travellers (a couple), and our travel dates in June are flexible. We want an 11-night honeymoon by train through Paris, Interlaken and Venice. Prioritize one rail pass, romantic city stays, a Seine evening cruise, Alpine day trips from Interlaken, and a gondola and quiet canals in Venice. Build it around scenic rail legs and slow evenings rather than rushing between sights.",
+  vietnamGently:
+    "We are 2 travellers (a couple), and our travel dates in March are flexible. We want an 8-night gentle honeymoon through Hanoi, Ha Long Bay and Hoi An. Prioritize an overnight Ha Long cruise, the old quarter, lantern-lit Hoi An evenings, a tailor visit, quiet beaches and unhurried food walks. Keep the itinerary relaxed with short travel days.",
+  // The "Pick a plan" trips carry no prompt — each card opens a finished
+  // itinerary at /chat/{id} instead of seeding a fresh session.
   // Ask Kaira
   askBar:
     "Which honeymoon should we do in November, just the two of us - the Maldives overwater villa, Bali and Santorini together, or Santorini and Athens? Compare privacy, cost, flying time and the best months for each, then build the ideal itinerary for the one you recommend.",
@@ -141,11 +187,12 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   overwater: { nights: 6, month: 11, who: "Couple" },
   twoIslands: { nights: 7, month: 9, who: "Couple" },
   ruinsAndWine: { nights: 8, month: 9, who: "Couple" },
-  islandMaldives: { nights: 6, month: 11, who: "Couple" },
-  islandBali: { nights: 7, month: 9, who: "Couple" },
-  islandSantorini: { nights: 6, month: 9, who: "Couple" },
-  islandSeychelles: { nights: 7, month: 10, who: "Couple" },
-  privateDinner: { nights: 7, month: 11, who: "Couple" },
+  villaThenCliffs: { nights: 9, month: 10, who: "Couple" },
+  seychellesThreeIslands: { nights: 7, month: 10, who: "Couple" },
+  alpsAndAegean: { nights: 12, month: 6, who: "Couple" },
+  slowJapan: { nights: 10, month: 11, who: "Couple" },
+  europeByRail: { nights: 11, month: 6, who: "Couple" },
+  vietnamGently: { nights: 8, month: 3, who: "Couple" },
   askBar: { month: 11, who: "Couple" },
 });
 
@@ -178,14 +225,111 @@ const honeymoonConfig: CinematicThemeConfig = {
     ],
   },
   sections: [
+    // ── Evenings ──
+    // The mockup's "Evenings you'll both remember" rail, and the first thing
+    // under the hero exactly as the mockup has it: the page opens on one thing
+    // to tap, not on a menu of trip shapes to choose between.
+    //
+    // `tone: "dark"` is the mockup's inset ink panel — 28px radius inside the
+    // page gutter, the yellow radial glow off its top-right corner, a yellow
+    // heading and a rail of ink cards. Six evenings from around the world, then
+    // the four candlelit dinners this page has always carried; same category,
+    // so they belong on the same shelf rather than in a list of their own.
+    // Every card is a live catalog activity and a click anywhere on it adds or
+    // removes the evening; the pill is the affordance.
+    {
+      type: "cards",
+      tone: "dark",
+      selectable: true,
+      itemKind: "activity",
+      addNoun: "evening",
+      rail: true,
+      heading: { lead: "Evenings you'll both", accent: "remember" },
+      cards: [
+        {
+          image: CAT.jimbaranSunset,
+          name: "Uluwatu temple, kecak dance and Jimbaran Bay",
+          line: "Cliff temple at golden hour, then grilled seafood on the sand.",
+          tag: "Jimbaran",
+          activityId: ACTIVITY.jimbaranSunset,
+        },
+        {
+          image: CAT.veniceGondola,
+          name: "Grand Canal by gondola",
+          line: "The one cliché worth doing - with live commentary.",
+          tag: "Venice",
+          activityId: ACTIVITY.veniceGondola,
+        },
+        {
+          image: CAT.seineDinner,
+          name: "3-course dinner cruise on the Seine",
+          line: "The city lit up, a table for two on the water.",
+          tag: "Paris",
+          activityId: ACTIVITY.seineDinner,
+        },
+        {
+          image: CAT.dubaiSky,
+          name: "Dinner in the Sky",
+          line: "A table 50 metres up. The stopover that upgrades the trip.",
+          tag: "Dubai",
+          activityId: ACTIVITY.dubaiSky,
+        },
+        {
+          image: CAT.tokyoYakatabune,
+          name: "Yakatabune dinner cruise on the Sumida",
+          line: "A traditional boat, kaiseki courses, the skyline drifting by.",
+          tag: "Tokyo",
+          activityId: ACTIVITY.tokyoYakatabune,
+        },
+        {
+          image: CAT.mykonosSunset,
+          name: "Sunset cruise with drinks",
+          line: "The Aegean at dusk, drinks included.",
+          tag: "Mykonos",
+          activityId: ACTIVITY.mykonosSunset,
+        },
+        {
+          image: CAT.dinnerUbud,
+          name: "6-course candlelight dinner in the valley",
+          line: "Six courses above the Ubud valley, under the stars. 3 hours.",
+          tag: "Ubud",
+          activityId: DINNER.ubud,
+        },
+        {
+          image: CAT.dinnerSeminyak,
+          name: "Island romantic candlelight dinner",
+          line: "Ocean views, live violin, and a table set on the sand.",
+          tag: "Seminyak",
+          activityId: DINNER.seminyak,
+        },
+        {
+          image: CAT.dinnerNusaPenida,
+          name: "Candlelight dinner under the stars",
+          line: "Three courses on the quietest of the three islands.",
+          tag: "Nusa Penida",
+          activityId: DINNER.nusaPenida,
+        },
+        {
+          image: CAT.dinnerSantorini,
+          name: "Private candlelight dinner",
+          line: "An intimate table with the caldera going gold behind it.",
+          tag: "Santorini",
+          activityId: DINNER.santorini,
+        },
+      ],
+    },
     // ── Routes ──
     {
       type: "cards",
       ctaLabel: "Create this plan →",
+      // Nine shapes, so the row stays a rail at every width. The 3-up grid it
+      // would otherwise fall into from md breaks the set across three bands and
+      // it stops reading as one shelf of options.
+      rail: true,
       heading: {
         eyebrow: "Multi-city · swipe",
-        lead: "Pick your",
-        accent: "honeymoon",
+        lead: "Pick a shape,",
+        accent: "I will fill it in",
       },
       cards: [
         {
@@ -209,6 +353,48 @@ const honeymoonConfig: CinematicThemeConfig = {
           tag: "8 nights",
           prompt: PROMPTS.ruinsAndWine,
         },
+        {
+          image: CAT.nusaPenida,
+          name: "Villa First, Cliffs After",
+          line: "Maldives → Bali",
+          tag: "9 nights",
+          prompt: PROMPTS.villaThenCliffs,
+        },
+        {
+          image: CAT.seychellesBeach,
+          name: "Granite Beaches, No Crowds",
+          line: "Mahé → Praslin → La Digue",
+          tag: "7 nights",
+          prompt: PROMPTS.seychellesThreeIslands,
+        },
+        {
+          image: CAT.pilatusCableCar,
+          name: "Alps, Then the Aegean",
+          line: "Switzerland → Santorini",
+          tag: "12 nights",
+          prompt: PROMPTS.alpsAndAegean,
+        },
+        {
+          image: CAT.tokyoYakatabune,
+          name: "Slow Japan",
+          line: "Tokyo → Hakone ryokan → Kyoto",
+          tag: "10 nights",
+          prompt: PROMPTS.slowJapan,
+        },
+        {
+          image: CAT.veniceGondola,
+          name: "Europe by Rail",
+          line: "Paris → Interlaken → Venice",
+          tag: "11 nights",
+          prompt: PROMPTS.europeByRail,
+        },
+        {
+          image: CAT.halongCruise,
+          name: "Vietnam, Gently",
+          line: "Hanoi → Ha Long → Hoi An",
+          tag: "8 nights",
+          prompt: PROMPTS.vietnamGently,
+        },
       ],
     },
     // ── Experiences (card click opens the drawer; "+ Add" saves to the trip) ──
@@ -216,7 +402,8 @@ const honeymoonConfig: CinematicThemeConfig = {
       type: "cards",
       selectable: true,
       itemKind: "activity",
-      heading: { lead: "Things to do", accent: "around the world" },
+      rail: true,
+      heading: { lead: "Days worth building around" },
       cards: [
         {
           image: CAT.santoriniVolcano,
@@ -233,11 +420,11 @@ const honeymoonConfig: CinematicThemeConfig = {
           activityId: ACTIVITY.santoriniScuba,
         },
         {
-          image: CAT.baliWaterfalls,
-          name: "Waterfalls, water temple and rice terraces",
-          line: "A private day through Ubud's postcard sights, paced so it never feels like a checklist.",
-          tag: "Bali",
-          activityId: ACTIVITY.baliWaterfalls,
+          image: CAT.ubudWaterfalls,
+          name: "Waterfalls, water temple and rice terraces - private",
+          line: "Your own car and guide through Ubud's postcard sights, paced so it never feels like a checklist.",
+          tag: "Ubud",
+          activityId: ACTIVITY.ubudWaterfalls,
         },
         {
           image: CAT.baliCooking,
@@ -260,133 +447,51 @@ const honeymoonConfig: CinematicThemeConfig = {
           tag: "Maldives",
           activityId: ACTIVITY.exploreMale,
         },
-      ],
-    },
-    // ── Two kinds of evening (dark) ──
-    {
-      type: "feature",
-      heading: { lead: "Two kinds of", accent: "evening" },
-      intro:
-        "Every honeymoon needs both - the night nobody else is there, and the night you want people around. Get the ratio right and the trip has a rhythm instead of a schedule.",
-      rows: [
         {
-          stat: "PRIVATE",
-          name: "Beach or cliffside dinner",
-          line: "Just the two of you, a table, and staff who disappear once the food arrives.",
+          image: CAT.baliHighlights,
+          name: "Bali highlights, full day",
+          line: "The rice terraces, temples and swings - one car, one day, all of it.",
+          tag: "Ubud",
+          activityId: ACTIVITY.baliHighlights,
         },
         {
-          stat: "SOCIAL",
-          name: "Beach clubs at sunset",
-          line: "Potato Head or Atlas in Bali, a wine bar in Fira - people around without losing the mood.",
-        },
-      ],
-      stats: [
-        { stat: "30min", label: "TO SET UP A PRIVATE DINNER" },
-        { stat: "100%", label: "PRIVACY ON OVERWATER VILLAS" },
-        { stat: "2", label: "ISLANDS RECOMMENDED FOR 7N+" },
-      ],
-      cta: {
-        title: "Private candlelit dinner",
-        meta: "Beach or cliffside · just the two of you",
-        prompt: PROMPTS.privateDinner,
-      },
-    },
-    // ── The actual candlelit dinners (each opens its own activity drawer) ──
-    {
-      type: "list",
-      selectable: true,
-      itemKind: "activity",
-      heading: {
-        lead: "A private table,",
-        accent: "wherever you land",
-        note: "Tap one for the menu, the setting and what it costs",
-      },
-      rows: [
-        {
-          image: CAT.dinnerUbud,
-          emoji: "🕯️",
-          gradient: "linear-gradient(150deg, #a8556b, #f8ebef 190%)",
-          name: "Ubud: 6-course candlelight dinner in the valley",
-          badge: "Kaira's pick",
-          line: "Six courses above the Ubud valley, under the stars. 3 hours.",
-          activityId: DINNER.ubud,
+          image: CAT.phuketIslands,
+          name: "Maya, Phi Phi and Khai islands",
+          line: "The blue-water triple with buffet lunch on board.",
+          tag: "Phuket",
+          activityId: ACTIVITY.phuketIslands,
         },
         {
-          image: CAT.dinnerSeminyak,
-          emoji: "🌊",
-          gradient: "linear-gradient(150deg, #16324f, #a8556b 170%)",
-          name: "Seminyak: island romantic candlelight dinner",
-          line: "Ocean views, live violin, and a table set on the sand.",
-          activityId: DINNER.seminyak,
+          image: CAT.lucerneHangGliding,
+          name: "Hang gliding over Lucerne",
+          line: "Two harnesses, one lake, the story you'll tell for years.",
+          tag: "Lucerne",
+          activityId: ACTIVITY.lucerneHangGliding,
         },
         {
-          image: CAT.dinnerNusaPenida,
-          emoji: "🪨",
-          gradient: "linear-gradient(150deg, #1a2436, #3d4f7a)",
-          name: "Nusa Penida: candlelight dinner under the stars",
-          line: "Three courses on the quietest of the three islands.",
-          activityId: DINNER.nusaPenida,
+          image: CAT.pilatusGolden,
+          name: "Mt. Pilatus golden round trip",
+          line: "Boat out, cogwheel up, cable car down - the classic Swiss day.",
+          tag: "Zurich",
+          activityId: ACTIVITY.pilatusGolden,
         },
         {
-          image: CAT.dinnerSantorini,
-          emoji: "🍷",
-          gradient: "linear-gradient(150deg, #2f6f9e, #f0e9d6 190%)",
-          name: "Santorini: private candlelight dinner",
-          line: "An intimate table with the caldera going gold behind it.",
-          activityId: DINNER.santorini,
+          image: CAT.hoiAnAncientTown,
+          name: "Hoi An ancient town with dinner",
+          line: "Lantern streets, Marble Mountain and dinner on the way back.",
+          tag: "Da Nang",
+          activityId: ACTIVITY.hoiAnAncientTown,
+        },
+        {
+          image: CAT.athensAcropolis,
+          name: "Acropolis and museum, guided",
+          line: "The Parthenon before the cruise crowds, museum after.",
+          tag: "Athens",
+          activityId: ACTIVITY.athensAcropolis,
         },
       ],
     },
-    // ── Which island is yours ──
-    // Deliberately NOT `selectable`: these aren't bookable elements, they're
-    // whole-trip requests. A selectable row with no activityId/href toggles the
-    // saved list on click and never fires its prompt (see ListRow), which would
-    // strand the four island prompts. Tapping one seeds the trip instead.
-    {
-      type: "list",
-      heading: {
-        lead: "Which island",
-        accent: "is yours",
-        note: "Tap one and I'll build the whole trip around it",
-      },
-      rows: [
-        {
-          image: IMG.maldives,
-          emoji: "🐚",
-          gradient: "linear-gradient(150deg, #16324f, #2f6f9e 150%)",
-          name: "Maldives",
-          badge: "Most private",
-          line: "One resort, one overwater villa, and nowhere to be. Visa-free for Indian passports.",
-          prompt: PROMPTS.islandMaldives,
-        },
-        {
-          image: IMG.bali,
-          emoji: "🌴",
-          gradient: "linear-gradient(150deg, #17724a, #f0e9d6 200%)",
-          name: "Bali",
-          badge: "Most picked",
-          line: "Cliffside Uluwatu for the view, Seminyak for the beach, Ubud for the quiet.",
-          prompt: PROMPTS.islandBali,
-        },
-        {
-          image: IMG.santorini,
-          emoji: "🌅",
-          gradient: "linear-gradient(150deg, #2f6f9e, #f0e9d6 190%)",
-          name: "Santorini",
-          line: "Caldera-view suites carved into the cliff, sunset in Oia every single night.",
-          prompt: PROMPTS.islandSantorini,
-        },
-        {
-          image: CAT.seychellesBeach,
-          emoji: "🪨",
-          gradient: "linear-gradient(150deg, #1a2436, #17724a 170%)",
-          name: "Seychelles",
-          line: "Granite boulders, empty beaches, and a fraction of the Maldives crowd in peak season.",
-          prompt: PROMPTS.islandSeychelles,
-        },
-      ],
-    },
-    // ── Trips — three finished itineraries, not prompts. Each card opens the
+    // ── Trips — four finished itineraries, not prompts. Each card opens the
     // real plan at /chat/{itinerary_id}.
     //
     // Copy, nights and prices all come from the itinerary itself: the route is
@@ -398,12 +503,25 @@ const honeymoonConfig: CinematicThemeConfig = {
     // carries no flight booking (ferry and taxis only), unlike the other two. ──
     {
       type: "trips",
+      // The mockup's packaged-product card: cover photo on top, the
+      // what's-included chips, a ruled price line and one ink CTA. The band
+      // washes the priced plans in the page's accentSoft so they read as the
+      // one commercial block between the free browsing above and below.
+      //
+      // `rail` because there are four: the 3-up grid strands the fourth on a
+      // row of its own and the set stops reading as one shelf of plans.
+      layout: "stacked",
+      tone: "band",
+      rail: true,
       ctaLabel: "Book this itinerary →",
       heading: {
-        lead: "Which honeymoon is",
-        accent: "yours?",
+        eyebrow: "Priced · bookable today",
+        lead: "Pick a plan",
         note: "Tap a plan to open the full itinerary",
       },
+      // `includes` is what the itinerary's own bookings actually carry, not a
+      // generic feature list — the Maldives and Greece plans book flights, the
+      // Bali one doesn't (ferry and taxis only), which is why its chips say so.
       cards: [
         {
           image: IMG.maldives,
@@ -412,6 +530,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "One lagoon resort, a speedboat from Male, and three nights with nothing scheduled.",
           price: "₹90,744 / person",
           nights: "3 nights · Maldives",
+          includes: ["Flights", "1 resort", "Boat transfers"],
           urgent: "Dec – Feb villas book out six months ahead",
           href: `${CHAT}/1f212379-86d2-4588-8d6c-938148467026`,
         },
@@ -422,6 +541,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "Three nights in the Ubud valley, two on Nusa Penida's cliffs, two on the Seminyak sand.",
           price: "₹55,333 / person",
           nights: "7 nights · Bali",
+          includes: ["3 stays", "6 activities", "Ferry + taxis"],
           href: `${CHAT}/a8802c37-7a27-4724-8213-4a6246e242f5`,
         },
         {
@@ -431,47 +551,65 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "Two nights of ruins, two on Mykonos, then three over the Santorini caldera.",
           price: "₹2,79,011 / person",
           nights: "8 nights · Greece",
+          includes: ["Flights", "4 stays", "Ferries"],
           href: `${CHAT}/cedadafb-03af-47f1-992c-169a88af12e6`,
+        },
+        {
+          image: CAT.phuketSunset,
+          tag: "Couple · 10N",
+          name: "Slow Thailand",
+          line: "Khao Lak's quiet coast, a night in the Khao Sok rainforest, then Phuket and Bangkok.",
+          price: "₹61,424 / person",
+          nights: "10 nights · Thailand",
+          includes: ["Flights", "4 stays", "5 activities"],
+          href: `${CHAT}/4a7bab43-aab2-41a7-96db-9512a238d722`,
         },
       ],
     },
     // ── When to go ──
+    // Keyed to the wedding date rather than to one destination: the reader
+    // can't move the wedding, so the calendar answers "given when we marry,
+    // where should we go" instead of "when should we visit the Maldives". The
+    // mockup's coloured status flag has no slot in CinematicMonthRow, so it
+    // opens the line instead.
     {
       type: "months",
       heading: {
-        eyebrow: "Three destinations, one calendar",
-        lead: "When to",
-        accent: "actually go",
+        eyebrow: "One calendar, every destination",
+        lead: "Match it to the",
+        accent: "wedding date",
       },
       rows: [
         {
-          range: "Nov – Mar",
-          name: "Peak everywhere",
-          line: "Dry in the Maldives, mild in Bali, cool in Santorini. Also the priciest - book villas six months out.",
+          range: "Nov – Feb",
+          name: "Winter weddings",
+          line: "Go south-east. Thailand, Bali and Vietnam are in their dry season - warm, clear and direct-flight easy. Europe is for the brave.",
         },
         {
-          range: "Apr – Jun",
-          name: "Shoulder season",
-          line: "Warm and mostly dry across all three. Fewer couples, softer rates, still reliable weather.",
+          range: "Mar – May",
+          name: "Spring weddings",
+          line: "Japan's moment. Sakura in Japan, shoulder-season Greece, and the islands before the heat. Book Japan four months out.",
         },
         {
-          range: "Jul – Aug",
-          name: "European peak",
-          line: "Santorini is packed and pricey. The Maldives and Bali stay calm - worth splitting the trip around this.",
+          range: "Jun – Sep",
+          name: "Summer weddings",
+          line: "Europe's turn. Swiss meadows, Italian coasts, Paris evenings. The Andaman is monsoon - skip Thailand's west coast.",
         },
         {
-          range: "Sep – Oct",
-          name: "Quiet transition",
-          line: "Crowds thin everywhere, prices ease, and the weather is still on your side in all three.",
+          range: "Oct",
+          name: "The shoulder",
+          line: "Best value. Everywhere is between seasons - Bali dry, Europe golden, prices at their year-low before December.",
         },
       ],
-      note:
-        "If manta rays matter to you, the Maldives season runs May to November on the western atolls - that date has to bend around the fish, not the other way round.",
     },
     // ── Visa (dark) ──
     {
       type: "visa",
-      heading: { lead: "Your visas,", accent: "handled" },
+      heading: {
+        eyebrow: "Indian passport · no embassy visit",
+        lead: "Visas,",
+        accent: "handled",
+      },
       intro:
         "The Maldives waives the visa entirely for Indian passports - 30 days on arrival, no paperwork. Bali and Greece are where the actual filing happens, and we do both for you before you fly.",
       // The four islands this page actually sends people to. Italy and
@@ -587,19 +725,23 @@ const honeymoonConfig: CinematicThemeConfig = {
       ],
     },
     // ── Destinations ──
+    // `meta` is the real count of couple itineraries (two adults) we have built
+    // through each country, not an invented trust number — re-run the count
+    // before quoting it again, because it only ever goes up. The page's own
+    // four lead, then the four the evenings and day trips above reach into.
     {
       type: "gradient",
       heading: {
         eyebrow: "Destinations in this theme",
         lead: "Where I",
-        accent: "send couples",
+        accent: "send people",
       },
-      columns: 6,
+      columns: 4,
       mobileGrid: true,
       cards: [
         {
           name: "Maldives",
-          meta: "Visa-free · overwater villas",
+          meta: "496 couple trips",
           emoji: "🐚",
           gradient: "linear-gradient(150deg, #16324f, #2f6f9e 150%)",
           image: IMG.maldives,
@@ -607,7 +749,7 @@ const honeymoonConfig: CinematicThemeConfig = {
         },
         {
           name: "Bali",
-          meta: "Most picked · cliffs + beaches",
+          meta: "2,622 couple trips",
           emoji: "🌴",
           gradient: "linear-gradient(150deg, #17724a, #f0e9d6 200%)",
           image: IMG.bali,
@@ -615,7 +757,7 @@ const honeymoonConfig: CinematicThemeConfig = {
         },
         {
           name: "Greece",
-          meta: "Best sunsets · caldera suites",
+          meta: "732 couple trips",
           emoji: "🌅",
           gradient: "linear-gradient(150deg, #2f6f9e, #f0e9d6 190%)",
           image: IMG.santorini,
@@ -623,11 +765,43 @@ const honeymoonConfig: CinematicThemeConfig = {
         },
         {
           name: "Seychelles",
-          meta: "Quietest · granite beaches",
+          meta: "126 couple trips",
           emoji: "🪨",
           gradient: "linear-gradient(150deg, #1a2436, #17724a 170%)",
           image: CAT.seychelles,
           href: "/africa/seychelles",
+        },
+        {
+          name: "Thailand",
+          meta: "5,384 couple trips",
+          emoji: "🏝️",
+          gradient: "linear-gradient(150deg, #0d7f8f, #f0e9d6 190%)",
+          image: CAT.krabiIslands,
+          href: "/asia/thailand",
+        },
+        {
+          name: "Switzerland",
+          meta: "2,936 couple trips",
+          emoji: "🏔️",
+          gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+          image: CAT.pilatusCableCar,
+          href: "/europe/switzerland",
+        },
+        {
+          name: "Japan",
+          meta: "2,175 couple trips",
+          emoji: "⛩️",
+          gradient: "linear-gradient(150deg, #3d2b52, #b84034 180%)",
+          image: CAT.tokyoYakatabune,
+          href: "/asia/japan",
+        },
+        {
+          name: "Vietnam",
+          meta: "2,721 couple trips",
+          emoji: "🛶",
+          gradient: "linear-gradient(150deg, #17724a, #2f6f9e 170%)",
+          image: CAT.halongCruise,
+          href: "/asia/vietnam",
         },
       ],
       footerCta: { label: "View all destinations", href: "/destinations" },
@@ -637,8 +811,8 @@ const honeymoonConfig: CinematicThemeConfig = {
       type: "gradient",
       heading: {
         eyebrow: "Other themes",
-        lead: "Not quite this?",
-        accent: "Try these",
+        lead: "Planning",
+        accent: "something else?",
       },
       columns: 4,
       cards: [
@@ -673,6 +847,38 @@ const honeymoonConfig: CinematicThemeConfig = {
           gradient: "linear-gradient(150deg, #3d2b52, #b84034 180%)",
           image: IMG.amalfi,
           href: "/theme/france-italy",
+        },
+        {
+          name: "Thailand + Bali offbeat",
+          meta: "Past the postcards",
+          emoji: "🛶",
+          gradient: "linear-gradient(150deg, #0d7f8f, #17724a 180%)",
+          image: CAT.krabiIslands,
+          href: "/theme/thailand-bali-offbeat",
+        },
+        {
+          name: "Filmy getaways",
+          meta: "The scenes you grew up on",
+          emoji: "🎬",
+          gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+          image: THEME_IMG.filmy,
+          href: "/theme/filmy-getaways",
+        },
+        {
+          name: "Christmas markets",
+          meta: "December in Europe",
+          emoji: "🎄",
+          gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
+          image: THEME_IMG.christmasMarkets,
+          href: "/theme/christmas-markets",
+        },
+        {
+          name: "Northern lights",
+          meta: "Sept – Mar, above the circle",
+          emoji: "🌌",
+          gradient: "linear-gradient(150deg, #1a2436, #17724a 170%)",
+          image: THEME_IMG.northernLights,
+          href: "/theme/northern-lights",
         },
       ],
     },
@@ -754,15 +960,15 @@ const HoneymoonThemePage = ({
           property="og:description"
           content="Plan your honeymoon with The Tarzan Way's AI itinerary - Maldives overwater villas, Bali pool villas, Santorini caldera suites and Seychelles beaches, with private dinners, visas and transfers handled for Indian couples."
         />
-        <link rel="canonical" href="https://thetarzanway.com/theme/honeymoon" />
+        <link rel="canonical" href={`${SITE_ORIGIN}/theme/honeymoon`} />
         <meta
           property="og:url"
-          content="https://thetarzanway.com/theme/honeymoon"
+          content={`${SITE_ORIGIN}/theme/honeymoon`}
         />
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="https://thetarzanway.com/og-image.png"
+          content={`${SITE_ORIGIN}/og-image.png`}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <script
@@ -776,12 +982,12 @@ const HoneymoonThemePage = ({
                   name: "Honeymoon - Trip Planner & Itineraries",
                   description:
                     "Plan your honeymoon with The Tarzan Way's AI itinerary - Maldives overwater villas, Bali pool villas, Santorini caldera suites and Seychelles beaches, with private dinners, visas and transfers handled for Indian couples.",
-                  url: "https://thetarzanway.com/theme/honeymoon",
-                  image: "https://thetarzanway.com/og-image.png",
+                  url: `${SITE_ORIGIN}/theme/honeymoon`,
+                  image: `${SITE_ORIGIN}/og-image.png`,
                   provider: {
                     "@type": "TravelAgency",
                     name: "The Tarzan Way",
-                    url: "https://thetarzanway.com",
+                    url: SITE_ORIGIN,
                   },
                 },
                 {
@@ -791,13 +997,13 @@ const HoneymoonThemePage = ({
                       "@type": "ListItem",
                       position: 1,
                       name: "Home",
-                      item: "https://thetarzanway.com",
+                      item: SITE_ORIGIN,
                     },
                     {
                       "@type": "ListItem",
                       position: 2,
                       name: "Honeymoon",
-                      item: "https://thetarzanway.com/theme/honeymoon",
+                      item: `${SITE_ORIGIN}/theme/honeymoon`,
                     },
                   ],
                 },

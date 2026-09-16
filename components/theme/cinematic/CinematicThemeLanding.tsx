@@ -22,6 +22,7 @@
 // Design tokens live in the scoped <CinematicStyles/> block so nothing leaks.
 
 import React from "react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 // Resize/re-encode our own media at the edge (see lib/mediaImage.js). These
 // scene stills are 1–4 MB PNGs shown in small cards; this cuts them ~30-100×
@@ -136,6 +137,20 @@ const DARK_CARD: React.CSSProperties = {
   border: "1px solid rgba(255,255,255,0.08)",
 };
 
+// Compact light rail cards: white, a hairline and soft shadow in the page's
+// accent (a 6-digit hex, so the alpha suffix is valid).
+const compactCardChrome = (palette: { accent: string }): React.CSSProperties => ({
+  background: "#ffffff",
+  border: `1px solid ${palette.accent}33`,
+  boxShadow: `0 10px 24px -14px ${palette.accent}59`,
+});
+
+// The `tinted` ink panel's cards: a faint yellow wash and hairline.
+const DARK_CARD_TINTED: React.CSSProperties = {
+  background: "rgba(247,231,0,0.07)",
+  border: "1px solid rgba(247,231,0,0.22)",
+};
+
 // The mono badge over a card image on a DARK card — the frosted white one
 // below disappears against an ink panel, so this inverts it.
 const IMAGE_BADGE_DARK: React.CSSProperties = {
@@ -219,6 +234,7 @@ const CinematicStyles = () => (
       .ctl-h { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.03em; color: ${INK}; margin: 0; }
       .ctl-h-light { color: ${PAPER}; }
       .ctl-h-yellow { color: ${YELLOW}; }
+      .ctl-h-paper { color: ${PAPER}; }
       .ctl-eyebrow-yellow { color: ${YELLOW}; }
       /* Shared measure for every section. The gutter stays put; only the cap
          moves, so a wider page gains content width rather than losing padding. */
@@ -668,6 +684,11 @@ const PromptCard: React.FC<{
   // The card sits on the ink panel: translucent chrome, light type, an inverted
   // image badge and a yellow CTA, since the accent fill vanishes against ink.
   onDark?: boolean;
+  // The ink panel opted into yellow-tinted card chrome (see section `tinted`).
+  tinted?: boolean;
+  // Compact light rail card (see section `compact`) and whether to drop `line`.
+  compact?: "md" | "sm";
+  hideLine?: boolean;
   // The section keeps its rail from md up, so the card holds a fixed width
   // there instead of stretching to a grid track.
   inRail?: boolean;
@@ -683,10 +704,22 @@ const PromptCard: React.FC<{
   addNoun,
   onSand,
   onDark,
+  tinted,
+  compact: compactProp,
+  hideLine,
   inRail,
 }) => {
   const selection = useThemeSelection();
   const palette = usePalette();
+  const compact = onDark ? undefined : compactProp;
+  const sm = compact === "sm";
+  // An ink card in a RAIL is a different object from an ink card in a grid.
+  // The grid version (two or three cards filling the panel) carries a tall hero
+  // image and headline type; a rail of ten has to stay scannable, so it takes
+  // the mockup's smaller proportions instead — 292px wide, a 140px image, a
+  // 14px centred name. Without this split the rail inherits the grid's 220px
+  // images and 18px names and the row reads twice the size it should.
+  const darkRail = !!(onDark && inRail);
   // The saved item: an explicit card.item wins; else derive from the card when
   // the section is selectable. An activity card carries its catalog id so the
   // element id rides along in the request.
@@ -721,21 +754,43 @@ const PromptCard: React.FC<{
         onSelectPrompt(card.prompt, { source: "card", label: card.name });
     }}
     aria-pressed={selectable ? selected : undefined}
-    className={`ctl-card group flex flex-col text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] shrink-0 ${
-      inRail ? "md:w-[288px]" : "md:w-auto md:shrink"
+    className={`ctl-card group flex flex-col rounded-[18px] overflow-hidden cursor-pointer shrink-0 ${
+      darkRail || compact ? "text-center" : "text-left"
+    } ${
+      compact
+        ? sm
+          ? "w-[210px]"
+          : "w-[244px]"
+        : darkRail
+          ? "w-[272px] md:w-[292px]"
+          : inRail
+            ? "w-[262px] md:w-[288px]"
+            : "w-[262px] md:w-auto md:shrink"
     }`}
     style={{
       ...(onDark
-        ? DARK_CARD
-        : inRail
-          ? railCardChrome
-          : cardChrome(onSand)),
+        ? tinted
+          ? DARK_CARD_TINTED
+          : DARK_CARD
+        : compact
+          ? compactCardChrome(palette)
+          : inRail
+            ? railCardChrome
+            : cardChrome(onSand)),
       ...(selected ? { borderColor: palette.accent } : {}),
     }}
   >
     <div
       className={`relative overflow-hidden ${
-        onDark ? "h-[176px] md:h-[220px]" : "h-[148px] md:h-[160px]"
+        compact
+          ? sm
+            ? "h-[118px]"
+            : "h-[136px]"
+          : darkRail
+            ? "h-[132px] md:h-[140px]"
+            : onDark
+              ? "h-[176px] md:h-[220px]"
+              : "h-[148px] md:h-[160px]"
       }`}
       style={{ background: onDark ? "rgba(255,255,255,0.04)" : SAND }}
     >
@@ -757,28 +812,61 @@ const PromptCard: React.FC<{
       )}
     </div>
     <div
-      className={`flex flex-col flex-1 px-[17px] py-[16px] ${
-        onDark ? "md:px-[22px] md:py-[22px]" : "md:px-[18px] md:py-[17px]"
+      className={`flex flex-col flex-1 ${
+        compact
+          ? sm
+            ? "p-[15px]"
+            : "p-[16px]"
+          : darkRail
+            ? "px-[16px] py-[16px]"
+            : onDark
+              ? "px-[17px] py-[16px] md:px-[22px] md:py-[22px]"
+              : "px-[17px] py-[16px] md:px-[18px] md:py-[17px]"
       }`}
     >
       <div
         className={`font-bold leading-[1.3] ${
-          onDark ? "text-[16px] md:text-[18px]" : "text-[15px] md:text-[16.5px]"
+          compact
+            ? sm
+              ? "text-[13.5px]"
+              : "text-[14px]"
+            : darkRail
+              ? "text-[13.5px] md:text-[14px]"
+              : onDark
+                ? "text-[16px] md:text-[18px]"
+                : "text-[15px] md:text-[16.5px]"
         }`}
         style={{ color: onDark ? PAPER : INK, letterSpacing: "-0.01em" }}
       >
         {card.name}
       </div>
-      {card.line && (
+      {card.line && !hideLine && (
         <div
-          className="text-[12.5px] md:text-[13.5px] leading-[1.5] mt-[8px] flex-1"
+          className={`leading-[1.5] flex-1 ${
+            compact
+              ? "text-[11.5px] mt-[6px]"
+              : "text-[12.5px] md:text-[13.5px] mt-[8px]"
+          }`}
           style={{ color: onDark ? FAINT : MUTED }}
         >
           {card.line}
         </div>
       )}
+      {compact && card.meta && (
+        <div
+          className={`ctl-mono ${hideLine ? "mt-[13px] flex-1" : "mt-[12px]"}`}
+          style={{ color: FAINT, fontSize: 9 }}
+        >
+          {card.meta.split("★").map((part, i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <span style={{ color: "#f5a623" }}>★</span>}
+              {part}
+            </React.Fragment>
+          ))}
+        </div>
+      )}
       {(ctaLabel || selectable) && (
-        <div className="mt-auto pt-[14px]">
+        <div className={`mt-auto ${compact ? "pt-[12px]" : "pt-[14px]"}`}>
           <span
             role={selectable ? "button" : undefined}
             onClick={
@@ -791,10 +879,18 @@ const PromptCard: React.FC<{
                   }
                 : undefined
             }
-            className="block w-full text-center rounded-full text-[12.5px] md:text-[13px] font-bold px-[14px] py-[10px]"
+            className={`block w-full text-center rounded-full font-bold px-[14px] ${
+              compact
+                ? sm
+                  ? "text-[11.5px] py-[9px]"
+                  : "text-[12px] py-[10px]"
+                : "text-[12.5px] md:text-[13px] py-[10px]"
+            }`}
             style={
               selectable
-                ? addCtaStyle(palette, selected, onDark)
+                ? tinted && !selected
+                  ? { background: YELLOW, color: INK, border: "none" }
+                  : addCtaStyle(palette, selected, onDark)
                 : onDark
                   ? { background: YELLOW, color: INK, border: "none" }
                   : ctaTone === "dark"
@@ -824,7 +920,7 @@ const CardsSection: React.FC<{
   // becomes a 3-up grid from md, which is right for a five-card row and wrong
   // for an eleven-card one — that stacks into four full-height bands and stops
   // reading as a set of options you scan across.
-  const rail = !!section.rail;
+  const rail = !!(section.rail || section.compact);
   const cards = (
     <div
       className={`ctl-scroll ctl-rail flex gap-[12px] overflow-x-auto pt-[4px] pb-[10px] ${
@@ -854,6 +950,9 @@ const CardsSection: React.FC<{
           addNoun={section.addNoun}
           onSand={section.tone === "sand"}
           onDark={onDark}
+          tinted={onDark && section.tinted}
+          compact={section.compact}
+          hideLine={section.hideLines}
           inRail={rail}
           priority={first && i === 0}
         />
@@ -866,7 +965,9 @@ const CardsSection: React.FC<{
       <div className="max-w-[620px]">
         <Heading
           heading={section.heading}
-          className={`text-[22px] md:text-[34px] ${onDark ? "ctl-h-yellow" : ""}`}
+          className={`text-[22px] md:text-[34px] ${
+            onDark ? (section.tinted ? "ctl-h-paper" : "ctl-h-yellow") : ""
+          }`}
           eyebrowClassName={onDark ? "ctl-eyebrow-yellow" : undefined}
         />
         {section.intro && (
@@ -1071,14 +1172,10 @@ const StackedTripCard: React.FC<{
             )}
           </div>
         )}
-        {ctaLabel && (
-          <span
-            className="block w-full text-center rounded-full text-[13px] font-bold px-[14px] py-[12px] mt-[14px]"
-            style={{ background: INK, color: PAPER, border: "none" }}
-          >
-            {ctaLabel}
-          </span>
-        )}
+        {/* The urgency notice sits ABOVE the CTA so the button is always the
+            card's last element. Below it, a card carrying one would push its
+            own CTA up while the cards beside it kept theirs on the bottom
+            edge, and a row of plans would end in a ragged line of buttons. */}
         {card.urgent && (
           <div className="flex items-start gap-[7px] mt-[10px]">
             <span
@@ -1090,6 +1187,19 @@ const StackedTripCard: React.FC<{
               style={{ color: RED, fontSize: 9, lineHeight: 1.4 }}
             >
               {card.urgent}
+            </span>
+          </div>
+        )}
+        {ctaLabel && (
+          // `mt-auto` pins the button to the bottom even on a card with no
+          // `line` to absorb the slack, so the CTAs line up whatever mix of
+          // copy, chips and notices the cards above them carry.
+          <div className="mt-auto pt-[14px]">
+            <span
+              className="block w-full text-center rounded-full text-[13px] font-bold px-[14px] py-[12px]"
+              style={{ background: INK, color: PAPER, border: "none" }}
+            >
+              {ctaLabel}
             </span>
           </div>
         )}
@@ -1231,7 +1341,20 @@ const TripsSection: React.FC<{
       style={band ? { background: palette.accentSoft } : undefined}
     >
       <Container>
-        <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+        {section.headingLink ? (
+          <div className="flex items-start justify-between gap-[16px] flex-wrap">
+            <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+            <Link
+              href={section.headingLink.href}
+              className="ctl-press shrink-0 rounded-full bg-white px-[18px] py-[10px] text-[13px] font-semibold no-underline"
+              style={{ color: INK }}
+            >
+              {section.headingLink.label} →
+            </Link>
+          </div>
+        ) : (
+          <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+        )}
         <div
           className={`gap-[10px] md:gap-[16px] mt-[14px] md:mt-[24px] ${
             stacked

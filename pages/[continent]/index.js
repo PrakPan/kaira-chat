@@ -1,3 +1,5 @@
+import { SITE_ORIGIN } from "../../lib/seo/siteOrigin";
+import { tripsHubsForPath } from "../../lib/seo/tripsHubs";
 import Head from "next/head";
 import { useEffect } from "react";
 import { connect } from "react-redux";
@@ -46,11 +48,11 @@ const TravelPlanner = (props) => {
           property="og:description"
           content={`${props.Data?.meta_description}`}
         />
-        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+        <meta name="twitter:image" content={`${SITE_ORIGIN}/og-image.png`} />
         <meta
           property="keywords"
           content={`${
@@ -72,7 +74,7 @@ const TravelPlanner = (props) => {
 
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/${props.path}`}
+          href={`${SITE_ORIGIN}/${props.path}`}
         ></link>
       </Head>
 
@@ -83,6 +85,7 @@ const TravelPlanner = (props) => {
         continetCarousel={props.continetCarousel}
         destination={convertDbNameToCapitalFirst(props.Data?.slug)}
         type={props.Type}
+        tripsHubs={props.tripsHubs}
       ></ContinentPage>
     </Layout>
   );
@@ -97,7 +100,7 @@ export async function getStaticPaths() {
     );
     const data = res.data.data.pages;
 
-    for (var i = 0; i < 1; i++) {
+    for (var i = 0; i < data?.length; i++) {
       paths.push({
         params: {
           continent: data[i]['path'],
@@ -152,7 +155,7 @@ export async function getStaticProps(context) {
   }
 
   try {
-   for (let i = 0; i < 1; i++) {
+   for (let i = 0; i < contientTheme?.length; i++) {
       // mercury api
       const countrydetailsResponse = await axioscountrydetailsinstance.get(
         `?limit=100&offset=0&continent=${contientTheme[i].path}`
@@ -199,7 +202,8 @@ export async function getStaticProps(context) {
       path,
       hotLocationSearch,
       destination:continent,
-      Type:"Page"
+      Type:"Page",
+      tripsHubs: tripsHubsForPath(path),
     },
   };
 }

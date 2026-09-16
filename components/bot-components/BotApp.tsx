@@ -32,6 +32,10 @@ import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
 import BrandLockup from "../brand/BrandLockup";
 import ItineraryShimmer from "./components/ItineraryShimmer";
+import {
+  ChatPanelSkeleton,
+  ItineraryPanelSkeleton,
+} from "./components/BotAppSkeleton";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
 import { getPlatform, type ThemeSelectedItem } from "./hooks/useChat";
@@ -440,6 +444,24 @@ export default function BotApp({
     })(),
   );
   const isFreshP1Redirect = isFreshP1RedirectRef.current;
+
+  // ── Session-reload skeletons ──────────────────────────────────────────────
+  // Opening/refreshing /chat/{id} used to paint the sidebar beside two empty
+  // white panels for the whole restore (status API → archive check → threads
+  // list → get_by_id), and the itinerary panel stayed empty a while longer
+  // until ItineraryContainer's first fetch filled Redux.
+  //   isSessionRestoring  — the initial restoreLatestThread is in flight. Both
+  //                         panels show a skeleton over their (mounted) content.
+  //   awaitingItineraryPaint — restore done but a real itinerary's data hasn't
+  //                         landed yet; only the itinerary panel keeps its
+  //                         skeleton. Cleared by the effect further down.
+  // A fresh P1 redirect has nothing to restore, so it never starts in either.
+  const [isSessionRestoring, setIsSessionRestoring] = useState(
+    !!sessionId && !isFreshP1Redirect,
+  );
+  const [awaitingItineraryPaint, setAwaitingItineraryPaint] = useState(
+    !!sessionId && !isFreshP1Redirect,
+  );
 
   const [mapState, setMapState] = useState<MapState>({
     lat: 20,
@@ -1152,6 +1174,7 @@ export default function BotApp({
 
   // ── Refs for restore guards ──────────────────────────────────────────────
   const hasRestoredRef = useRef(false);
+  const initialRestoreInFlightRef = useRef(false);
   const userSelectedThreadRef = useRef(false);
   const chatBotInjectedMessageRef = useRef<string | null>(null);
   const isLoadingThreadRef = useRef(false);
@@ -3027,11 +3050,27 @@ export default function BotApp({
   // ── Only restore on initial mount ────────────────────────────────────────
   useEffect(() => {
     if (!sessionId) return;
-    if (hasRestoredRef.current) return;
-    if (userSelectedThreadRef.current) return;
+    if (hasRestoredRef.current || userSelectedThreadRef.current) {
+      // This effect re-runs whenever restoreLatestThread's identity changes, so
+      // only drop the reload skeletons when the restore was claimed elsewhere
+      // (pending seed prompt, thread select, popstate) — never while our own
+      // restore is still in flight; its .finally clears them.
+      if (!initialRestoreInFlightRef.current) {
+        setIsSessionRestoring(false);
+        setAwaitingItineraryPaint(false);
+      }
+      return;
+    }
     hasRestoredRef.current = true;
     if (window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/)) {
-      restoreLatestThread(sessionId);
+      initialRestoreInFlightRef.current = true;
+      restoreLatestThread(sessionId).finally(() => {
+        initialRestoreInFlightRef.current = false;
+        setIsSessionRestoring(false);
+      });
+    } else {
+      setIsSessionRestoring(false);
+      setAwaitingItineraryPaint(false);
     }
   }, [sessionId, restoreLatestThread]);
 
@@ -4156,6 +4195,38 @@ Start Location: ${details.startLocation}`;
     return activeItineraryId;
   }, [activeItineraryId]);
 
+  // Hold the itinerary skeleton past the restore only while a real itinerary
+  // is mounted but hasn't painted (no name in Redux yet). Chat-only / draft /
+  // map landings have nothing more to wait for, and the tailored flow has its
+  // own body shimmer. Capped so a fetch that never fills the name can't leave
+  // the panel stuck on a skeleton.
+  const hasItineraryName = !!(
+    itineraryReduxName || currentItineraryRef?.current?.name
+  );
+  useEffect(() => {
+    if (!awaitingItineraryPaint || isSessionRestoring) return;
+    if (
+      !itineraryContainerId ||
+      hasItineraryName ||
+      fromTailored ||
+      viewMode !== "itinerary"
+    ) {
+      setAwaitingItineraryPaint(false);
+      return;
+    }
+    const t = setTimeout(() => setAwaitingItineraryPaint(false), 15000);
+    return () => clearTimeout(t);
+  }, [
+    awaitingItineraryPaint,
+    isSessionRestoring,
+    itineraryContainerId,
+    hasItineraryName,
+    fromTailored,
+    viewMode,
+  ]);
+  const showItineraryReloadSkeleton =
+    isSessionRestoring || awaitingItineraryPaint;
+
   // ── Tailored-form skeleton gate ──────────────────────────────────────────
   // When the user lands on /chat/{id}?source=tailored, the itinerary panel's
   // body would otherwise be blank (header + cart loader visible, body empty)
@@ -4603,6 +4674,18 @@ Start Location: ${details.startLocation}`;
         overflow: isMobile ? "visible" : "hidden",
       }}
     >
+      {/* Session reload: skeleton in place of the header + body. The real
+          header and body stay mounted (display:none) so ItineraryContainer's
+          fetch/poll keeps running underneath — same trick as the tailored
+          shimmer below. */}
+      {showItineraryReloadSkeleton && <ItineraryPanelSkeleton />}
+      <div
+        style={
+          showItineraryReloadSkeleton
+            ? { display: "none" }
+            : { display: "contents" }
+        }
+      >
       {/* Header strip — full-width bar on desktop, compact rounded card on mobile
           (design's .trip strip).
           On mobile the card sticks to the top of the itinerary scroll pane. The
@@ -5131,6 +5214,7 @@ Start Location: ${details.startLocation}`;
           </div>
         ) : null}
       </div>
+      </div>
     </div>
   );
 
@@ -5359,6 +5443,13 @@ Start Location: ${details.startLocation}`;
               />
             )}
           </div>
+          {/* Session reload: cover the (mounted) chat until the thread restore
+              has filled it. */}
+          {isSessionRestoring && (
+            <div className="absolute inset-0 z-20">
+              <ChatPanelSkeleton />
+            </div>
+          )}
         </div>
       </div>
 
@@ -5523,6 +5614,11 @@ Start Location: ${details.startLocation}`;
                   />
                 )}
               </div>
+              {isSessionRestoring && (
+                <div className="absolute inset-0 z-10">
+                  <ChatPanelSkeleton />
+                </div>
+              )}
             </div>
           }
           itineraryContent={isMobile ? mobileItineraryPanel : null}
@@ -6152,7 +6248,7 @@ const LockInHoldStrip = ({
         // Midnight, not the brand's `primary-indigo` (#07213A) — that is a blue
         // navy and the design's ribbon is near-black. #0B1220 is the ink the
         // rest of the checkout already sets its darkest type in.
-        className="ttw-hold-ribbon flex items-center gap-[10px] max-ph:gap-[9px] rounded-t-[12px] bg-[#0B1220] px-[20px] max-ph:px-[10px] py-[10px] max-ph:py-[8px] transition-transform duration-500 ease-out motion-reduce:transition-none"
+        className="ttw-hold-ribbon flex items-center gap-[10px] max-ph:gap-[9px] rounded-t-[12px] bg-[#0B1220] px-[18px] max-ph:px-[10px] py-[8px] max-ph:py-[8px] transition-transform duration-500 ease-out motion-reduce:transition-none"
         style={{ transform: revealed ? "translateY(0)" : "translateY(100%)" }}
       >
         {/* Kaira, ringed in the brand yellow so she reads as the speaker rather
@@ -6181,84 +6277,24 @@ const LockInHoldStrip = ({
           <div className="font-inter text-[12px] font-600 leading-[14px] text-white">
             Prices are dynamic but I can hold them for you.
           </div>
-          {/* Hard against the sentence, as the design has it. `flex` is doing
-              the work, not a margin: as a plain block this div laid the clock
-              out in a LINE BOX, and a line box is at least as tall as the
-              block's own strut — inherited here from the app's ~16px/1.5 body
-              metrics, so ~24px of it around a 9.5px span. The clock's own
-              `leading` could not touch that; the strut is the div's, not the
-              span's. A flex container has no line boxes at all, so the row is
-              exactly the clock's height and what is left between the two is
-              half-leading measured in their own type sizes — which left the two
-              almost touching, hence the 3px put back deliberately. With the
-              strut gone this margin is the whole gap and nothing else, so it
-              can be read off the design instead of guessed at. */}
           {/* <div className="mt-[3px] flex">{expiryClock}</div> */}
         </div>
 
-        {/* ── Desktop ───────────────────────────────────────────────────────
-            The design's row — sentence, byline, clock, button — wants about
-            1080px, and this bar is the itinerary panel at `md:w-[48%]`, so it
-            often has less. `flex-wrap` decides what happens then, off the real
-            text rather than a guessed breakpoint: flex breaks lines by each
-            item's MAX-CONTENT width, so the clock stays on the row while the
-            sentence's full single line plus the clock still fit, and drops to
-            the next line the moment they do not — which is the rule by eye
-            ("same row if there is room, next line if not") expressed exactly.
-            No resize listener either, on a bar two ResizeObservers already
-            watch.
-
-            The sentence and the Hold button never move. The byline is the one
-            piece that hides outright, since the portrait beside it already
-            says whose voice this is — see `.ttw-hold-byline` in globals.css.
-
-            `min-w-0` so a genuinely narrow panel wraps the sentence itself
-            rather than shoving the button off the bar. */}
+        {/* ── Desktop ─────────────────────────────────────────────────────── */}
         <div className="max-ph:hidden min-w-0 flex-1 flex flex-wrap items-baseline gap-x-3 gap-y-[3px]">
-          {/* `grow` on the SENTENCE is what right-aligns the clock, rather than
-              anything on the clock itself. When both share a line the sentence
-              swells to fill the gap and the clock ends up against the Hold
-              button, as the design has it; when the sentence is too long to
-              share, it takes the line alone and the clock starts the next one
-              at the left. Growing the sentence cannot misplace the clock the
-              way a spacer or an `ml-auto` can — see the note below. */}
           <span className="grow font-inter text-[13.5px] font-600 leading-[18px] text-white">
-            Prices change often. I can hold this one for you, for {holdDays}{" "}
-            full days.
-            {/* Her byline, in the bar's own label voice — small caps in mono is
-                how every other label on this bar reads ("Total Cost").
-                Deliberately INSIDE the sentence rather than a flex item beside
-                it: as a sibling it was the growing sentence that pushed it, so
-                it drifted across the bar and came to rest against the clock
-                instead of sitting at the end of the line it belongs to. As
-                inline text it simply follows the last word, wherever that
-                falls. Shown only where the row is wide enough to keep the
-                sentence on one line — see `.ttw-hold-byline` in globals.css. */}
+            Prices are dynamic but I can hold them for you.
             <span className="ttw-hold-byline ml-3 font-mono text-[9.5px] font-400 tracking-[0.1em] text-[#7C8698] whitespace-nowrap">
               KAIRA · YOUR TRIP PLANNER
             </span>
           </span>
-          {/* Nothing on the clock does the aligning — deliberately. `ml-auto`
-              right-aligns it on WHICHEVER line it lands, so once it wrapped it
-              hung off the right of line two. A zero-width growing spacer before
-              it fails the same way for a subtler reason: when the sentence is
-              wider than the bar it takes line one alone and the spacer is
-              pushed onto line two WITH the clock, where it grows and shoves it
-              right again. Only the sentence can be trusted to stay on line one,
-              so the sentence is what grows. */}
-          <span>{expiryClock}</span>
+          <span className="ttw-hold-byline">{expiryClock}</span>
         </div>
 
         <button
           type="button"
           onClick={onHold}
-          // The clip box is `aria-hidden` and zero-height for the first beat,
-          // and a focusable control inside that is the one thing that combination
-          // actually breaks — tab lands on a button nobody can see.
           tabIndex={revealed ? undefined : -1}
-          // The one control on the ribbon, and the reason it exists. Same
-          // yellow, hover bloom and press as the cart's own hold CTA, so the
-          // two read as the same button in two places.
           className="shrink-0 flex items-center gap-[6px] rounded-67br bg-primary-yellow px-[14px] max-ph:px-[12px] h-[33px] max-ph:h-[29px] font-inter text-[13px] max-ph:text-[12px] font-bold text-[#0B1220] whitespace-nowrap cursor-pointer transition-all duration-200 ease-out hover:bg-[#FFEE1A] hover:-translate-y-[1px] hover:shadow-[0_10px_22px_-12px_rgba(247,231,0,0.95)] active:translate-y-0 active:bg-[#EFDF00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F7E700]"
         >
           <HoldLock size={13} />
