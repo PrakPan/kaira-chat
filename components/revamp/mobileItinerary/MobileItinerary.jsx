@@ -95,6 +95,24 @@ const scrollParentOf = (node) => {
   return null;
 };
 
+// How far below the sticky header a leg comes to rest — the design's own 8px
+// breathing gap, so the card doesn't butt into the rule above it.
+const ANCHOR_GAP = 8;
+
+// The travel a chip tap draws (see scrollToAnchor). Each frame closes REACH of
+// whatever gap is left, which is an ease-out: ~250ms to land, most of it in the
+// first third. MIN_STEP keeps the tail of that curve from crawling a fraction
+// of a pixel at a time, and HOLD_FRAMES is how long it then sits on the target
+// re-aiming, for the reflow that arrives just after the travel stops.
+const REACH = 0.24;
+const MIN_STEP = 1.5;
+const HOLD_FRAMES = 20;
+// A ceiling on the whole run. Browsers round a scroll offset to device pixels,
+// so on a fractional DPR the last pixel of the gap can round straight back out
+// and never close — and a frame loop that never converges is a frame loop that
+// never stops.
+const MAX_FRAMES = 120;
+
 // The stay carries an image KEY, but the detail sheet paints it as a CSS
 // background and needs a URL — resized, because a hotel hero is a 54px
 // thumbnail here and shipping the original is what the media resizer exists to
@@ -190,6 +208,16 @@ export default function MobileItinerary({
   const isDetail = sheet?.type === "detail";
   const isMore = sheet?.type === "more";
   const rootRef = useRef(null);
+  // Teardown for the in-flight chip travel — cancels its frame and drops the
+  // gesture listeners that let the user interrupt it (see scrollToAnchor).
+  const scrollRunRef = useRef(null);
+  const stopScroll = useCallback(() => {
+    const stop = scrollRunRef.current;
+    scrollRunRef.current = null;
+    stop?.();
+  }, []);
+  // Measured scroll room under the last leg, so its chip can reach the top.
+  const [tailHeight, setTailHeight] = useState(0);
 
   // Kaira can't act on two requests at once — a send made mid-stream is dropped
   // silently by useChat — so the CTAs go quiet while the trip is repricing.
@@ -276,21 +304,40 @@ export default function MobileItinerary({
     [ask],
   );
 
-  // CHANGE on the taxi row. Named by the booking rather than the city, so
-  // Kaira's "About …" chip says which car is being talked about on a leg that
-  // has more than one.
-  const handleChangeExtra = useCallback(
-    (leg, extra) =>
-      ask(
-        extra?.airportRole
-          ? prompts.changeHubTaxi(
-              extra.airportHub,
-              extra.airportRole,
-              leg.city,
-            )
-          : prompts.changeTaxi(leg.city),
-        extra?.name || `Taxi in ${leg.city}`,
-      ),
+  // A dashed taxi chip under a transfer card — the half of the journey that has
+  // no car. The pickup is in the city the journey reaches; the drop is in the
+  // one it leaves (the previous city, or the traveller's start city on leg 1).
+  // On the way home the only half is the drop in the last city.
+  const handleAddJourneyTaxi = useCallback(
+    (leg, travel, chip, isReturn) => {
+      if (!chip?.ask || !travel) return;
+      const hub = travel.hub || "Airport";
+      const label = travel.title || `Taxi in ${leg.city}`;
+      if (isReturn || chip.ask === "drop") {
+        const city = isReturn ? leg.city : travel.fromCity || leg.city;
+        ask(prompts.addHubTaxi(hub, "drop", city), label);
+        return;
+      }
+      if (chip.ask === "pickup") {
+        ask(prompts.addHubTaxi(hub, "pickup", leg.city), label);
+        return;
+      }
+      ask(prompts.addTransferTaxis(hub, travel.fromCity, leg.city), label);
+    },
+    [ask],
+  );
+
+  // "Day at leisure · ask Kaira" — a day with nothing in the package.
+  const handleAddToDay = useCallback(
+    (leg, day) =>
+      ask(prompts.addToDay(leg.city, day.dayLabel), `Day ${day.dayNumber}`),
+    [ask],
+  );
+
+  // "NO PICKUP · ADD ›" on an included activity.
+  const handleAddActivityPickup = useCallback(
+    (leg, item) =>
+      ask(prompts.addActivityPickup(item.name, leg.city), `Pickup · ${item.name}`),
     [ask],
   );
 
@@ -566,15 +613,27 @@ export default function MobileItinerary({
 
   // Jump to a leg without leaving the page.
   //
-  // NOT `scrollIntoView`. That asks the browser to put the element at the top
-  // of the viewport whatever it takes, and it moves EVERY scrollable ancestor
-  // to get there. It also lands the target flush under the top edge, where the
-  // sticky trip card is already sitting — so the eyebrow it scrolled to is
-  // covered by the thing you tapped in.
+  // NOT `scrollIntoView`, and not `scrollTo({behavior:"smooth"})` either.
   //
-  // So one scroller is moved directly, by hand, and the target is clamped to
-  // the scroll it actually has. Tapping the last city lands as far down as the
-  // trip goes and stops there.
+  //  • `scrollIntoView` moves EVERY scrollable ancestor to get there, and lands
+  //    the target flush under the top edge — where the sticky trip card is
+  //    already sitting, so the city you tapped arrives underneath the chip you
+  //    tapped it with.
+  //
+  //  • A native smooth scroll is fire-and-forget: there is no event for "it
+  //    arrived", the target is fixed at the moment it starts, and the phones
+  //    this ships to do not all honour it on the WINDOW. Anything built on top
+  //    of it has to guess when the travel ended by watching the offset go
+  //    still — and a smooth scroll that has not begun yet is indistinguishable
+  //    from one that has finished, which is what turned a chip tap into a hard
+  //    jump.
+  //
+  // So the travel is run here, one frame at a time, and the destination is
+  // RE-MEASURED on every one of those frames: each frame closes a fixed
+  // fraction of whatever gap is left. That is the same ease-out a native smooth
+  // scroll draws, except that a reflow underway while it travels — the browser
+  // retracting its address bar, a sticky header changing height, a row settling
+  // — is absorbed as it happens rather than corrected afterwards.
   //
   // WHICH scroller depends on the host. On a phone this surface has none of
   // its own: the bot shell lays the trip out in the document so the browser
@@ -583,35 +642,154 @@ export default function MobileItinerary({
   // sheet, or the desktop column — that pane is. Both are handled below rather
   // than one being a fallback for the other, because the maths differs: a
   // pane's own top is its scroll origin, the window's is 0.
-  const scrollToAnchor = useCallback((anchor) => {
+  const scrollToAnchor = useCallback(
+    (anchor) => {
+      const root = rootRef.current;
+      const el = anchor ? root?.querySelector(`#${CSS.escape(anchor)}`) : null;
+      if (!el) return;
+
+      // A tap on a second chip abandons the first one's travel.
+      stopScroll();
+
+      const pane = scrollParentOf(root);
+      const posOf = () => (pane ? pane.scrollTop : window.scrollY);
+      const maxOf = () => {
+        if (pane) return Math.max(0, pane.scrollHeight - pane.clientHeight);
+        const doc = document.scrollingElement || document.documentElement;
+        return Math.max(0, doc.scrollHeight - window.innerHeight);
+      };
+      const moveTo = (y) =>
+        pane ? pane.scrollTo(0, y) : window.scrollTo(0, y);
+
+      // Where the leg has to come to rest, in the scroller's own units, as of
+      // THIS frame. Clamped to the scroll that actually exists — `tailHeight`
+      // below is what makes sure the last city has enough of it.
+      const aim = () => {
+        const stuck = root.firstElementChild?.getBoundingClientRect().height || 0;
+        const frameTop = pane ? pane.getBoundingClientRect().top : 0;
+        const error =
+          el.getBoundingClientRect().top - frameTop - stuck - ANCHOR_GAP;
+        return Math.min(Math.max(posOf() + error, 0), maxOf());
+      };
+
+      let raf = 0;
+      // The user always wins. A drag or a wheel during the travel drops it on
+      // the spot — without this the animation scrolls back against the finger
+      // every frame, which is worse than not animating at all.
+      const abort = () => stopScroll();
+      const stop = () => {
+        cancelAnimationFrame(raf);
+        window.removeEventListener("touchstart", abort);
+        window.removeEventListener("wheel", abort);
+        window.removeEventListener("keydown", abort);
+      };
+      scrollRunRef.current = stop;
+      window.addEventListener("touchstart", abort, { passive: true });
+      window.addEventListener("wheel", abort, { passive: true });
+      window.addEventListener("keydown", abort);
+
+      const instant =
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // Holding on the target rather than stopping the moment it is reached:
+      // the shell can still reflow for a few frames after the travel ends (the
+      // address bar finishing its retraction is the common one), and re-aiming
+      // through that is the difference between the city cover sitting under the
+      // chips and sitting half off the top of the screen.
+      let held = 0;
+      let frames = 0;
+      const frame = () => {
+        if (frames++ >= MAX_FRAMES) {
+          stopScroll();
+          return;
+        }
+        const from = posOf();
+        const gap = aim() - from;
+        if (Math.abs(gap) < 1) {
+          if (held++ >= HOLD_FRAMES) {
+            stopScroll();
+            return;
+          }
+        } else {
+          held = 0;
+          moveTo(
+            instant
+              ? from + gap
+              : from + Math.sign(gap) * Math.max(Math.abs(gap) * REACH, MIN_STEP),
+          );
+        }
+        raf = requestAnimationFrame(frame);
+      };
+      raf = requestAnimationFrame(frame);
+    },
+    [stopScroll],
+  );
+
+  // Drop any in-flight travel when this surface goes away.
+  useEffect(() => stopScroll, [stopScroll]);
+
+  // ── Room at the foot of the trip ───────────────────────────────────────────
+  // A chip can only bring its city to the top if the page has that much scroll
+  // left below it. It often doesn't: the last leg is the short one on a trip
+  // that ends with a single night, and the cart bar's padding is nowhere near a
+  // screen. Tapping the last chip then moved the trip a few pixels and stopped
+  // — indistinguishable, from the traveller's side, from the chip doing
+  // nothing.
+  //
+  // So the exact shortfall is measured and added as a spacer at the end. A trip
+  // already long enough gets zero, and the measurement is idempotent: it reads
+  // back the scroll range the spacer it already rendered produced, so it
+  // settles on the first pass rather than growing on every one.
+  // `itineraryReady` is in the deps because the skeleton below renders no root
+  // at all: without it the first measurement is taken against a tree that does
+  // not exist yet and never retaken.
+  const ready = gates.itineraryReady;
+  const lastAnchor = legs.length ? legs[legs.length - 1].anchor : null;
+  useEffect(() => {
     const root = rootRef.current;
-    const el = anchor ? root?.querySelector(`#${CSS.escape(anchor)}`) : null;
-    if (!el) return;
-
-    // Clear the sticky trip card, which would otherwise sit over the leg's own
-    // eyebrow the moment it arrived. It is this component's first child.
-    const stuck = root.firstElementChild?.offsetHeight || 0;
-    const pane = scrollParentOf(root);
-
-    if (pane) {
-      const top =
-        pane.scrollTop +
-        el.getBoundingClientRect().top -
-        pane.getBoundingClientRect().top -
-        stuck;
-      const max = Math.max(0, pane.scrollHeight - pane.clientHeight);
-      pane.scrollTo({ top: Math.min(Math.max(top, 0), max), behavior: "smooth" });
-      return;
+    if (!root || !lastAnchor) {
+      setTailHeight(0);
+      return undefined;
     }
 
-    const doc = document.scrollingElement || document.documentElement;
-    const top = window.scrollY + el.getBoundingClientRect().top - stuck;
-    const max = Math.max(0, doc.scrollHeight - window.innerHeight);
-    window.scrollTo({
-      top: Math.min(Math.max(top, 0), max),
-      behavior: "smooth",
-    });
-  }, []);
+    let raf = 0;
+    const measure = () => {
+      raf = 0;
+      const el = root.querySelector(`#${CSS.escape(lastAnchor)}`);
+      if (!el) return;
+      const pane = scrollParentOf(root);
+      const doc = document.scrollingElement || document.documentElement;
+      const pos = pane ? pane.scrollTop : window.scrollY;
+      const frameTop = pane ? pane.getBoundingClientRect().top : 0;
+      const stuck = root.firstElementChild?.getBoundingClientRect().height || 0;
+      const view = pane ? pane.clientHeight : window.innerHeight;
+      // What the chip asks for, against what the page can give.
+      const want =
+        pos + el.getBoundingClientRect().top - frameTop - stuck - ANCHOR_GAP;
+      const have = pane
+        ? Math.max(0, pane.scrollHeight - pane.clientHeight)
+        : Math.max(0, doc.scrollHeight - window.innerHeight);
+      setTailHeight((h) =>
+        Math.min(Math.max(0, Math.round(h + want - have)), view),
+      );
+    };
+
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(measure);
+    };
+
+    schedule();
+    const ro = new ResizeObserver(schedule);
+    ro.observe(root);
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      window.removeEventListener("resize", schedule);
+    };
+  }, [lastAnchor, ready]);
+
 
   // ── Where Kaira's last change landed ───────────────────────────────────────
   // The effect payload names an itinerary_city_id and (sometimes) a
@@ -669,7 +847,7 @@ export default function MobileItinerary({
         onLegClick={scrollToAnchor}
       />
 
-      <div className="flex flex-col gap-[12px] px-[14px] pb-[18px] pt-[12px]">
+      <div className="flex flex-col gap-[11px] px-[14px] pb-[18px] pt-[12px]">
         {/* ── The one price on this surface ── */}
         <div style={T.tripCard}
           className="flex flex-col gap-[13px] p-[16px]">
@@ -726,9 +904,12 @@ export default function MobileItinerary({
             onOpenTravel={handleOpenTravel}
             onOpenStay={handleOpenStay}
             onOpenDay={handleOpenDay}
+            onOpenDayItem={handleOpenDayItem}
+            onAddToDay={handleAddToDay}
+            onAddActivityPickup={handleAddActivityPickup}
             onAddTaxi={handleAddTaxi}
+            onAddJourneyTaxi={handleAddJourneyTaxi}
             onOpenExtra={handleOpenExtra}
-            onChangeExtra={handleChangeExtra}
             onChangeReturn={handleChangeReturn}
             onAddReturn={handleAddReturn}
           />
@@ -790,6 +971,14 @@ export default function MobileItinerary({
           </div>
         )}
       </div>
+
+      {/* The scroll room the last city's chip needs — measured, and 0 on a trip
+          that is long enough already. It carries no paint of its own, so on the
+          trips that do need it the page simply ends in the white ground it
+          already ends in. */}
+      {tailHeight > 0 ? (
+        <div style={{ height: tailHeight }} aria-hidden />
+      ) : null}
 
       {/* One slot, one sheet. Opening an item from the day REPLACES it —
           `isDay` goes false the moment `sheet.type` becomes "detail". */}

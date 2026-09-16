@@ -38,70 +38,133 @@ export const tripCard = {
   boxShadow: "0 10px 24px -18px rgba(11,18,32,0.25)",
 };
 
-/** Arrival-transfer row — tinted, no border. */
+// ── Itinerary E · Bordered ───────────────────────────────────────────────────
+// The day-by-day list as "Kaira E Bordered" draws it: every city in its own
+// colour, carried by the city cover's gradient, the stay card's left edge, the
+// included-activity strip and the day cards' border.
+//
+// Six colours, indexed by `leg.tone` (the leg's position, cycling). The design
+// gives each as a base, a soft border and a gradient.
+export const CITY_BASE = ["#2e5f52", "#b06a4a", "#2e4a5f", "#4a6f8f", "#6f5230", "#4a4a7a"];
+export const CITY_SOFT = [
+  "rgba(46,95,82,.5)",
+  "rgba(176,106,74,.55)",
+  "rgba(46,74,95,.5)",
+  "rgba(74,111,143,.5)",
+  "rgba(111,82,48,.55)",
+  "rgba(74,74,122,.5)",
+];
+export const CITY_GRADIENT = [
+  "linear-gradient(135deg,#2e5f52,#5ba38b)",
+  "linear-gradient(135deg,#b06a4a,#d1936f)",
+  "linear-gradient(135deg,#2e4a5f,#7fa8c4)",
+  "linear-gradient(135deg,#4a6f8f,#8fb4d4)",
+  "linear-gradient(135deg,#6f5230,#a3814f)",
+  "linear-gradient(135deg,#4a4a7a,#8484b4)",
+];
+/** The "Fly home" cover — ink, not a city colour. */
+export const HOME_GRADIENT = "linear-gradient(135deg,#0b1220,#2a3550)";
+
+export const tone = (i) => (Number.isFinite(i) ? ((i % 6) + 6) % 6 : 0);
+
+export const GREEN = "#1f8a5a";
+export const GREEN_TINT = "rgba(31,138,90,.12)";
+export const TRANSFER_TINT = "#eff4fe";
+export const TRANSFER_INK = "#2563eb"; // glyph stroke
+export const TRANSFER_LINK = "#1a4fd6"; // CHANGE / ADD text
+export const PAPER_2 = "#f4f3ec";
+
+/** Transfer card — tinted, no border. */
 export const travelRow = {
   ...flat,
   border: "none",
   borderRadius: 14,
-  background: "#eff4fe",
+  background: TRANSFER_TINT,
 };
 
-/**
- * The same row, with nothing in it — a leg of the route with no transfer
- * booked. It keeps the travel row's SHAPE, because a missing transfer is a
- * hole in the route rather than an extra you declined, and takes the amber the
- * chat itinerary already uses for exactly this state (VerticalLayout's
- * "No transfer added from … to …" card) so one condition reads the same on
- * every surface.
- */
-export const travelGapRow = {
+/** City cover — the leg's gradient, no border. */
+export const cover = (i, isHome = false) => ({
   ...flat,
-  border: "1px solid #f5dfa6",
-  borderRadius: 14,
-  background: "#fff7e6",
-};
+  border: 0,
+  borderRadius: 18,
+  background: isHome ? HOME_GRADIENT : CITY_GRADIENT[tone(i)],
+  boxSizing: "border-box",
+});
 
-/** "ADD" on the amber row — the tinted row's white pill, hairlined in amber. */
-export const pillOnAmber = {
+/** Stay card — hairline border with the city's 3px colour edge. */
+export const stayCard = (i) => ({
   ...flat,
-  border: "1px solid #f0dbaa",
-  borderRadius: 999,
+  border: `1px solid ${LINE}`,
+  borderLeft: `3px solid ${CITY_BASE[tone(i)]}`,
+  borderRadius: 12,
   background: "#ffffff",
-};
+});
 
-/** The day list is one bordered box; rows inside it are separated by hairlines. */
-export const dayList = {
+/** A booked taxi in the city — plain bordered row with ✓ INCLUDED. */
+export const taxiCard = {
   ...flat,
   border: `1px solid ${LINE}`,
   borderRadius: 12,
-  overflow: "hidden",
   background: "#ffffff",
 };
 
-export const dayRow = {
+/** One card per day, bordered in the city's soft colour. */
+export const dayCard = (i) => ({
   ...flat,
-  border: "none",
+  border: `1.5px solid ${CITY_SOFT[tone(i)]}`,
+  borderRadius: 18,
+  background: "#ffffff",
+  overflow: "hidden",
+});
+
+/** A row inside a day card, under a hairline. */
+export const dayCardRow = {
+  ...flat,
+  border: 0,
   borderTop: `1px solid ${HAIRLINE}`,
   borderRadius: 0,
   background: "#ffffff",
   width: "100%",
 };
 
-export const addRow = {
-  ...dayRow,
-  background: "#fbfbfa",
+/** An included activity — the day-card row with the city's 3px strip. */
+export const paidRow = (i) => ({
+  ...dayCardRow,
+  borderLeft: `3px solid ${CITY_BASE[tone(i)]}`,
+});
+
+/** Mono chips — green "✓ …", dashed "ADD ›", and the time-of-day tag. */
+export const chipIn = {
+  ...flat,
+  border: 0,
+  borderRadius: 3,
+  background: GREEN_TINT,
+  color: GREEN,
+};
+export const chipAdd = {
+  ...flat,
+  border: "1px dashed #cfd3da",
+  borderRadius: 3,
+  background: "none",
+  color: "#6b7280",
+};
+export const chipTod = {
+  ...flat,
+  border: 0,
+  borderRadius: 3,
+  background: PAPER_2,
+  color: INK,
 };
 
 /**
- * The in-city taxi, as the last row of the day list — the slot "Add taxi in …"
- * occupies when there is none. It takes the ARRIVAL ROW's tint rather than the
- * add row's off-white: a booked taxi is a journey, the same kind of thing as
- * the transfer that got you into the city, and the tint is what says so. The
- * day list clips it to the box's radius, so it needs none of its own.
+ * Borderless reset for a button that is only a tap target. No `padding` here:
+ * an inline padding would outrank the padding classes the caller sets.
  */
-export const taxiRow = {
-  ...dayRow,
-  background: "#eff4fe",
+export const bare = {
+  ...flat,
+  border: 0,
+  background: "none",
+  borderRadius: 0,
 };
 
 /** Pill controls — leg-nav chips, "More", "Map", the ask-Kaira field. */
@@ -112,7 +175,7 @@ export const pill = {
   background: "#ffffff",
 };
 
-/** "CHANGE" on a tinted row sits on white with no border. */
+/** "CHANGE" / "ADD ›" on a tinted row sits on white with no border. */
 export const pillOnTint = {
   ...flat,
   border: "none",
@@ -137,10 +200,16 @@ export const primaryPill = {
   boxShadow: "0 8px 20px -10px rgba(247,231,0,0.55)",
 };
 
-/** Dashed placeholder — "Add a stay", "Ask Kaira to add something". */
+/** Dashed placeholder — "Add a stay", "Add taxi in …". */
 export const dashed = {
   ...flat,
   border: `1.5px dashed #cfd3da`,
   borderRadius: 12,
   background: "#ffffff",
+};
+
+/** "Day at leisure · ask Kaira" — the dashed placeholder, tighter, inside a day card. */
+export const leisure = {
+  ...dashed,
+  borderRadius: 10,
 };

@@ -11,6 +11,12 @@
 //  carries over unchanged.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// "an airport", "a station" — the hub word, lowercased, with its article.
+const hubPhrase = (hub) => {
+  const h = String(hub || "airport").toLowerCase();
+  return `${/^[aeiou]/.test(h) ? "an" : "a"} ${h}`;
+};
+
 const prompts = {
   // ── Stays ──────────────────────────────────────────────────────────────────
   changeStay: (city) => `change hotel in ${city}`,
@@ -40,6 +46,17 @@ const prompts = {
   changeHubTaxi: (hub, role, city) =>
     `change the ${String(hub || "airport").toLowerCase()} ${role} in ${city}`,
   addTaxi: (city) => `add a taxi in ${city}`,
+  // The missing half of a journey's taxis, from the chip under its transfer
+  // card — worded like changeHubTaxi so Kaira hears the same vocabulary.
+  addHubTaxi: (hub, role, city) => `add ${hubPhrase(hub)} ${role} in ${city}`,
+  // Both halves at once — "NO TAXIS ADDED · ADD ›".
+  addTransferTaxis: (hub, from, to) =>
+    from
+      ? `add ${hubPhrase(hub)} drop in ${from} and ${hubPhrase(hub)} pickup in ${to}`
+      : `add ${hubPhrase(hub)} pickup in ${to}`,
+  // "NO PICKUP · ADD ›" on an included activity.
+  addActivityPickup: (name, city) =>
+    `add a taxi to ${name}${city ? ` in ${city}` : ""} and back`,
 
   // ── Days ───────────────────────────────────────────────────────────────────
   addToDay: (city, dayLabel) =>

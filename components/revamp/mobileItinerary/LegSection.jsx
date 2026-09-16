@@ -3,7 +3,16 @@ import * as T from "./designTokens";
 import getModeAccent from "../common/components/bookingDetail/modeAccent";
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  One leg of the trip: how you arrive, where you sleep, what each day holds.
+//  One leg of the trip, as "Kaira E Bordered" draws it:
+//
+//    transfer card  → how you get here, with its taxi halves as chips
+//    city cover     → the city in serif on its own gradient
+//    stay card      → where you sleep, edged in the city's colour
+//    day cards      → one per day, bordered in the city's colour, holding
+//                     that day's activities and the cars that run on it
+//    add taxi       → while this city is still missing a car
+//
+//  and, on the last leg, the journey home with its own "Fly home" cover.
 //
 //  There are no prices on any row. The trip is sold as a package, so the only
 //  amount on this surface is the one total in the footer; a per-row price would
@@ -12,78 +21,134 @@ import getModeAccent from "../common/components/bookingDetail/modeAccent";
 //  Every mutating affordance here is a request to Kaira, not a drawer.
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Only the GLYPH varies by mode — the row keeps the design's one transfer
-// colour for every mode. Hardcoding a plane put one on trains, buses and
-// ferries ("London Kings Cross → Edinburgh" is a train), but tinting each mode
-// with its own accent is equally wrong here: the design draws every travel row
-// in the same blue, so the colour says "transfer", not "which transfer".
-const TRAVEL_INK = "#1a4fd6";
-const modeIconFor = (modeKey) => getModeAccent(modeKey).Icon;
-
-
-const Chevron = () => (
-  <span className="flex-none text-[14px] leading-none text-[#b8becc]" aria-hidden>
-    ›
-  </span>
+// The design's own glyphs for the three modes it draws. Any other mode (bus,
+// ferry, a two-wheeler) keeps its Font Awesome glyph from modeAccent, drawn in
+// the same colour and size, rather than borrowing a plane or a car it isn't.
+const PlaneGlyph = ({ size, color }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
+    strokeWidth="2" strokeLinecap="round" className="flex-none" aria-hidden>
+    <path d="M17.8 19.2L16 11l3.5-3.5a2.1 2.1 0 00-3-3L13 8 4.8 6.2a.5.5 0 00-.5.8l3.5 3.5-2 2-2.3-.6a.5.5 0 00-.5.8L5 15l1.3 2.1a.5.5 0 00.8-.1l.6-2.3 2-2 3.5 3.5a.5.5 0 00.8-.5z" />
+  </svg>
 );
 
+const RailGlyph = ({ size, color }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
+    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-none" aria-hidden>
+    <rect x="4" y="3" width="16" height="16" rx="2" />
+    <path d="M4 11h16M12 3v8M8 19l-2 3M16 19l2 3" />
+    <circle cx="8" cy="15" r="1" />
+    <circle cx="16" cy="15" r="1" />
+  </svg>
+);
+
+const CarGlyph = ({ size, color }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
+    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-none" aria-hidden>
+    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+    <circle cx="7" cy="17" r="2" />
+    <path d="M9 17h6" />
+    <circle cx="17" cy="17" r="2" />
+  </svg>
+);
+
+function ModeGlyph({ modeKey, size, color }) {
+  const key = getModeAccent(modeKey).key;
+  if (key === "Flight") return <PlaneGlyph size={size} color={color} />;
+  if (key === "Train") return <RailGlyph size={size} color={color} />;
+  // Taxi only: a self-drive keeps modeAccent's steering wheel, which is also
+  // what its detail sheet shows — who is driving is the whole distinction.
+  if (key === "Taxi") return <CarGlyph size={size} color={color} />;
+  const Icon = getModeAccent(modeKey).Icon;
+  return Icon ? <Icon size={size} color={color} className="flex-none" aria-hidden /> : null;
+}
+
 /**
- * Arrival into this city — flight, train, ferry, bus or car, or a COMBO of
+ * The taxi halves of a journey, under its transfer card — a green "✓" for a
+ * half that is booked, a dashed chip that asks Kaira for one that isn't. The
+ * chips come built from the view model; this only draws them.
+ */
+function TaxiChips({ chips, onChip, disabled }) {
+  if (!chips?.length) return null;
+  return (
+    <div className="mt-[5px] flex flex-wrap gap-[5px]">
+      {chips.map((chip) =>
+        chip.tone === "add" ? (
+          <button
+            key={chip.label}
+            type="button"
+            onClick={() => onChip?.(chip)}
+            disabled={disabled}
+            style={T.chipAdd}
+            className="px-[6px] py-[2px] font-mono text-[7.5px] font-[600] tracking-[0.06em] disabled:opacity-40"
+          >
+            {chip.label}
+          </button>
+        ) : (
+          <span
+            key={chip.label}
+            style={T.chipIn}
+            className="px-[6px] py-[2px] font-mono text-[7.5px] font-[600] tracking-[0.06em]"
+          >
+            {chip.label}
+          </span>
+        ),
+      )}
+    </div>
+  );
+}
+
+/**
+ * How you get into this city — flight, train, ferry, bus or car, or a COMBO of
  * them ("taxi to the airport, then fly").
  *
- * A combo shows one glyph per leg, chevron-separated. Showing only the first
+ * A combo shows one glyph per mode, chevron-separated. Showing only the first
  * leg's icon is an active misstatement, not a simplification: a taxi glyph on
  * a taxi+flight booking tells the traveller they are being driven the whole
  * way to another city.
  */
-function TravelRow({ travel, cityName, onOpen, onChange, disabled }) {
+function TravelCard({ travel, onOpen, onChange, onChip, disabled }) {
   // De-duplicated by mode, in order — built with the journey in
-  // lib/tripViewModel.js, so the detail sheet this row opens shows the same
+  // lib/tripViewModel.js, so the detail sheet this card opens shows the same
   // run of glyphs rather than its own reading of the booking.
-  const glyphKeys = travel.glyphKeys?.length
-    ? travel.glyphKeys
-    : [travel.modeKey];
+  const glyphKeys = travel.glyphKeys?.length ? travel.glyphKeys : [travel.modeKey];
 
   return (
-    <div
-      style={T.travelRow}
-      className="flex items-center gap-[13px] px-[14px] py-[14px]"
-    >
+    <div style={T.travelRow} className="flex items-center gap-[12px] px-[14px] py-[13px]">
       <span className="flex flex-none items-center gap-[3px]" aria-hidden>
-        {glyphKeys.map((key, i) => {
-          const ModeIcon = modeIconFor(key);
-          if (!ModeIcon) return null;
-          return (
-            <React.Fragment key={`${key}-${i}`}>
-              {i > 0 ? (
-                <span className="text-[10.5px] leading-none text-[#8fa8dd]">›</span>
-              ) : null}
-              <ModeIcon size={22} color={TRAVEL_INK} />
-            </React.Fragment>
-          );
-        })}
+        {glyphKeys.map((key, i) => (
+          <React.Fragment key={`${key}-${i}`}>
+            {i > 0 ? (
+              <span className="text-[10px] leading-none text-[#8fa8dd]">›</span>
+            ) : null}
+            <ModeGlyph modeKey={key} size={20} color={T.TRANSFER_INK} />
+          </React.Fragment>
+        ))}
       </span>
-      <button
-        type="button"
-        onClick={onOpen}
-        className="min-w-0 flex-1 border-0 bg-transparent p-0 text-left"
-      >
-        <div className="truncate font-inter text-[13.5px] font-[700] text-[#0b1220]">
-          {travel.title || cityName}
-        </div>
-        {travel.meta ? (
-          <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
-            {travel.meta}
+      <div className="min-w-0 flex-1">
+        <button
+          type="button"
+          onClick={onOpen}
+          style={T.bare}
+          className="block w-full p-0 text-left"
+        >
+          <div className="font-inter text-[12.5px] font-[700] text-[#0b1220]">
+            {travel.title}
           </div>
-        ) : null}
-      </button>
+          {travel.rowMeta ? (
+            <div className="mt-[4px] font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+              {travel.rowMeta}
+            </div>
+          ) : null}
+        </button>
+        <TaxiChips chips={travel.chips} onChip={onChip} disabled={disabled} />
+      </div>
       {!travel.isDraftLeg && (
         <button
           type="button"
           onClick={onChange}
           disabled={disabled}
           style={T.pillOnTint}
-          className="flex-none px-[12px] py-[7px] font-mono text-[10px] font-[600] tracking-[0.06em] text-[#1a4fd6] disabled:opacity-40"
+          className="flex-none px-[12px] py-[7px] font-mono text-[8.5px] font-[600] tracking-[0.06em] text-[#1a4fd6] disabled:opacity-40"
         >
           CHANGE
         </button>
@@ -93,59 +158,85 @@ function TravelRow({ travel, cityName, onOpen, onChange, disabled }) {
 }
 
 /**
- * The leg of the route with nothing booked on it.
+ * A leg of the route with nothing booked on it — the design's T6 card: the
+ * transfer card's own tint, "TRANSFER NOT ADDED YET" in yellow, and any taxis
+ * already bought for it still shown green.
  *
  * This is NOT the same thing as a row that hasn't loaded, and not the same
  * thing as an optional extra the traveller skipped: the trip says it goes from
- * one city to the next, and how is unanswered. So it takes the travel row's
- * shape and says so plainly, rather than being left out — a leg that silently
- * disappears reads as "handled", which is the one thing it isn't.
+ * one city to the next, and how is unanswered. A leg that silently disappears
+ * reads as "handled", which is the one thing it isn't.
  */
-function TravelGapRow({ meta, onAdd, disabled }) {
+function TravelGapCard({ gap, onAdd, disabled }) {
+  const TransferIcon = getModeAccent("Transfer").Icon;
   return (
-    <button
-      type="button"
-      onClick={onAdd}
-      disabled={disabled}
-      style={T.travelGapRow}
-      className="flex w-full items-center gap-[13px] px-[14px] py-[14px] text-left disabled:opacity-40"
-    >
-      <span className="flex flex-none items-center text-[#b67b10]" aria-hidden>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M12 4.5 2.8 20h18.4L12 4.5z"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinejoin="round"
-          />
-          <path d="M12 10v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          <circle cx="12" cy="17" r="1" fill="currentColor" />
-        </svg>
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block truncate font-inter text-[13.5px] font-[700] text-[#5c4405]">
-          No transfer added
-        </span>
-        {meta ? (
-          <span className="mt-[4px] block truncate font-mono text-[10px] tracking-[0.06em] text-[#9c7a22]">
-            {meta}
-          </span>
-        ) : null}
-      </span>
-      {/* A span, not a button: the whole row is the target, and a button inside
-          a button is invalid markup that Safari resolves by dropping one. */}
+    <div style={T.travelRow} className="flex items-center gap-[12px] px-[14px] py-[13px]">
       <span
-        style={T.pillOnAmber}
-        className="flex-none px-[12px] py-[7px] font-mono text-[10px] font-[600] tracking-[0.06em] text-[#b67b10]"
+        className="grid h-[26px] w-[26px] flex-none place-items-center rounded-full"
+        style={{ background: "#ffffff", color: "#93a3bd" }}
+        aria-hidden
       >
-        + ADD
+        {TransferIcon ? <TransferIcon size={13} color="currentColor" /> : null}
       </span>
-    </button>
+      <div className="min-w-0 flex-1">
+        <div className="font-inter text-[12.5px] font-[700] text-[#0b1220]">
+          {gap.title}
+        </div>
+        <div className="mt-[4px] font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+          {gap.dateLabel ? `${gap.dateLabel} · ` : ""}
+          <span
+            className="font-[600] text-[#0b1220]"
+            style={{ background: T.YELLOW, padding: "1px 5px", borderRadius: 3 }}
+          >
+            TRANSFER NOT ADDED YET
+          </span>
+        </div>
+        <TaxiChips chips={gap.chips} />
+      </div>
+      <button
+        type="button"
+        onClick={onAdd}
+        disabled={disabled}
+        style={T.pillOnTint}
+        className="flex-none px-[12px] py-[7px] font-mono text-[8.5px] font-[600] tracking-[0.06em] text-[#1a4fd6] disabled:opacity-40"
+      >
+        ADD ›
+      </button>
+    </div>
+  );
+}
+
+/**
+ * The city in serif on its gradient — or "Fly home" on ink.
+ */
+function CityCover({ name, meta, tone, isHome }) {
+  return (
+    <div style={T.cover(tone, isHome)} className="flex items-center gap-[10px] px-[17px] py-[15px]">
+      {/* No `truncate`: at line-height 1 its overflow clip cuts the serif's
+          descenders and italic overhang ("Fly home" loses the tail of its y). */}
+      <span
+        className="ttw-type-serif min-w-0 text-[23px] leading-none text-white"
+        style={{ letterSpacing: "normal" }}
+      >
+        {name}
+      </span>
+      <span
+        className="ml-auto flex-none font-mono text-[8.5px] tracking-[0.12em]"
+        style={{ color: "rgba(255,255,255,.8)" }}
+      >
+        {meta}
+      </span>
+      {isHome ? (
+        <span className="flex-none text-[20px] leading-none" aria-hidden>
+          ✈️
+        </span>
+      ) : null}
+    </div>
   );
 }
 
 /** Where you sleep — or the gap where a stay should be. */
-function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled }) {
+function StayCard({ stay, tone, showGap, gapMeta, cityName, onOpen, onChange, disabled }) {
   if (showGap) {
     return (
       <button
@@ -153,18 +244,21 @@ function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled 
         onClick={onChange}
         disabled={disabled}
         style={T.dashed}
-        className="flex w-full items-center gap-[11px] p-[13px] text-left disabled:opacity-40"
+        className="flex w-full items-center gap-[10px] p-[12px] text-left disabled:opacity-40"
       >
-        <div className="h-[32px] w-[32px] flex-none rounded-[7px] border-[1.5px] border-dashed border-[#cfd3da]" />
+        <div
+          className="h-[30px] w-[30px] flex-none"
+          style={{ border: "1.5px dashed #cfd3da", borderRadius: 7 }}
+        />
         <div className="min-w-0 flex-1">
-          <div className="font-inter text-[13.5px] font-[700] text-[#0b1220]">
+          <div className="font-inter text-[12.5px] font-[700] text-[#0b1220]">
             Add a stay
           </div>
-          <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
+          <div className="mt-[4px] font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
             {gapMeta || `IN ${cityName.toUpperCase()}`}
           </div>
         </div>
-        <span className="flex-none font-mono text-[10px] tracking-[0.06em] text-[#6b7280]">
+        <span className="flex-none font-mono text-[8.5px] tracking-[0.06em] text-[#6b7280]">
           ASK KAIRA ›
         </span>
       </button>
@@ -174,36 +268,26 @@ function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled 
   if (!stay) return null;
 
   return (
-    <div style={T.card}
-      className="flex items-center gap-[11px] px-[12px] py-[12px]">
-      {/* ── The hotel thumbnail ──────────────────────────────────────────
-          A plain <img>, deliberately — NOT the shared <ImageLoader>, which
-          could not load on this surface:
-
-           • It wraps every image in react-lazyload, which listens for SCROLL
-             ON THE WINDOW. This page's scroller is a nested pane (the window
-             never scrolls), so after the one check it makes when it mounts,
-             nothing ever re-checks: a thumbnail below the fold stayed an empty
-             grey box no matter how far you scrolled.
-           • Its styled-components are declared INSIDE its render, so every
-             re-render is a new component type — React unmounts and remounts
-             the <img>, which is what made the ones that did load flicker and
-             re-fetch on every trip update.
-
-          None of that machinery buys anything for a 42px thumbnail. `loading`
-          is the native attribute, which — unlike the library — understands the
-          scroll container it is actually in.
+    <div style={T.stayCard(tone)} className="flex items-center gap-[10px] px-[12px] py-[11px]">
+      {/* A plain <img>, deliberately — NOT the shared <ImageLoader>. Its
+          react-lazyload listens for scroll on the WINDOW (so a thumbnail in a
+          nested scroller never loads), and its styled-components are declared
+          inside render (so every re-render remounts and re-fetches the image).
+          `loading` is native and understands the scroller it is actually in.
 
           The two inline resets are load-bearing: styles.css and Bootstrap both
           set bare `img {}` rules with margins and `max-width`, which otherwise
           push this out of the row. */}
-      <div className="h-[46px] w-[46px] flex-none overflow-hidden rounded-[10px] bg-[#eef0f4]">
+      <div
+        className="h-[42px] w-[42px] flex-none overflow-hidden"
+        style={{ borderRadius: 10, background: "#eef0f4" }}
+      >
         {stay.imageUrl ? (
           <img
             src={stay.imageUrl}
             alt=""
-            width={46}
-            height={46}
+            width={42}
+            height={42}
             loading="lazy"
             decoding="async"
             style={{
@@ -220,13 +304,14 @@ function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled 
       <button
         type="button"
         onClick={onOpen}
-        className="min-w-0 flex-1 border-0 bg-transparent p-0 text-left"
+        style={T.bare}
+        className="min-w-0 flex-1 p-0 text-left"
       >
-        <div className="truncate font-inter text-[13.5px] font-[700] text-[#0b1220]">
+        <div className="font-inter text-[12.5px] font-[700] text-[#0b1220]">
           {stay.name}
         </div>
         {stay.meta ? (
-          <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
+          <div className="mt-[4px] font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
             {stay.meta}
           </div>
         ) : null}
@@ -236,7 +321,7 @@ function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled 
         onClick={onChange}
         disabled={disabled}
         style={T.pill}
-        className="flex-none px-[11px] py-[6px] font-mono text-[10px] tracking-[0.06em] text-[#6b7280] disabled:opacity-40"
+        className="flex-none px-[11px] py-[6px] font-mono text-[8.5px] tracking-[0.06em] text-[#6b7280] disabled:opacity-40"
       >
         CHANGE
       </button>
@@ -244,124 +329,336 @@ function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled 
   );
 }
 
-/** A day, collapsed to what it costs you in attention: what's booked, what's loose. */
-function DayRow({ day, onOpen, changed }) {
-  const freeParts = [
-    day.freeIdeaCount ? `${day.freeIdeaCount} IDEAS` : null,
-    day.mealCount ? `${day.mealCount} ${day.mealCount === 1 ? "MEAL" : "MEALS"}` : null,
-  ].filter(Boolean);
-
-  const freeLabel =
-    freeParts.length > 0
-      ? freeParts.join(" · ")
-      : day.paidActivityCount
-        ? ""
-        : "NOTHING ELSE PLANNED";
-
+/**
+ * The car this day is driven around in, as one quiet line of its day card —
+ * glyph and fact, nothing else. The booking's own name ("Sedan, 8h") and its
+ * dates are in the sheet it opens; on the card the only thing the traveller is
+ * checking is whether a car is there.
+ */
+function DayTaxiRow({ taxis, onOpen }) {
+  if (!taxis.length) return null;
   return (
     <button
       type="button"
-      onClick={onOpen}
-      style={T.dayRow}
-      className="flex w-full items-center gap-[12px] px-[12px] py-[12px] text-left"
+      onClick={() => onOpen?.(taxis[0])}
+      style={T.dayCardRow}
+      className="flex w-full items-center gap-[9px] px-[13px] py-[10px] text-left"
     >
-      {/* The trip's day INDEX in serif, as the design draws it — "01", "02".
-          Fixed width so the title column stays aligned all the way down; a
-          ragged left edge on a list this long reads as broken. */}
-      <span className="flex w-[28px] flex-none items-center justify-center">
-        <span className="ttw-type-serif text-[21px] leading-none text-[#0b1220]">
-          {day.dayNumber}
-        </span>
+      {/* Green, like every other "this is in your package" mark on the
+          surface (the ✓ chips) — it states a fact, it doesn't ask for
+          anything. */}
+      <span className="flex-none" style={{ color: T.GREEN }} aria-hidden>
+        <ModeGlyph modeKey={taxis[0].modeKey} size={16} color="currentColor" />
       </span>
-      <div className="flex min-w-0 flex-1 flex-col gap-[5px]">
-        <div className="truncate font-inter text-[13.5px] font-[700] text-[#0b1220]">
-          {day.title || "Free day"}
-        </div>
-        <div className="flex items-center gap-[7px]">
-          {day.paidActivityCount > 0 && (
-            <span className="flex-none rounded-[4px] bg-[#f7e700] px-[8px] py-[4px] font-mono text-[10px] font-[600] tracking-[0.07em] text-[#0b1220]">
-              {day.paidActivityCount === 1
-                ? "1 PAID ACTIVITY"
-                : `${day.paidActivityCount} PAID ACTIVITIES`}
-            </span>
-          )}
-          {freeLabel ? (
-            <span className="truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
-              {freeLabel}
-            </span>
-          ) : null}
-        </div>
-      </div>
-      {/* The day Kaira just touched. On a scroll this long a change made in
-          the chat otherwise lands invisibly — the badge is what lets the user
-          confirm the thing they asked for happened HERE. */}
-      {changed ? (
-        <span
-          style={{
-            border: "1px solid #0b1220",
-            borderRadius: 3,
-            background: "#f7e700",
-            boxShadow: "none",
-          }}
-          className="flex-none px-[6px] py-[3px] font-mono text-[9.5px] tracking-[0.07em] text-[#0b1220]"
-        >
-          CHANGED
-        </span>
-      ) : null}
-      <Chevron />
+      <span
+        className="min-w-0 flex-1 font-inter text-[12px] font-[600]"
+        style={{ color: T.GREEN }}
+      >
+        {taxis.length > 1 ? "Sightseeing taxis included" : "Sightseeing taxi included"}
+      </span>
     </button>
   );
 }
 
 /**
- * The city's taxi, as the last row of the day list.
- *
- * A booked intracity car is a JOURNEY, not an extra you bolted on, so it takes
- * the arrival row's tint and glyph — the same blue every travel row on this
- * surface is drawn in — rather than the white card with a BOOKED tag it used
- * to get. It also earns a CHANGE, for the same reason every other booked row
- * has one: "BOOKED" states a fact and then offers nothing to do about it.
- *
- * The glyph sits in a 28px slot so its title lines up with the day titles
- * above, which are offset by the serif day number.
+ * A car booked inside the city that lands on no day of it — the fallback row,
+ * so a booking never renders nowhere. Tapping it opens the booking, whose
+ * sheet is where it is changed or removed.
  */
-function TaxiRow({ extra, onOpen, onChange, disabled }) {
-  const TaxiIcon = modeIconFor(extra.modeKey);
-
+function TaxiCard({ extra, onOpen }) {
   return (
-    <div
-      style={T.taxiRow}
-      className="flex w-full items-center gap-[12px] px-[12px] py-[11px]"
+    <button
+      type="button"
+      onClick={onOpen}
+      style={T.taxiCard}
+      className="flex w-full items-center gap-[10px] px-[12px] py-[11px] text-left"
     >
       <span
-        className="flex w-[28px] flex-none items-center justify-center"
+        className="grid h-[26px] w-[26px] flex-none place-items-center rounded-full"
+        style={{ background: T.PAPER_2, color: "#445069" }}
         aria-hidden
       >
-        {TaxiIcon ? <TaxiIcon size={19} color={TRAVEL_INK} /> : null}
+        <ModeGlyph modeKey={extra.modeKey} size={13} color="currentColor" />
       </span>
-      <button
-        type="button"
-        onClick={onOpen}
-        className="min-w-0 flex-1 border-0 bg-transparent p-0 text-left"
-      >
-        <div className="truncate font-inter text-[13.5px] font-[700] text-[#0b1220]">
+      <div className="min-w-0 flex-1">
+        <div className="font-inter text-[12.5px] font-[700] text-[#0b1220]">
           {extra.name}
         </div>
         {extra.meta ? (
-          <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
+          <div className="mt-[4px] font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
             {extra.meta}
           </div>
         ) : null}
-      </button>
+      </div>
+      <span
+        style={T.chipIn}
+        className="flex-none px-[6px] py-[3px] font-mono text-[8px] tracking-[0.07em]"
+      >
+        ✓ INCLUDED
+      </span>
+    </button>
+  );
+}
+
+/**
+ * An activity on the day card.
+ *
+ * `included` is an activity that is in the package: the city's colour strip,
+ * its pickup chip, "✓ INCLUDED". An activity that isn't (yet) — the cart hasn't
+ * priced, which happens on every reprice, or it isn't selected — keeps the same
+ * row without those claims. Dropping it would leave its day reading "at
+ * leisure" while it is plainly planned.
+ *
+ * The row is a plain container, not a button: the "NO PICKUP · ADD ›" chip is
+ * a button of its own, and a button inside a button (or a role="button") is
+ * nested interactive content. The photo and the text column are the open
+ * target instead, the way TravelCard pairs its title button with its chips.
+ */
+function ActivityRow({ item, tone, included, disabled, onOpen, onAddPickup }) {
+  const tod = item.timeOfDay ? String(item.timeOfDay).toUpperCase() : null;
+  const rest = [item.durationLabel, item.rating ? `${item.rating}★` : null, item.category]
+    .filter(Boolean)
+    .join(" · ")
+    .toUpperCase();
+
+  return (
+    <div
+      style={included ? T.paidRow(tone) : T.dayCardRow}
+      className={`flex items-center gap-[10px] py-[10px] pr-[13px] ${
+        included ? "pl-[10px]" : "pl-[13px]"
+      }`}
+    >
       <button
         type="button"
-        onClick={onChange}
-        disabled={disabled}
-        style={T.pillOnTint}
-        className="flex-none px-[12px] py-[7px] font-mono text-[10px] font-[600] tracking-[0.06em] text-[#1a4fd6] disabled:opacity-40"
+        onClick={onOpen}
+        style={T.bare}
+        className="h-[38px] w-[38px] flex-none p-0"
+        aria-label={item.name}
       >
-        CHANGE
+        <span
+          className="block h-full w-full"
+          style={{
+            borderRadius: 8,
+            background: item.imageUrl
+              ? `#eef0f4 center/cover no-repeat url("${item.imageUrl}")`
+              : "#eef0f4",
+          }}
+        />
       </button>
+      <div className="min-w-0 flex-1">
+        <button
+          type="button"
+          onClick={onOpen}
+          style={T.bare}
+          className="block w-full truncate p-0 text-left font-inter text-[12.5px] font-[700] text-[#0b1220]"
+        >
+          {item.name}
+        </button>
+        <div className="mt-[4px] flex flex-wrap items-center gap-[5px]">
+          {tod ? (
+            <span
+              style={T.chipTod}
+              className="px-[6px] py-[2px] font-mono text-[7.5px] font-[600] tracking-[0.08em]"
+            >
+              {tod}
+            </span>
+          ) : null}
+          {/* Only an explicit answer from an included booking earns a pickup
+              chip. */}
+          {included && item.pickup === true ? (
+            <span
+              style={T.chipIn}
+              className="px-[6px] py-[2px] font-mono text-[7.5px] font-[600] tracking-[0.06em]"
+            >
+              ✓ HOTEL PICKUP
+            </span>
+          ) : null}
+          {included && item.pickup === false ? (
+            <button
+              type="button"
+              onClick={() => onAddPickup?.()}
+              disabled={disabled}
+              style={T.chipAdd}
+              className="px-[6px] py-[2px] font-mono text-[7.5px] font-[600] tracking-[0.06em] disabled:opacity-40"
+            >
+              NO PICKUP · ADD ›
+            </button>
+          ) : null}
+          {rest ? (
+            <span className="font-mono text-[7.5px] tracking-[0.06em] text-[#8a93a6]">
+              {rest}
+            </span>
+          ) : null}
+        </div>
+      </div>
+      {included ? (
+        <span
+          style={T.chipIn}
+          className="flex-none px-[6px] py-[3px] font-mono text-[8px] tracking-[0.07em]"
+        >
+          ✓ INCLUDED
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * Kaira's whisper under a day: the free places and meals planned around it, in
+ * one serif line. "All free, no booking" is only true of those two kinds, so an
+ * activity that isn't in the cart stays out of it — it is in the full day.
+ */
+const whisperFor = (day, activityCount) => {
+  const recos = day.items.filter(
+    (x) => (x.kind === "poi" || x.kind === "food") && x.name,
+  );
+  if (!recos.length) return null;
+  const lead = activityCount
+    ? "Around it: "
+    : day.dayNumber === "01"
+      ? "Ease in: "
+      : "Go see: ";
+  const parts = recos.map((x) => (x.kind === "food" ? `eat at ${x.name}` : x.name));
+  return `${lead}${parts.join(", ")} · all free, no booking.`;
+};
+
+/** One day of the trip, as its own card. */
+function DayCard({
+  day,
+  tone,
+  taxis = [],
+  changed,
+  disabled,
+  onOpen,
+  onOpenItem,
+  onOpenTaxi,
+  onAddToDay,
+  onAddPickup,
+}) {
+  // Included activities first, then any the cart hasn't confirmed.
+  const activities = [
+    ...day.items.filter((x) => x.kind === "booked"),
+    ...day.items.filter((x) => x.kind === "activity"),
+  ];
+  const whisper = whisperFor(day, activities.length);
+  const isTravel = !!day.isTravelDay;
+
+  return (
+    <div style={T.dayCard(tone)}>
+      <button
+        type="button"
+        onClick={onOpen}
+        style={T.bare}
+        className="flex w-full items-center gap-[11px] px-[13px] pb-[10px] pt-[12px] text-left"
+      >
+        <span
+          className="grid h-[36px] w-[36px] flex-none place-items-center"
+          style={{ borderRadius: 10, background: T.PAPER_2 }}
+        >
+          <span
+            className="ttw-type-serif text-[19px] leading-none text-[#0b1220]"
+            style={{ letterSpacing: "normal" }}
+          >
+            {day.dayNumber}
+          </span>
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="font-inter text-[13px] font-[700] text-[#0b1220]">
+            {day.title || "Free day"}
+          </div>
+          <div className="mt-[3px] font-mono text-[8px] tracking-[0.07em] text-[#8a93a6]">
+            {day.dateMeta}
+          </div>
+        </div>
+        {/* The day Kaira just touched. On a scroll this long a change made in
+            the chat otherwise lands invisibly. */}
+        {changed ? (
+          <span
+            className="flex-none px-[6px] py-[3px] font-mono text-[8px] tracking-[0.08em]"
+            style={{ background: T.INK, color: "#ffffff", borderRadius: 3 }}
+          >
+            CHANGED
+          </span>
+        ) : null}
+        <span className="flex-none font-mono text-[8px] tracking-[0.06em] text-[#8a93a6]">
+          FULL DAY ›
+        </span>
+      </button>
+
+      {activities.map((item, idx) => (
+        <ActivityRow
+          key={item.id || `${item.name}-${idx}`}
+          item={item}
+          tone={tone}
+          included={item.kind === "booked"}
+          disabled={disabled}
+          onOpen={() => onOpenItem?.(item)}
+          onAddPickup={() => onAddPickup?.(item)}
+        />
+      ))}
+
+      {activities.length === 0 && !isTravel ? (
+        <button
+          type="button"
+          onClick={onAddToDay}
+          disabled={disabled}
+          style={{
+            ...T.leisure,
+            width: "calc(100% - 26px)",
+            boxSizing: "border-box",
+            margin: "2px 13px 4px",
+          }}
+          className="flex items-center gap-[9px] px-[11px] py-[9px] text-left disabled:opacity-40"
+        >
+          <span className="flex-none text-[13px] text-[#6b7280]">+</span>
+          <span className="min-w-0 flex-1 font-inter text-[11.5px] font-[600] text-[#6b7280]">
+            Day at leisure · ask Kaira
+          </span>
+          <span className="flex-none font-mono text-[8px] tracking-[0.06em] text-[#8a93a6]">
+            3 FIT ›
+          </span>
+        </button>
+      ) : null}
+
+      {/* The day's car, under the plan and above Kaira's suggestions. */}
+      <DayTaxiRow taxis={taxis} onOpen={onOpenTaxi} />
+
+      {whisper ? (
+        <button
+          type="button"
+          onClick={onOpen}
+          style={T.dayCardRow}
+          className="flex gap-[9px] px-[13px] pb-[13px] pt-[11px] text-left"
+        >
+          <span
+            className="mt-[1px] block h-[20px] w-[20px] flex-none rounded-full"
+            style={{ background: '#cfe4f0 center/cover no-repeat url("/KairaInsta.png")' }}
+            aria-hidden
+          />
+          <span className="block min-w-0 flex-1">
+            <span
+              className="ttw-type-serif block truncate text-[13.5px] text-[#445069]"
+              style={{ letterSpacing: "normal", lineHeight: 1.5 }}
+            >
+              {whisper}
+            </span>
+            <span className="mt-[5px] block font-mono text-[8px] tracking-[0.06em] text-[#0b1220]">
+              PLAN ›
+            </span>
+          </span>
+        </button>
+      ) : null}
+
+      {/* The fly-home day: no leisure invitation. It says "nothing planned"
+          only when that is true. */}
+      {isTravel && activities.length === 0 && !whisper ? (
+        <div
+          style={{ borderTop: `1px solid ${T.HAIRLINE}` }}
+          className="px-[13px] py-[10px] font-mono text-[8px] tracking-[0.07em] text-[#8a93a6]"
+        >
+          TRAVEL DAY · NOTHING PLANNED
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -377,43 +674,58 @@ export default function LegSection({
   onOpenTravel,
   onOpenStay,
   onOpenDay,
+  onOpenDayItem,
+  onAddToDay,
+  onAddActivityPickup,
   onAddTaxi,
+  onAddJourneyTaxi,
   onOpenExtra,
-  onChangeExtra,
   onChangeReturn,
   onAddReturn,
 }) {
-  return (
-    <section id={leg.anchor} className="flex flex-col gap-[12px]">
-      {/* Eyebrow — leg number, city, dates */}
-      <div className="flex items-center gap-[8px] pt-[3px]">
-        <span className="flex-none font-mono text-[10.5px] tracking-[0.08em] text-[#8a93a6]">
-          {leg.eyebrow}
-        </span>
-        <div className="h-px flex-1 bg-[#e6e8ec]" />
-        <span className="flex-none font-mono text-[10.5px] tracking-[0.08em] text-[#8a93a6]">
-          {leg.datesLabel}
-        </span>
-      </div>
+  const hasReturn = !!(leg.outboundTravel || leg.outboundGap);
 
+  // The cars booked inside this city. Each one belongs to the day (or days) it
+  // runs on — `dates` is its check-in → check-out range, so a multi-day hire
+  // appears on each of them.
+  //
+  // The airport/station pickup and drop are not here at all: each belongs to a
+  // journey, and the transfer card already states it ("✓ PICKUP & DROP
+  // INCLUDED"), which is where the design puts it too.
+  const cityTaxis = leg.extras.filter((x) => !x.airportRole);
+  const taxisOn = (day) =>
+    cityTaxis.filter((x) => day.date && (x.dates || []).includes(day.date));
+  // A car whose dates land on no day of this city still has to appear
+  // somewhere — a booking that renders nowhere reads as one that isn't there.
+  const strandedTaxis = cityTaxis.filter(
+    (x) => !leg.days.some((day) => day.date && (x.dates || []).includes(day.date)),
+  );
+
+  return (
+    // `leading-[normal]`: the design sets no line-height, and Bootstrap's body
+    // 1.5 would otherwise open up every one of these small mono lines.
+    <section id={leg.anchor} className="flex flex-col gap-[11px] leading-[normal]">
       {leg.inboundTravel ? (
-        <TravelRow
+        <TravelCard
           travel={leg.inboundTravel}
-          cityName={leg.city}
           disabled={disabled}
           onOpen={() => onOpenTravel?.(leg, leg.inboundTravel)}
           onChange={() => onChangeTravel?.(leg)}
+          onChip={(chip) => onAddJourneyTaxi?.(leg, leg.inboundTravel, chip, false)}
         />
       ) : leg.travelGap ? (
-        <TravelGapRow
-          meta={leg.travelGap.meta}
+        <TravelGapCard
+          gap={leg.travelGap}
           disabled={disabled}
           onAdd={() => onAddTravel?.(leg)}
         />
       ) : null}
 
-      <StayRow
+      <CityCover name={leg.city} meta={leg.coverMeta} tone={leg.tone} />
+
+      <StayCard
         stay={leg.stay}
+        tone={leg.tone}
         showGap={leg.showStayGap}
         gapMeta={leg.stayGapMeta}
         cityName={leg.city}
@@ -422,90 +734,70 @@ export default function LegSection({
         onChange={() => onChangeStay?.(leg)}
       />
 
-      {/* The days, and under them every car booked in this city: the airport
-          pickup and drop, and the sightseeing taxi — each its own row, each
-          openable and changeable, in the order they happen.
+      {strandedTaxis.map((x) => (
+        <TaxiCard
+          key={x.bookingId || x.name}
+          extra={x}
+          onOpen={() => onOpenExtra?.(leg, x)}
+        />
+      ))}
 
-          "Add taxi in …" stands for whichever car this city is still missing —
+      {leg.days.map((day) => (
+        <DayCard
+          key={day.key}
+          day={day}
+          tone={leg.tone}
+          taxis={taxisOn(day)}
+          disabled={disabled}
+          changed={!!changedDayKey && day.key === changedDayKey}
+          onOpen={() => onOpenDay?.(leg, day)}
+          onOpenItem={(item) => onOpenDayItem?.(leg, day, item)}
+          onOpenTaxi={(taxi) => onOpenExtra?.(leg, taxi)}
+          onAddToDay={() => onAddToDay?.(leg, day)}
+          onAddPickup={(item) => onAddActivityPickup?.(leg, item)}
+        />
+      ))}
+
+      {/* "Add taxi in …" stands for whichever car this city is still missing —
           the airport pickup, the airport drop, the sightseeing car — so it goes
           only once there is nothing left to add. `taxiSlots.complete` is that
           question answered in the view model, where it can also tell that a
-          city reached and left by road can hold no airport pair at all, and so
-          is complete on its sightseeing car alone.
-          The box renders for a leg with taxis but no days too — otherwise the
-          booking would have nowhere left to appear. */}
-      {(leg.days.length > 0 || leg.extras.length > 0) && (
-        <div style={T.dayList}>
-          {leg.days.map((day) => (
-            <DayRow
-              key={day.key}
-              day={day}
-              changed={!!changedDayKey && day.key === changedDayKey}
-              onOpen={() => onOpenDay?.(leg, day)}
-            />
-          ))}
-          {leg.extras.map((x) => (
-            <TaxiRow
-              key={x.bookingId || x.name}
-              extra={x}
-              disabled={disabled}
-              onOpen={() => onOpenExtra?.(leg, x)}
-              onChange={() => onChangeExtra?.(leg, x)}
-            />
-          ))}
-          {leg.taxiSlots?.complete ? null : (
-            <button
-              type="button"
-              onClick={() => onAddTaxi?.(leg)}
-              disabled={disabled}
-              style={T.addRow}
-              className="flex w-full items-center gap-[8px] px-[12px] py-[11px] text-left disabled:opacity-40"
-            >
-              <span className="text-[14px] leading-none text-[#6b7280]">+</span>
-              <span className="font-inter text-[12.5px] font-[600] text-[#6b7280]">
-                Add taxi in {leg.city}
-              </span>
-            </button>
-          )}
-        </div>
-      )}
+          city reached and left by road can hold no airport pair at all. */}
+      {(leg.days.length > 0 || leg.extras.length > 0) && !leg.taxiSlots?.complete ? (
+        <button
+          type="button"
+          onClick={() => onAddTaxi?.(leg)}
+          disabled={disabled}
+          style={T.dashed}
+          className="flex w-full items-center justify-center gap-[8px] p-[11px] disabled:opacity-40"
+        >
+          <span className="text-[13px] text-[#6b7280]">+</span>
+          <span className="font-inter text-[11.5px] font-[600] text-[#6b7280]">
+            Add taxi in {leg.city}
+          </span>
+        </button>
+      ) : null}
 
       {/* ── Flying home ────────────────────────────────────────────────────
           The return journey is folded onto the last stop by the view model,
           but it is not part of that city — it is how the trip ENDS. The design
-          gives it its own block, with its own rule, after everything else. */}
-      {leg.outboundTravel || leg.outboundGap ? (
-        <>
-          <div className="flex items-center gap-[8px] pt-[3px]">
-            <span className="flex-none font-mono text-[10.5px] tracking-[0.08em] text-[#8a93a6]">
-              {`FLY HOME${
-                (leg.outboundTravel || leg.outboundGap).destName
-                  ? ` · ${(leg.outboundTravel || leg.outboundGap).destName.toUpperCase()}`
-                  : ""
-              }`}
-            </span>
-            <div className="h-px flex-1 bg-[#e6e8ec]" />
-            <span className="flex-none font-mono text-[10.5px] tracking-[0.08em] text-[#8a93a6]">
-              {leg.outboundTravel?.departLabel || ""}
-            </span>
-          </div>
-          {leg.outboundTravel ? (
-            <TravelRow
-              travel={leg.outboundTravel}
-              cityName={leg.outboundTravel.destName || leg.city}
-              disabled={disabled}
-              onOpen={() => onOpenTravel?.(leg, leg.outboundTravel)}
-              onChange={() => onChangeReturn?.(leg)}
-            />
-          ) : (
-            <TravelGapRow
-              meta={leg.outboundGap.meta}
-              disabled={disabled}
-              onAdd={() => onAddReturn?.(leg)}
-            />
-          )}
-        </>
+          draws it as a leg of its own: the journey, then a "Fly home" cover. */}
+      {leg.outboundTravel ? (
+        <TravelCard
+          travel={leg.outboundTravel}
+          disabled={disabled}
+          onOpen={() => onOpenTravel?.(leg, leg.outboundTravel)}
+          onChange={() => onChangeReturn?.(leg)}
+          onChip={(chip) => onAddJourneyTaxi?.(leg, leg.outboundTravel, chip, true)}
+        />
+      ) : leg.outboundGap ? (
+        <TravelGapCard
+          gap={leg.outboundGap}
+          disabled={disabled}
+          onAdd={() => onAddReturn?.(leg)}
+        />
       ) : null}
+      {hasReturn ? <CityCover name="Fly home" meta={leg.homeCoverMeta} isHome /> : null}
     </section>
   );
 }
