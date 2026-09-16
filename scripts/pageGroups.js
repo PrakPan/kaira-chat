@@ -66,6 +66,15 @@ const GROUPS = {
   trips: {
     pages: ["trips"],
     keyPrefixes: ["trips/"],
+    // Not buildable from this branch: scripts/tripsSeoCache.js is commented out
+    // of package.json's `prebuild`, so the .seo-cache snapshot is absent and
+    // pages/trips/** short-circuit to an empty path list. Selecting the group
+    // anyway compiles zero pages, which s3Manifest.js already refuses to write
+    // a manifest for — but only after a full build. Refusing at `select` costs
+    // twenty minutes less and says where the switch is.
+    disabled:
+      "trips are commented out of this branch's build — see `_comment_prebuild` " +
+      "in package.json and the notes in pages/trips/**",
     // Exclusively this group's namespace: nothing else exports under /trips/,
     // so `s3Manifest.js prune --reconcile` may sweep anything there that this
     // build did not emit. That is how the 658 legacy /trips/<group_type>/ pages
@@ -92,12 +101,30 @@ const resolve = (csv) => {
     );
   }
 
+  // A group can be switched off in the tree itself (see `disabled` on trips).
+  // Naming it is a mistake worth stopping: the build would compile zero of its
+  // pages and the deploy would then have to be diagnosed from a manifest error
+  // twenty minutes later. `all` is not that mistake — it means "everything this
+  // branch can build" — so there the group is dropped with a warning instead.
+  // Dropping rather than selecting-and-emitting-nothing also keeps it out of
+  // the manifest, so no prune ever looks at its live pages.
+  const named = asked.filter((name) => name !== "all" && GROUPS[name].disabled);
+  if (named.length) {
+    throw new Error(
+      named
+        .map((name) => `[page-groups] ${name}: ${GROUPS[name].disabled}`)
+        .join("\n")
+    );
+  }
+
   const selected = asked.includes("all") ? [...ALL] : asked;
   for (const name of ALL) {
     if (GROUPS[name].always && !selected.includes(name)) selected.push(name);
   }
 
-  return ALL.filter((name) => selected.includes(name));
+  return ALL.filter(
+    (name) => selected.includes(name) && !GROUPS[name].disabled
+  );
 };
 
 const move = (src, dest) => {
@@ -124,6 +151,12 @@ const select = (csv) => {
     for (const rel of GROUPS[name].pages) {
       const moved = move(path.join(PAGES_DIR, rel), path.join(BACKUP_DIR, name, rel));
       if (moved) console.log(`[page-groups] parked pages/${rel} (${name})`);
+    }
+  }
+
+  for (const name of skipped) {
+    if (GROUPS[name].disabled) {
+      console.log(`[page-groups] ${name} is switched off: ${GROUPS[name].disabled}`);
     }
   }
 
@@ -166,7 +199,11 @@ if (require.main === module) {
       restore();
     } else if (command === "list") {
       for (const name of ALL) {
-        const tag = GROUPS[name].always ? " (always built)" : "";
+        const tag = GROUPS[name].always
+          ? " (always built)"
+          : GROUPS[name].disabled
+            ? " (SWITCHED OFF on this branch)"
+            : "";
         console.log(`  ${name.padEnd(14)}${GROUPS[name].description}${tag}`);
       }
     } else {

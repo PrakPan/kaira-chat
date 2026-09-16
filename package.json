@@ -18,7 +18,9 @@
   },
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next dev",
-    "prebuild": "node scripts/assertBuildEnv.js && cross-env BUILD_NUMBER=330420252277 node -r ./scripts/loadEnv.js scripts/tripsSeoCache.js && cross-env BUILD_NUMBER=330420252277 node -r ./scripts/loadEnv.js scripts/sitemap.xml.js",
+    "_comment_prebuild": "Trips are NOT built from this branch: the tripsSeoCache.js crawl (~3 min, 1,865 pages) is commented out of `prebuild` and parked in `prebuild:with-trips`. Without the .seo-cache snapshot the pages under pages/trips/** cannot be generated, so their getStaticPaths/getStaticProps are short-circuited to match, and scripts/sitemap.xml.js republishes the trips URLs already live instead of emitting an empty sitemap-trips.xml. To restore: swap the two scripts back and undo the early returns in pages/trips/**.",
+    "prebuild": "node scripts/assertBuildEnv.js && cross-env BUILD_NUMBER=330420252277 node -r ./scripts/loadEnv.js scripts/sitemap.xml.js",
+    "prebuild:with-trips": "node scripts/assertBuildEnv.js && cross-env BUILD_NUMBER=330420252277 node -r ./scripts/loadEnv.js scripts/tripsSeoCache.js && cross-env BUILD_NUMBER=330420252277 node -r ./scripts/loadEnv.js scripts/sitemap.xml.js",
     "check-env": "node scripts/assertBuildEnv.js",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build",
     "start": "next start -p 3002",

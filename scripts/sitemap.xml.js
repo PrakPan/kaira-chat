@@ -116,14 +116,18 @@ const readPublishedChild = async (file) => {
     const blocks = String(data).match(/<url>[\s\S]*?<\/url>/g) || [];
     if (!blocks.length) return null;
 
+    // `entries` are in the same shape this script builds elsewhere, so a caller
+    // can republish them verbatim — see the trips fallback in generateSitemap.
+    const entries = blocks.map((block) => ({
+      link: tagValue(block, "loc"),
+      lastmod: tagValue(block, "lastmod") || undefined,
+      priority: tagValue(block, "priority") || undefined,
+    }));
+
     return {
-      fingerprint: urlFingerprint(
-        blocks.map((block) => ({
-          link: tagValue(block, "loc"),
-          priority: tagValue(block, "priority") || undefined,
-        }))
-      ),
-      lastmod: pickLatest(blocks.map((block) => tagValue(block, "lastmod"))),
+      entries,
+      fingerprint: urlFingerprint(entries),
+      lastmod: pickLatest(entries.map((el) => el.lastmod)),
     };
   } catch (err) {
     console.error(`[sitemap] could not read published ${file}: ${err.message}`);
@@ -399,6 +403,39 @@ const generateSitemap = async () => {
     console.error("[sitemap] failed to read trips cache:", err.message);
   }
 
+  // Trips are not built from this branch (see the note in package.json), so the
+  // .seo-cache snapshot the block above reads is never there and the two lists
+  // come back empty. Writing that out would publish a sitemap-trips.xml with
+  // zero URLs — and the 1,865 trips pages it covers are live, deployed from a
+  // separate build that this one leaves untouched on S3. Dropping them here
+  // would tell Google the whole section is gone.
+  //
+  // So the live file is republished as-is: same URLs, same per-URL lastmods,
+  // which makes it byte-identical to what is already there (resolveChildLastmod
+  // then re-derives the same child lastmod from those dates). Exactly the
+  // reasoning behind the parked-directory fallback in getStaticThemeSlugs — the
+  // sitemap lists what is LIVE, not what this particular build compiled.
+  //
+  // If production is unreachable the child degrades to empty, as it did before:
+  // a sitemap fetch failure must not take the whole prebuild, and therefore the
+  // release, down. It is loud in the log when it happens.
+  let livePaths = null;
+  if (!tripsPaths.length && !hubPaths.length) {
+    const published = await readPublishedChild(CHILD_SITEMAPS.trips);
+    if (published?.entries.length) {
+      livePaths = published.entries;
+      console.log(
+        `[sitemap] trips not built here — republishing the ${published.entries.length} ` +
+          `URLs already live in ${CHILD_SITEMAPS.trips}`
+      );
+    } else {
+      console.error(
+        `[sitemap] trips not built here and ${CHILD_SITEMAPS.trips} could not be read ` +
+          "from production — writing an EMPTY trips sitemap"
+      );
+    }
+  }
+
   // Theme landing pages: union of statically-authored pages/theme/*.tsx files
   // and CMS-driven themes served by pages/theme/[slug].js. Deduped by slug
   // (a static file and a CMS entry can share a slug; Next serves the static one).
@@ -445,7 +482,7 @@ const generateSitemap = async () => {
     ...subRegionsPaths,
   ];
   const citiesGroup = [...statesPaths, ...cityPaths];
-  const tripsGroup = [...hubPaths, ...tripsPaths];
+  const tripsGroup = livePaths || [...hubPaths, ...tripsPaths];
   const themesStaticGroup = [...StaticPaths, ...themePaths];
 
   // Resolve each child's lastmod before writing it: the same value is both the
@@ -485,7 +522,10 @@ const generateSitemap = async () => {
     `  ${CHILD_SITEMAPS.cities}: ${citiesGroup.length} urls (states + cities)`
   );
   console.log(
-    `  ${CHILD_SITEMAPS.trips}: ${tripsGroup.length} urls (${hubPaths.length} hubs + ${tripsPaths.length} trips)`
+    `  ${CHILD_SITEMAPS.trips}: ${tripsGroup.length} urls ` +
+      (livePaths
+        ? "(republished from the live sitemap — trips not built here)"
+        : `(${hubPaths.length} hubs + ${tripsPaths.length} trips)`)
   );
   console.log(
     `  ${CHILD_SITEMAPS.themesStatic}: ${themesStaticGroup.length} urls (${StaticPaths.length} static + ${themePaths.length} themes)`
