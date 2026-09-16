@@ -1,5 +1,7 @@
 import React from "react";
 import ItineraryShimmer from "./ItineraryShimmer";
+import BrandLockup from "../../brand/BrandLockup";
+import { LOGO_HEIGHT } from "../constants";
 
 // Loading placeholders for /chat/[id].
 //
@@ -301,8 +303,10 @@ const BotAppSkeleton: React.FC = () => (
     </div>
     {/* Mobile — a sessionId refresh lands on the itinerary tab */}
     <div className="flex md:hidden flex-col flex-1 overflow-hidden min-h-0">
-      <div className="flex items-center justify-between px-4 h-[56px] border-b border-[#f0f0f0]">
-        <TtwMark size={30} />
+      {/* Mirrors BotApp's MobileHeader (.kaira-mheader): the full brand lockup
+          at the shared mobile logo height, menu side on the right. */}
+      <div className="flex items-center justify-between px-4 py-[10px] border-b border-[#ececec]">
+        <BrandLockup size={LOGO_HEIGHT.MOBILE} variant="light" />
         <KairaAvatar size={32} dot />
       </div>
       <div className="flex items-center gap-2 px-4 py-2">
