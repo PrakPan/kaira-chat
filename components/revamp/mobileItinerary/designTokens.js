@@ -30,12 +30,19 @@ export const card = {
   background: "#ffffff",
 };
 
-/** The trip-total card: softer border, larger radius, the one intentional lift. */
+/**
+ * The trip-total card: softer border, larger radius, the one intentional lift.
+ *
+ * `overflow: hidden` like the day cards, and for the same reason — the card is
+ * a stack of rows under full-bleed hairlines, and its foot (the hold strip) is
+ * ink, so without the clip its square corners paint over the card's own.
+ */
 export const tripCard = {
   border: `1px solid ${LINE_SOFT}`,
   borderRadius: 18,
   background: "#ffffff",
   boxShadow: "0 10px 24px -18px rgba(11,18,32,0.25)",
+  overflow: "hidden",
 };
 
 // ── Itinerary E · Bordered ───────────────────────────────────────────────────

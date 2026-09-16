@@ -22,11 +22,21 @@ import { formatCurrencyValue } from "./formatCurrencyValue";
 /** Symbol for an ISO code. Always pass the CODE string, never the slice object. */
 export const currencySymbolFor = (code) => currencySymbols?.[code] || "₹";
 
-/** "₹3,60,789" — symbol + grouped amount, rounded to whole units. */
-export const formatMoney = (amount, code = "INR") => {
+/**
+ * "₹3,60,789" — symbol + grouped amount, rounded to whole units.
+ *
+ * `spaced` puts a hair of space after the symbol ("₹ 999"), for an amount set
+ * on a BUTTON FACE. Tight is right in running text and in the big totals, but
+ * at button size and weight the symbol crowds the first digit — the cart's own
+ * pay CTAs make the same distinction (NewBookingSlide's `money`).
+ */
+export const formatMoney = (amount, code = "INR", { spaced = false } = {}) => {
   const n = Number(amount);
   if (!Number.isFinite(n)) return null;
-  return `${currencySymbolFor(code)}${formatCurrencyValue(Math.round(n), code)}`;
+  return `${currencySymbolFor(code)}${spaced ? " " : ""}${formatCurrencyValue(
+    Math.round(n),
+    code,
+  )}`;
 };
 
 /**

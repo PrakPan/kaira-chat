@@ -41,12 +41,31 @@ import getModeAccent from "../common/components/bookingDetail/modeAccent";
 //   • Sticky headers must use top:0 and stay under z-40 (the navbar).
 // ─────────────────────────────────────────────────────────────────────────────
 
+// The trip card's trust mark, in the surface's own green rather than the app's
+// purple. #AD5BE7 was the only purple anywhere on this itinerary; green is
+// already what a settled booking reads as here (every "✓ INCLUDED" chip), so
+// the shield now agrees with the rows it sits above instead of introducing a
+// sixth accent for one glyph.
 const ShieldCheck = () => (
-  <svg width="26" height="33" viewBox="0 0 23 30" fill="none" className="flex-none" aria-hidden>
+  <svg width="24" height="30" viewBox="0 0 23 30" fill="none" className="flex-none" aria-hidden>
     <path
       d="M11.33 29.75L1.13 22.1A2.9 2.9 0 010 19.83V2.83A2.83 2.83 0 012.83 0h17a2.83 2.83 0 012.84 2.83v17a2.9 2.9 0 01-1.14 2.27l-10.2 7.65zm0-3.54l8.5-6.38V2.83H2.83v17l8.5 6.38zm-1.49-7.79l8-8-1.98-2.06-6.02 6.02-2.98-2.97-2.05 1.98 5.03 5.03z"
-      fill="#AD5BE7"
+      fill={T.GREEN}
     />
+  </svg>
+);
+
+// The padlock on the hold strip, drawn rather than the 🔒 emoji: at this size
+// the emoji lands at a different weight, colour and baseline in every OS.
+const HoldLock = ({ size = 15, color = T.YELLOW }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
+    <path
+      d="M8 10V7.5a4 4 0 0 1 8 0V10"
+      stroke={color}
+      strokeWidth="2.2"
+      strokeLinecap="round"
+    />
+    <rect x="4.5" y="10" width="15" height="10.5" rx="2.2" fill={color} />
   </svg>
 );
 
@@ -143,6 +162,10 @@ export default function MobileItinerary({
   // default — the sheet below handles More itself and simply omits any row
   // whose handler wasn't supplied.
   onOpenMore = undefined,
+  // Charges the lock-in fee — BotApp's `startPriceHold`, the same handler the
+  // desktop cart bar's hold ribbon calls. Absent means no hold can be taken,
+  // so the card's offer is withheld rather than drawn dead.
+  onHold = undefined,
   onDownloadPdf = undefined,
   isDownloadingPdf = false,
   isBusy = false,
@@ -828,6 +851,34 @@ export default function MobileItinerary({
     return formatMoney(trip.totalAmount, trip.currency);
   }, [trip.pricesHidden, trip.totalAmount, trip.currency]);
 
+  // What the hold costs, on the button face. The card offers the hold only
+  // once there is a handler to take it and a fee to name — a strip whose
+  // button says "—" is an offer nobody can act on.
+  const holdFeeStr = useMemo(
+    () =>
+      trip.hold.fee > 0
+        ? formatMoney(trip.hold.fee, trip.currency, { spaced: true })
+        : null,
+    [trip.hold.fee, trip.currency],
+  );
+  const showHold = trip.hold.offer && !!onHold && !!holdFeeStr;
+
+  // "TRIP TOTAL · 18 BOOKINGS · ALL INCLUDED" — what the number above it is,
+  // what it covers, and that there is nothing else to pay. One line rather
+  // than three, and the label goes here rather than over the amount: "Per
+  // Person" and "Estimated Price" are qualifications of the figure, which is
+  // what this line is for.
+  const totalMeta = useMemo(
+    () =>
+      [
+        (trip.totalLabel || "TRIP TOTAL").toUpperCase(),
+        trip.bookingsCount > 0
+          ? `${trip.bookingsCount} BOOKING${trip.bookingsCount === 1 ? "" : "S"} · ALL INCLUDED`
+          : "PRICING YOUR TRIP…",
+      ].join(" · "),
+    [trip.totalLabel, trip.bookingsCount],
+  );
+
   if (!gates.itineraryReady) return <Skeleton />;
 
   const gapLeg = legs.find((l) => l.showStayGap) || null;
@@ -848,34 +899,67 @@ export default function MobileItinerary({
       />
 
       <div className="flex flex-col gap-[11px] px-[14px] pb-[18px] pt-[12px]">
-        {/* ── The one price on this surface ── */}
-        <div style={T.tripCard}
-          className="flex flex-col gap-[13px] p-[16px]">
-          <div className="flex items-start justify-between gap-[11px]">
+        {/* ── The one price on this surface ──────────────────────────────────
+            Three grounds, stacked, each one a different job: PAPER for the
+            price, WHITE for whatever still needs doing before it can be paid,
+            INK for the thing that charges money. No rules between them — the
+            change of ground is the separation, the way the city covers and the
+            day cards separate themselves below.
+
+            It reads in the surface's own voice too: the meta line is mono
+            small-caps like every other card's second line, not the grey
+            sentence it used to be, and the trust mark is green rather than the
+            app's purple (see ShieldCheck).
+
+            The hold is the foot, in the same midnight-and-yellow the cart chip
+            uses, and for the same reason. It used to ride on the bottom bar as
+            a slide-up ribbon, which put the offer at the far end of the page
+            from the price it was about to freeze. */}
+        <div style={T.tripCard}>
+          {/* The amount leads and its label follows, rather than the other way
+              round: the label was reading as a heading over a block, when the
+              number is the block. Everything that qualifies it — what it is,
+              what it covers, what it includes — is one mono line under it,
+              which is how every other card here writes its second line.
+
+              The band is the day tile's paper. It is what separates this from
+              the rows below without a rule, and what gives the card its three
+              grounds: paper for the price, white for what still needs doing,
+              ink for the thing that charges money. */}
+          <div
+            className="flex items-center justify-between gap-[11px] px-[16px] pb-[14px] pt-[15px]"
+            style={{ background: T.PAPER_2 }}
+          >
             <div className="min-w-0">
-              <div className="font-mono text-[10px] tracking-[0.08em] text-[#8a93a6]">
-                {(trip.totalLabel || "TRIP TOTAL").toUpperCase()}
-              </div>
-              <div className="mt-[3px] text-[25px] font-[800] tracking-[-0.03em] text-[#0b1220]">
+              <div className="text-[23px] font-[800] leading-none tracking-[-0.03em] text-[#0b1220]">
                 {totalStr || "—"}
               </div>
-              <div className="mt-[3px] text-[12.5px] text-[#6b7280]">
-                {trip.bookingsCount > 0
-                  ? `${trip.bookingsCount} booking${trip.bookingsCount === 1 ? "" : "s"} · price held today`
-                  : "Pricing your trip…"}
+              {/* No "price held today" here any more: with the hold strip
+                  below actually offering to freeze the price, a line claiming
+                  it was already held contradicted the thing it sat above. */}
+              <div className="mt-[8px] font-mono text-[8.5px] tracking-[0.09em] text-[#8a93a6]">
+                {totalMeta}
               </div>
             </div>
             <ShieldCheck />
           </div>
 
+          {/* No hairline under the band — the change of ground is the
+              separation, here and at the ink strip below. */}
           {gapLeg ? (
-            <div className="flex items-center gap-[11px] border-t border-[#e6e8ec] pt-[11px]">
-              <div className="h-[22px] w-[22px] flex-none rounded-full border-[1.5px] border-[#8a93a6]" />
+            <div className="flex items-center gap-[11px] px-[16px] py-[12px]">
+              {/* The dashed square the day list already uses for "Add a stay",
+                  rather than a lone circle — this is the same missing thing,
+                  named from the top of the page. */}
+              <div
+                className="h-[30px] w-[30px] flex-none"
+                style={{ border: "1.5px dashed #cfd3da", borderRadius: 7 }}
+              />
               <div className="min-w-0 flex-1">
-                <div className="truncate text-[14px] font-[700] text-[#0b1220]">
+                <div className="truncate font-inter text-[12.5px] font-[700] text-[#0b1220]">
                   {gapLeg.city} has no stay
                 </div>
-                <div className="mt-[2px] truncate text-[12px] text-[#6b7280]">
+                <div className="mt-[4px] truncate font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
                   {gapLeg.stayGapMeta}
                 </div>
               </div>
@@ -884,10 +968,63 @@ export default function MobileItinerary({
                 onClick={() => handleChangeStay(gapLeg)}
                 disabled={disabled}
                 style={T.primaryPill}
-                className="flex-none px-[18px] py-[9px] text-[13.5px] font-[800] disabled:opacity-40"
+                className="flex-none px-[16px] py-[8px] text-[13px] font-[800] disabled:opacity-40"
               >
                 Fix
               </button>
+            </div>
+          ) : null}
+
+          {showHold ? (
+            // Tighter than the rows above it: one line of text and a button,
+            // so the 12px the two-line rows need would just be air.
+            <div
+              className="flex items-center gap-[11px] px-[16px] py-[9px]"
+              style={{ background: T.INK }}
+            >
+              <span
+                className="grid h-[30px] w-[30px] flex-none place-items-center"
+                style={{ borderRadius: 8, background: "rgba(255,255,255,.08)" }}
+              >
+                <HoldLock />
+              </span>
+              {/* One line. The terms — how long it lasts, and that the fee
+                  comes off the total rather than sitting on top of it — are
+                  the cart's to state at the point of payment; here they were
+                  small print under a button, which is the worst place for
+                  them. */}
+              <div className="min-w-0 flex-1 font-inter text-[12.5px] font-[700] text-white">
+                Hold this price
+              </div>
+              <button
+                type="button"
+                onClick={onHold}
+                disabled={disabled}
+                // The face is the fee alone — the row beside it is what the
+                // fee buys, and repeating "Hold" on the button said it twice.
+                // A screen reader gets no row, so it gets the whole sentence.
+                aria-label={`Hold this price for ${trip.hold.days} days for ${holdFeeStr}`}
+                style={T.primaryPill}
+                className="flex-none px-[13px] py-[6px] text-[12px] font-[800] disabled:opacity-40"
+              >
+                {holdFeeStr}
+              </button>
+            </div>
+          ) : trip.hold.locked ? (
+            /* Already held. Nothing to sell, so the card simply states it —
+               in the green the surface gives anything settled. */
+            <div className="flex items-center gap-[7px] px-[16px] py-[11px]">
+              <span
+                style={T.chipIn}
+                className="px-[6px] py-[2px] font-mono text-[8.5px] font-[600] tracking-[0.06em]"
+              >
+                ✓ PRICE LOCKED
+              </span>
+              {trip.hold.untilLabel ? (
+                <span className="font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+                  {`TILL ${trip.hold.untilLabel}`}
+                </span>
+              ) : null}
             </div>
           ) : null}
         </div>

@@ -132,6 +132,7 @@ import {
   getLockInState,
   LOCK_IN_HOLD_HOURS,
   parseCartTimestamp,
+  tripHasDeparted,
 } from "../../helper/lockIn";
 import { FiCalendar } from "react-icons/fi";
 import { tr } from "date-fns/locale";
@@ -4569,6 +4570,10 @@ Start Location: ${details.startLocation}`;
       <MobileItinerary
         askKaira={handleItineraryContainerSendMessage}
         onViewMap={handleViewMap}
+        // The hold, which the trip card now makes at the top of the itinerary
+        // instead of the footer's ribbon. Same handler either way — it opens
+        // the hold-offer card and charges the fee from there.
+        onHold={startPriceHold}
         onShare={() => setShowShare(true)}
         onSettings={handleMobileSettings}
         isBusy={pricingStatus === "PENDING"}
@@ -5972,9 +5977,13 @@ const ItineraryStepsLoader = ({
 };
 
 // ── LockInHoldStrip ──────────────────────────────────────────────────────────
-// The "hold this price" offer, as a midnight ribbon capping the cart bar. It
-// used to be a one-line caption that only *named* the hold — the traveller then
-// had to open the cart to find the button. The ribbon carries the button
+// The "hold this price" offer, as a midnight ribbon capping the cart bar —
+// the chat and desktop bar's version of it. The phone's ITINERARY footer no
+// longer mounts this: there the offer sits in the trip card at the top of the
+// page, against the total it freezes (MobileItinerary's trip card).
+//
+// It used to be a one-line caption that only *named* the hold — the traveller
+// then had to open the cart to find the button. The ribbon carries the button
 // itself, so the offer and the way to take it are the same object.
 //
 // Kaira says it, in the first person and over her own portrait: the sentence is
@@ -5986,9 +5995,9 @@ const ItineraryStepsLoader = ({
 // came to read the trip, and an offer thrown at them in the first beat is an
 // interruption of the thing they opened the page for; by ten seconds they have
 // scrolled the itinerary and the prices it quotes are what they are weighing,
-// which is the moment holding one is worth being asked about. One constant for
-// both breakpoints — the bar and this ribbon are a single component at every
-// width, so desktop and phone make the offer on the same clock.
+// which is the moment holding one is worth being asked about. One constant at
+// every width this bar renders at, so the offer is made on the same clock
+// wherever it is the bar making it.
 //
 // Only the transform animates: the clip wrapper's height is switched, not
 // transitioned, because two ResizeObservers watch this bar (to size the scroll
@@ -5998,23 +6007,6 @@ const ItineraryStepsLoader = ({
 // `translateY` is a percentage of the band's own height, so nothing here needs
 // a hardcoded pixel height to animate correctly at either breakpoint.
 const LOCK_IN_STRIP_DELAY_MS = 10_000;
-
-// The trip has already departed. Mirrors CartSheet's `tripHasStarted` and the
-// desktop cart's `isItineraryInFuture` — the same test all three have to make,
-// because a hold on a trip that has left is as empty an offer as a hold on a
-// lapsed price. Both ends floored to midnight: a trip starting TODAY has not
-// started too late to pay for. A missing date reads as "not loaded yet" and
-// never as departed — redux seeds the itinerary with a placeholder that carries
-// no `start_date`, and treating that as past would blank the ribbon on load.
-const tripHasDeparted = (startDate?: string | null) => {
-  if (!startDate) return false;
-  const start = new Date(startDate);
-  if (Number.isNaN(start.getTime())) return false;
-  const today = new Date();
-  start.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-  return start < today;
-};
 
 // The quote's own deadline, as the design's zero-padded clock. This is
 // `price_valid_until` — how long today's PRICES stand — and not the hold
@@ -6085,21 +6077,12 @@ const LockInHoldStrip = ({
   currencyCode,
   priceValidUntil,
   onHold,
-  bleedStyle,
 }: {
   fee: number;
   currencySymbol: string;
   currencyCode?: string;
   priceValidUntil?: string | null;
   onHold?: () => void;
-  /**
-   * How far the ribbon has to reach to cancel the padding of the bar it caps,
-   * for a bar whose padding the class below cannot express. The desktop bar
-   * pads a flat 24px/10px, which the negative margins handle; the phone's
-   * itinerary footer adds the safe-area insets to its own 10px, so its bleed is
-   * a `calc()` and has to arrive as a style. Inline, so it wins over the class.
-   */
-  bleedStyle?: React.CSSProperties;
 }) => {
   // Mounts only once the cart has resolved a required lock-in, so "after the
   // page loads" is measured from here rather than from the bar's own mount:
@@ -6162,7 +6145,7 @@ const LockInHoldStrip = ({
       // still what hides it at rest, and is rounded to match so nothing of the
       // band can paint outside the corners once it has arrived.
       className="overflow-hidden rounded-t-[12px] -mx-[24px] max-ph:-mx-[10px] -mt-2 mb-1"
-      style={{ height: revealed ? "auto" : 0, ...bleedStyle }}
+      style={{ height: revealed ? "auto" : 0 }}
       aria-hidden={!revealed}
     >
       <div
@@ -6583,38 +6566,11 @@ export const BottomCTABar = React.memo(
             paddingLeft: "calc(10px + var(--safe-left, 0px))",
             paddingRight: "calc(10px + var(--safe-right, 0px))",
           }}
-          className={`z-20 fixed bottom-0 w-full flex-shrink-0 pt-[8px] flex flex-col gap-[8px] ${
-            showHoldRibbon
-              ? "rounded-t-[12px]"
-              : "border-t border-[#ececec]"
-          }`}
+          // The hold used to cap this bar as a slide-up ribbon. It now lives in
+          // the trip card at the top of the itinerary, beside the total it
+          // offers to freeze — the bar is back to one row: ask Kaira, and pay.
+          className="z-20 fixed bottom-0 w-full flex-shrink-0 border-t border-[#ececec] pt-[8px] flex flex-col gap-[8px]"
         >
-          {/* The hold, capping the phone's footer exactly as it caps the
-              desktop bar — same ribbon, same offer, same `onHold`. The footer
-              takes its own return path below the shared bar's markup, so this
-              is mounted here rather than inherited from it.
-
-              `bleedStyle` because this bar's side padding is `10px` PLUS the
-              safe-area insets, which the ribbon's negative-margin classes
-              cannot express. Top and bottom are flat: `-8px` cancels the bar's
-              `pt-[8px]`, and the bottom margin is dropped because the column's
-              own `gap-[8px]` is already the space under the ribbon (the desktop
-              bar's gap is 4px, hence the `mb-1` there). */}
-          {showHoldRibbon && (
-            <LockInHoldStrip
-              fee={lockIn.fee}
-              currencySymbol={currencySymbol}
-              currencyCode={currency?.currency}
-              priceValidUntil={cart?.price_valid_until}
-              onHold={onHold}
-              bleedStyle={{
-                marginLeft: "calc(-10px - var(--safe-left, 0px))",
-                marginRight: "calc(-10px - var(--safe-right, 0px))",
-                marginTop: -8,
-                marginBottom: 0,
-              }}
-            />
-          )}
           {changeBar ? (
             <TripChangeBar
               text={changeBar.text}

@@ -47,6 +47,28 @@ export const parseCartTimestamp = (value) => {
   return Number.isNaN(date.getTime()) ? null : date;
 };
 
+/**
+ * The trip has already departed.
+ *
+ * A hold on a trip that has left is as empty an offer as a hold on a lapsed
+ * price, so every surface that offers one has to make this test — the itinerary
+ * card (lib/tripViewModel.js) and the desktop cart bar (BotApp.tsx) both do.
+ *
+ * Both ends floored to midnight: a trip starting TODAY has not started too late
+ * to pay for. A missing date reads as "not loaded yet" and never as departed —
+ * redux seeds the itinerary with a placeholder that carries no `start_date`, and
+ * treating that as past would blank the offer on load.
+ */
+export const tripHasDeparted = (startDate) => {
+  if (!startDate) return false;
+  const start = new Date(startDate);
+  if (Number.isNaN(start.getTime())) return false;
+  const today = new Date();
+  start.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  return start < today;
+};
+
 export function getLockInState(cart) {
   const fee = Number(cart?.lock_in_fee) || 0;
 
