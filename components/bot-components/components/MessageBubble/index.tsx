@@ -59,8 +59,12 @@ function useUserAvatarSrc(): string | null {
 // is white on phones as well (see `.kp-root` in ChatKitPanel), so paper-on-white
 // reads as the soft card it does on desktop.
 //
-// Also phone-only: gutters so cards don't kiss the screen edge, the smaller
-// type scale, and the user bubble's darker fill.
+// Also phone-only: gutters so cards don't kiss the screen edge, and the user
+// bubble's darker fill. NOT the type — the chat's sizes are the clamp() scale
+// in ChatMdStyles, which already resolves smaller on a phone, and every heading,
+// code span and quote inside a bubble is built against it. A phone-only
+// font-size on the body copy alone left those at their own sizes, so a bubble
+// with anything but plain paragraphs in it carried two type scales at once.
 const MessageBubbleResponsiveStyles: React.FC = () => (
   <style dangerouslySetInnerHTML={{ __html: `
     @media (max-width: 767px) {
@@ -137,10 +141,6 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
         background: #0b1220 !important;
         border-radius: 16px 0 16px 16px !important;
         padding: 10px 14px !important;
-      }
-      .msg .chat-md {
-        font-size: 12.5px;
-        line-height: 1.5;
       }
     }
   ` }} />

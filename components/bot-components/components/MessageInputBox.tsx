@@ -726,11 +726,6 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           }
           .kp-composer-wrap .kp-plus:hover { background: none; }
           .kp-composer-wrap .kp-plus svg { width: 15px; height: 15px; }
-          .kp-composer-wrap .kp-field textarea,
-          .kp-composer-wrap .kp-field input {
-            font-size: 12.5px;
-            color: #0b1220;
-          }
           .kp-composer-wrap .kp-send,
           .kp-composer-wrap .kp-stop {
             width: 34px;
