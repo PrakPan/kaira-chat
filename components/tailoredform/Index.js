@@ -1144,7 +1144,7 @@ const EnquiryForm = (props) => {
   const ctaLabel =
     slideIndex === 0
       ? "Find my route"
-      : slideIndex === VIBE_STEP && !needsSignIn
+      : slideIndex === VIBE_STEP
         ? "Get my itinerary"
         : "Continue";
   // Step 1's CTA stays pressable with the form incomplete, on purpose.
