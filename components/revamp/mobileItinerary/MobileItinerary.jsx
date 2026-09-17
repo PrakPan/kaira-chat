@@ -265,6 +265,15 @@ export default function MobileItinerary({
     [askKaira],
   );
 
+  // Opening the conversation with nothing to say. `ask` refuses an empty
+  // message on purpose — a prompt builder returning "" must not fire — so the
+  // one entry point that HAS no message is its own callback rather than a hole
+  // in that guard. It still closes the sheets for the reason above.
+  const openChat = useCallback(() => {
+    setSheet(null);
+    askKaira?.();
+  }, [askKaira]);
+
   const handleChangeStay = useCallback(
     (leg) =>
       ask(
@@ -1145,7 +1154,7 @@ export default function MobileItinerary({
         onShare={onShare}
         onSettings={onSettings}
         isDownloadingPdf={isDownloadingPdf}
-        onOpenChat={() => ask(prompts.openEnded())}
+        onOpenChat={openChat}
       />
 
     </div>

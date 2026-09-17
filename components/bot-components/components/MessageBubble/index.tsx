@@ -1917,6 +1917,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     return (
       <div
         className="msg user"
+        // The chat pane measures the last of these to scroll a freshly-inserted
+        // turn to the top — see sizeTopAnchor in ChatKitPanel.
+        data-user-msg="1"
         style={{
           display: "flex",
           flexDirection: "row-reverse",

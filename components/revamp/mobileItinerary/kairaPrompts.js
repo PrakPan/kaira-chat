@@ -85,7 +85,6 @@ const prompts = {
   changeRoute: () => `change my route`,
   changeActivity: (name, city) =>
     `Can you change ${name}${city ? ` in ${city}` : ""} to something else?`,
-  openEnded: () => `I'd like to change something in my trip`,
   // `what` is the one booking being changed — "visa" or "eSIM". Each is its
   // own card and its own sheet now, so the request names one rather than
   // asking Kaira to redo both.

@@ -203,7 +203,14 @@ export type ChatSendFn = (
   text: string,
   attachmentIds?: string[],
   attachmentMeta?: MessageAttachment[],
-  opts?: { formSubmitted?: boolean; intakePayload?: Record<string, unknown> },
+  opts?: {
+    formSubmitted?: boolean;
+    intakePayload?: Record<string, unknown>;
+    /** Scroll this message to the TOP of the pane instead of the bottom. Set by
+     *  the itinerary's own CTAs, whose message the user never typed and whose
+     *  answer wants the whole pane — see sizeTopAnchor. */
+    anchorTop?: boolean;
+  },
 ) => void;
 
 interface ChatKitPanelProps {
@@ -1755,6 +1762,18 @@ startEmptyIntake = false,
   // growing content (login/OTP card, the stepped status loader, images,
   // widgets) re-pins the view to the bottom — see the ResizeObserver effect.
   const messagesContentRef = useRef<HTMLDivElement>(null);
+  // Empty room past the end of the thread, so "scrolled to the bottom" can MEAN
+  // "the newest user message is at the top of the pane" — see sizeTopAnchor.
+  const anchorSpacerRef = useRef<HTMLDivElement>(null);
+  // The text of a send that has asked for the top anchor, held until its own
+  // message reaches the DOM. It is the TEXT and not a bare flag because useChat
+  // appends the user message and the empty streaming assistant bubble in a
+  // single commit — the newest message is never the user's, so there is nothing
+  // else in `messages` that marks the arriving turn.
+  const anchorPendingRef = useRef<string | null>(null);
+  // The spacer is currently holding a turn at the top. Goes false on its own as
+  // the reply grows past the fold and the spacer shrinks to nothing.
+  const anchorActiveRef = useRef(false);
   const hasProcessedInitial = useRef(false);
   const hasUpdatedUrl = useRef(false);
   const postLoginFiredRef = useRef(false);
@@ -3156,13 +3175,95 @@ case "shimmer_day_by_day": {
   );
   handlePricingWidgetRef.current = handlePricingFormWidget;
 
-  // ── Wrap sendMessage to clear quick replies ───────────────────────────────
+  // ── A new turn starts at the top ─────────────────────────────────────────
+  // A message inserted from the itinerary ("Add transfer", "Change hotel", …)
+  // lands at the foot of a thread the user has not been reading, and Kaira's
+  // answer to it then streams in below the fold. The turn is scrolled so the
+  // user's own line sits at the TOP of the pane instead — which is where the
+  // answer is about to appear.
+  //
+  // Scrolling alone cannot do that: a message at the end of the thread is
+  // already as low as the scroller goes. The spacer is what buys the room, and
+  // sizing it so the bottom of the scroll range IS the anchored position is
+  // what keeps the rest of this file out of it — the auto-scroll effect below
+  // needs no special case, because its snap-to-bottom now lands on the anchor.
+  // As the reply grows the spacer shrinks to nothing and ordinary
+  // follow-the-stream scrolling resumes on its own.
+  const TOP_ANCHOR_GAP = 8;
+
+  /** Size the spacer for the newest user message. `activating` is the first
+   *  call of a turn and may grow the spacer; every later call only shrinks it,
+   *  so the ground never moves out from under a reply already streaming.
+   *  False means the pane isn't measurable yet — mobile opens the chat sheet
+   *  and sends in one gesture, so the first attempt can beat the layout. */
+  const sizeTopAnchor = useCallback((activating: boolean) => {
+    const scroller = messagesScrollRef.current;
+    const spacer = anchorSpacerRef.current;
+    if (!scroller || !spacer) return false;
+    const viewport = scroller.clientHeight;
+    if (!viewport) return false;
+    const bubbles = scroller.querySelectorAll<HTMLElement>('[data-user-msg="1"]');
+    const node = bubbles[bubbles.length - 1];
+    if (!node) return false;
+
+    const current = spacer.offsetHeight;
+    // Measured through the rects rather than offsetTop: the bubble's
+    // offsetParent is whatever card or wrapper happens to enclose it.
+    const top = Math.max(
+      0,
+      node.getBoundingClientRect().top -
+        scroller.getBoundingClientRect().top +
+        scroller.scrollTop -
+        TOP_ANCHOR_GAP,
+    );
+    const thread = scroller.scrollHeight - current;
+    let needed = Math.max(0, top + viewport - thread);
+    if (!activating) needed = Math.min(needed, current);
+    if (needed !== current) spacer.style.height = `${needed}px`;
+    anchorActiveRef.current = needed > 0;
+    return true;
+  }, []);
+
+  /** Drop the spacer and go back to plain bottom-following. */
+  const clearTopAnchor = useCallback(() => {
+    anchorPendingRef.current = null;
+    anchorActiveRef.current = false;
+    const spacer = anchorSpacerRef.current;
+    if (spacer && spacer.offsetHeight) spacer.style.height = "0px";
+  }, []);
+
+  /** Put the pending turn at the top, retrying across a few frames while the
+   *  pane is still laying out. */
+  const armTopAnchor = useCallback(() => {
+    let tries = 0;
+    const attempt = () => {
+      if (anchorPendingRef.current === null) return;
+      if (sizeTopAnchor(true)) {
+        anchorPendingRef.current = null;
+        // The spacer has made the anchor the bottom of the scroll range, so
+        // this is the same snap every other send does.
+        isAtBottomRef.current = true;
+        const c = messagesScrollRef.current;
+        if (c) c.scrollTop = c.scrollHeight;
+        return;
+      }
+      if (++tries < 10) requestAnimationFrame(attempt);
+      else anchorPendingRef.current = null;
+    };
+    attempt();
+  }, [sizeTopAnchor]);
+
+// ── Wrap sendMessage to clear quick replies ─────────────────────────────────
 const sendMessage = useCallback(
   (
     text: string,
     attachmentIds?: string[],
     attachmentMeta?: MessageAttachment[],
-    opts?: { formSubmitted?: boolean; intakePayload?: Record<string, unknown> },
+    opts?: {
+      formSubmitted?: boolean;
+      intakePayload?: Record<string, unknown>;
+      anchorTop?: boolean;
+    },
   ) => {
     setQuickReplies([]);
     setQuickReplyShimmer(false);
@@ -3227,6 +3328,12 @@ const sendMessage = useCallback(
     // User-initiated send: snap the view to the latest message even if they
     // had scrolled up earlier in the session.
     isAtBottomRef.current = true;
+    // A message the user typed goes to the bottom like always — and drops any
+    // spacer a previous itinerary CTA left up, or "the bottom" would still mean
+    // that older turn's anchor. A CTA's message is armed for the top instead,
+    // and measured once it reaches the DOM.
+    if (opts?.anchorTop) anchorPendingRef.current = text.trim();
+    else clearTopAnchor();
 
     if (isFirstMessageRef.current) {
       isFirstMessageRef.current = false;
@@ -3257,7 +3364,7 @@ const sendMessage = useCallback(
       intakePayload: opts?.intakePayload,
     });
   },
-  [rawSendMessage],
+  [rawSendMessage, clearTopAnchor],
 );
 
 // ── Intake form completion ───────────────────────────────────────────────────
@@ -3402,6 +3509,24 @@ const handleLoginCardSkip = useCallback(() => {
   useEffect(() => {
     // Don't auto-scroll to bottom when older messages are being prepended
     if (isFetchingMoreRef.current) return;
+    // The commit that carries the anchored send's own message. Found by walking
+    // back to the newest user message rather than by looking at the end of the
+    // array: the turn arrives as [… , user, empty streaming assistant], so the
+    // last message belongs to Kaira from the very first commit.
+    if (anchorPendingRef.current !== null) {
+      let newest: (typeof messages)[number] | undefined;
+      for (let i = messages.length - 1; i >= 0; i--) {
+        if (messages[i].role === "user") {
+          newest = messages[i];
+          break;
+        }
+      }
+      if (newest?.content === anchorPendingRef.current) {
+        armTopAnchor();
+        return;
+      }
+    }
+    if (anchorActiveRef.current) sizeTopAnchor(false);
     // /chat?intake=1 landing: keep the view on Kaira's greeting rather than
     // snapping to the bottom of the injected intake form. Once a stream starts
     // (the user submitted the form / sent a message) resume normal auto-scroll.
@@ -3417,13 +3542,15 @@ const handleLoginCardSkip = useCallback(() => {
     // absolute bottom — smooth scrollIntoView fires once and gets overtaken
     // by content that grows after, leaving intermediate streamed text
     // hidden below the viewport until the user manually scrolls.
-    if (initialScrollPendingRef.current || isStreaming) {
+    // (And whenever the anchor is up: messagesEndRef sits BEFORE the spacer, so
+    // scrollIntoView on it stops short of the anchored position.)
+    if (initialScrollPendingRef.current || isStreaming || anchorActiveRef.current) {
       const c = messagesScrollRef.current;
       if (c) c.scrollTop = c.scrollHeight;
       return;
     }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isStreaming]);
+  }, [messages, isStreaming, armTopAnchor, sizeTopAnchor]);
 
   // Custom in-thread cards grow *after* they mount: the stepped status loader
   // (StatusNotesCard) accumulates step lines, the inline login/OTP card and
@@ -3440,12 +3567,16 @@ const handleLoginCardSkip = useCallback(() => {
     const ro = new ResizeObserver(() => {
       // Prepending older messages / intake landing manage their own scroll.
       if (isFetchingMoreRef.current || suppressIntakeAutoScrollRef.current) return;
+      // The reply growing is what retires the top anchor: give back exactly as
+      // much spacer as the new content took up. The spacer is outside `content`
+      // precisely so this resize can't feed itself.
+      if (anchorActiveRef.current) sizeTopAnchor(false);
       if (!isAtBottomRef.current) return;
       scroller.scrollTop = scroller.scrollHeight;
     });
     ro.observe(content);
     return () => ro.disconnect();
-  }, []);
+  }, [sizeTopAnchor]);
 
   // Mobile: when the chat tab is hidden behind another tab, scrollIntoView
   // calls fired by the auto-scroll effect above don't reliably move the
@@ -5339,6 +5470,10 @@ const handleShowLogin = useCallback(() => {
 
             <div ref={messagesEndRef} />
           </div>
+          {/* Scroll room for the top anchor. Deliberately OUTSIDE the content
+              wrapper: the ResizeObserver watches that wrapper, and a spacer
+              inside it would observe its own resize. */}
+          <div ref={anchorSpacerRef} aria-hidden style={{ height: 0 }} />
       </div>
 
       {/* ── Quick reply skeleton ──────────────────────────────────────────── */}
@@ -5392,40 +5527,20 @@ const handleShowLogin = useCallback(() => {
         </div>
       )}
 
-      {/* ── Quick reply chips ─────────────────────────────────────────────── */}
-      {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
-      {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && !isForeignItinerary && !loginBlocked && !promptLoginBlocked && (
-        <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
-          <div className="mx-auto">
-            <div
-              className="flex gap-[6px] md:gap-2 overflow-x-auto md:pb-1"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
-              {quickReplyLoading
-                ? ["28%", "24%", "30%", "26%"].map((w, idx) => (
-                    <QuickReplyShimmerChip key={`qr-shimmer-${idx}`} width={w} />
-                  ))
-                : quickReplies.map((reply, idx) => (
-                    <SingleChips
-                      key={idx}
-                      onClick={() => handleQuickReply(reply)}
-                      disabled={isStreaming || isComposerLocked || promptLoginBlocked}
-                    >
-                      {reply.label}
-                    </SingleChips>
-                  ))}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ── Context chip ─────────────────────────────────────────────────
           What this request is about, when it came from a row in the trip
           rather than from the composer. Mobile only: on desktop the itinerary
           is on screen beside the chat, so the thing being changed never left
-          view and the chip would be restating what the user can see. */}
+          view and the chip would be restating what the user can see.
+
+          Above the quick replies, not below them: the replies are something to
+          TAP, so they belong against the composer with the rest of the input,
+          while this only says what the turn is about. */}
       {chatContext && isMobile ? (
-        <div className="flex-shrink-0 px-[14px] pb-[8px] md:hidden">
+        // pb-0: the quick-reply row below brings its own `pt-2`, which is the
+        // single gap between the two. Doubling it up read as a gap twice the
+        // size of every other one in the tray.
+        <div className="flex-shrink-0 px-[14px] pt-[8px] pb-0 md:hidden">
           <div
             style={{
               border: "1px solid #dcdfe5",
@@ -5454,6 +5569,33 @@ const handleShowLogin = useCallback(() => {
           </div>
         </div>
       ) : null}
+
+      {/* ── Quick reply chips ─────────────────────────────────────────────── */}
+      {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
+      {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && !isForeignItinerary && !loginBlocked && !promptLoginBlocked && (
+        <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
+          <div className="mx-auto">
+            <div
+              className="flex gap-[6px] md:gap-2 overflow-x-auto md:pb-1"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {quickReplyLoading
+                ? ["28%", "24%", "30%", "26%"].map((w, idx) => (
+                    <QuickReplyShimmerChip key={`qr-shimmer-${idx}`} width={w} />
+                  ))
+                : quickReplies.map((reply, idx) => (
+                    <SingleChips
+                      key={idx}
+                      onClick={() => handleQuickReply(reply)}
+                      disabled={isStreaming || isComposerLocked || promptLoginBlocked}
+                    >
+                      {reply.label}
+                    </SingleChips>
+                  ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Composer ─────────────────────────────────────────────────────── */}
       {/* While the in-chat intake form is open on phone, drop the disabled

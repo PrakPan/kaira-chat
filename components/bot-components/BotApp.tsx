@@ -75,9 +75,6 @@ const SHEET_SLIDE_MS = 550;
 const TRIP_LIFT_MS = 500;
 const GESTURE_EASE = "cubic-bezier(.2,.7,.3,1)";
 
-// What the standing ask-Kaira pill says when the user opens the conversation
-// without pointing at anything in particular.
-const KAIRA_OPEN_ENDED_PROMPT = kairaPrompts.openEnded();
 import type {
   Location,
   ItineraryData,
@@ -3947,11 +3944,22 @@ Start Location: ${details.startLocation}`;
     return imgs;
   }, [itineraryRedux?.cities]);
 
+  // `msg` is optional: the standing ask-Kaira pill opens the conversation
+  // without pointing at anything, so it OPENS ONLY. Putting words in the
+  // user's mouth ("I'd like to change something in my trip") spent a turn of
+  // Kaira's latency on a sentence they hadn't written and might not have meant
+  // — every other entry point here carries a real question.
   const handleItineraryContainerSendMessage = useCallback(
-    (msg: string, contextLabel?: string | null) => {
+    (msg?: string, contextLabel?: string | null) => {
       setChatContext(contextLabel || null);
+      // Every message that starts here was inserted by a CTA on the itinerary —
+      // "Add transfer", "Change hotel", a day's "Plan" — not typed. Anchored to
+      // the TOP of the chat pane rather than the bottom, so the line the user
+      // did not write is the first thing they see, with the whole pane below it
+      // for the answer. See sizeTopAnchor in ChatKitPanel.
+      const opts = { anchorTop: true };
       if (!isMobile) {
-        chatSendMessageRef.current?.(msg);
+        if (msg) chatSendMessageRef.current?.(msg, undefined, undefined, opts);
         return;
       }
       // Open first, send after. On mobile this opens a sheet over the trip —
@@ -3962,8 +3970,11 @@ Start Location: ${details.startLocation}`;
       // delay is imperceptible next to Kaira's own latency, and it hands the
       // gesture a clean start.
       mobileTabSwitchRef.current?.("chat");
+      if (!msg) return;
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => chatSendMessageRef.current?.(msg));
+        requestAnimationFrame(() =>
+          chatSendMessageRef.current?.(msg, undefined, undefined, opts),
+        );
       });
     },
     [isMobile],
@@ -5933,8 +5944,12 @@ interface BottomCTABarProps {
   variant?: "default" | "mobileItinerary";
   /** Opens the design's "Review & pay" sheet. Falls back to onViewCart. */
   onReviewPay?: () => void;
-  /** Opens the chat with a message — renders the ask-Kaira pill in the footer. */
-  onAskKaira?: (message: string) => void;
+  /**
+   * Opens the chat, with an opening message when one is given — the footer's
+   * own pill passes none, so tapping it just raises the sheet. Its PRESENCE is
+   * what renders the ask-Kaira pill in the footer.
+   */
+  onAskKaira?: (message?: string) => void;
   /**
    * Rotating example prompts for the ask-Kaira pill, templated on this trip's
    * cities (see kairaPrompts.hints). Only read by the mobileItinerary variant.
@@ -6617,10 +6632,7 @@ export const BottomCTABar = React.memo(
           ) : null}
           <div className="flex items-center gap-[8px]">
             {onAskKaira && (
-              <AskKairaPill
-                hints={kairaHints}
-                onClick={() => onAskKaira(KAIRA_OPEN_ENDED_PROMPT)}
-              />
+              <AskKairaPill hints={kairaHints} onClick={() => onAskKaira()} />
             )}
             {/* Without the pill the chip would sit alone against the left edge;
                 the spacer keeps it on the right where it always lives. */}
@@ -7288,8 +7300,8 @@ interface MobileLayoutProps {
   onLoginSuccess?: () => void | Promise<void>;
   /** Collapse the expanded trip-details card when the itinerary pane scrolls. */
   onItineraryScrolled?: (scrolledAway: boolean, isDown: boolean) => void;
-  /** Opens the chat with a message — powers the standing ask-Kaira pill. */
-  onAskKaira?: (message: string) => void;
+  /** Opens the chat, with an opening message when one is given — powers the standing ask-Kaira pill. */
+  onAskKaira?: (message?: string) => void;
 }
 
 const MobileLayout = React.memo(
