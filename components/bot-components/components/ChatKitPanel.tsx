@@ -4640,15 +4640,23 @@ const handleShowLogin = useCallback(() => {
     handleFilesSelected(initialFiles);
   }, [initialFiles, handleFilesSelected]);
 
-  // `initialInputText` pre-fills the composer (NOT auto-sent). The user
-  // reviews seed + uploaded attachments and clicks send. Only runs once
-  // and only when the composer is empty to avoid clobbering user input.
+  // `initialInputText` pre-fills the composer (NOT auto-sent). It carries the
+  // `?seed=` prompt from a blog / trip / theme link and any hero handoff text;
+  // the reader reviews it alongside any uploaded attachments and presses send,
+  // which is the gesture that finally creates the thread. Only runs once and
+  // only when the composer is empty to avoid clobbering user input.
+  //
+  // Bumping `composerFocusKey` hands the composer focus and scrolls it into
+  // view, so a seeded landing reads as a message that is ready to send rather
+  // than as an empty chat with some text in it.
   const hasConsumedInitialInputRef = useRef(false);
+  const [composerFocusKey, setComposerFocusKey] = useState(0);
   useEffect(() => {
     if (hasConsumedInitialInputRef.current) return;
     if (!initialInputText) return;
     hasConsumedInitialInputRef.current = true;
     setInput((prev) => (prev && prev.trim() ? prev : initialInputText));
+    setComposerFocusKey((k) => k + 1);
   }, [initialInputText]);
 
   const handleRemoveAttachment = useCallback(
@@ -4714,10 +4722,23 @@ const handleShowLogin = useCallback(() => {
     // A genuine new chat turn → suppress the clone CTA for the rest of this
     // page session (it only shows once per refresh).
     setCloneCtaSuppressed(true);
+    // A prompt seeded from a theme page carries that page's structured `intake`
+    // (slug, source, whatever the prompt states about month/nights/pax, the
+    // saved items). It used to ride the auto-send in the `initialPrompt` effect
+    // below; now that the seed only lands in the composer, this is where it has
+    // to be attached — the opening message of the thread, in the same
+    // `form_submitted` + `intake` shape the themed mini-form submits. Gated on
+    // there being no thread yet so later turns in the same conversation stay
+    // plain free text, exactly as they were.
+    const themedFirstMessage =
+      !threadIdRef.current && themeIntakeRef.current
+        ? { formSubmitted: true, intakePayload: themeIntakeRef.current }
+        : undefined;
     sendMessage(
       input.trim(),
       attachmentIds.length > 0 ? attachmentIds : undefined,
       attachmentMeta.length > 0 ? attachmentMeta : undefined,
+      themedFirstMessage,
     );
     setInput("");
     setAttachments([]);
@@ -5775,6 +5796,9 @@ const handleShowLogin = useCallback(() => {
             onChange={setInput}
             onSubmit={handleSubmit}
             onStop={cancelStream}
+            // Raised when a `?seed=` draft is hydrated into the box, so the
+            // landing puts the cursor in a ready-to-send message.
+            focusKey={composerFocusKey}
             isStreaming={isStreamingResponse}
             disabled={isComposerLocked || loginBlocked || promptLoginBlocked}
             placeholder={

@@ -85,21 +85,70 @@ const WhenPanel = ({
       el.scrollIntoView({ block: "nearest" });
       return;
     }
-    // On desktop the card is a fixed-height dialog: the step body is the
-    // scroll container that clips the panel, so it — not the card — is what
-    // the panel has to fit inside.
-    const clip =
-      el.closest(".kform-body") ||
-      el.closest(".kform-card") ||
-      document.documentElement;
-    const bottom = clip.getBoundingClientRect().bottom;
-    const top = el.getBoundingClientRect().top;
-    setMaxHeight(Math.max(240, Math.round(bottom - top - 12)));
+    // On desktop the panel floats in front of the card instead of sitting
+    // inside the step body.
+    //
+    // The body is the scroll container (`overflow-y: auto`), so an absolutely
+    // positioned child of it is CLIPPED by it: the calendar ran to the bottom
+    // edge of the body and the rest of it — including Done — was behind the
+    // footer's trust row, reachable only by scrolling the step. Nothing about
+    // the height fixes that; the panel has to leave the clip.
+    //
+    // `fixed` is what takes it out, so the coordinates come from the field's
+    // own rectangle and have to be refreshed whenever anything moves (see the
+    // scroll/resize listeners below). Anchored to the field's right edge, the
+    // way the stylesheet anchors it, because it is wider than the field.
+    const anchor = el.closest(".kform-when-pop");
+    const field = anchor?.parentElement;
+    if (!anchor || !field) {
+      setMaxHeight(null);
+      return;
+    }
+
+    // The card, not the body: the panel is allowed to cover the footer now, so
+    // the card's bottom edge is the only real floor.
+    const card = el.closest(".kform-card") || document.documentElement;
+    const cardBox = card.getBoundingClientRect();
+    const fieldBox = field.getBoundingClientRect();
+    const GAP = 8;
+    const EDGE = 12;
+
+    const below = cardBox.bottom - fieldBox.bottom - GAP - EDGE;
+    const above = fieldBox.top - cardBox.top - GAP - EDGE;
+    // Open downward unless the panel wants more room than is under the field
+    // and there is more over it — on a short laptop window that is how the
+    // whole calendar stays on screen without the reader scrolling anything.
+    const wanted = Math.min(el.scrollHeight, 560);
+    const flip = below < wanted && above > below;
+
+    anchor.style.position = "fixed";
+    anchor.style.right = `${Math.round(window.innerWidth - fieldBox.right)}px`;
+    anchor.style.left = "auto";
+    anchor.style.margin = "0";
+    if (flip) {
+      anchor.style.top = "auto";
+      anchor.style.bottom = `${Math.round(window.innerHeight - fieldBox.top + GAP)}px`;
+    } else {
+      anchor.style.bottom = "auto";
+      anchor.style.top = `${Math.round(fieldBox.bottom + GAP)}px`;
+    }
+
+    setMaxHeight(Math.max(240, Math.round(flip ? above : below)));
   };
-  useLayoutEffect(measure, []);
+  // Re-measured when the tab changes as well as on open: the three tabs are
+  // very different heights (a two-month calendar against a month grid and a
+  // stepper), so the side that fits is not the same answer for all of them.
+  useLayoutEffect(measure, [mode]);
   useEffect(() => {
+    // Capture, so the step body's own scroll is heard as well as the window's:
+    // the panel is `fixed` on desktop, so it does not travel with the field and
+    // has to be put back under it whenever anything moves.
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    window.addEventListener("scroll", measure, true);
+    return () => {
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", measure, true);
+    };
   }, []);
 
   const switchMode = (next) => setMode(next);

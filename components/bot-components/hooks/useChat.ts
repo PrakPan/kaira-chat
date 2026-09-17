@@ -1,5 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { getAdParams, getLandingPage } from "../../../helper/adAttribution";
+import {
+  peekSeedLandingSource,
+  clearSeedLandingSource,
+} from "../../../helper/seedLandingSource";
 import { isIntakeFormWidgetId } from "../components/IntakeForm/intakePrompt";
 import { isPricingFormWidgetId } from "../components/PricingForm/pricingPrompt";
 
@@ -210,8 +214,17 @@ export function buildSourceFields(): Record<string, unknown> {
   const platform = getPlatform();
   if (typeof window === "undefined") return { platform };
 
+  // A `/chat?seed=` landing no longer sends on mount — the seed hydrates the
+  // composer and this thread is created when the reader presses send, by which
+  // time the address bar may have moved on. Read that landing's query string
+  // from the snapshot taken on the first render instead of from the live URL,
+  // so `seed`, the `utm_*` set, `fbclid` and the click ids survive the wait.
+  // `null` for every other entry to /chat, which keeps reading the live URL.
+  const landing = peekSeedLandingSource();
+  const search = landing ? landing.search : window.location.search;
+
   const queryObj: Record<string, unknown> = {};
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(search);
   for (const [key, value] of urlParams.entries()) {
     if (value === "true") queryObj[key] = true;
     else if (value === "false") queryObj[key] = false;
@@ -221,7 +234,9 @@ export function buildSourceFields(): Record<string, unknown> {
 
   const stored = getAdParams();
   const merged: Record<string, unknown> = { ...stored, ...queryObj };
-  const path = window.location.pathname + window.location.search;
+  const path = landing
+    ? landing.path
+    : window.location.pathname + window.location.search;
   // First page the user landed on this session (home, destination, theme, ...);
   // falls back to the current path if capture missed (e.g. direct /chat entry).
   const landing_page = getLandingPage() || window.location.pathname;
@@ -778,6 +793,13 @@ export function useChat({
     if (!threadIdRef.current) {
       threadIdRef.current = apiThreadId;
       console.log("[useChat] api thread_id:", apiThreadId);
+      // The seeded landing has now produced its thread, so retire its
+      // attribution snapshot — a chat the reader starts later in this same tab
+      // is a new landing and must not inherit this one's `seed` / `utm_*`.
+      // Deliberately here rather than where the body is built: a first send
+      // that never reaches the backend can still be retried with its
+      // attribution intact.
+      clearSeedLandingSource();
     }
     // Notify parent with our OWN sessionId (UUID), not the API thread_id
     if (!sessionCreatedFiredRef.current) {

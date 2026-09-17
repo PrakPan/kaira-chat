@@ -137,6 +137,7 @@ import {
 } from "../../services/analyticsFunnel";
 import Login from "../modals/Login";
 import { replaceUrl, pushUrlDetached } from "../../helper/historyUrl";
+import { captureSeedLandingSource } from "../../helper/seedLandingSource";
 import {
   getLockInState,
   LOCK_IN_HOLD_HOURS,
@@ -505,16 +506,22 @@ export default function BotApp({
     string[] | undefined
   >(undefined);
   // Hero handoff: seed prompt and/or selected files arriving from the
-  // homepage chat input. Files are queued to ChatKitPanel for upload via
-  // `initialFiles`. The seed pre-fills the composer (`initialInputText`)
-  // when files are present so the user can review before sending; when
-  // there are no files, it's auto-sent through the regular
-  // `handlePromptSelect` path.
+  // homepage chat input, a theme card, a blog sidebar link or a trip page.
+  // Files are queued to ChatKitPanel for upload via `initialFiles`; the seed
+  // pre-fills the composer (`initialInputText`) and is never auto-sent — see
+  // the handoff effect for why.
   const [initialFiles, setInitialFiles] = useState<File[] | undefined>(
     undefined,
   );
   const [initialInputText, setInitialInputText] = useState<string | null>(null);
   const hasConsumedHeroHandoffRef = useRef(false);
+
+  // Snapshot the landing query string of a `/chat?seed=` open before anything
+  // rewrites the address bar. Taken during the first client render — earlier
+  // than any effect, this component's or _app's — because the thread it belongs
+  // to is now created only when the reader presses send, which can be minutes
+  // and several history writes later. See helper/seedLandingSource.js.
+  useState(captureSeedLandingSource);
   const [activeTravellerStory, setActiveTravellerStory] =
     useState<TravellerStory | null>(null);
   // Widened past `(msg: string)`: a theme-page prompt has to reach the panel's
@@ -3601,35 +3608,34 @@ export default function BotApp({
     // a place.
     setSeedActive(true);
 
-    if (files && files.length > 0) {
-      // Pre-fill composer + upload files; let the user click send so the
-      // first message includes any newly-uploaded attachment IDs.
-      setShowStartScreen(false);
-      setIsChatActive(true);
-      setInitialInputText(seed);
-      setInitialFiles(files);
-    } else if (seed) {
-      // Plain seed (no files): existing prompt-auto-send flow already
-      // funnels through `handlePromptSelect`, which sets `initialPrompt`
-      // and flips `isChatActive`. ChatKitPanel's `initialPrompt` effect
-      // sends it as the first message after location is ready.
-      //
-      // The theme page's `intake` is handed over directly rather than read back
-      // off `themeIntake` state — the setState above hasn't landed yet, and the
-      // live-panel branch inside executePromptSelect sends synchronously.
-      handlePromptSelect(seed, undefined, seedMeta?.intake ?? undefined);
-    }
+    // ── The seed is a DRAFT, never a send ──────────────────────────────────
+    //
+    // Seeded links are ordinary anchors on blog, trip and theme pages, so any
+    // crawler that runs JavaScript used to create a real thread and a full LLM
+    // run just by fetching one — ~900 junk threads a day against ~90 genuine
+    // web chats, most of it one crawler that ignores robots.txt and spoofs
+    // desktop Chrome UAs. Nothing about the request distinguishes it, so the
+    // only reliable signal left is an actual human gesture.
+    //
+    // Hence: hydrate the composer, focus it, and let the reader press send.
+    // Deferring only the message would not have helped — the thread row is
+    // what costs us, so thread creation has to sit behind the same gesture.
+    // There is deliberately no timer, scroll, viewport or synthetic-event
+    // fallback here: a crawler trips all of those.
+    //
+    // With files the seed already behaved this way (so the first message could
+    // carry the freshly-uploaded attachment ids); both paths now agree.
+    setShowStartScreen(false);
+    setIsChatActive(true);
+    setInitialInputText(seed);
+    if (files && files.length > 0) setInitialFiles(files);
 
-    // Drop the seed from the URL once consumed so a refresh doesn't replay it.
-    if (querySeed && typeof window !== "undefined") {
-      try {
-        const url = new URL(window.location.href);
-        url.searchParams.delete("seed");
-        replaceUrl(url.toString());
-      } catch {
-        /* noop */
-      }
-    }
+    // `?seed=` deliberately stays on the URL until the thread is created (at
+    // which point handleSessionCreated replaces the whole URL with
+    // `/chat/{id}`). It is what makes a refresh before sending re-hydrate the
+    // composer, and it costs nothing: attribution was already snapshotted on
+    // the first render, so nothing downstream depends on the address bar.
+
     // We deliberately want this to run only once. The ref guards re-runs.
     // `viewportMeasured` is a dep so the effect fires once the viewport is
     // measured, even when `router.isReady` was already true on first render.

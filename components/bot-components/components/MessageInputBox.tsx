@@ -35,6 +35,15 @@ const StopIcon = () => (
   </svg>
 );
 
+// ── Field sizing ─────────────────────────────────────────────────────────────
+// The textarea's cap is kept an exact multiple of the line height. At an
+// arbitrary cap the box ends mid-glyph and the last visible line reads as a
+// rendering fault rather than as "there is more below" — very visible on a
+// seeded landing, where the composer opens already full of text.
+const FIELD_LINE_HEIGHT = 22;
+const FIELD_MAX_ROWS = 6;
+const FIELD_MAX_HEIGHT = FIELD_LINE_HEIGHT * FIELD_MAX_ROWS;
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatFileSize(bytes: number): string {
@@ -259,6 +268,11 @@ interface MessageInputBoxProps {
   requireAuth?: boolean;
   /** Called when the user tries to interact while requireAuth is true. */
   onAuthRequired?: () => void;
+  /** Bump to take focus, put the caret after whatever is in the box, and
+   *  scroll the composer into view. Used by the `/chat?seed=` landing, which
+   *  hydrates the box with a draft the reader sends themselves — the focus is
+   *  what makes it read as a ready message rather than as leftover text. */
+  focusKey?: number;
 }
 
 export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
@@ -276,6 +290,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
   onRemoveAttachment,
   requireAuth = false,
   onAuthRequired,
+  focusKey = 0,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dictateRef = useRef<any>(null);
@@ -312,12 +327,49 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
       ? rotatePlaceholders[placeholderIdx]
       : placeholder;
 
+  // True once the field has grown past its first line. The pill is a stadium
+  // (`border-radius: 999px`) built for one row — at six rows that radius draws
+  // a 152px-tall ellipse with the "+" and Send floating in its vertically
+  // centred middle. So the multi-row shape is a distinct state, not just a
+  // taller version of the same one: see the `.is-multiline` block below.
+  const [isMultiline, setIsMultiline] = useState(false);
+
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
     el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+    const next = Math.min(el.scrollHeight, FIELD_MAX_HEIGHT);
+    el.style.height = `${next}px`;
+    setIsMultiline(next > FIELD_LINE_HEIGHT);
   }, [value]);
+
+  // Focus + reveal on demand (see `focusKey`). Deferred by a frame because the
+  // render that raises the key is also the one that fills the box: the
+  // auto-grow effect above hasn't resized the textarea yet, so scrolling now
+  // would aim at the wrong height. `preventScroll` keeps the browser's own
+  // focus scroll out of it so the smooth scroll below is the only movement.
+  useEffect(() => {
+    if (!focusKey) return;
+    const raf = requestAnimationFrame(() => {
+      const el = textareaRef.current;
+      if (!el) return;
+      try {
+        el.focus({ preventScroll: true });
+        // Caret after the draft, so typing extends it instead of replacing it.
+        const end = el.value.length;
+        el.setSelectionRange(end, end);
+      } catch {
+        /* older Safari: focus({preventScroll}) / setSelectionRange can throw */
+      }
+      // …but show the draft from its FIRST line. Moving the caret scrolls a
+      // capped field to the bottom, which opens a seeded message on its last
+      // sentence — the reader has to scroll up to find out what they are about
+      // to send. Typing jumps back to the caret on its own.
+      el.scrollTop = 0;
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [focusKey]);
 
   const hasUploadedAttachments = attachments.some((a) => a.status === "uploaded");
   // Nothing in the composer accepts input. The chrome ("+", Send) stays on
@@ -452,7 +504,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
 
   return (
     <div
-      className="kp-chat-input"
+      className={`kp-chat-input${isMultiline ? " is-multiline" : ""}`}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
@@ -602,13 +654,35 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           background: #fff;
           padding: 5px 6px 5px 8px;
           box-shadow: 0 8px 20px -10px rgba(11,18,32,0.15);
-          transition: border-color 0.15s;
+          transition: border-color 0.15s, border-radius 0.15s;
         }
         .kp-composer-wrap .kp-chat-input:focus-within .kp-row {
           border-color: #dcdfe5;
           box-shadow: 0 8px 20px -10px rgba(11,18,32,0.15);
         }
+
+        /* ── Multi-row composer ───────────────────────────────────────────
+           A seeded prompt off a blog, trip or theme link arrives as a whole
+           paragraph, so the pill opens at its six-row cap rather than growing
+           into it. Two things have to give at that height:
+
+             · the stadium radius, which at 152px tall is no longer a pill but
+               an ellipse — the text then sits in a lens-shaped hole with wide
+               dead corners. A fixed 22px corner keeps the same soft edge at
+               any height.
+             · align-items:center, which parks the "+" and Send halfway up
+               the box, unmoored from both the first and the last line. They
+               belong on the baseline of the line the caret will end on. */
+        .kp-composer-wrap .kp-chat-input.is-multiline .kp-row {
+          align-items: flex-end;
+          border-radius: 22px;
+        }
         .kp-composer-wrap .kp-field { flex: 1; min-width: 0; }
+        /* The buttons are 30px against a 22px line box, so flush bottoms would
+           hang the last line 4px below their optical centre. */
+        .kp-composer-wrap .kp-chat-input.is-multiline .kp-field {
+          padding-bottom: 4px;
+        }
         .kp-composer-wrap .kp-foot {
           flex: 0 0 auto;
           border-top: 0;
@@ -894,7 +968,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
             // 16px min prevents iOS auto-zoom-on-focus (must stay >= 16)
             fontSize: 16,
             color: "#0b1220",
-            lineHeight: "22px",
+            lineHeight: `${FIELD_LINE_HEIGHT}px`,
             // `block` kills the inline-block baseline gap: as an inline element
             // the textarea sits on a line box that reserves descender space
             // below it, so .kp-field measured ~5px taller than the text and the
@@ -902,8 +976,8 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
             display: "block",
             // Match lineHeight exactly so a single row is 22px tall and the
             // centered placeholder overlay lands on the same baseline.
-            minHeight: 22,
-            maxHeight: 120,
+            minHeight: FIELD_LINE_HEIGHT,
+            maxHeight: FIELD_MAX_HEIGHT,
             border: "none",
             padding: 0,
             marginBottom: 0,
@@ -931,7 +1005,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
               fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               // Match textarea 16px so overlay aligns and doesn't trigger zoom
               fontSize: 16,
-              lineHeight: "22px",
+              lineHeight: `${FIELD_LINE_HEIGHT}px`,
               color: "#8a93a6",
               whiteSpace: "nowrap",
               overflow: "hidden",
