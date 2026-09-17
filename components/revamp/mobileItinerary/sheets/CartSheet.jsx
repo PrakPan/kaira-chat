@@ -477,7 +477,14 @@ export default function CartSheet({
     const lock = deriveLockIn(C);
     // What the pay bar actually charges. With a hold owed that is the fee, not
     // the balance — the same swap the desktop CTA makes.
-    const payNow = lock.requiresLockIn ? lock.payNowAmount : payable;
+    //
+    // Except on a stale cart, where the bar's button is Reprice and nothing is
+    // being charged at all. The fee there named a hold the traveller cannot
+    // buy — ₹999 under "PRICES EXPIRED", beside a button that takes no money —
+    // so the figure goes back to the trip's own total, which is what the rest
+    // of the sheet is showing them. Same condition that stands the hold card
+    // down, for the same reason.
+    const payNow = lock.requiresLockIn && !stale ? lock.payNowAmount : payable;
     // The card is on screen in exactly the states the CTA it explains is: while
     // the hold is owed, and once it has been paid. Not while the cart is stale,
     // where the bar offers a reprice or new dates instead of a payment.
