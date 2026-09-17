@@ -25,10 +25,21 @@ const modeOf = (type) =>
  *
  * Everything the reader touches here is a DRAFT held in local state. Nothing
  * reaches Redux — and so nothing reaches the field above or the payload —
- * until Done is pressed. Picking the second date used to commit and close the
- * panel on the spot, which meant a mis-tapped end date was already the answer
- * and the panel had shut before the reader saw it. Closing any other way
- * (Escape, the scrim, the field again) discards the draft.
+ * until it is committed. Closing any other way (Escape, the scrim, the field
+ * again) discards the draft.
+ *
+ * WHAT COMMITS depends on the tab:
+ *
+ *   I have dates — the second tap does. A start and an end is the whole answer,
+ *     and there is nothing else on that tab to set, so asking for Done after it
+ *     is a second tap that says what the first already said. A mis-tapped end
+ *     is re-picked by opening the field again: pickDay restarts the range on
+ *     the tap after a complete one, so a second pass is just a new trip.
+ *
+ *   Flexible / Not sure — Done does. Those tabs carry a month and/or a nights
+ *     stepper, so there is no single gesture that means "that's it": committing
+ *     on the month tap would close the panel before the reader had set the
+ *     length, and committing on the stepper would fire on every increment.
  */
 const WhenPanel = ({
   date,
@@ -96,6 +107,15 @@ const WhenPanel = ({
   const pickRange = ({ start, end }) => {
     setDs(start);
     setDe(end);
+    setCleared(false);
+    // A complete range is the answer — write it and close. `end` is only ever
+    // set on the second tap (see RangeCalendar.pickDay, which restarts the
+    // range rather than ending it on or before the start), so this cannot fire
+    // on a half-picked range or a single day.
+    if (start && end) {
+      onFixed(toYMD(start), toYMD(end));
+      onDone?.();
+    }
   };
 
   const changeNights = (n) => setNights(n);
