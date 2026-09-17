@@ -33,6 +33,17 @@ interface OtpCardProps {
    *  max-width — so it can fill a host container (e.g. the BotLoginModal bottom
    *  sheet) instead of floating as a standalone chat card. */
   bare?: boolean;
+  /**
+   * Host element for the primary action, if it should not sit under the fields.
+   *
+   * The trip form's sign-in step puts every step's action in one footer bar at
+   * the bottom of the sheet, so "Send OTP" belongs there rather than halfway up
+   * the panel — see components/tailoredform/kaira/StepSignIn. Given a node, the
+   * button is portaled into it and styled with `submitClassName` instead of its
+   * own; given nothing, it renders inline exactly as before.
+   */
+  submitSlot?: HTMLElement | null;
+  submitClassName?: string;
 }
 
 /**
@@ -49,6 +60,8 @@ const OtpCard: React.FC<OtpCardProps> = ({
   submitLabel = "Send OTP & Start",
   itineraryId,
   bare = false,
+  submitSlot = null,
+  submitClassName,
 }) => {
   const dispatch = useDispatch();
   const {
@@ -368,7 +381,12 @@ const OtpCard: React.FC<OtpCardProps> = ({
     // Once the 4 digits are in, existing users verify immediately; new users
     // are routed to the name + email screen first (same code is submitted from
     // there). Guard so a duplicate input event can't advance/verify twice.
-    if (code.length === 4 && submittedCodeRef.current !== code) {
+    //
+    // Not when the host owns the button (`submitSlot`): there the footer says
+    // "Verify" and that is what the reader is being asked to press, the same as
+    // Continue on every other step of that form. Auto-firing here would leave
+    // them looking at a button that had already gone by.
+    if (!submitSlot && code.length === 4 && submittedCodeRef.current !== code) {
       submittedCodeRef.current = code;
       if (newUser) {
         setUserDetailsRequired(true);
@@ -376,6 +394,20 @@ const OtpCard: React.FC<OtpCardProps> = ({
         setTimeout(() => verify(code), 200);
       }
     }
+  };
+
+  // Verify what has been typed, for a host that gives the card an explicit
+  // button instead of relying on the auto-submit in onOtpChange. Same guard:
+  // `submittedCodeRef` means this code is already in flight, so pressing the
+  // button after the fourth digit has already triggered it does nothing rather
+  // than posting the code twice (the second call consumes a spent code and
+  // fails *after* the first has logged the user in).
+  const submitOtp = () => {
+    if (otp.length !== 4 || loading) return;
+    if (submittedCodeRef.current === otp) return;
+    submittedCodeRef.current = otp;
+    if (newUser) setUserDetailsRequired(true);
+    else verify(otp);
   };
 
   // New-user details screen submit. Name is required (same as BotLoginModal);
@@ -421,12 +453,126 @@ const OtpCard: React.FC<OtpCardProps> = ({
     dispatch(authaction.authResetLogin() as any);
   };
 
+  // The card's primary action for whichever screen is showing. Only used when a
+  // host has asked for the button in its own bar (`submitSlot`) — the three
+  // inline buttons below are untouched for every other caller.
+  //
+  // The OTP screen has no inline button at all: existing users verify on the
+  // fourth digit. A footer bar has to hold something there, so it gets an
+  // explicit Verify, and `submitOtp` makes pressing it after the auto-submit a
+  // no-op rather than a second post.
+  const slotAction = !otpSent
+    ? {
+        onClick: sendOtp,
+        disabled: !phoneValid || loading,
+        label: loading
+          ? "Sending…"
+          : whatsapp
+            ? "Send OTP via WhatsApp"
+            : "Send OTP via SMS",
+        whatsapp,
+      }
+    : userDetailsRequired
+      ? {
+          onClick: submitDetails,
+          disabled: loading,
+          label: loading ? "Verifying…" : "Continue",
+          whatsapp: false,
+        }
+      : {
+          onClick: submitOtp,
+          disabled: otp.length !== 4 || loading,
+          label: loading ? "Verifying…" : "Verify",
+          whatsapp: false,
+        };
+
+  const slottedButton =
+    submitSlot &&
+    createPortal(
+      <button
+        type="button"
+        onClick={slotAction.onClick}
+        disabled={slotAction.disabled}
+        className={`${submitClassName || ""}${
+          slotAction.whatsapp ? " kform-cta--whatsapp" : ""
+        }`}
+      >
+        {slotAction.whatsapp && !loading && (
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden
+            style={{ flexShrink: 0 }}
+          >
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+          </svg>
+        )}
+        {slotAction.label}
+      </button>,
+      submitSlot,
+    );
+
+  // The primary action. Rendered where the host asks for it: inline under the
+  // fields by default, or portaled into `submitSlot` when the host has its own
+  // action bar (the trip form's footer). Same button either way — same handler,
+  // same disabled rule — so there is one send path, not two.
+  const sendButtonEl = (
+    <button
+      type="button"
+      onClick={sendOtp}
+      disabled={!phoneValid || loading}
+      className={
+        submitSlot
+          ? submitClassName
+          : "w-full mt-[10px] py-[11px] rounded-[11px] text-[13.5px] font-bold text-white inline-flex items-center justify-center gap-[7px] transition-all"
+      }
+      style={
+        submitSlot
+          ? undefined
+          : {
+              background:
+                !phoneValid || loading
+                  ? "#b8becc"
+                  : whatsapp
+                    ? "#1FA855"
+                    : "#0f1a2e",
+              cursor: !phoneValid || loading ? "not-allowed" : "pointer",
+            }
+      }
+    >
+            {loading ? (
+              "Sending…"
+            ) : whatsapp ? (
+              <>
+                <svg
+                  width="17"
+                  height="17"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden
+                  className="shrink-0"
+                >
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                </svg>
+                Send OTP via WhatsApp
+              </>
+            ) : (
+              "Send OTP via SMS"
+            )}
+    </button>
+  );
+  const sendButton = submitSlot ? null : sendButtonEl;
+
   return (
     <div
       className={
         bare ? "w-full" : "flex gap-[10px] mt-1 max-ph:gap-0 max-ph:px-3"
       }
     >
+      {/* Rendered here but painted in the host's action bar — see slotAction. */}
+      {slottedButton}
       {/* Kaira avatar in the left gutter — same gradient ring + image as her
           chat replies, so the sign-in card reads as part of the conversation.
           Hidden on phones (like other bot avatars) to give the card full width.
@@ -752,41 +898,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
               Send OTP on WhatsApp?
             </span>
           </label>
-          <button
-            type="button"
-            onClick={sendOtp}
-            disabled={!phoneValid || loading}
-            className="w-full mt-[10px] py-[11px] rounded-[11px] text-[13.5px] font-bold text-white inline-flex items-center justify-center gap-[7px] transition-all"
-            style={{
-              background:
-                !phoneValid || loading
-                  ? "#b8becc"
-                  : whatsapp
-                    ? "#1FA855"
-                    : "#0f1a2e",
-              cursor: !phoneValid || loading ? "not-allowed" : "pointer",
-            }}
-          >
-            {loading ? (
-              "Sending…"
-            ) : whatsapp ? (
-              <>
-                <svg
-                  width="17"
-                  height="17"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  aria-hidden
-                  className="shrink-0"
-                >
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                </svg>
-                Send OTP via WhatsApp
-              </>
-            ) : (
-              "Send OTP via SMS"
-            )}
-          </button>
+          {sendButton}
           {/* Initiate (OTP send) failure — invalid number, rate limit, network,
               or any non-success from /initiate/. Hidden while a retry is in
               flight so a stale message doesn't linger over "Sending…". */}
@@ -886,18 +998,20 @@ const OtpCard: React.FC<OtpCardProps> = ({
               </button>
             </div>
           )}
-          <button
-            type="button"
-            onClick={submitDetails}
-            disabled={loading}
-            className="w-full mt-[10px] py-[11px] rounded-[11px] text-[13.5px] font-bold text-white inline-flex items-center justify-center gap-[7px] transition-all"
-            style={{
-              background: loading ? "#b8becc" : "#0f1a2e",
-              cursor: loading ? "not-allowed" : "pointer",
-            }}
-          >
-            {loading ? "Verifying…" : "Continue"}
-          </button>
+          {!submitSlot && (
+            <button
+              type="button"
+              onClick={submitDetails}
+              disabled={loading}
+              className="w-full mt-[10px] py-[11px] rounded-[11px] text-[13.5px] font-bold text-white inline-flex items-center justify-center gap-[7px] transition-all"
+              style={{
+                background: loading ? "#b8becc" : "#0f1a2e",
+                cursor: loading ? "not-allowed" : "pointer",
+              }}
+            >
+              {loading ? "Verifying…" : "Continue"}
+            </button>
+          )}
           <div className="text-[11.5px] text-[#8a93a6] text-center mt-[10px]">
             Sent to <b className="text-[#445069]">{dialCode} {phone}</b>
             {" · "}

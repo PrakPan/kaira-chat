@@ -198,6 +198,13 @@ const EnquiryForm = (props) => {
   // desktop one — the four-step strip — and the phone learns better a beat
   // later, long before anyone reaches the vibe step.
   const [narrow, setNarrow] = useState(false);
+  // Where the sign-in step's action goes. The step keeps every other step's
+  // shape — Kaira header, progress strip, one action in the footer bar — so the
+  // OTP card's "Send OTP" is portaled down here rather than sitting halfway up
+  // the panel with the footer holding a second, different button. Held in state
+  // (not a ref) because the portal target has to exist on the render that uses
+  // it, and a ref assignment does not re-render.
+  const [signInSlot, setSignInSlot] = useState(null);
 
   useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return undefined;
@@ -1169,7 +1176,9 @@ const EnquiryForm = (props) => {
   const embedded = !!(props.tailoredFormModal || props.HeroBanner);
 
   const card = (
-    <div className={`kform-card${embedded ? " kform-card--embedded" : ""}`}>
+    <div
+      className={`kform-card${embedded ? " kform-card--embedded" : ""}`}
+    >
       {/* header */}
       <div className="kform-head">
         <div className="kform-avatar">
@@ -1255,6 +1264,7 @@ const EnquiryForm = (props) => {
             itineraryId={latestItineraryIdRef.current || undefined}
             onVerified={_SignInVerified}
             onSkip={_SignInSkipped}
+            submitSlot={signInSlot}
           />
         ) : (
           <StepVibe
@@ -1307,11 +1317,14 @@ const EnquiryForm = (props) => {
                   </button>
                 </>
               )}
-              {/* No footer CTA on the sign-in step: the OTP card owns its own
-                  buttons there (Send OTP, then Verify), and a second primary
-                  button in the footer would be a third thing to press that does
-                  something different from both. Back still works. */}
-              {!onSignInStep && (
+              {/* The sign-in step fills this with the OTP card's own action,
+                  portaled in, so the footer bar reads the same on every step.
+                  Once the code has been sent the card verifies on the fourth
+                  digit and there is nothing left to press — the slot is simply
+                  empty then, and Back is the only control. */}
+              {onSignInStep ? (
+                <div className="kform-cta-slot" ref={setSignInSlot} />
+              ) : (
                 <button
                   type="button"
                   className={`kform-cta${ctaDisabled ? " is-disabled" : ""}`}

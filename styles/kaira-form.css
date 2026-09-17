@@ -386,6 +386,31 @@
 .kform-signin {
   max-width: 460px;
 }
+
+/* The sign-in step's action lives in the footer bar with every other step's —
+   the OTP card portals its button in here (see StepSignIn).
+
+   `display: contents` and not a box: the footer row is a flex line and the CTA
+   sits in it as `flex: 1` on a phone. Wrapped in a div, that rule applied to
+   the button inside the wrapper instead of to the row, so the sign-in action
+   came out a different width and alignment from Continue on every other step.
+   With `contents` the slot leaves the layout entirely and the portaled button
+   is a direct child of the row, exactly like the real CTA. */
+.kform-cta-slot {
+  display: contents;
+}
+
+/* Green while it will actually send on WhatsApp — the channel is the promise
+   the button is making, so it carries WhatsApp's colour rather than the form's
+   ink. Unchecking the box drops it back to ink (SMS). */
+.kform-cta--whatsapp:not(:disabled) {
+  background: #1fa855;
+  box-shadow: 0 8px 20px -10px rgba(31, 168, 85, 0.55);
+}
+.kform-cta--whatsapp:not(:disabled):hover {
+  background: #1b9a4d;
+}
+
 @media (max-width: 767.98px) {
   .kform-signin {
     max-width: none;
