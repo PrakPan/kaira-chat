@@ -508,7 +508,7 @@ export default function BotApp({
   // Hero handoff: seed prompt and/or selected files arriving from the
   // homepage chat input, a theme card, a blog sidebar link or a trip page.
   // Files are queued to ChatKitPanel for upload via `initialFiles`; the seed
-  // is sent straight away only when the link carries `?composer=true`, and
+  // is sent straight away only when the link carries `?composer=false`, and
   // otherwise pre-fills the composer (`initialInputText`) — see the handoff
   // effect for why.
   const [initialFiles, setInitialFiles] = useState<File[] | undefined>(
@@ -3609,20 +3609,22 @@ export default function BotApp({
     // a place.
     setSeedActive(true);
 
-    // ── `?composer=true`: send the seed straight away ──────────────────────
+    // ── `?composer=false`: skip the composer, send the seed straight away ──
     //
-    // Opt-in, per link. Our own seed links add it (services/heroChatHandoff's
-    // seedChatUrl) when the click that produced the URL is itself the gesture
-    // — the reader already chose the prompt, so making them press Send again
-    // on /chat is a wasted step. Anything else — `composer=false`, no param at
-    // all (the externally-generated blog links), a malformed value — falls
-    // through to the draft below. Only the literal "true" sends.
+    // Read the param as "should the seed go through the composer?". `false`
+    // means no — send it. Opt-in, per link: our own click-driven seed links
+    // add it (services/heroChatHandoff's seedChatUrl), because the click that
+    // produced the URL is itself the gesture — the reader already chose the
+    // prompt, so making them press Send again on /chat is a wasted step.
+    // Anything else — `composer=true` (the blog links), no param at all, a
+    // malformed value — falls through to the draft below. Only the literal
+    // "false" sends, so a link can't auto-send by accident.
     //
     // Files can't take this path: they upload after /chat mounts, and the
     // first message has to carry their attachment ids, so a seed with files
     // is always a draft.
     const autoSend =
-      readParam("composer") === "true" && !(files && files.length > 0);
+      readParam("composer") === "false" && !(files && files.length > 0);
     if (autoSend) {
       // Funnels through `handlePromptSelect`, which sets `initialPrompt` and
       // flips `isChatActive`; ChatKitPanel's `initialPrompt` effect sends it as
@@ -3635,7 +3637,7 @@ export default function BotApp({
 
       // Drop the seed from the URL once it's sent. handleSessionCreated PUSHES
       // `/chat/{id}`, so this entry stays behind in history — left as
-      // `?seed=…&composer=true`, a back-swipe that reloads it (Meta's in-app
+      // `?seed=…&composer=false`, a back-swipe that reloads it (Meta's in-app
       // webviews do exactly that) would send the prompt a second time.
       // Attribution doesn't need the address bar: it was snapshotted on the
       // first render.

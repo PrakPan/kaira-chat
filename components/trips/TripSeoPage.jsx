@@ -43,12 +43,13 @@ import {
 // the blog's own sidebar CTA uses, so the thread opens with the reader's
 // context already stated.
 //
-// `composer: false` on purpose — unlike every other seed link, this one is a
-// real `<a href>` in the prerendered HTML, so crawlers follow it without a
-// click. Auto-sending here is what created most of the junk threads (a thread
-// plus a full LLM run per crawler fetch); as a draft, nothing reaches /chatkit
-// until a reader presses Send.
-const chatSeedHref = (text) => seedChatUrl(text, { composer: false });
+// `autoSend: false` (→ `composer=true`, a draft) on purpose — unlike every
+// other seed link in this repo, this one is a real `<a href>` in the
+// prerendered HTML, so crawlers follow it without a click. Auto-sending here
+// is what created most of the junk threads (a thread plus a full LLM run per
+// crawler fetch); as a draft, nothing reaches /chatkit until a reader presses
+// Send.
+const chatSeedHref = (text) => seedChatUrl(text, { autoSend: false });
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
