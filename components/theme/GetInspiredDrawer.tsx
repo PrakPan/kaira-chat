@@ -13,7 +13,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { setPendingSeed } from "../../services/heroChatHandoff";
+import { setPendingSeed, seedChatUrl } from "../../services/heroChatHandoff";
 import StartScreen from "../bot-components/components/StartScreen";
 import type { ThemeConfig } from "../bot-components/types/themeConfig";
 import Drawer from "../ui/Drawer";
@@ -63,7 +63,7 @@ const GetInspiredDrawer: React.FC<GetInspiredDrawerProps> = ({
   const goToChat = (seed: string) => {
     const s = (seed || "").trim();
     if (s) setPendingSeed(s);
-    router.push(s ? `/chat?seed=${encodeURIComponent(s)}` : "/chat");
+    router.push(seedChatUrl(s));
   };
 
   const handlePromptSelect = (prompt: string) => {

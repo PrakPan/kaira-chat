@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import StoryCard from "./StoryCard";
 import MobileCardCarousel from "./MobileCardCarousel";
 import styles from "./TravelerStoriesSection.module.scss";
+import { seedChatUrl } from "../../../services/heroChatHandoff";
 
 /*
  * "Real trips. Real moments." — editorial story grid.
@@ -112,7 +113,7 @@ const TravelerStoriesSection = ({ stories = DEFAULT_STORIES, total = 2140 }) => 
       author={s.author}
       rating={s.rating}
       onClick={() =>
-        router.push(`/chat?seed=${encodeURIComponent(s.seed || s.badge || "")}`)
+        router.push(seedChatUrl(s.seed || s.badge))
       }
     />
   );

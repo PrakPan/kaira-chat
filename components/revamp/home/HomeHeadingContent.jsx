@@ -4,6 +4,7 @@ import styles from "./HeadingContent.module.scss";
 import {
   setPendingFiles,
   setPendingSeed,
+  seedChatUrl,
 } from "../../../services/heroChatHandoff";
 import Link from "next/link";
 import ctastyles from "./HeroSection.module.scss";
@@ -55,7 +56,7 @@ const HomeHeadingContent = ({ title, subtitle }) => {
   const goToChat = (seed, files) => {
     if (files && files.length) setPendingFiles(files);
     if (seed) setPendingSeed(seed);
-    const url = seed ? `/chat?seed=${encodeURIComponent(seed)}` : "/chat";
+    const url = seedChatUrl(seed);
     router.push(url);
   };
 

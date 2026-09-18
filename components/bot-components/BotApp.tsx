@@ -508,8 +508,9 @@ export default function BotApp({
   // Hero handoff: seed prompt and/or selected files arriving from the
   // homepage chat input, a theme card, a blog sidebar link or a trip page.
   // Files are queued to ChatKitPanel for upload via `initialFiles`; the seed
-  // pre-fills the composer (`initialInputText`) and is never auto-sent — see
-  // the handoff effect for why.
+  // is sent straight away only when the link carries `?composer=true`, and
+  // otherwise pre-fills the composer (`initialInputText`) — see the handoff
+  // effect for why.
   const [initialFiles, setInitialFiles] = useState<File[] | undefined>(
     undefined,
   );
@@ -3608,7 +3609,48 @@ export default function BotApp({
     // a place.
     setSeedActive(true);
 
-    // ── The seed is a DRAFT, never a send ──────────────────────────────────
+    // ── `?composer=true`: send the seed straight away ──────────────────────
+    //
+    // Opt-in, per link. Our own seed links add it (services/heroChatHandoff's
+    // seedChatUrl) when the click that produced the URL is itself the gesture
+    // — the reader already chose the prompt, so making them press Send again
+    // on /chat is a wasted step. Anything else — `composer=false`, no param at
+    // all (the externally-generated blog links), a malformed value — falls
+    // through to the draft below. Only the literal "true" sends.
+    //
+    // Files can't take this path: they upload after /chat mounts, and the
+    // first message has to carry their attachment ids, so a seed with files
+    // is always a draft.
+    const autoSend =
+      readParam("composer") === "true" && !(files && files.length > 0);
+    if (autoSend) {
+      // Funnels through `handlePromptSelect`, which sets `initialPrompt` and
+      // flips `isChatActive`; ChatKitPanel's `initialPrompt` effect sends it as
+      // the first message once location is ready.
+      //
+      // The theme page's `intake` is handed over directly rather than read back
+      // off `themeIntake` state — the setState above hasn't landed yet, and the
+      // live-panel branch inside executePromptSelect sends synchronously.
+      handlePromptSelect(seed, undefined, seedMeta?.intake ?? undefined);
+
+      // Drop the seed from the URL once it's sent. handleSessionCreated PUSHES
+      // `/chat/{id}`, so this entry stays behind in history — left as
+      // `?seed=…&composer=true`, a back-swipe that reloads it (Meta's in-app
+      // webviews do exactly that) would send the prompt a second time.
+      // Attribution doesn't need the address bar: it was snapshotted on the
+      // first render.
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("seed");
+        url.searchParams.delete("composer");
+        replaceUrl(url.toString());
+      } catch {
+        /* noop */
+      }
+      return;
+    }
+
+    // ── Otherwise the seed is a DRAFT, not a send ──────────────────────────
     //
     // Seeded links are ordinary anchors on blog, trip and theme pages, so any
     // crawler that runs JavaScript used to create a real thread and a full LLM
@@ -3622,9 +3664,6 @@ export default function BotApp({
     // what costs us, so thread creation has to sit behind the same gesture.
     // There is deliberately no timer, scroll, viewport or synthetic-event
     // fallback here: a crawler trips all of those.
-    //
-    // With files the seed already behaved this way (so the first message could
-    // carry the freshly-uploaded attachment ids); both paths now agree.
     setShowStartScreen(false);
     setIsChatActive(true);
     setInitialInputText(seed);

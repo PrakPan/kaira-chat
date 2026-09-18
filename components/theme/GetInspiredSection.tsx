@@ -15,7 +15,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { setPendingSeed } from "../../services/heroChatHandoff";
+import { setPendingSeed, seedChatUrl } from "../../services/heroChatHandoff";
 import { useStatsStripPinned } from "../../services/floatingStatsStrip";
 import StartScreen from "../bot-components/components/StartScreen";
 import type { ThemeConfig } from "../bot-components/types/themeConfig";
@@ -102,7 +102,7 @@ const GetInspiredSection: React.FC<GetInspiredSectionProps> = ({
   const goToChat = (seed: string) => {
     const s = (seed || "").trim();
     if (s) setPendingSeed(s);
-    router.push(s ? `/chat?seed=${encodeURIComponent(s)}` : "/chat");
+    router.push(seedChatUrl(s));
   };
 
   const handlePromptSelect = (prompt: string) => {

@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import styles from "./WhereNextSection.module.scss";
 import { optimizedMediaUrl } from "../../../lib/mediaImage";
+import { seedChatUrl } from "../../../services/heroChatHandoff";
 
 /*
  * "Pick a feeling" — the vibes grid.
@@ -73,11 +74,11 @@ const WhereNextSection = ({ vibes = DEFAULT_VIBES, total = 47 }) => {
               role="button"
               tabIndex={0}
               onClick={() =>
-                router.push(`/chat?seed=${encodeURIComponent(v.seed || "")}`)
+                router.push(seedChatUrl(v.seed))
               }
               onKeyDown={(e) => {
                 if (e.key === "Enter")
-                  router.push(`/chat?seed=${encodeURIComponent(v.seed || "")}`);
+                  router.push(seedChatUrl(v.seed));
               }}
             >
               <div

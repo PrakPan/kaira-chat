@@ -30,6 +30,7 @@ import {
   SectionNote,
 } from "./TripBlogChrome";
 import { resolveImageUrl } from "../../helper/imageUrl";
+import { seedChatUrl } from "../../services/heroChatHandoff";
 import { tripName } from "../../lib/seo/tripName";
 import {
   destinationLabel,
@@ -41,7 +42,13 @@ import {
 // Where the sidebar's "Chat with Kaira" goes. `?seed=` is the same parameter
 // the blog's own sidebar CTA uses, so the thread opens with the reader's
 // context already stated.
-const CHAT_SEED = "/chat?seed=";
+//
+// `composer: false` on purpose — unlike every other seed link, this one is a
+// real `<a href>` in the prerendered HTML, so crawlers follow it without a
+// click. Auto-sending here is what created most of the junk threads (a thread
+// plus a full LLM run per crawler fetch); as a draft, nothing reaches /chatkit
+// until a reader presses Send.
+const chatSeedHref = (text) => seedChatUrl(text, { composer: false });
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -170,9 +177,9 @@ const TripSeoPage = ({
     .filter(Boolean)
     .join(" · ");
 
-  const chatHref = `${CHAT_SEED}${encodeURIComponent(
+  const chatHref = chatSeedHref(
     `I was looking at your ${title} (${routeLine}). Reshape it for me — start by asking my travel dates, budget per person and group size.`,
-  )}`;
+  );
 
   return (
     <TripItineraryView

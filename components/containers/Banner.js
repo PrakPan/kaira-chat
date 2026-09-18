@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import { useStatsStripPinned } from "../../services/floatingStatsStrip";
-import { setPendingSeed } from "../../services/heroChatHandoff";
+import { setPendingSeed, seedChatUrl } from "../../services/heroChatHandoff";
 
 // The floating "plan your trip" bar that appears once a marketing page is
 // scrolled past its first screen.
@@ -210,7 +210,7 @@ const Banner = (props) => {
     // Same handoff as the hero and the theme pages: stash it so a cold /chat
     // load can still pick it up, and put it in the URL for the warm one.
     if (seed) setPendingSeed(seed);
-    router.push(seed ? `/chat?seed=${encodeURIComponent(seed)}` : "/chat");
+    router.push(seedChatUrl(seed));
   };
 
   const onKeyDown = (e) => {

@@ -21,6 +21,29 @@ const SEED_META_KEY = "ttw_hero_seed_meta";
 
 let pendingFiles = [];
 
+/**
+ * The /chat URL for a seeded prompt — the one place every seed link is built.
+ *
+ * `composer` (default true) adds `composer=true`, which tells /chat to send the
+ * seed as the first message the moment it loads. Pass `{ composer: false }` for
+ * `composer=false`: the seed then lands in the message box as a draft and
+ * nothing reaches /chatkit until the reader presses Send. A link with no
+ * `composer` param at all behaves like false (see the handoff effect in
+ * bot-components/BotApp.tsx).
+ *
+ * Only give `composer: true` to a URL that is reached by a click. Auto-send
+ * happens on page load, so a crawler that fetches the URL creates a real
+ * thread and a full LLM run — a crawlable `<a href>` must use
+ * `composer: false`.
+ *
+ * An empty seed returns plain `/chat`.
+ */
+export const seedChatUrl = (seed, { composer = true } = {}) => {
+  const s = (seed || "").trim();
+  if (!s) return "/chat";
+  return `/chat?seed=${encodeURIComponent(s)}&composer=${composer ? "true" : "false"}`;
+};
+
 const safeSession = () => {
   if (typeof window === "undefined") return null;
   try {

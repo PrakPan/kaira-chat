@@ -10,6 +10,7 @@ import CountryCardV2 from "../destination/CountryCardV2";
 import openTailoredModal from "../../../services/openTailoredModal";
 import urls from "../../../services/urls";
 import styles from "./KairaPlansSection.module.scss";
+import { seedChatUrl } from "../../../services/heroChatHandoff";
 
 /*
  * "Let Kaira plan whatever's on your mind." — a swipeable rail of travel-style
@@ -22,7 +23,7 @@ import styles from "./KairaPlansSection.module.scss";
 
 // Each card opens Kaira pre-briefed (or a real theme page where one exists),
 // so it doubles as an SEO link to a destination/intent.
-const chat = (seed) => `/chat?seed=${encodeURIComponent(seed)}`;
+const chat = (seed) => seedChatUrl(seed);
 
 const TRAVEL_STYLES = [
   {

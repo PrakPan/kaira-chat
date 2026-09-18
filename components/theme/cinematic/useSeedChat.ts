@@ -19,6 +19,7 @@ import { useRouter } from "next/router";
 import {
   setPendingSeed,
   setPendingSeedMeta,
+  seedChatUrl,
 } from "../../../services/heroChatHandoff";
 import type {
   CinematicPromptIntake,
@@ -56,7 +57,7 @@ export function useSeedChat() {
           facts: meta?.facts,
         }),
       });
-      router.push(seed ? `/chat?seed=${encodeURIComponent(seed)}` : "/chat");
+      router.push(seedChatUrl(seed));
     },
     [router],
   );
