@@ -1,4 +1,12 @@
-import React, { useState, useContext, createContext, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useContext,
+  createContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { PiAirplaneTakeoff } from "react-icons/pi";
 import {
   TRANSPORT_ICONS,
@@ -1065,7 +1073,7 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
 
         {imgSrc && (
           <div className="w-full h-40 sm:w-[120px] sm:h-[120px] shrink-0 rounded-xl overflow-hidden self-center">
-            <img src={optimizedMediaUrl(imgSrc, { width: 700 })} alt={imgAlt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <img src={optimizedMediaUrl(imgSrc, { width: 700 })} alt={imgAlt} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         )}
       </div>
@@ -1137,11 +1145,23 @@ function ActivityListView({
 }) {
   const children = (node.children ?? []) as WidgetNode[];
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
-      {children.map((item, idx) => (
-        <ActivityCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
-      ))}
-    </div>
+    <>
+      <div
+        className="kp-wide-only"
+        style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}
+      >
+        {children.map((item, idx) => (
+          <ActivityCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
+        ))}
+      </div>
+      <div className="kp-phone-only">
+        <RichCardRail navTop={160}>
+          {children.map((item, idx) => (
+            <ActivityRichCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
+          ))}
+        </RichCardRail>
+      </div>
+    </>
   );
 }
 
@@ -2245,13 +2265,14 @@ function HotelDetailErrorBlock({
   );
 }
 
-function HotelCard({
-  node,
-  onAction,
-}: {
-  node: WidgetNode;
-  onAction?: WidgetRendererProps["onAction"];
-}) {
+// Everything a hotel list card knows, read out of one ListViewItem: the fields
+// parsed from the widget JSON plus the detail-fetch / Raise Query flow behind
+// its CTA. Shared by the desktop HotelCard and the phone HotelRichCard so the
+// two layouts can never disagree about what a hotel is or what tapping it does.
+function useHotelCardModel(
+  node: WidgetNode,
+  onAction?: WidgetRendererProps["onAction"],
+) {
   const dispatch = useDispatch();
   const itinerary = useItineraryState();
   const itineraryId = useSelector(
@@ -2328,22 +2349,6 @@ function HotelCard({
 
   // Distance from the city center replaces the street address on the card.
   const distanceKm = extractHotelDistanceKm(node, clickPayload as Record<string, any>);
-
-  const rating = starsText ? starsText.trim().length : 0;
-
-const starIcons = Array.from({ length: 5 }, (_, i) =>
-  i < Math.round(rating) ? (
-    <svg key={i} xmlns="http://www.w3.org/2000/svg" width="14" height="13" viewBox="0 0 14 13" fill="none">
-      <path
-        d="M6.30562 1.04912C6.45928 0.737826 6.53611 0.582179 6.64041 0.53245C6.73115 0.489183 6.83658 0.489183 6.92732 0.53245C7.03162 0.582179 7.10845 0.737826 7.26211 1.04912L8.71989 4.00243C8.76526 4.09433 8.78794 4.14028 8.82109 4.17596C8.85044 4.20755 8.88563 4.23314 8.92473 4.25132C8.96889 4.27186 9.01959 4.27927 9.121 4.29409L12.3818 4.77071C12.7252 4.8209 12.8969 4.846 12.9764 4.92987C13.0455 5.00284 13.078 5.10311 13.0649 5.20276C13.0497 5.31729 12.9254 5.43836 12.6768 5.6805L10.3182 7.97785C10.2446 8.04947 10.2079 8.08528 10.1841 8.12788C10.1631 8.16561 10.1497 8.20705 10.1445 8.24991C10.1386 8.29832 10.1473 8.3489 10.1646 8.45007L10.7212 11.695C10.7799 12.0372 10.8092 12.2084 10.7541 12.3099C10.7061 12.3983 10.6208 12.4602 10.5219 12.4786C10.4083 12.4996 10.2546 12.4188 9.94726 12.2572L7.03211 10.7241C6.94128 10.6764 6.89586 10.6525 6.84802 10.6431C6.80565 10.6348 6.76208 10.6348 6.71972 10.6431C6.67187 10.6525 6.62645 10.6764 6.53562 10.7241L3.62047 12.2572C3.31313 12.4188 3.15946 12.4996 3.04584 12.4786C2.94698 12.4602 2.86167 12.3983 2.81368 12.3099C2.75852 12.2084 2.78787 12.0372 2.84657 11.695L3.40311 8.45007C3.42046 8.3489 3.42914 8.29832 3.42327 8.24991C3.41807 8.20705 3.4046 8.16561 3.38359 8.12788C3.35987 8.08528 3.32311 8.04947 3.24958 7.97785L0.890894 5.68049C0.642296 5.43836 0.517997 5.31729 0.502872 5.20276C0.489712 5.10311 0.522223 5.00284 0.591355 4.92987C0.670811 4.846 0.842502 4.8209 1.18588 4.77071L4.44673 4.29409C4.54814 4.27927 4.59884 4.27186 4.643 4.25132C4.6821 4.23314 4.7173 4.20755 4.74664 4.17596C4.77979 4.14028 4.80247 4.09433 4.84784 4.00243L6.30562 1.04912Z"
-        fill="#F7E700" stroke="#C1A51B" strokeLinecap="round" strokeLinejoin="round"
-      />
-    </svg>
-  ) : (
-   <></>
-  )
-);
-
 
   // Build a list of colorful tags for this hotel (hotel type + any extra tag-worthy captions)
   const hotelTags: string[] = [];
@@ -2520,6 +2525,75 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
     if (!cardClickable || detailLoading) return;
     fetchDetail();
   };
+
+  const dismissDetailError = () => {
+    setDetailStatus("idle");
+    setDetailError("");
+  };
+
+  return {
+    name,
+    description,
+    priceFormatted,
+    priceUnit,
+    images,
+    imgAlt,
+    cityName,
+    distanceKm,
+    hotelTags,
+    starsText,
+    starTag,
+    starCategory,
+    starPropertyType,
+    otherTags,
+    accommodationId,
+    itineraryCityId,
+    itineraryId,
+    detailStatus,
+    detailError,
+    detailLoading,
+    raisingQuery,
+    cardClickable,
+    fetchDetail,
+    raiseQuery,
+    handleCardClick,
+    dismissDetailError,
+  };
+}
+
+function HotelCard({
+  node,
+  onAction,
+}: {
+  node: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const {
+    name,
+    description,
+    priceFormatted,
+    priceUnit,
+    images,
+    imgAlt,
+    cityName,
+    distanceKm,
+    hotelTags,
+    starTag,
+    starCategory,
+    starPropertyType,
+    otherTags,
+    accommodationId,
+    itineraryId,
+    detailStatus,
+    detailError,
+    detailLoading,
+    raisingQuery,
+    cardClickable,
+    fetchDetail,
+    raiseQuery,
+    handleCardClick,
+    dismissDetailError,
+  } = useHotelCardModel(node, onAction);
 
   return (
     <div
@@ -2787,8 +2861,7 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
           }}
           onDismiss={(e) => {
             e.stopPropagation();
-            setDetailStatus("idle");
-            setDetailError("");
+            dismissDetailError();
           }}
         />
       )}
@@ -2805,10 +2878,790 @@ function HotelListView({
 }) {
   const children = (node.children ?? []) as WidgetNode[];
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
-      {children.map((item, idx) => (
-        <HotelCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
-      ))}
+    <>
+      <div
+        className="kp-wide-only"
+        style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}
+      >
+        {children.map((item, idx) => (
+          <HotelCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
+        ))}
+      </div>
+      <div className="kp-phone-only">
+        <RichCardRail navTop={170}>
+          {children.map((item, idx) => (
+            <HotelRichCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
+          ))}
+        </RichCardRail>
+      </div>
+    </>
+  );
+}
+
+// ─── Phone rich cards (Claude Design "Chat Widgets" · 1A) ────────────────────
+// On a phone, hotel and activity lists render as one horizontal swipe row of
+// 300px cards instead of the stacked desktop cards: a photo on top (a
+// swipeable gallery for hotels), the name, a short read, the price, and one
+// yellow "Add to itinerary →". Once the thing is already in the trip the CTA
+// turns into a green "✓ In your trip" / "✓ Added" and the card takes a yellow
+// left edge.
+//
+// Which layout shows is decided in CSS (`kp-wide-only` / `kp-phone-only` in
+// WidgetScopeStyles), never by useMediaQuery: that hook reads `false` on the
+// first paint, so a phone would get the desktop column until hydration.
+//
+// Everything is styled inline on purpose. Bootstrap and styles.css load after
+// Tailwind with `!important` rules for buttons and a bare `img {}` reset, and
+// `.kp-widget *` forces `font-family: inherit`, so only an inline style
+// reliably renders as drawn.
+
+const RICH_SANS = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+const RICH_MONO = "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace";
+const RICH_INK = "#0b1220";
+const RICH_YELLOW = "#f7e700";
+const RICH_GREEN = "#1f8a5a";
+const RICH_CARD_GAP = 9;
+// Prev/next button diameter.
+const RICH_NAV = 32;
+// How far the widget sits in from the screen edge on a phone: the chat
+// scroller's `px-[0.25rem]` (ChatKitPanel) plus `.msg`'s 12px phone gutter
+// (MessageBubble). The row bleeds out by exactly this much so cards scroll
+// edge to edge.
+const RICH_BLEED = 16;
+// The current card is centred. It is the design's 300px at most, and always
+// narrow enough to leave a 48px gutter each side, where the prev/next button
+// sits over the neighbouring card's peek instead of over the card being read.
+const RICH_CARD_W = "min(300px, calc(100vw - 96px))";
+// Width of each of those gutters, as a % of the full-bleed row.
+const RICH_GUTTER = `calc((100% - ${RICH_CARD_W}) / 2)`;
+// A card-sized gallery only needs a handful of photos (and one dot each) —
+// the full set lives in the detail drawer.
+const RICH_GALLERY_MAX = 8;
+
+/** Is this accommodation the city's current stay? Stays with no `id` are
+ *  placeholders (same rule as lib/tripViewModel). */
+function useHotelInTrip(accommodationId: string, itineraryCityId?: string): boolean {
+  const stays = useSelector((s: any) => s?.Stays) as any[] | null | undefined;
+  if (!accommodationId || !Array.isArray(stays)) return false;
+  return stays.some((st) => {
+    if (!st?.id) return false;
+    if (itineraryCityId && st.itinerary_city_id !== itineraryCityId) return false;
+    const acc = st.accommodation;
+    return String(acc?.id ?? acc ?? "") === accommodationId;
+  });
+}
+
+/** Is this activity in the trip AND paid for? A day's slab element names its
+ *  activity by id, but an unselected booking is only an idea — it counts once
+ *  its booking is selected in the cart, the same test the itinerary uses to
+ *  mark an activity "Confirmed". */
+function useActivityInTrip(activityId: string, itineraryCityId?: string): boolean {
+  const cities = useSelector((s: any) => s?.Itinerary?.cities) as any[] | undefined;
+  const summary = useSelector((s: any) =>
+    s?.Cart && !s.Cart.error ? s.Cart.summary : null,
+  ) as Record<string, any> | null;
+  return useMemo(() => {
+    if (!activityId || !Array.isArray(cities) || !summary) return false;
+    const selected = new Set<string>();
+    for (const category of Object.values(summary)) {
+      for (const b of (category?.bookings ?? []) as any[]) {
+        if (b?.id && b.selected === true) selected.add(String(b.id));
+      }
+    }
+    if (!selected.size) return false;
+    return cities.some(
+      (c) =>
+        (!itineraryCityId || c?.id === itineraryCityId) &&
+        ((c?.day_by_day ?? []) as any[]).some((day) =>
+          ((day?.slab_elements ?? []) as any[]).some(
+            (e) =>
+              String(e?.activity?.id ?? e?.activity ?? "") === activityId &&
+              !!e?.booking?.id &&
+              selected.has(String(e.booking.id)),
+          ),
+        ),
+    );
+  }, [activityId, itineraryCityId, cities, summary]);
+}
+
+function RichChevron({ dir }: { dir: "prev" | "next" }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d={dir === "prev" ? "m15 18-6-6 6-6" : "m9 18 6-6-6-6"} />
+    </svg>
+  );
+}
+
+// The swipe row. Bleeds to both screen edges and snaps the current card to
+// the centre, with the neighbours peeking into the gutters either side. The
+// design's round ink prev/next buttons sit in those gutters, each hidden once
+// there is nothing further that way (both, for a single card).
+//
+// The first and last cards are centred by spacer elements, not inline
+// padding: a scroll container's end padding isn't part of its scrollable
+// area in every engine, and without it the last card can't reach the centre.
+function RichCardRail({
+  navTop,
+  children,
+}: {
+  /** Vertical centre of the prev/next buttons, from the top of the row. */
+  navTop: number;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [edges, setEdges] = useState({ start: true, end: true });
+
+  const measure = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    const start = el.scrollLeft < 20;
+    const end = el.scrollLeft > el.scrollWidth - el.clientWidth - 20;
+    setEdges((p) => (p.start === start && p.end === end ? p : { start, end }));
+  }, []);
+
+  useEffect(() => {
+    measure();
+    // Also re-measures when the row goes from display:none (desktop width)
+    // to shown, e.g. a rotated tablet.
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [measure]);
+
+  const page = (dir: 1 | -1) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const el = ref.current;
+    if (!el) return;
+    // children[0] is the leading spacer.
+    const card = el.children[1] as HTMLElement | undefined;
+    const step = (card?.offsetWidth ?? 300) + RICH_CARD_GAP;
+    el.scrollBy({ left: dir * step, behavior: "smooth" });
+  };
+
+  const navStyle = (hidden: boolean): React.CSSProperties => ({
+    position: "absolute",
+    top: navTop,
+    width: RICH_NAV,
+    height: RICH_NAV,
+    borderRadius: "50%",
+    border: 0,
+    background: RICH_INK,
+    color: RICH_YELLOW,
+    display: "grid",
+    placeItems: "center",
+    cursor: "pointer",
+    zIndex: 2,
+    padding: 0,
+    boxShadow: "0 8px 20px -10px rgba(11,18,32,0.3)",
+    transition: "opacity .2s cubic-bezier(.2,.7,.3,1)",
+    opacity: hidden ? 0 : 1,
+    pointerEvents: hidden ? "none" : "auto",
+  });
+
+  // Wide enough that, with the row's gap after it, the first card's centre
+  // lands on the row's centre. `100%` here is the scroller's width.
+  const spacer = (
+    <div
+      aria-hidden
+      style={{
+        flex: "none",
+        width: `max(0px, calc(${RICH_GUTTER} - ${RICH_CARD_GAP}px))`,
+      }}
+    />
+  );
+
+  return (
+    // Full-bleed: every `%` below (spacers, button offsets) is of the screen-
+    // wide row, not of the inset message column.
+    <div style={{ position: "relative", margin: `0 -${RICH_BLEED}px` }}>
+      <div
+        ref={ref}
+        className="kp-sb"
+        onScroll={measure}
+        style={{
+          display: "flex",
+          gap: RICH_CARD_GAP,
+          overflowX: "auto",
+          overscrollBehaviorX: "contain",
+          scrollSnapType: "x mandatory",
+          padding: "2px 0 10px",
+        }}
+      >
+        {spacer}
+        {children}
+        {spacer}
+      </div>
+      <button
+        type="button"
+        aria-label="Previous"
+        tabIndex={edges.start ? -1 : 0}
+        onClick={page(-1)}
+        style={{
+          ...navStyle(edges.start),
+          left: `calc(${RICH_GUTTER} / 2)`,
+          transform: "translate(-50%, -50%)",
+        }}
+      >
+        <RichChevron dir="prev" />
+      </button>
+      <button
+        type="button"
+        aria-label="Next"
+        tabIndex={edges.end ? -1 : 0}
+        onClick={page(1)}
+        style={{
+          ...navStyle(edges.end),
+          right: `calc(${RICH_GUTTER} / 2)`,
+          transform: "translate(50%, -50%)",
+        }}
+      >
+        <RichChevron dir="next" />
+      </button>
+    </div>
+  );
+}
+
+// Card photo: a scroll-snapped strip the traveller swipes with a thumb, with
+// the design's pill dots (the current one stretched). One photo → no dots.
+// `children` are overlays (the top-left badge).
+function RichGallery({
+  images,
+  alt,
+  height,
+  fallbackSrc,
+  children,
+}: {
+  images: string[];
+  alt: string;
+  height: number;
+  /** Shown when there is no image, or when one fails to load. */
+  fallbackSrc?: string;
+  children?: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [index, setIndex] = useState(0);
+  const slides = useMemo(() => {
+    const list = Array.from(new Set(images.filter(Boolean))).slice(0, RICH_GALLERY_MAX);
+    return list.length ? list : fallbackSrc ? [fallbackSrc] : [];
+  }, [images, fallbackSrc]);
+
+  const onScroll = () => {
+    const el = ref.current;
+    if (!el || !el.clientWidth) return;
+    const i = Math.round(el.scrollLeft / el.clientWidth);
+    if (i !== index) setIndex(i);
+  };
+
+  const go = (i: number) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const el = ref.current;
+    if (el) el.scrollTo({ left: i * el.clientWidth, behavior: "smooth" });
+  };
+
+  return (
+    <div style={{ position: "relative", height, background: "#e6e8ec" }}>
+      <div
+        ref={ref}
+        className="kp-sb"
+        onScroll={onScroll}
+        style={{
+          display: "flex",
+          height: "100%",
+          overflowX: "auto",
+          scrollSnapType: "x mandatory",
+        }}
+      >
+        {slides.map((src, i) => (
+          <img
+            key={`${i}-${src}`}
+            src={optimizedMediaUrl(src, { width: 700 })}
+            alt={alt}
+            loading="lazy"
+            draggable={false}
+            onError={(e) => {
+              const el = e.currentTarget;
+              if (fallbackSrc && el.src !== fallbackSrc) el.src = fallbackSrc;
+            }}
+            style={{
+              flex: "none",
+              display: "block",
+              width: "100%",
+              height: "100%",
+              margin: 0,
+              maxWidth: "none",
+              objectFit: "cover",
+              scrollSnapAlign: "start",
+            }}
+          />
+        ))}
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 44,
+          background: "linear-gradient(transparent, rgba(11,18,32,0.38))",
+          pointerEvents: "none",
+        }}
+      />
+      {children}
+      {slides.length > 1 && (
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 9,
+            display: "flex",
+            justifyContent: "center",
+            gap: 5,
+          }}
+        >
+          {slides.map((_, i) => (
+            <span
+              key={i}
+              onClick={go(i)}
+              style={{
+                width: i === index ? 14 : 6,
+                height: 6,
+                borderRadius: 999,
+                background: i === index ? "#ffffff" : "rgba(255,255,255,.6)",
+                cursor: "pointer",
+                transition: "all .25s cubic-bezier(.2,.7,.3,1)",
+                boxShadow: "0 1px 4px rgba(11,18,32,.35)",
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function richCardShell(inTrip: boolean, clickable: boolean): React.CSSProperties {
+  return {
+    flex: "none",
+    width: RICH_CARD_W,
+    scrollSnapAlign: "center",
+    border: "1px solid #ececec",
+    borderLeft: inTrip ? `3px solid ${RICH_YELLOW}` : "1px solid #ececec",
+    background: "#ffffff",
+    borderRadius: 18,
+    overflow: "hidden",
+    boxShadow: "0 10px 24px -18px rgba(11,18,32,0.25)",
+    cursor: clickable ? "pointer" : "default",
+    fontFamily: RICH_SANS,
+    textAlign: "left",
+    // A column, so the body can pin the price row to the bottom: the row
+    // stretches every card to the tallest one (a two-line name), and the
+    // prices and CTAs should still line up across it.
+    display: "flex",
+    flexDirection: "column",
+  };
+}
+
+const richBodyStyle: React.CSSProperties = {
+  padding: "13px 15px 15px",
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+};
+
+const richFootStyle: React.CSSProperties = {
+  marginTop: "auto",
+  paddingTop: 12,
+  display: "flex",
+  alignItems: "flex-end",
+  gap: 10,
+};
+
+const richNameStyle: React.CSSProperties = {
+  fontSize: 15,
+  fontWeight: 800,
+  letterSpacing: "-0.02em",
+  lineHeight: 1.3,
+  color: RICH_INK,
+};
+
+const richDescStyle: React.CSSProperties = {
+  marginTop: 8,
+  fontSize: 12.5,
+  lineHeight: 1.55,
+  color: "#445069",
+  display: "-webkit-box",
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: "vertical",
+  overflow: "hidden",
+};
+
+const richMonoLabelStyle: React.CSSProperties = {
+  fontFamily: RICH_MONO,
+  fontSize: 8,
+  letterSpacing: ".08em",
+  color: "#8a93a6",
+  textTransform: "uppercase",
+};
+
+const richChipStyle: React.CSSProperties = {
+  fontFamily: RICH_MONO,
+  fontSize: 7.5,
+  letterSpacing: ".08em",
+  fontWeight: 600,
+  color: RICH_INK,
+  background: "#f4f3ec",
+  padding: "3px 7px",
+  borderRadius: 3,
+  textTransform: "uppercase",
+  whiteSpace: "nowrap",
+};
+
+// "STARTING FROM / ₹14,267 /night" — the label, the amount, and the unit.
+function RichPrice({
+  label,
+  amount,
+  unit,
+}: {
+  label: string;
+  amount: string;
+  unit: string;
+}) {
+  if (!amount) return null;
+  return (
+    <>
+      {label && <div style={richMonoLabelStyle}>{label}</div>}
+      <div style={{ marginTop: 3, display: "flex", alignItems: "baseline", gap: 4 }}>
+        <span
+          style={{
+            fontSize: 17,
+            fontWeight: 800,
+            letterSpacing: "-0.02em",
+            color: RICH_INK,
+            lineHeight: 1.2,
+          }}
+        >
+          {amount}
+        </span>
+        {unit && <span style={{ fontSize: 11, color: "#6b7280" }}>/{unit}</span>}
+      </div>
+    </>
+  );
+}
+
+// The card's one action. Yellow "Add to itinerary →" until the thing is in the
+// trip, then green "✓ In your trip" — which still opens the same drawer, so
+// the traveller can change the room or read the details again.
+function RichCardCta({
+  inTrip,
+  inTripLabel,
+  loading = false,
+  loadingLabel = "Loading…",
+  disabled = false,
+  onClick,
+}: {
+  inTrip: boolean;
+  inTripLabel: string;
+  loading?: boolean;
+  loadingLabel?: string;
+  disabled?: boolean;
+  onClick: () => void;
+}) {
+  const base: React.CSSProperties = {
+    borderRadius: 999,
+    fontFamily: RICH_SANS,
+    fontSize: 12.5,
+    fontWeight: 800,
+    lineHeight: "18px",
+    flex: "none",
+    whiteSpace: "nowrap",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+    cursor: disabled || loading ? "default" : "pointer",
+    opacity: disabled ? 0.6 : 1,
+  };
+  const style: React.CSSProperties =
+    inTrip && !loading
+      ? {
+          ...base,
+          border: `1.5px solid ${RICH_GREEN}`,
+          background: "rgba(31,138,90,0.08)",
+          color: RICH_GREEN,
+          padding: "9px 15px",
+          boxShadow: "none",
+        }
+      : {
+          ...base,
+          border: 0,
+          background: RICH_YELLOW,
+          color: RICH_INK,
+          padding: "10px 16px",
+          boxShadow: "0 8px 20px -10px rgba(247,231,0,0.55)",
+        };
+  return (
+    <button
+      type="button"
+      disabled={disabled || loading}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      style={style}
+    >
+      {loading ? (
+        <>
+          <DarkMiniSpinner />
+          {loadingLabel}
+        </>
+      ) : inTrip ? (
+        inTripLabel
+      ) : (
+        "Add to itinerary →"
+      )}
+    </button>
+  );
+}
+
+function HotelRichCard({
+  node,
+  onAction,
+}: {
+  node: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const m = useHotelCardModel(node, onAction);
+  const inTrip = useHotelInTrip(m.accommodationId, m.itineraryCityId);
+
+  // "4-Star Hotel" → 4 and "4-star hotel"; a widget that only sends the ★
+  // caption still gets its stars.
+  const starCount = m.starCategory || Math.min(m.starsText.trim().length, 5);
+  const starLabel = starCount
+    ? `${starCount}-star ${m.starPropertyType.toLowerCase()}`
+    : "";
+
+  return (
+    <div
+      onClick={m.handleCardClick}
+      style={richCardShell(inTrip, m.cardClickable && !m.detailLoading)}
+    >
+      <RichGallery
+        images={m.images}
+        alt={m.imgAlt}
+        height={158}
+        fallbackSrc={HOTEL_PLACEHOLDER_IMAGE}
+      />
+      <div style={richBodyStyle}>
+        <div>
+          {m.name && <div style={richNameStyle}>{m.name}</div>}
+          {starCount > 0 && (
+            <div
+              role="img"
+              aria-label={starLabel}
+              style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 5 }}
+            >
+              <span style={{ fontSize: 13, letterSpacing: 2, color: "#f5a623" }}>
+                {"★".repeat(starCount)}
+              </span>
+              <span style={{ fontSize: 11, color: "#6b7280" }}>{starLabel}</span>
+            </div>
+          )}
+          {m.description && <div style={richDescStyle}>{m.description}</div>}
+          {m.distanceKm && (
+            <div
+              style={{
+                marginTop: 10,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                background: "#eff4fe",
+                color: "#1a4fd6",
+                borderRadius: 999,
+                padding: "5px 10px",
+              }}
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none" }}>
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span style={{ fontSize: 11, fontWeight: 600 }}>
+                {m.distanceKm} km from city centre
+              </span>
+            </div>
+          )}
+        </div>
+        {(m.priceFormatted || (m.accommodationId && m.detailStatus !== "error")) && (
+          <div style={richFootStyle}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <RichPrice label="Starting from" amount={m.priceFormatted} unit={m.priceUnit} />
+            </div>
+            {m.accommodationId && m.detailStatus !== "error" && (
+              <RichCardCta
+                inTrip={inTrip}
+                inTripLabel="✓ In your trip"
+                loading={m.detailLoading}
+                loadingLabel="Loading rooms…"
+                disabled={!m.cardClickable}
+                onClick={m.fetchDetail}
+              />
+            )}
+          </div>
+        )}
+        {m.detailStatus === "error" && (
+          <HotelDetailErrorBlock
+            message={m.detailError || "Couldn't load hotel details."}
+            raising={m.raisingQuery}
+            canRaise={!!m.accommodationId && !!m.itineraryId}
+            onRaiseQuery={(e) => {
+              e.stopPropagation();
+              m.raiseQuery();
+            }}
+            onDismiss={(e) => {
+              e.stopPropagation();
+              m.dismissDetailError();
+            }}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// "4.6 (120)", "4.6", or "None ()" when the activity has no reviews yet.
+const ACTIVITY_RATING_CAPTION_RE = /^(?:none|\d+(?:\.\d+)?)\s*(?:\(\s*[\d,]*\s*\))?$/i;
+
+function ActivityRichCard({
+  node,
+  onAction,
+}: {
+  node: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const symbol = useItineraryCurrencySymbol();
+  const texts = extractAllTexts(node);
+  const captions = findNodesByType(node, "Caption")
+    .map((n) => String(n.value ?? "").trim())
+    .filter(Boolean);
+  const bodyTexts = findNodesByType(node, "Text").map((n) => String(n.value ?? "").trim());
+
+  // The Title node when the widget has one; otherwise the same text heuristic
+  // the desktop ActivityCard uses.
+  const name =
+    String(findNodesByType(node, "Title")[0]?.value ?? "").trim() ||
+    (texts.find((t) => t.length > 20 && !PRICE_TEXT_RE.test(t) && !/[•·]/.test(t)) ?? "");
+
+  const ratingCaption = captions.find((c) => ACTIVITY_RATING_CAPTION_RE.test(c));
+  const ratingNum = parseFloat(ratingCaption ?? "");
+  const rating = ratingNum > 0 ? ratingNum.toFixed(1) : "";
+
+  // Category ("Entry Ticket", "Cruise", "Tours / Culture") → one chip each.
+  const categoryCaption =
+    captions.find(
+      (c) =>
+        c !== ratingCaption &&
+        c !== name &&
+        !/^\(.*\)$/.test(c) &&
+        !PRICE_TEXT_RE.test(c) &&
+        c.length < 40,
+    ) ?? "";
+  const categories = categoryCaption
+    .split(/\s*[,/|•·]\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+
+  const description =
+    bodyTexts.find((t) => t.length > 40 && !PRICE_TEXT_RE.test(t)) ??
+    texts.find((t) => t.length > 50 && t !== name && !PRICE_TEXT_RE.test(t)) ??
+    "";
+
+  const priceText = texts.find((t) => PRICE_TEXT_RE.test(t)) ?? "";
+  const priceFormatted = priceText ? formatPriceString(priceText, symbol) : "";
+  // "(Per Person)" → label "PER PERSON", suffix "/person"; a unit that isn't
+  // "per …" ("1 - 2 Pax") keeps the label and drops the suffix.
+  const unitLabel = extractUnitLabel(texts);
+  const perUnit = unitLabel.match(/^per\s+(.+)$/i)?.[1]?.toLowerCase() ?? "";
+
+  const images = findNodesByType(node, "Image")
+    .map((n) => String(n.src ?? ""))
+    .filter(Boolean);
+  const imgAlt = String(findNodesByType(node, "Image")[0]?.alt ?? name) || "Activity";
+
+  const clickAction = node.onClickAction as
+    | { type: string; payload?: Record<string, unknown> }
+    | undefined;
+  const payload = (clickAction?.payload ?? {}) as Record<string, any>;
+  const itineraryCityId = (payload.itineraryCityId ?? payload.itinerary_city_id) as
+    | string
+    | undefined;
+  const activityId = String(payload.id ?? payload.activityId ?? payload.activity_id ?? "");
+  // The desktop card names the city under the heading; here it rides the
+  // photo's top-left badge, the slot the design gives the time of day (which
+  // the widget doesn't send).
+  const cityName = useCityNameById(itineraryCityId);
+  const inTrip = useActivityInTrip(activityId, itineraryCityId);
+
+  const open = () => {
+    if (clickAction) onAction?.(clickAction);
+  };
+
+  return (
+    <div onClick={open} style={richCardShell(inTrip, !!clickAction)}>
+      <RichGallery images={images} alt={imgAlt} height={138}>
+        {cityName && (
+          <span
+            style={{
+              position: "absolute",
+              top: 10,
+              left: 10,
+              fontFamily: RICH_MONO,
+              fontSize: 7.5,
+              letterSpacing: ".08em",
+              fontWeight: 600,
+              color: "#fafaf5",
+              background: "rgba(10,16,32,0.72)",
+              padding: "3px 7px",
+              borderRadius: 4,
+              backdropFilter: "blur(6px)",
+              WebkitBackdropFilter: "blur(6px)",
+              textTransform: "uppercase",
+            }}
+          >
+            {cityName}
+          </span>
+        )}
+      </RichGallery>
+      <div style={richBodyStyle}>
+        <div>
+          {name && <div style={richNameStyle}>{name}</div>}
+          {(rating || categories.length > 0) && (
+            <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 7, flexWrap: "wrap" }}>
+              {rating && (
+                <span style={richChipStyle}>
+                  <span style={{ color: "#f5a623" }}>★</span> {rating}
+                </span>
+              )}
+              {categories.map((c) => (
+                <span key={c} style={richChipStyle}>
+                  {c}
+                </span>
+              ))}
+            </div>
+          )}
+          {description && <div style={richDescStyle}>{description}</div>}
+        </div>
+        {(priceFormatted || clickAction) && (
+          <div style={richFootStyle}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <RichPrice label={unitLabel} amount={priceFormatted} unit={perUnit} />
+            </div>
+            {clickAction && (
+              <RichCardCta inTrip={inTrip} inTripLabel="✓ Added" onClick={open} />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -7324,8 +8177,34 @@ const WidgetScopeStyles: React.FC = () => (
       font-weight: 400;
       letter-spacing: -0.01em;
     }
+    /* Phone / wider layouts of the same widget (hotel + activity lists), at
+       MessageBubble's 767px phone boundary. 767.02 is its exact complement,
+       so no width shows both or neither. */
+    @media (max-width: 767px) {
+      .kp-widget .kp-wide-only { display: none !important; }
+    }
+    @media (min-width: 767.02px) {
+      .kp-widget .kp-phone-only { display: none !important; }
+    }
+    .kp-widget .kp-sb { scrollbar-width: none; }
+    .kp-widget .kp-sb::-webkit-scrollbar { display: none; }
   ` }} />
 );
+
+/**
+ * True for a hotel or activity list — the widgets that render as the phone's
+ * swipe row of rich cards. MessageBubble drops its paper bubble around these on
+ * a phone so the row can run edge to edge. Mirrors ListViewNode's dispatch
+ * order: hotel first, and a restaurant list is never an activity list.
+ */
+export function isRichCardListWidget(widget: Record<string, unknown>): boolean {
+  const node = widget as WidgetNode;
+  if (node?.type !== "ListView") return false;
+  const children = (node.children ?? []) as WidgetNode[];
+  if (isHotelListView(children)) return true;
+  if (isRestaurantListView(children)) return false;
+  return isActivityListView(children);
+}
 
 export function WidgetRenderer({ widget, onAction, disabled = false }: WidgetRendererProps) {
   return (

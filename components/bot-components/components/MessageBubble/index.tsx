@@ -3,7 +3,7 @@ import { optimizedMediaUrl } from "../../../../lib/mediaImage";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import type { Message, ProgressStep, ThinkingTask } from "../../hooks/useChat";
-import { WidgetRenderer, isRouteWidget } from "../WidgetRenderer";
+import { WidgetRenderer, isRouteWidget, isRichCardListWidget } from "../WidgetRenderer";
 import {
   getUserAvatarColor,
   getAvatarColorForName,
@@ -132,6 +132,13 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
          clears the badge here. */
       .msg.kaira .msg-avatar { left: 12px; }
       .msg.user  .msg-avatar { right: 12px; }
+      /* Hotel / activity lists are a swipe row of their own cards on a
+         phone, running edge to edge — no paper bubble around them. The
+         bubble's surface is inline, hence !important. */
+      .kp-rich-surface {
+        background: transparent !important;
+        padding: 0 !important;
+      }
     }
   ` }} />
 );
@@ -1806,6 +1813,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           {/* Content widgets sit on the Kaira bubble surface — inner cards
               (transport, activity, POI) stay white on top of this base. */}
           <div
+            className={
+              isRichCardListWidget(message.widgetItem.widget)
+                ? "kp-rich-surface"
+                : undefined
+            }
             style={{
               background: "#fafaf5",
               borderRadius: 16,
