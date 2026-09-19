@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { getWithExpiry, setWithExpiry } from '../../services/localStorageUtils';
 import useMediaQuery from '../../hooks/useMedia';
 
@@ -34,7 +35,7 @@ const NotesPopup = ({ notes, itineraryId, onClose, isLoggedIn }) => {
   // Don't render if user is not logged in or other conditions not met
   if (!isLoggedIn || !isVisible || !notes || !notes.length) return null;
 
-  return (
+  const popup = (
     <div className="fixed inset-0 z-[1600] flex items-end md:items-center justify-center">
       <div
         className="absolute inset-0"
@@ -188,6 +189,16 @@ const NotesPopup = ({ notes, itineraryId, onClose, isLoggedIn }) => {
       </div>
     </div>
   );
+
+  // Portalled on desktop. The chat page draws its desktop itinerary with
+  // DesktopItinerary and keeps ItineraryContainer (which renders this) mounted
+  // but display:none, so a popup drawn in place there would never be seen.
+  // Fixed and full-screen either way, so the standalone itinerary page looks
+  // the same whichever way it is mounted.
+  if (isDesktop && typeof document !== 'undefined') {
+    return createPortal(popup, document.getElementById('modal-portal') || document.body);
+  }
+  return popup;
 };
 
 export default NotesPopup;

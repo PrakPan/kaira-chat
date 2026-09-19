@@ -3,6 +3,7 @@ import styled from "styled-components";
 import useMediaQuery from "../../media";
 import BottomModal from "../../ui/LowerModal";
 import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
+import { KairaBlock, KairaCountRow, KairaModal } from "../../settings/KairaPaxModal";
 
 export const StyledText = styled.div`
   // font-family: "Inter", sans-serif;
@@ -213,12 +214,69 @@ const EnterPassenger = (props) => {
 
   return (
     <div>
-      <StyledText className="mb-[4px] Body1M_16">{props.settings ? 'Number of Travellers' : "Who's Going"}</StyledText>
-      <StyledBox onClick={() => setShowPassenger(true)}>
-        {props.numberOfAdults + props.numberOfChildren + props.numberOfInfants} Travelers <span className="text-blue">Change</span>
-      </StyledBox>
+      {/* `renderTrigger` lets a host draw its own field (the desktop trip
+          settings card) and still open this editor, unchanged. */}
+      {props.renderTrigger ? (
+        props.renderTrigger({ open: () => setShowPassenger(true) })
+      ) : (
+        <>
+          <StyledText className="mb-[4px] Body1M_16">{props.settings ? 'Number of Travellers' : "Who's Going"}</StyledText>
+          <StyledBox onClick={() => setShowPassenger(true)}>
+            {props.numberOfAdults + props.numberOfChildren + props.numberOfInfants} Travelers <span className="text-blue">Change</span>
+          </StyledBox>
+        </>
+      )}
 
-      {isPageWide ? 
+      {props.variant === "kaira" ? (
+        // The desktop trip settings card's own look (see KairaPaxModal). Same
+        // counts, same limits, same Apply as the modal below.
+        showPassengers ? (
+          <KairaModal
+            title={{ lead: "Who's", emphasis: "going?" }}
+            subtitle={`${adults + children + infants} traveller${
+              adults + children + infants === 1 ? "" : "s"
+            }`}
+            onClose={() => {
+              setShowPassenger(false);
+              setAdults(props.numberOfAdults);
+              setChildren(props.numberOfChildren);
+              setInfants(props.numberOfInfants);
+            }}
+            onApply={handleApply}
+          >
+            <KairaBlock>
+              <KairaCountRow
+                first
+                label="Adults"
+                hint="Ages 13 or above"
+                value={adults}
+                onMinus={() => setAdults((p) => p - 1)}
+                minusDisabled={adults <= 1}
+                onPlus={() => setAdults((p) => p + 1)}
+                plusDisabled={props?.isTailored == true ? false : adults >= 14}
+              />
+              <KairaCountRow
+                label="Children"
+                hint="Ages 2 to 12"
+                value={children}
+                onMinus={() => handleChildrenChange(children - 1)}
+                minusDisabled={children <= 0}
+                onPlus={() => handleChildrenChange(children + 1)}
+                plusDisabled={props?.isTailored == true ? false : children > 12}
+              />
+              <KairaCountRow
+                label="Infants"
+                hint="Under age 2"
+                value={infants}
+                onMinus={() => setInfants((p) => p - 1)}
+                minusDisabled={infants <= 0}
+                onPlus={() => setInfants((p) => p + 1)}
+                plusDisabled={props?.isTailored == true ? false : infants > 4}
+              />
+            </KairaBlock>
+          </KairaModal>
+        ) : null
+      ) : isPageWide ? 
       <ModalWithBackdrop
         show={showPassengers}
         backdrop

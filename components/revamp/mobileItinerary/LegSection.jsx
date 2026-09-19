@@ -524,6 +524,7 @@ const whisperFor = (day, activityCount) => {
 
 /** One day of the trip, as its own card. */
 function DayCard({
+  id,
   day,
   tone,
   taxis = [],
@@ -544,7 +545,7 @@ function DayCard({
   const isTravel = !!day.isTravelDay;
 
   return (
-    <div style={T.dayCard(tone)}>
+    <div id={id} style={T.dayCard(tone)}>
       <button
         type="button"
         onClick={onOpen}
@@ -682,6 +683,9 @@ export default function LegSection({
   onOpenExtra,
   onChangeReturn,
   onAddReturn,
+  // DOM id for this leg's FIRST day card — the target the chat's "View
+  // itinerary" CTA scrolls to and flashes. Only the first leg gets one.
+  firstDayId = null,
 }) {
   const hasReturn = !!(leg.outboundTravel || leg.outboundGap);
 
@@ -742,9 +746,10 @@ export default function LegSection({
         />
       ))}
 
-      {leg.days.map((day) => (
+      {leg.days.map((day, i) => (
         <DayCard
           key={day.key}
+          id={i === 0 && firstDayId ? firstDayId : undefined}
           day={day}
           tone={leg.tone}
           taxis={taxisOn(day)}

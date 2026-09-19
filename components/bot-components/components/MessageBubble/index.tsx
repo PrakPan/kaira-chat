@@ -38,14 +38,15 @@ function useUserAvatarSrc(): string | null {
   return USER_IMAGE_CDN + candidate;
 }
 
-// Shared responsive rules for the message bubble.
+// Shared layout rules for the message bubble — the phone's, at every width.
 //
-// Phones do NOT keep desktop's row. On a 360px screen the in-flow avatar plus
-// its gap is 40px off every one of Kaira's bubbles, and she is the side that
-// carries the long answers — so the avatar comes out of flow here and is
-// re-pinned as a small badge on the row ABOVE the bubble, at its leading
-// corner: top-LEFT for Kaira, top-RIGHT for the user. The bubble then runs the
-// full width of the pane and the badge still names its author.
+// Neither side keeps an in-flow avatar beside its bubble. The avatar comes out
+// of flow and is pinned as a small badge on the row ABOVE the bubble, at its
+// leading corner: top-LEFT for Kaira, top-RIGHT for the user. The bubble then
+// runs the full width of the row and the badge still names its author. This
+// started as the phone layout (on a 360px screen an in-flow avatar plus its gap
+// is 40px off every one of Kaira's long answers); desktop now matches it, so
+// the chat reads the same on both.
 //
 // Above, not over. The badge did overlap the corner for a while, which is how
 // this is usually drawn — but a bubble that runs the full width has its first
@@ -54,94 +55,83 @@ function useUserAvatarSrc(): string | null {
 // `!important` is needed throughout because the avatar divs set their size and
 // display inline, and `.msg.kaira` sets `maxWidth` inline too.
 //
-// Kaira's bubble keeps desktop's paper (#fafaf5, set inline where the bubble is
-// rendered) rather than the white-with-a-hairline it once took here; the panel
-// is white on phones as well (see `.kp-root` in ChatKitPanel), so paper-on-white
-// reads as the soft card it does on desktop.
+// Kaira's bubble keeps its paper (#fafaf5, set inline where the bubble is
+// rendered); the panel is white (see `.kp-root` in ChatKitPanel), so
+// paper-on-white reads as a soft card.
 //
-// Also phone-only: gutters so cards don't kiss the screen edge, and the user
-// bubble's darker fill. NOT the type — the chat's sizes are the clamp() scale
-// in ChatMdStyles, which already resolves smaller on a phone, and every heading,
-// code span and quote inside a bubble is built against it. A phone-only
-// font-size on the body copy alone left those at their own sizes, so a bubble
-// with anything but plain paragraphs in it carried two type scales at once.
+// Phone-only: the 12px gutters so cards don't kiss the screen edge, and the
+// badge offsets that go with them. NOT the type — the chat's sizes are the
+// clamp() scale in ChatMdStyles, which already resolves smaller on a phone, and
+// every heading, code span and quote inside a bubble is built against it. A
+// phone-only font-size on the body copy alone left those at their own sizes, so
+// a bubble with anything but plain paragraphs in it carried two type scales at
+// once.
 const MessageBubbleResponsiveStyles: React.FC = () => (
   <style dangerouslySetInnerHTML={{ __html: `
+    .msg {
+      position: relative;
+      /* A row of its own for the badge: its 24px plus a 4px gap. It sits
+         ABOVE the bubble, never on it — an avatar overlapping the corner
+         covers the first word of a full-width bubble. */
+      padding-top: 28px;
+    }
+    /* Kaira's bubble fills the row: the avatar is out of flow (below), so
+       nothing is pushing it in. */
+    .msg.kaira {
+      max-width: 100% !important;
+      width: 100%;
+    }
+    .msg.kaira > .chatWrapper,
+    .msg.kaira > div:not(.msg-avatar) { flex: 1 1 auto; min-width: 0; }
+
+    /* The badge. "top: 0" is the padding box's top edge, so it fills the
+       28px row above the bubble with 4px to spare, and its outer edge lines
+       up with the bubble's, not with the text inside it. */
+    .msg-avatar {
+      position: absolute !important;
+      top: 0 !important;
+      width: 24px !important;
+      height: 24px !important;
+      box-sizing: border-box !important;
+      z-index: 2;
+      border: 2px solid #fff !important;
+      box-shadow: 0 1px 4px rgba(11,18,32,0.18);
+    }
+    .msg.kaira .msg-avatar { left: 0; }
+    .msg.user  .msg-avatar { right: 0; }
+
+    /* A turn that opens with a "Thought for Xs" line doesn't need a row of
+       its own for the badge: the line is short, so the two share one. The
+       turn keeps only its normal 14px of top gap, the badge starts level
+       with the line, and the line is indented past it — 30px clears the
+       24px badge with 6 to spare. The bubble underneath still runs the full
+       width.
+
+       :has() is the whole condition; where it is unsupported the badge
+       keeps its own row above the prelude, which is merely the plainer of
+       the two layouts. */
+    .msg.kaira:has(.msg-prelude) { padding-top: 14px; }
+    .msg.kaira:has(.msg-prelude) .msg-avatar { top: 14px !important; }
+    .msg.kaira .msg-prelude { padding-left: 30px; }
+    /* The badge's own 24px, so the two centre on each other rather than
+       leaving the text riding low against a taller circle. */
+    .msg.kaira .msg-thought-head {
+      display: flex;
+      align-items: center;
+      min-height: 24px;
+    }
+
     @media (max-width: 767px) {
+      /* Keep bubbles off the screen edges on phones… */
       .msg {
-        position: relative;
-        /* A row of its own for the badge: its 24px plus a 4px gap. It sits
-           ABOVE the bubble, never on it — an avatar overlapping the corner
-           covers the first word of a full-width bubble. */
-        padding-top: 28px;
-        /* Keep bubbles off the screen edges on phones. */
         padding-left: 12px;
         padding-right: 12px;
       }
-      /* Kaira's bubble fills the row: the avatar is out of flow (below), so
-         nothing is pushing it in. */
-      .msg.kaira {
-        max-width: 100% !important;
-        width: 100%;
-      }
-      .msg.kaira > .chatWrapper,
-      .msg.kaira > div:not(.msg-avatar) { flex: 1 1 auto; min-width: 0; }
-
-      /* The badge. "top: 0" is the padding box's top edge, so it fills the
-         28px row above the bubble with 4px to spare. The 12px left/right is
-         the gutter — the badge's outer edge lines up with the bubble's, not
-         with the text inside it. */
-      .msg-avatar {
-        position: absolute !important;
-        top: 0 !important;
-        width: 24px !important;
-        height: 24px !important;
-        box-sizing: border-box !important;
-        z-index: 2;
-        border: 2px solid #fff !important;
-        box-shadow: 0 1px 4px rgba(11,18,32,0.18);
-      }
+      /* …and the badge on the bubble's edge, inside that gutter. The
+         prelude's 30px indent is measured from the same gutter, so it still
+         clears the badge here. */
       .msg.kaira .msg-avatar { left: 12px; }
       .msg.user  .msg-avatar { right: 12px; }
-
-      /* A turn that opens with a "Thought for Xs" line doesn't need a row of
-         its own for the badge: the line is short, so the two share one. The
-         turn keeps only its normal 14px of top gap, the badge starts level
-         with the line, and the line is indented past it — 30px clears the
-         24px badge at its 12px offset with 6 to spare. The bubble underneath
-         still runs the full width.
-
-         :has() is the whole condition; where it is unsupported the badge
-         keeps its own row above the prelude, which is merely the plainer of
-         the two layouts. */
-      .msg.kaira:has(.msg-prelude) { padding-top: 14px; }
-      .msg.kaira:has(.msg-prelude) .msg-avatar { top: 14px !important; }
-      .msg.kaira .msg-prelude { padding-left: 30px; }
-      /* The badge's own 24px, so the two centre on each other rather than
-         leaving the text riding low against a taller circle. */
-      .msg.kaira .msg-thought-head {
-        display: flex;
-        align-items: center;
-        min-height: 24px;
-      }
-
-      /* No fin on phones. The tail (.chat-md.kaira::before in ChatMdStyles)
-         aims a wedge sideways at an avatar that is no longer beside the
-         bubble — it is above it. The badge is the pointer here; the corner
-         beneath it just stops being round. */
-      .msg .chat-md.kaira::before,
-      .msg .chat-md.user::before { display: none !important; }
-
-      /* TL TR BR BL — square on the corner nearest the avatar, so the bubble
-         squares up to the badge above it instead of curving away. */
-      .msg.kaira .chat-md.kaira {
-        border-radius: 0 16px 16px 16px !important;
-      }
-      .msg.user .chat-md.user {
-        background: #0b1220 !important;
-        border-radius: 16px 0 16px 16px !important;
-        padding: 10px 14px !important;
-      }
     }
   ` }} />
 );
@@ -1589,63 +1579,6 @@ const ChatMdStyles: React.FC = () => (
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
-    /* ── The tail ───────────────────────────────────────────────────────
-       A chat app's bubble has a point on it, aimed at whoever said it. A
-       squared corner alone was too quiet to read as a direction, so the
-       bubble grows a small curved fin off that corner: up-LEFT for Kaira, at
-       her avatar, and up-RIGHT for the user, at theirs. Both avatars sit at the
-       top of their row (it is top-aligned, and an avatar is 30px against a
-       bubble of any height), which is why the tail is at the top and not,
-       as it started, at the bottom.
-
-       The wedge takes "background: inherit" rather than a colour, so it is
-       always the bubble's own fill — Kaira's paper, the user's ink — with
-       nothing to keep in sync.
-
-       DESKTOP ONLY in effect: phones pin the avatar as a badge on the row
-       above the bubble, so a fin aimed sideways points at nothing, and the
-       phone rules switch it off (see MessageBubbleResponsiveStyles). */
-    .chat-md.kaira, .chat-md.user { position: relative; }
-    .chat-md.kaira::before,
-    .chat-md.user::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      /* 5px out, 14px down: 3 of the 8 sit INSIDE the bubble, so the fin and
-         the bubble are one continuous shape with no join to see.
-
-         Taller than it is wide, deliberately. At 6x11 the curve was shallow
-         enough to read as a bump on the corner; stretching the same
-         quarter-ellipse over nearly three times its width makes it a steep,
-         tapering fin — sharper, without going back to a straight-edged
-         triangle. */
-      width: 8px;
-      height: 14px;
-      background: inherit;
-      pointer-events: none;
-    }
-    /* The curve is the whole point. A clip-path triangle gave the tail a
-       straight diagonal running into a hard point, which is what read as a
-       chipped corner rather than a tail — messaging apps draw a fin whose
-       underside CURVES back into the bubble.
-
-       So instead of clipping, the corner is rounded away: an elliptical
-       bottom radius the full size of the box carves a quarter-ellipse out of
-       the underside, leaving a fin that is widest where it meets the bubble's
-       top edge and tapers smoothly to nothing 14px down. The small radius on
-       the outer corner takes the needle off the tip. */
-    .chat-md.kaira::before {
-      left: -5px;
-      border-bottom-left-radius: 8px 14px;
-      /* 2px, not 4: enough to take the needle off the tip, not enough to
-         round it into a lobe. */
-      border-top-left-radius: 2px;
-    }
-    .chat-md.user::before {
-      right: -5px;
-      border-bottom-right-radius: 8px 14px;
-      border-top-right-radius: 2px;
-    }
     .chat-md p { margin: 0 0 6px; }
     .chat-md p:last-child { margin-bottom: 0; }
     .chat-md ul, .chat-md ol { margin: 6px 0; padding-left: 18px; }
@@ -1984,13 +1917,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             <div
               className="chat-md user"
               style={{
-                padding: "11px 15px",
-                background: "#0f1a2e",
-                borderRadius: 16,
-                // Mirror of Kaira's, tail and all — the user's avatar sits
-                // top-right on this row (it is `row-reverse`), and on phones
-                // the badge is pinned above that corner.
-                borderTopRightRadius: 3,
+                // The phone's bubble at every width: ink, 10/14, and square on
+                // the corner under the avatar badge, with no fin — the badge is
+                // pinned above that corner (MessageBubbleResponsiveStyles).
+                padding: "10px 14px",
+                background: "#0b1220",
+                borderRadius: "16px 0 16px 16px",
                 wordBreak: "break-word",
                 overflowWrap: "anywhere",
               }}
@@ -2125,20 +2057,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             style={{
               padding: "11px 15px",
               background: "#fafaf5",
-              borderRadius: 16,
-              // The squared corner is the bubble's tail, and a tail points at
-              // whoever said it. The avatars sit at the TOP of the row — it is
-              // top-aligned, and an avatar is 30px against a bubble of any
-              // height — so this is the top-left corner for Kaira and the
-              // top-right for the user (see the user branch).
-              //
-              // Barely rounded, so the tail (see .chat-md.kaira::before in
-              // ChatMdStyles) grows out of the corner rather than being stuck
-              // onto it — but not square, which under a small nib reads as a
-              // chopped corner. Phones take it all the way to 0 and drop the
-              // fin: there the avatar is a badge on the row above, and the
-              // corner squares up to it.
-              borderTopLeftRadius: 3,
+              // TL TR BR BL — square on the corner under Kaira's badge, so the
+              // bubble squares up to it instead of curving away (the user's
+              // pill is the mirror: square top-right).
+              borderRadius: "0 16px 16px 16px",
               willChange: "contents",
               transition: "opacity 0.1s ease",
               wordBreak: "break-word",

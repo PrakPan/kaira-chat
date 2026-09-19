@@ -100,19 +100,20 @@ const LoginButton = styled.button`
   font-weight: 600;
 `;
 
-// The Kaira mock's chip: a hairline white pill in ink text, sitting directly
-// above the composer pill it feeds. This used to be a phone-only override on a
-// squarer grey Montserrat chip; desktop now gets the same pill, so the quick
-// replies read as one control across breakpoints instead of two designs.
+// The design's quick-reply chip: a white pill with a #cfd3da hairline and
+// semibold slate text, sitting directly above the composer pill it feeds. The
+// same chip at every width ("Kaira E Bordered" and "Kaira E Desktop" draw it
+// identically) — it used to be this on phones only, with a lighter-weight ink
+// variant on desktop.
 const SingleChips = styled.button`
   border-radius: 999px;
   padding: 8px 13px;
-  border: 1px solid #dcdfe5;
+  border: 1px solid #cfd3da;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 11.5px;
   background: #fff;
-  color: #0b1220;
+  color: #445069;
   white-space: nowrap;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
@@ -121,21 +122,13 @@ const SingleChips = styled.button`
     cursor: not-allowed;
   }
 
-  /* Pointer devices only — a phone has no hover state to give, and tying this
-     to a width breakpoint is what split the two designs in the first place. */
+  /* Pointer devices only — a phone has no hover state to give. */
   @media (hover: hover) {
     &:hover:not(:disabled) {
       background: #fafaf5;
-      border-color: #c9ced8;
+      border-color: #b8becc;
+      color: #0b1220;
     }
-  }
-
-  /* Phone — the same pill, a touch heavier and quieter: a hairline that holds
-     its edge at arm's length on a small screen. */
-  @media (max-width: 768px) {
-    border: 1px solid #cfd3da;
-    font-weight: 600;
-    color: #445069;
   }
 `;
 
@@ -650,7 +643,9 @@ const ChatPanelStyles = () => (
        the pill (see MessageInputBox .kp-row) — the padding and the pill's own
        outline are all that separate it from the thread. */
     .kp-composer-wrap {
-  padding: 10px 10px 10px;
+  /* The design's tray: 12px either side, 14px under the pill. The top 10px
+     is the gap to the quick-reply chips (or the thread) above it. */
+  padding: 10px 12px 14px;
   background: #fff;
 }
 @media (max-width: 768px) {
@@ -5573,10 +5568,14 @@ const handleShowLogin = useCallback(() => {
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
       {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && !isForeignItinerary && !loginBlocked && !promptLoginBlocked && (
-        <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
+        // Desktop: the design's chip row — 14px in (the composer's 12px
+        // gutter plus the row's own 2px), so the chips line up over the pill,
+        // and no bottom padding: the composer tray's 10px top is the one gap
+        // between the chips and the pill.
+        <div className="flex-shrink-0 px-3 md:!px-[14px] pt-2 pb-0">
           <div className="mx-auto">
             <div
-              className="flex gap-[6px] md:gap-2 overflow-x-auto md:pb-1"
+              className="flex gap-[6px] overflow-x-auto"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {quickReplyLoading

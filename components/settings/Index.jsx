@@ -11,6 +11,15 @@ import { useDispatch } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import { togglePreference } from "../../store/actions/slideOneActions";
 import { deriveRoomConfiguration } from "../tailoredform/utils/slideOneActions";
+import DateRangeSheet from "./DateRangeSheet";
+import KairaSettingsCard, {
+  CalendarGlyph,
+  ChangePill,
+  KairaField,
+  KairaInclusionChip,
+  KairaSection,
+} from "./KairaSettings";
+import { diffDays, fmtDayMon, fromYMD } from "../tailoredform/kaira/dateUtils";
 
 
 const parseDateString = (dateString) => {
@@ -24,12 +33,20 @@ const parseDateString = (dateString) => {
 // specific reason — a trip whose travel dates have gone. `heading` swaps the
 // three pieces of the title without losing its serif-italic middle word, and
 // `subheading` the line under it; both fall back to the general copy.
-const Settings = ({setShowSettings, isHotelsPresent, handleApply, maxAdults=false, maxRooms=false, heading, subheading}) => {
+//
+// `variant="kaira"` draws the desktop itinerary's card ("Kaira E Desktop") —
+// same state, same request, different markup; see ./KairaSettings.jsx. The
+// travellers and rooms editors are the existing Pax / EnterPassenger in both,
+// only their trigger field is redrawn.
+const Settings = ({setShowSettings, isHotelsPresent, handleApply, maxAdults=false, maxRooms=false, heading, subheading, variant = "default"}) => {
   const dispatch = useDispatch();
   const itinerary = useSelector(state => state.Itinerary);
   const isDomestic = itinerary?.destination_type === "Domestic";
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [isLoading, setIsLoading] = useState(false);
+  // The kaira variant draws its own dates field, so it opens the picker itself
+  // (the default variant's DateComponent keeps its own copy of this).
+  const [showCalendar, setShowCalendar] = useState(false);
 
   // Initialize states with values from itinerary
   const [addHotels, setAddHotels] = useState(itinerary?.add_hotels ?? isHotelsPresent);
@@ -225,6 +242,117 @@ const handleUpdate = () => {
           { id: "add-esim", label: "eSIM", checked: addEsim, set: setAddEsim },
         ]),
   ];
+
+  if (variant === "kaira") {
+    const start = fromYMD(date.start_date);
+    const end = fromYMD(date.end_date);
+    const nights = start && end ? diffDays(start, end) : 0;
+    const count = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+    // Who is travelling, in words. Infants only where their editor tracks them
+    // (EnterPassenger) — the rooms editor has no infants to show.
+    const who = [
+      count(numberOfAdults, "adult", "adults"),
+      numberOfChildren > 0 ? count(numberOfChildren, "child", "children") : null,
+      !addHotels && numberOfInfants > 0 ? count(numberOfInfants, "infant", "infants") : null,
+    ]
+      .filter(Boolean)
+      .join(", ");
+    const roomCount = roomConfiguration?.length || 1;
+
+    return (
+      <KairaSettingsCard
+        heading={heading}
+        subheading={subheading}
+        onClose={handleCancel}
+        onUpdate={handleUpdate}
+        isLoading={isLoading}
+      >
+        <KairaSection label="DATES">
+          <KairaField
+            value={start && end ? `${fmtDayMon(start)} – ${fmtDayMon(end)} ${end.getFullYear()}` : null}
+            suffix={nights ? ` · ${count(nights, "night", "nights")}` : null}
+            placeholder="Select dates"
+            trailing={<CalendarGlyph />}
+            onClick={() => setShowCalendar(true)}
+            ariaLabel="Change dates"
+          />
+          {showCalendar && (
+            <DateRangeSheet
+              start={date?.start_date}
+              end={date?.end_date}
+              onApply={({ start: s, end: e }) =>
+                handleApplyDates({ start: s, end: e, dateType: "fixed" })
+              }
+              onClose={() => setShowCalendar(false)}
+            />
+          )}
+        </KairaSection>
+
+        <KairaSection label="INCLUSIONS">
+          <div className="flex flex-wrap gap-[8px]">
+            {inclusions.map((opt) => (
+              <KairaInclusionChip key={opt.id} opt={opt} />
+            ))}
+          </div>
+        </KairaSection>
+
+        {/* The same two editors the default variant uses — rooms when the trip
+            has hotels, a plain traveller count when it doesn't — opened from
+            the design's field instead of their own box. */}
+        <KairaSection label={addHotels ? "TRAVELLERS & ROOMS" : "TRAVELLERS"}>
+          {addHotels ? (
+            <Pax
+              numberOfAdults={numberOfAdults}
+              setNumberOfAdults={setNumberOfAdults}
+              numberOfChildren={numberOfChildren}
+              setNumberOfChildren={setNumberOfChildren}
+              numberOfInfants={numberOfInfants}
+              setNumberOfInfants={setNumberOfInfants}
+              roomConfiguration={roomConfiguration}
+              setRoomConfiguration={setRoomConfiguration}
+              groupType={itinerary?.group_type}
+              maxRooms={maxRooms}
+              variant="kaira"
+              renderTrigger={({ open }) => (
+                <KairaField
+                  value={who}
+                  suffix={` · ${count(roomCount, "room", "rooms")}`}
+                  trailing={<ChangePill />}
+                  padding="9px 9px 9px 16px"
+                  onClick={open}
+                  ariaLabel="Change travellers and rooms"
+                />
+              )}
+            />
+          ) : (
+            <EnterPassenger
+              roomConfiguration={roomConfiguration}
+              setRoomConfiguration={setRoomConfiguration}
+              groupType={itinerary?.group_type}
+              numberOfAdults={numberOfAdults}
+              numberOfChildren={numberOfChildren}
+              numberOfInfants={numberOfInfants}
+              setNumberOfAdults={setNumberOfAdults}
+              setNumberOfChildren={setNumberOfChildren}
+              setNumberOfInfants={setNumberOfInfants}
+              settings={true}
+              isTailored={maxAdults}
+              variant="kaira"
+              renderTrigger={({ open }) => (
+                <KairaField
+                  value={who}
+                  trailing={<ChangePill />}
+                  padding="9px 9px 9px 16px"
+                  onClick={open}
+                  ariaLabel="Change travellers"
+                />
+              )}
+            />
+          )}
+        </KairaSection>
+      </KairaSettingsCard>
+    );
+  }
 
   return (
     <div

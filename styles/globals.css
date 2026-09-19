@@ -627,6 +627,47 @@ a.termsnavunderlinelink {
     }
 }
 
+/* Desktop itinerary — a sheet rising inside the itinerary pane, and the More
+   menu dropping from its button. The design's own `shUp` and `menuIn`: a short
+   lift with a fade, not the phone sheet's full-height travel, because on
+   desktop the sheet only covers part of one pane. */
+@keyframes ttwPaneSheetUp {
+    from {
+        transform: translateY(24px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+@keyframes ttwMenuIn {
+    from {
+        transform: translateY(-6px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+.ttw-pane-sheet-up {
+    animation: ttwPaneSheetUp 0.22s ease-out;
+}
+
+.ttw-menu-in {
+    animation: ttwMenuIn 0.15s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ttw-pane-sheet-up,
+    .ttw-menu-in {
+        animation: none;
+    }
+}
+
 /* Two concentric dots: a pulsing core with a rippling outer ring,
    shown on the active itinerary step */
 @keyframes ttwStepsBubbleDot {

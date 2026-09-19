@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import CloseButton from "./CloseButton";
 import Drawer from "../../../ui/Drawer";
 import { lockDocumentScroll } from "../scrollLock";
@@ -33,6 +34,24 @@ import { lockDocumentScroll } from "../scrollLock";
 //  chat and map layers, which the payment drawer opens OVER rather than under.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ── Pane mode (desktop) ──────────────────────────────────────────────────────
+// On desktop the itinerary is one pane of a two-pane screen, with Kaira's chat
+// in the other. The design raises its sheets INSIDE that pane: centred in it,
+// at most 640px wide, over a scrim that dims the itinerary and leaves the chat
+// alone. A viewport-wide Drawer would cover the conversation the sheet's own
+// "Change" buttons hand the traveller to.
+//
+// A host that provides this context gets every Sheet below it in pane mode —
+// today the desktop itinerary's day and detail sheets — without any of them
+// knowing which surface they are on. The value
+// is `{ el }`: the absolutely-positioned layer the sheets portal into. A portal
+// rather than rendering in place, because a sheet opened from inside another
+// one (a nested detail sheet, say) is a child of the first sheet's scrolling
+// body and would otherwise be clipped by it. `el` is null until the layer mounts, and a
+// pane-mode sheet renders nothing until then rather than falling back to the
+// full-screen Drawer.
+export const SheetHostContext = createContext(null);
+
 const SHEET_OPEN_CLASS = "ttw-sheet-open";
 let openSheets = 0;
 
@@ -58,11 +77,18 @@ export default function Sheet({
   subtitle,
   headerRight,
   height = "82dvh",
+  // Height inside a desktop pane, as a share of the pane. The design gives each
+  // sheet its own (day 82%, detail 78%, cart 86%); the phone's `height` is a
+  // viewport height and means nothing there.
+  paneHeight = "86%",
   zIndex = 1600,
   children,
   footer,
   contentClassName = "",
 }) {
+  const paneHost = useContext(SheetHostContext);
+  const inPane = !!paneHost;
+
   // Never mount Drawer before the first open — see (2) above.
   const [everOpened, setEverOpened] = useState(false);
   useEffect(() => {
@@ -76,10 +102,14 @@ export default function Sheet({
   // does not reliably honour `overflow: hidden` on body against a touch drag.
   // Without this a drag beside the sheet scrolls the trip out from under it and
   // the user is somewhere else when it closes.
+  //
+  // Not in a desktop pane: the desktop shell never scrolls the document, and
+  // the pane's own scroller sits under the scrim, which already takes the
+  // pointer.
   useEffect(() => {
-    if (!open) return undefined;
+    if (!open || inPane) return undefined;
     return lockDocumentScroll();
-  }, [open]);
+  }, [open, inPane]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -99,6 +129,100 @@ export default function Sheet({
   }, [open]);
 
   if (!everOpened) return null;
+
+  const body = (
+    <div className="flex h-full flex-col bg-white">
+      {/* Grab handle */}
+      {/* Handle sits 6px above the first row, per the design — the sheets
+          add their own top padding, so this wrapper must not add more. */}
+      <div className="flex-none pb-[6px] pt-[9px]">
+        <div className="mx-auto h-[4px] w-[40px] rounded-full bg-[#dcdfe5]" />
+      </div>
+
+      {(title || headerRight) && (
+        <div className="flex flex-none items-start gap-[11px] border-b border-[#e6e8ec] px-[14px] pb-[11px] pt-[11px]">
+          <div className="min-w-0 flex-1">
+            {title ? (
+              <div className="font-inter text-[15.5px] font-[800] tracking-[-0.02em] text-[#0b1220]">
+                {title}
+              </div>
+            ) : null}
+            {subtitle ? (
+              <div className="mt-[5px] font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+                {subtitle}
+              </div>
+            ) : null}
+          </div>
+          {headerRight}
+          <CloseButton onClick={onClose} />
+        </div>
+      )}
+
+      <div
+        className={`min-h-0 flex-1 overflow-y-auto ${contentClassName}`}
+        style={{ WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}
+      >
+        {children}
+      </div>
+
+      {footer ? (
+        <div
+          className="flex-none border-t border-[#e6e8ec] bg-white px-[14px] pb-[14px] pt-[11px]"
+          style={{ paddingBottom: "calc(14px + env(safe-area-inset-bottom))" }}
+        >
+          {footer}
+        </div>
+      ) : (
+        <div style={{ height: "env(safe-area-inset-bottom)" }} />
+      )}
+    </div>
+  );
+
+  if (inPane) {
+    // Unmounted while closed rather than slid out: the pane sheet is a short
+    // lift, and the callers already hold their last content for the frame the
+    // slot empties (see DetailSheet's lastRef).
+    if (!open || !paneHost.el) return null;
+    return createPortal(
+      <div className="pointer-events-auto absolute inset-0" style={{ zIndex }}>
+        {/* The design's scrim: the itinerary pane only, never the chat. */}
+        <button
+          type="button"
+          aria-label="Close"
+          tabIndex={-1}
+          onClick={onClose}
+          className="absolute inset-0 cursor-pointer"
+          style={{
+            border: 0,
+            borderRadius: 0,
+            padding: 0,
+            boxShadow: "none",
+            background: "rgba(11,18,32,0.22)",
+          }}
+        />
+        {/* Centred with auto margins, NOT translateX(-50%) as the prototype
+            does it: a transform on this panel would become the containing
+            block of every position:fixed thing opened from inside it. */}
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="ttw-pane-sheet-up absolute bottom-0 left-0 right-0 mx-auto flex flex-col overflow-hidden bg-white"
+          style={{
+            width: "min(640px, 92%)",
+            height: height === "auto" ? "auto" : paneHeight,
+            maxHeight: "95%",
+            borderRadius: "20px 20px 0 0",
+            border: "1px solid #dcdfe5",
+            borderBottom: 0,
+            boxShadow: "none",
+          }}
+        >
+          {body}
+        </div>
+      </div>,
+      paneHost.el,
+    );
+  }
 
   return (
     <Drawer
@@ -126,51 +250,7 @@ export default function Sheet({
         boxShadow: "none",
       }}
     >
-      <div className="flex h-full flex-col bg-white">
-        {/* Grab handle */}
-        {/* Handle sits 6px above the first row, per the design — the sheets
-            add their own top padding, so this wrapper must not add more. */}
-        <div className="flex-none pb-[6px] pt-[9px]">
-          <div className="mx-auto h-[4px] w-[40px] rounded-full bg-[#dcdfe5]" />
-        </div>
-
-        {(title || headerRight) && (
-          <div className="flex flex-none items-start gap-[11px] border-b border-[#e6e8ec] px-[14px] pb-[11px] pt-[11px]">
-            <div className="min-w-0 flex-1">
-              {title ? (
-                <div className="font-inter text-[15.5px] font-[800] tracking-[-0.02em] text-[#0b1220]">
-                  {title}
-                </div>
-              ) : null}
-              {subtitle ? (
-                <div className="mt-[5px] font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
-                  {subtitle}
-                </div>
-              ) : null}
-            </div>
-            {headerRight}
-            <CloseButton onClick={onClose} />
-          </div>
-        )}
-
-        <div
-          className={`min-h-0 flex-1 overflow-y-auto ${contentClassName}`}
-          style={{ WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}
-        >
-          {children}
-        </div>
-
-        {footer ? (
-          <div
-            className="flex-none border-t border-[#e6e8ec] bg-white px-[14px] pb-[14px] pt-[11px]"
-            style={{ paddingBottom: "calc(14px + env(safe-area-inset-bottom))" }}
-          >
-            {footer}
-          </div>
-        ) : (
-          <div style={{ height: "env(safe-area-inset-bottom)" }} />
-        )}
-      </div>
+      {body}
     </Drawer>
   );
 }

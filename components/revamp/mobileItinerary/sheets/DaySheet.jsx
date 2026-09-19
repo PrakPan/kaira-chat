@@ -58,7 +58,7 @@ export default function DaySheet({
   if (!d || !l) return null;
 
   return (
-    <Sheet open={open} onClose={onClose} height="95dvh" zIndex={1600}>
+    <Sheet open={open} onClose={onClose} height="95dvh" paneHeight="82%" zIndex={1600}>
       <div className="flex h-full flex-col">
         {/* Header — day number first, per the design */}
         <div className="flex-none px-[14px]">

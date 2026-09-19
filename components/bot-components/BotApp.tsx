@@ -46,6 +46,11 @@ import ItineraryLegend from "../itinerary/itineraryCity/ItineraryLegend";
 import ArchiveChatPanel from "./components/ArchiveChatPanel";
 import CloneItineraryModal from "./components/CloneItineraryModal";
 import MobileItinerary from "../revamp/mobileItinerary/MobileItinerary";
+import DesktopItinerary, {
+  DESKTOP_DAY_ONE_ID,
+} from "../revamp/desktopItinerary/DesktopItinerary";
+import DesktopCartFooter from "../revamp/desktopItinerary/DesktopCartFooter";
+import PaneModal from "../revamp/desktopItinerary/PaneModal";
 import kairaPrompts from "../revamp/mobileItinerary/kairaPrompts";
 import {
   lockDocumentScroll,
@@ -112,7 +117,6 @@ import NewSummaryContainers from "../../containers/itinerary/NewSummaryContainer
 import HoldOfferOverlay from "./components/HoldOfferOverlay";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import ModalWithBackdrop from "../ui/ModalWithBackdrop";
 import BottomModal from "../ui/LowerModal";
 import Settings from "../settings/Index";
 import { SocialShareDesktop } from "../../containers/itinerary/booking1/SocialShare";
@@ -1005,6 +1009,13 @@ export default function BotApp({
         : { left: leftPanelBox.left, width: leftPanelBox.width, right: "auto" },
     [isMobile, leftPanelBox],
   );
+
+  // Desktop: the layer trip settings opens into (PaneModal), covering the
+  // whole left panel — the itinerary, the map or the route view, whichever is
+  // up. State, not a ref, so the modal renders the moment there is somewhere
+  // to put it.
+  const [desktopSheetLayer, setDesktopSheetLayer] =
+    useState<HTMLDivElement | null>(null);
 
   // Desktop scroller for the itinerary body. On mobile the pane that actually
   // scrolls lives in MobileLayout, which reports through onItineraryScrolled.
@@ -3708,7 +3719,13 @@ export default function BotApp({
 
     let attempts = 0;
     const flashDay1 = () => {
-      const el = document.getElementById("bot-itinerary-day-1");
+      // Desktop looks for the desktop itinerary's own Day 1 and nothing
+      // else: the old tree's anchor is still in the DOM there, hidden along
+      // with it, and finding that one would end the retries on an element
+      // nobody can see while the new tree is still loading.
+      const el = document.getElementById(
+        isMobile ? "bot-itinerary-day-1" : DESKTOP_DAY_ONE_ID,
+      );
       if (!el) {
         if (attempts++ < 25) window.setTimeout(flashDay1, 120);
         return;
@@ -4668,6 +4685,11 @@ Start Location: ${details.startLocation}`;
     </>
   );
 
+  // The desktop itinerary view is "Kaira E Desktop" (DesktopItinerary). The
+  // Route and Bookings views still render through ItineraryContainer's own
+  // body below, with the header strip and cart bar they always had.
+  const showDesktopItinerary = !isMobile && viewMode === "itinerary";
+
   // Desktop keeps the gate so viewMode can swap map ↔ itinerary.
   const itineraryPanel = (
     <div
@@ -4711,8 +4733,11 @@ Start Location: ${details.startLocation}`;
           it is the panel's header, not a sheet's second one. */}
       <div
         className="max-ph:sticky max-ph:top-0 max-ph:z-30 max-ph:bg-white"
+        // …and hidden behind the desktop itinerary, which has its own header.
         style={
-          isMobile && viewMode === "routes" ? { display: "none" } : undefined
+          (isMobile && viewMode === "routes") || showDesktopItinerary
+            ? { display: "none" }
+            : undefined
         }
       >
         {/* Arbitrary px values, not px-3/py-3: bootstrap's `.px-3`/`.py-3` are
@@ -5184,10 +5209,59 @@ Start Location: ${details.startLocation}`;
       <div className="flex-1 overflow-hidden flex flex-col">
         {activeItineraryId ? (
           <div className="flex flex-col h-full overflow-hidden">
+            {/* The desktop itinerary. Mounted whenever the panel is, and only
+                hidden on the other views, so the pane keeps its scroll position
+                across a trip to the map and back. It reads the same redux slices
+                ItineraryContainer (below, hidden on this view) produces — that
+                container stays mounted in its own spot either way, since
+                remounting it restarts every poll it runs. */}
+            {!isMobile && (
+              <div
+                style={{
+                  display: showDesktopItinerary ? "flex" : "none",
+                  flexDirection: "column",
+                  flex: 1,
+                  minHeight: 0,
+                }}
+              >
+                <DesktopItinerary
+                  askKaira={handleItineraryContainerSendMessage}
+                  onViewMap={handleViewMap}
+                  onHold={startPriceHold}
+                  onShare={() => setShowShare(true)}
+                  // Same gate as the old header's gear: Settings edits the
+                  // live itinerary, which a draft or an archive doesn't have.
+                  onSettings={
+                    !isDraft && !isV1Archive ? handleMobileSettings : undefined
+                  }
+                  onDownloadPdf={handleDownloadPdf}
+                  isDownloadingPdf={isDownloadingPdf}
+                  isBusy={pricingStatus === "PENDING"}
+                  isArchive={!!isV1Archive}
+                  change={tripChange}
+                  placeholder={
+                    showTailoredSkeleton ? (
+                      <ItineraryShimmer cities={skeletonCities} />
+                    ) : null
+                  }
+                  footer={
+                    <BottomCTABar
+                      {...ctaBarProps}
+                      variant="desktopItinerary"
+                      barStyle={DESKTOP_ITINERARY_BAR_STYLE}
+                      viewMode={viewMode}
+                    />
+                  }
+                />
+              </div>
+            )}
             <div
               ref={desktopItineraryScrollRef}
               className="flex-1 overflow-y-auto"
-              style={{ scrollbarWidth: "none" }}
+              style={{
+                scrollbarWidth: "none",
+                display: showDesktopItinerary ? "none" : undefined,
+              }}
             >
               {showTailoredSkeleton && (
                 <ItineraryShimmer cities={skeletonCities} />
@@ -5203,8 +5277,9 @@ Start Location: ${details.startLocation}`;
                 position:fixed bar inside that pane (which carries
                 -webkit-overflow-scrolling:touch) makes iOS position it against
                 the *scrolled content* rather than the viewport, so the bar
-                scrolls off-screen and the cart bar disappears on phones. */}
-            {!isMobile && (
+                scrolls off-screen and the cart bar disappears on phones.
+                The desktop itinerary carries its own (the footer above). */}
+            {!isMobile && !showDesktopItinerary && (
               <>
                 <BottomCTABar
                   {...ctaBarProps}
@@ -5394,6 +5469,10 @@ Start Location: ${details.startLocation}`;
               {!isMobile && !!activeItineraryId && (
                 <BottomCTABar
                   {...ctaBarProps}
+                  // The desktop itinerary's footer, so the bar doesn't change
+                  // design between the trip and its map. Still fixed over the
+                  // map (ctaBarStyle); View Cart opens the payment drawer.
+                  variant="desktopItinerary"
                   barStyle={ctaBarStyle}
                   viewMode="itinerary"
                 />
@@ -5410,6 +5489,17 @@ Start Location: ${details.startLocation}`;
             {/* ITINERARY / BOOKINGS / ROUTES — desktop only renders when !isMobile */}
             {!isMobile && itineraryPanel}
           </div>
+
+          {/* The layer trip settings opens into (PaneModal), over whichever
+              view is up and never over the chat. Above the fixed cart bar
+              (z-20) and the itinerary pane; empty and click-through until
+              something portals into it. z 50, the level the desktop Settings
+              modal used to sit at before it moved in here. */}
+          <div
+            ref={setDesktopSheetLayer}
+            className="pointer-events-none absolute inset-0"
+            style={{ zIndex: 50 }}
+          />
         </div>
 
         {/* RIGHT PANEL — always ChatKitPanel */}
@@ -5742,10 +5832,11 @@ Start Location: ${details.startLocation}`;
               />
             </BottomModal>
           ) : (
-            <ModalWithBackdrop
-              show={true}
+            // Desktop: the design's card, centred over the itinerary pane
+            // with the pane's own scrim, so the chat beside it stays clear.
+            <PaneModal
+              host={desktopSheetLayer}
               onHide={() => setShowSettings(false)}
-              closeIcon={false}
             >
               <Settings
                 setShowSettings={setShowSettings}
@@ -5753,9 +5844,10 @@ Start Location: ${details.startLocation}`;
                 handleApply={settingsHandleApply}
                 maxAdults={true}
                 maxRooms={true}
+                variant="kaira"
                 {...settingsCopy}
               />
-            </ModalWithBackdrop>
+            </PaneModal>
           );
         })()}
 
@@ -5884,6 +5976,18 @@ Start Location: ${details.startLocation}`;
   );
 }
 
+// The desktop itinerary's cart bar sits in the pane's own column, under its
+// scroller, instead of fixed over the viewport like the other desktop bars —
+// so the trip never scrolls under it, and the pane's sheets can cover it.
+// Inline, so it outranks the `fixed bottom-0` every branch of the bar carries.
+const DESKTOP_ITINERARY_BAR_STYLE: React.CSSProperties = {
+  position: "relative",
+  left: "auto",
+  right: "auto",
+  bottom: "auto",
+  width: "100%",
+};
+
 // ── BottomCTABar — memoized, outside BotApp ──────────────────────────────────
 interface BottomCTABarProps {
   viewMode: ViewMode;
@@ -5940,8 +6044,12 @@ interface BottomCTABarProps {
    * cart chip carrying the trip's one total, side by side on a single row.
    * Every other state (draft/confirm, cart error, pricing loader) is shared, so
    * they keep working untouched.
+   *
+   * "desktopItinerary" does the same for the desktop itinerary pane: the
+   * design's footer (total, the hold pill, "Inclusive of N bookings", View
+   * Cart). Like the phone's, it never goes missing while the trip reprices.
    */
-  variant?: "default" | "mobileItinerary";
+  variant?: "default" | "mobileItinerary" | "desktopItinerary";
   /** Opens the design's "Review & pay" sheet. Falls back to onViewCart. */
   onReviewPay?: () => void;
   /**
@@ -6468,7 +6576,9 @@ export const BottomCTABar = React.memo(
     }
 
     if (!hasFreshPricing) {
-      const isMobileFooter = variant === "mobileItinerary";
+      // Both package footers, phone and desktop: each is its surface's floor.
+      const isMobileFooter =
+        variant === "mobileItinerary" || variant === "desktopItinerary";
 
       // Loading the page is not an update, so the mobile footer narrates
       // nothing until it has carried a price once — it just shows the cart bar
@@ -6656,6 +6766,41 @@ export const BottomCTABar = React.memo(
               em-dash holds the slot until the price lands. Same call as the
               desktop bar below. */}
         </div>
+      );
+    }
+
+    // ── Desktop itinerary footer ─────────────────────────────────────────────
+    // "Kaira E Desktop": the total with the hold beside it, the bookings it is
+    // made of, and View Cart. The hold is the same offer the ribbon below makes
+    // — same test, same handler — drawn as the design's pill instead.
+    if (variant === "desktopItinerary") {
+      const money = (n: number) =>
+        `${currencySymbol}${formatCurrencyValue(Math.round(n), currency?.currency)}`;
+      const held = lockIn.paid && !lockIn.holdExpired;
+      return (
+        <DesktopCartFooter
+          barStyle={barStyle}
+          label={
+            perPerson
+              ? "PER PERSON"
+              : cart?.is_estimated_price && cost !== null && cost > 0
+                ? "ESTIMATED"
+                : "TOTAL COST"
+          }
+          total={cost !== null ? money(cost) : null}
+          count={countCartItems}
+          holdFee={
+            showHoldRibbon && onHold && !cart?.are_prices_hidden
+              ? money(lockIn.fee)
+              : null
+          }
+          onHold={onHold}
+          held={held}
+          heldUntil={held ? lockIn.holdUntil : null}
+          onViewCart={onReviewPay || onViewCart}
+          cartError={!!cart?.error}
+          onGetInTouch={onGetInTouch}
+        />
       );
     }
 

@@ -566,9 +566,10 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         .kp-plus-wrap { display: none; }
 
         /* ── Chat composer ─────────────────────────────────────────────────
-           One rounded pill holding, left to right: a "+" button, the field,
-           and a "Send" pill (Kaira mock). Same shape at every width — phone
-           and desktop are identical.
+           One rounded pill holding, left to right: a bare "+" glyph, the
+           field, and a 34px ink disc with a yellow arrow — the design's
+           composer ("Kaira E Bordered" on the phone, "Kaira E Desktop" beside
+           the itinerary; both draw the same one). Same shape at every width.
 
            The outer .kp-chat-input keeps NO border, radius or padding of its
            own; the chrome moves onto .kp-row, which floats as a lifted pill
@@ -595,15 +596,17 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         .kp-composer-wrap .kp-row {
           display: flex;
           align-items: center;
-          gap: 8px;
-          border: 1px solid #dcdfe5;
+          gap: 6px;
+          border: 1px solid #ececec;
           border-radius: 999px;
           background: #fff;
-          padding: 7px 8px 7px 7px;
+          padding: 5px 6px 5px 8px;
+          box-shadow: 0 8px 20px -10px rgba(11,18,32,0.15);
           transition: border-color 0.15s;
         }
         .kp-composer-wrap .kp-chat-input:focus-within .kp-row {
-          border-color: #0b1220;
+          border-color: #dcdfe5;
+          box-shadow: 0 8px 20px -10px rgba(11,18,32,0.15);
         }
         .kp-composer-wrap .kp-field { flex: 1; min-width: 0; }
         .kp-composer-wrap .kp-foot {
@@ -624,149 +627,94 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           position: relative;
           flex: 0 0 auto;
         }
+        /* A bare grey glyph, not a bordered button — a ring competed with the
+           send disc for the role of "the control on this row". The zero
+           border is explicit because a button carries a UA border otherwise;
+           the 50% radius is for the filled "menu open" state below. */
         .kp-composer-wrap .kp-plus {
           width: 30px;
           height: 30px;
           display: grid;
           place-items: center;
           padding: 0;
-          /* No ring — the glyph sits bare in the pill. The zero border is
-             explicit because a button carries a UA border otherwise. The 50%
-             radius stays for the filled hover/open state. */
           border: 0;
           border-radius: 50%;
-          background: #fff;
-          color: #0b1220;
+          background: none;
+          color: #8a93a6;
           cursor: pointer;
-          transition: background 0.15s;
+          transition: background 0.15s, color 0.15s;
         }
-        .kp-composer-wrap .kp-plus:hover { background: #fafaf5; }
+        @media (hover: hover) {
+          .kp-composer-wrap .kp-plus:hover { color: #0b1220; }
+        }
         .kp-composer-wrap .kp-plus[aria-expanded="true"] {
           background: #0b1220;
           color: #fff;
         }
         .kp-composer-wrap .kp-plus svg { width: 15px; height: 15px; }
         .kp-composer-wrap .kp-plus:disabled,
-        .kp-composer-wrap .kp-plus:disabled:hover { background: #fff; }
+        .kp-composer-wrap .kp-plus:disabled:hover { background: none; color: #8a93a6; }
 
+        /* The send disc: no word, a yellow arrow on ink. It stays filled even
+           with nothing to send — the design has no outlined "armed/unarmed"
+           state, and a disc that flips between outline and fill on every
+           keystroke flickers the one fixed point of the row. Nothing to send
+           reads as an inert disc; only a locked composer dims (below).
+
+           Stop keeps the same disc so the row does not change shape mid-turn;
+           only the glyph swaps. */
         .kp-composer-wrap .kp-send,
         .kp-composer-wrap .kp-stop {
-          height: auto;
-          padding: 7px 14px;
-          border-radius: 999px;
-          font-size: 11.5px;
-          font-weight: 700;
+          width: 34px;
+          height: 34px;
+          min-width: 34px;
+          padding: 0;
+          border: 0;
+          border-radius: 50%;
+          display: grid;
+          place-items: center;
           gap: 0;
+          background: #0b1220;
+          color: #f7e700;
         }
-        /* Nothing typed yet → the mock's outlined pill, inactive. The moment
-           there is something to send it fills in black with white text. */
-        .kp-composer-wrap .kp-send {
-          background: #fff;
-          color: #0b1220;
-          border: 1.5px solid #0b1220;
-        }
-        .kp-composer-wrap .kp-send:disabled { opacity: 1; }
         .kp-composer-wrap .kp-send:not(:disabled) {
           background: #0b1220;
-          color: #fff;
+          color: #f7e700;
+        }
+        .kp-composer-wrap .kp-send:disabled {
+          background: #0b1220;
+          color: #f7e700;
+          opacity: 1;
         }
         .kp-composer-wrap .kp-send:hover { transform: none; }
-        .kp-composer-wrap .kp-stop { border: 1.5px solid #1c1917; }
 
         /* ── Locked composer ──────────────────────────────────────────────
            While the box is disabled (itinerary building, login required, a
            foreign itinerary) the "+" and Send stay mounted rather than the
            pill collapsing to a bare placeholder — a composer with no actions
            reads as broken. Both dim and refuse clicks instead. The empty-input
-           Send is a different state and keeps its full-strength outline: it is
-           inactive, not locked. */
+           Send is a different state and keeps full strength: it is inactive,
+           not locked. */
         .kp-plus:disabled,
         .kp-send.is-locked:disabled {
           opacity: 0.4;
           cursor: not-allowed;
         }
         .kp-composer-wrap .kp-send.is-locked:disabled { opacity: 0.4; }
-        .kp-composer-wrap .kp-send-arrow,
+
+        /* The word goes; the arrow comes in. */
+        .kp-composer-wrap .kp-send .kp-btn-label,
+        .kp-composer-wrap .kp-stop .kp-btn-label { display: none; }
         .kp-composer-wrap .kp-send-plane { display: none; }
-        .kp-composer-wrap .kp-stop svg { width: 12px; height: 12px; margin-right: 5px; }
-
-        /* ── Phone: the composer exactly as the design draws it ───────────
-           The desktop treatment is a wide pill ending in a "Send" LABEL. The
-           design's phone composer ends in a 34px INK DISC with a yellow arrow
-           — no word at all. That is not decoration: at this width the label
-           was eating roughly a fifth of the row, so the field it belongs to
-           had less room than the button describing it.
-
-           The send disc stays filled even when there is nothing to send. The
-           design has no outlined "armed/unarmed" state — the disc is the
-           anchor of the row, and having it switch between outline and fill on
-           every keystroke flickers the one fixed point at the bottom of the
-           screen. Nothing to send reads as an inert disc, not a faded one:
-           only a locked composer dims.
-
-           Stop keeps the same disc so the row does not change shape mid-turn;
-           only the glyph swaps. */
-        @media (max-width: 768px) {
-          .kp-composer-wrap .kp-row {
-            gap: 6px;
-            border: 1px solid #ececec;
-            padding: 5px 6px 5px 8px;
-            box-shadow: 0 8px 20px -10px rgba(11,18,32,0.15);
-          }
-          .kp-composer-wrap .kp-chat-input:focus-within .kp-row {
-            border-color: #dcdfe5;
-            box-shadow: 0 8px 20px -10px rgba(11,18,32,0.15);
-          }
-          /* A bare glyph, not a bordered button — the ring competed with the
-             send disc for the role of "the control on this row". */
-          .kp-composer-wrap .kp-plus {
-            border: 0;
-            background: none;
-            color: #8a93a6;
-          }
-          .kp-composer-wrap .kp-plus:hover { background: none; }
-          .kp-composer-wrap .kp-plus svg { width: 15px; height: 15px; }
-          .kp-composer-wrap .kp-send,
-          .kp-composer-wrap .kp-stop {
-            width: 34px;
-            height: 34px;
-            min-width: 34px;
-            padding: 0;
-            border: 0;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            background: #0b1220;
-            color: #f7e700;
-          }
-          .kp-composer-wrap .kp-send:not(:disabled) {
-            background: #0b1220;
-            color: #f7e700;
-          }
-          /* Full strength with nothing typed. The disc is the fixed anchor of
-             the bottom row, and fading it to a third on every empty field made
-             the composer look broken rather than idle — the same reason the
-             desktop pill keeps its outline at full strength when unarmed. It
-             is still disabled, so it takes no tap; only the genuinely locked
-             composer (.is-locked, rule above at higher specificity) dims. */
-          .kp-composer-wrap .kp-send:disabled {
-            background: #0b1220;
-            color: #f7e700;
-            opacity: 1;
-          }
-          /* The word goes; the arrow the desktop pill hides comes back. */
-          .kp-composer-wrap .kp-send .kp-btn-label,
-          .kp-composer-wrap .kp-stop .kp-btn-label { display: none; }
-          .kp-composer-wrap .kp-send-arrow {
-            display: block;
-            width: 14px;
-            height: 14px;
-          }
-          .kp-composer-wrap .kp-stop svg {
-            width: 12px;
-            height: 12px;
-            margin-right: 0;
-          }
+        .kp-composer-wrap .kp-send-arrow {
+          display: block;
+          width: 14px;
+          height: 14px;
+        }
+        .kp-composer-wrap .kp-stop svg {
+          width: 12px;
+          height: 12px;
+          margin-right: 0;
         }
 
         /* "+" menu — a small card floated above the button. */

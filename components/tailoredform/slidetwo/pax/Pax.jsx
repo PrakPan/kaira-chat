@@ -5,6 +5,13 @@ import Image from "next/image";
 import useMediaQuery from "../../../media";
 import BottomModal from "../../../ui/LowerModal";
 import { MdDelete } from "react-icons/md";
+import {
+  KairaBlock,
+  KairaCountRow,
+  KairaDashedButton,
+  KairaModal,
+  KairaTextAction,
+} from "../../../settings/KairaPaxModal";
 
 const Pax = (props) => {
   const containerRef = useRef(null);
@@ -92,12 +99,27 @@ const Pax = (props) => {
     setIsRoomExpanded(false);
   };
 
+  // Kaira variant only: it has a Cancel, so closing without Apply puts the
+  // rooms back to what was last applied rather than keeping the draft.
+  const handleCancel = () => {
+    setRooms(props?.roomConfiguration || []);
+    setShowError(false);
+    setIsRoomExpanded(false);
+  };
+
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
   return (
     <div
       ref={containerRef}
-      className={`${!props?.isOpenModal ? 'relative flex p-[12px] items-center gap-[10px] self-stretch rounded-[6px] border-sm border-solid border-primary-yellow bg-text-white' : 'relative'}`}    >
+      className={`${!props?.isOpenModal && !props?.renderTrigger ? 'relative flex p-[12px] items-center gap-[10px] self-stretch rounded-[6px] border-sm border-solid border-primary-yellow bg-text-white' : 'relative'}`}    >
 
-      {!props?.isOpenModal && <div
+      {/* `renderTrigger` lets a host draw its own field (the desktop trip
+          settings card) and still open this room editor, unchanged. */}
+      {!props?.isOpenModal && props?.renderTrigger
+        ? props.renderTrigger({ open: () => setIsRoomExpanded(true) })
+        : null}
+      {!props?.isOpenModal && !props?.renderTrigger && <div
         className="flex rounded-lg cursor-pointer w-full justify-between"
         onClick={() => setIsRoomExpanded(!isRoomExpanded)}
       >
@@ -109,7 +131,42 @@ const Pax = (props) => {
         <span className="text-blue">Change</span>
       </div>
       }
-      {isDesktop ? <ModalWithBackdrop
+      {props?.variant === "kaira" ? (
+        // The desktop trip settings card's own look (see KairaPaxModal). Same
+        // rooms, same limits, same Apply as the modal below.
+        isRoomExpanded ? (
+          <KairaModal
+            title={{ lead: "Rooms &", emphasis: "travellers" }}
+            subtitle={[
+              plural(totalAdults, "adult", "adults"),
+              totalChildren > 0 ? plural(totalChildren, "child", "children") : null,
+            ]
+              .filter(Boolean)
+              .join(", ") + ` · ${plural(rooms.length, "room", "rooms")}`}
+            onClose={handleCancel}
+            onApply={handleDone}
+          >
+            {rooms.map((room, index) => (
+              <Room
+                key={index}
+                index={index}
+                data={room}
+                setRooms={setRooms}
+                showError={showError}
+                removeRoom={removeRoom}
+                variant="kaira"
+                isLast={index === rooms.length - 1}
+              />
+            ))}
+            <KairaDashedButton
+              onClick={handleAddRoom}
+              disabled={rooms.length >= 8 && !props?.maxRooms}
+            >
+              Add room
+            </KairaDashedButton>
+          </KairaModal>
+        ) : null
+      ) : isDesktop ? <ModalWithBackdrop
         centered
         show={isRoomExpanded}
         mobileWidth="100%"
@@ -226,7 +283,7 @@ const Pax = (props) => {
   );
 };
 
-const Room = ({ index, data, setRooms, showError, removeRoom }) => {
+const Room = ({ index, data, setRooms, showError, removeRoom, variant, isLast }) => {
   const [adults, setAdults] = useState(data.adults);
   const [children, setChildren] = useState(data.children);
   const [childAges, setChildAges] = useState(data?.childAges || []);
@@ -263,6 +320,59 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
       setChildAges((prev) => prev.slice(0, -1));
     }
   };
+
+  if (variant === "kaira") {
+    return (
+      <KairaBlock
+        label={`ROOM ${index + 1}`}
+        // `removeRoom` takes the LAST room off whichever one asked, so the
+        // action is only offered where that is what it does.
+        action={
+          isLast && index > 0 ? (
+            <KairaTextAction onClick={removeRoom} tone="danger">
+              Remove
+            </KairaTextAction>
+          ) : null
+        }
+      >
+        <KairaCountRow
+          first
+          label="Adults"
+          hint="Ages 13 or above"
+          value={adults}
+          onMinus={() => setAdults((p) => p - 1)}
+          minusDisabled={adults <= 1}
+          onPlus={() => setAdults((p) => p + 1)}
+          plusDisabled={adults >= 14}
+        />
+        <KairaCountRow
+          label="Children"
+          hint="Ages 2 to 12"
+          value={children}
+          onMinus={() => handleChildren("minus")}
+          minusDisabled={children <= 0}
+          onPlus={() => handleChildren("plus")}
+          plusDisabled={children > 12}
+        />
+        {childAges.map((age, i) => (
+          <KairaCountRow
+            key={i}
+            label={`Child ${i + 1}`}
+            hint="Age"
+            value={`${age} yr${age === 1 ? "" : "s"}`}
+            onMinus={() =>
+              setChildAges((prev) => prev.map((a, j) => (j === i ? a - 1 : a)))
+            }
+            minusDisabled={age <= 0}
+            onPlus={() =>
+              setChildAges((prev) => prev.map((a, j) => (j === i ? a + 1 : a)))
+            }
+            plusDisabled={age >= 12}
+          />
+        ))}
+      </KairaBlock>
+    );
+  }
 
   return (
     <div className="mb-6 last:mb-0 ">

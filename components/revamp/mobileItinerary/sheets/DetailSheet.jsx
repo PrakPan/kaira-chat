@@ -162,7 +162,7 @@ export default function DetailSheet({
   };
 
   return (
-    <Sheet open={open} onClose={onClose} height="95dvh" zIndex={zIndex}>
+    <Sheet open={open} onClose={onClose} height="95dvh" paneHeight="78%" zIndex={zIndex}>
       <div className="flex h-full flex-col">
         <div className="flex-none px-[14px]">
           <div className="flex items-start gap-[12px] border-b border-[#e6e8ec] pb-[11px]">
