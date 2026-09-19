@@ -1325,7 +1325,7 @@ const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
   if (!allDone) {
     return (
       <ThinkingActive
-        lead="Great - locking it in. Give me ~30 seconds."
+        lead="Great - locking it in."
         steps={steps}
       />
     );
@@ -1415,7 +1415,7 @@ const ThinkingBlock: React.FC<{
   if (isThinking) {
     return (
       <ThinkingActive
-        lead="Great - locking it in. Give me ~30 seconds."
+        lead="Great - locking it in."
         steps={tasks.map((t) => ({
           text: cleanContent(t.content),
           done: t.done,
