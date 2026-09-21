@@ -31,7 +31,10 @@ import AmenitySelector from "./AmenitySelector";
 import { QuoteTerms } from "../../VendorCharges";
 import {
   getVehicleCount,
+  MultiVehicleNote,
+  PerTaxiPrice,
   resolvePerVehicleTotal,
+  VehicleCountBadge,
 } from "../../MultiVehicleInfo";
 import { QuoteDetailRow } from "../../QuoteDetailSheet";
 import VehicleSpecs from "../../VehicleSpecs";
@@ -369,10 +372,14 @@ const Section = (props) => {
   const multiSelect = Boolean(selectionContext?.enabled) && !!resultIndex;
   const quantity = Number(selectionContext?.selection?.[resultIndex] || 0);
 
-  // >1 only when no single cab seats the party, where price.total already covers
-  // the whole convoy. 1 for every ordinary quote, which is all this card sees
-  // outside the fleet drawer.
+  // >1 when ONE quote is itself several cabs - a Mozio result for a big party
+  // comes back as e.g. 3 x Passat under one price. taxi_category then describes
+  // one of those cabs and price.total already covers all of them, so the card
+  // has to say how many cabs it is or "3 seats" reads as a car too small for the
+  // group. Never >1 in the fleet drawer: there every quote is a single cab and the
+  // count is the customer's quantity instead.
   const vehicleCount = getVehicleCount(props.data);
+  const isConvoyQuote = vehicleCount > 1 && !multiSelect;
   const perVehicleTotal = resolvePerVehicleTotal(
     props.data,
     props.data?.price?.total,
@@ -474,6 +481,9 @@ const Section = (props) => {
                   {quantity} added
                 </span>
               ) : null}
+              {isConvoyQuote ? (
+                <VehicleCountBadge count={vehicleCount} />
+              ) : null}
             </div>
 
             {<div className="text-sm font-400 leading-lg-md text-[#445069]">{props.data?.taxi_category?.type}</div>}
@@ -482,7 +492,7 @@ const Section = (props) => {
               <div className="flex flex-col ">
                 <VehicleSpecs
                   category={props.data?.taxi_category}
-                  perTaxi={multiSelect}
+                  perTaxi={multiSelect || isConvoyQuote}
                 />
                 <div>
                   {/* <Accordion
@@ -550,6 +560,13 @@ const Section = (props) => {
                   for {quantity}
                 </span>
               ) : null}
+              {isConvoyQuote ? (
+                <PerTaxiPrice
+                  count={vehicleCount}
+                  perVehicleTotal={perVehicleTotal}
+                  symbol={currencySymbol}
+                />
+              ) : null}
             </div>
             <div className="flex items-end justify-center">
               {multiSelect ? (
@@ -595,6 +612,17 @@ const Section = (props) => {
             </div>
           </div>
         </div>
+
+        {/* Why a card that says "3 seats" is offered to a group of 8. Wide screens
+            only: on a phone the badge and "(per taxi)" carry it on the card, and
+            QuoteDetailRow's sheet states this same note in full. */}
+        {isConvoyQuote ? (
+          <MultiVehicleNote
+            count={vehicleCount}
+            seatingCapacity={props.data?.taxi_category?.seating_capacity}
+            className="mt-sm max-ph:hidden"
+          />
+        ) : null}
 
         {/* What this fare already covers and how it cancels, per the supplier. Renders
             nothing unless the quote states one or the other, so the sources that itemise
