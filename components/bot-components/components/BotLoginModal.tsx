@@ -688,6 +688,7 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
       submitLabel="Send OTP"
       itineraryId={props.itinary_id}
       onVerified={handleVerified}
+      dropdownZIndex={Number(z) + 5}
     />
   );
 

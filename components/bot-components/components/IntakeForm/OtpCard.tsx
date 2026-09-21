@@ -44,6 +44,10 @@ interface OtpCardProps {
    */
   submitSlot?: HTMLElement | null;
   submitClassName?: string;
+  /** Stacking level of the country-code dropdown. It's portaled to <body>, so
+   *  a host that is itself a high-z overlay (BotLoginModal) must lift it above
+   *  its own layer or the list opens behind the modal. */
+  dropdownZIndex?: number;
 }
 
 /**
@@ -62,6 +66,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
   bare = false,
   submitSlot = null,
   submitClassName,
+  dropdownZIndex = 2000,
 }) => {
   const dispatch = useDispatch();
   const {
@@ -873,7 +878,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
                     position: "fixed",
                     top: dropdownPos.top,
                     left: dropdownPos.left,
-                    zIndex: 2000,
+                    zIndex: dropdownZIndex,
                   }}
                 >
                   <CountryCodeDropdown
