@@ -7,8 +7,9 @@ import { formatMoney } from "../../../services/money";
 import { SheetHostContext } from "../common/components/Sheet";
 import LegSection from "../mobileItinerary/LegSection";
 import DaySheet from "../mobileItinerary/sheets/DaySheet";
-import DetailSheet from "../mobileItinerary/sheets/DetailSheet";
 import useTripActions from "../mobileItinerary/useTripActions";
+import useDesktopDrawers from "./useDesktopDrawers";
+import { TRIP_DAY_ACTION, dayTurn } from "./ChatDayWidget";
 import * as T from "../mobileItinerary/designTokens";
 import DesktopTripHeader from "./DesktopTripHeader";
 import DesktopTripCard from "./DesktopTripCard";
@@ -22,14 +23,24 @@ import { GUTTER } from "./desktopTokens";
 //    body     trip-total card, the legs, before you fly        (the scroller)
 //    footer   the cart bar, handed in by BotApp                (never scrolls)
 //
-//  Same two rules as the phone (MobileItinerary): the trip is ONE package, so
-//  the only amount is the trip total; and every change is a sentence to Kaira.
-//  The legs are the phone's own LegSection, and what every row does comes from
-//  the same useTripActions — only the chrome around them is desktop's.
+//  The trip is ONE package, as on the phone (MobileItinerary): the only amount
+//  is the trip total. The legs are the phone's own LegSection.
 //
-//  Sheets open INSIDE this pane (see SheetHostContext in Sheet.jsx): centred
-//  in it, over a scrim that dims the trip and leaves the chat alone, because
-//  the chat is where every "Change" in those sheets sends the traveller.
+//  What a row DOES is desktop's own, though: booking details and every change
+//  or add flow open the same drawers the old desktop day-by-day opened (see
+//  useDesktopDrawers), not the phone's detail sheet and Kaira hand-off. The
+//  exceptions are the CTAs that say "ask Kaira" (an empty stay's "ASK KAIRA ›",
+//  a day at leisure): those ask her in the chat, with the phone's prompts.
+//
+//  The full day ("FULL DAY ›") plays into the CHAT as a short exchange: the
+//  user asking "Help me plan Day 1 in Tokyo", Kaira answering, and the day as
+//  a widget under her answer (`onShowDayInChat`, ChatDayWidget's dayTurn), the
+//  way her hotel and activity lists arrive, so the trip stays in view beside
+//  it. Its taps come back here as
+//  TRIP_DAY_ACTION: an item opens the same drawer the trip's row does, and
+//  its add button asks Kaira, as the phone's does. With no live chat to put it
+//  in, it falls back to the sheet INSIDE this pane (see SheetHostContext in
+//  Sheet.jsx).
 // ─────────────────────────────────────────────────────────────────────────────
 
 // How far below the top of the scroller a leg comes to rest.
@@ -296,6 +307,13 @@ function BodySkeleton() {
 export default function DesktopItinerary({
   askKaira,
   onViewMap,
+  // Raises the login prompt — every drawer that needs an account asks for one
+  // first, as the old day-by-day did.
+  onLoginRequired = undefined,
+  // Plays a day's turn into the chat (a ChatLocalTurnFn turn, from dayTurn).
+  // Returns false when there's no chat to put it in, and the day opens in the
+  // sheet here instead.
+  onShowDayInChat = undefined,
   // Charges the lock-in fee (BotApp's startPriceHold). Absent means no hold can
   // be taken, so the card's offer is withheld rather than drawn dead.
   onHold = undefined,
@@ -335,30 +353,23 @@ export default function DesktopItinerary({
     [slices],
   );
 
+  // The day sheet's slot, the Kaira funnel, and the row actions that are
+  // Kaira's on desktop too: every CTA that says "ask Kaira" (an empty stay's
+  // "ASK KAIRA ›", a day at leisure) and an activity's missing hotel pickup.
+  // They send the phone's own prompts, and the chat puts them at the top of
+  // its pane.
   const {
     sheet,
+    setSheet,
     closeDay,
-    closeDetail,
     ask,
-    handleChangeStay,
-    handleChangeTravel,
-    handleChangeReturn,
-    handleAddTravel,
-    handleAddReturn,
-    handleAddTaxi,
-    handleAddJourneyTaxi,
-    handleAddToDay,
+    handleChangeStay: askStay,
+    handleAddToDay: askAddToDay,
     handleAddActivityPickup,
-    handleOpenStay,
-    handleOpenTravel,
-    handleOpenExtra,
-    handleOpenAncillary,
-    handleOpenDayItem,
     handleOpenDay,
   } = useTripActions({ askKaira, onViewMap });
 
   const isDay = sheet?.type === "day";
-  const isDetail = sheet?.type === "detail";
 
   // The layer every sheet in this pane portals into. State, not a ref: the
   // context has to change when it mounts, so a sheet already asked to open
@@ -368,6 +379,50 @@ export default function DesktopItinerary({
 
   const [moreOpen, setMoreOpen] = useState(false);
   const closeMore = useCallback(() => setMoreOpen(false), []);
+
+  // Every other row action: the old desktop drawers. A drawer takes over from
+  // the More menu and from the day sheet (when the day is in one).
+  const beforeDrawer = useCallback(() => {
+    setSheet(null);
+    setMoreOpen(false);
+  }, [setSheet]);
+  const rows = useDesktopDrawers({
+    askKaira: ask,
+    onLoginRequired,
+    beforeOpen: beforeDrawer,
+  });
+
+  // "FULL DAY ›": into the chat when there is one, else the sheet here.
+  const openDay = useCallback(
+    (leg, day) => {
+      if (onShowDayInChat?.(dayTurn(leg, day))) return;
+      handleOpenDay(leg, day);
+    },
+    [onShowDayInChat, handleOpenDay],
+  );
+
+  // The day in the chat, tapped. Read through refs: the listener stays put
+  // while `rows` is rebuilt every render.
+  const rowsRef = useRef(rows);
+  rowsRef.current = rows;
+  const askRef = useRef(ask);
+  askRef.current = ask;
+  const busyRef = useRef(isBusy);
+  busyRef.current = isBusy;
+  useEffect(() => {
+    const onAction = (e) => {
+      const { action, leg, day, item, message, contextLabel } = e.detail || {};
+      if (!leg || !day) return;
+      if (action === "openItem" && item) rowsRef.current.onOpenDayItem(leg, day, item);
+      // The widget greys its add button out while the trip reprices; this is
+      // the same rule for a tap that landed on the frame it changed.
+      if (action === "askKaira" && message && !busyRef.current) {
+        askRef.current(message, contextLabel);
+      }
+    };
+    window.addEventListener(TRIP_DAY_ACTION, onAction);
+    return () => window.removeEventListener(TRIP_DAY_ACTION, onAction);
+  }, []);
   const rootRef = useRef(null);
   useEffect(() => {
     if (!moreOpen) return undefined;
@@ -536,7 +591,7 @@ export default function DesktopItinerary({
                   holdFeeStr={showHold ? holdFeeStr : null}
                   onHold={onHold}
                   gapLeg={gapLeg}
-                  onFixGap={() => gapLeg && handleChangeStay(gapLeg)}
+                  onFixGap={() => gapLeg && rows.onChangeStay(gapLeg)}
                   disabled={disabled}
                 />
               ) : null}
@@ -550,24 +605,27 @@ export default function DesktopItinerary({
                   firstDayId={i === 0 ? DESKTOP_DAY_ONE_ID : null}
                   disabled={disabled}
                   changedDayKey={changed.dayKey}
-                  onChangeStay={handleChangeStay}
-                  onChangeTravel={handleChangeTravel}
-                  onAddTravel={handleAddTravel}
-                  onOpenTravel={handleOpenTravel}
-                  onOpenStay={handleOpenStay}
-                  onOpenDay={handleOpenDay}
-                  onOpenDayItem={handleOpenDayItem}
-                  onAddToDay={handleAddToDay}
+                  // The stay card, "Add a stay" included, opens the old
+                  // hotel drawer; only the empty stay's "ASK KAIRA ›" asks her.
+                  onChangeStay={rows.onChangeStay}
+                  onAskStay={askStay}
+                  onChangeTravel={rows.onChangeTravel}
+                  onAddTravel={rows.onAddTravel}
+                  onOpenTravel={rows.onOpenTravel}
+                  onOpenStay={rows.onOpenStay}
+                  onOpenDay={openDay}
+                  onOpenDayItem={rows.onOpenDayItem}
+                  onAddToDay={askAddToDay}
                   onAddActivityPickup={handleAddActivityPickup}
-                  onAddTaxi={handleAddTaxi}
-                  onAddJourneyTaxi={handleAddJourneyTaxi}
-                  onOpenExtra={handleOpenExtra}
-                  onChangeReturn={handleChangeReturn}
-                  onAddReturn={handleAddReturn}
+                  onAddTaxi={rows.onAddTaxi}
+                  onAddJourneyTaxi={rows.onAddJourneyTaxi}
+                  onOpenExtra={rows.onOpenExtra}
+                  onChangeReturn={rows.onChangeReturn}
+                  onAddReturn={rows.onAddReturn}
                 />
               ))}
 
-              <BeforeYouFly items={ancillaries.items} onOpen={handleOpenAncillary} />
+              <BeforeYouFly items={ancillaries.items} onOpen={rows.onOpenAncillary} />
             </div>
           )}
           {tailHeight > 0 && !placeholder && ready ? (
@@ -587,7 +645,9 @@ export default function DesktopItinerary({
           />
         ) : null}
 
-        {/* One slot, one sheet — opening an item from the day REPLACES it. */}
+        {/* The full day, when there's no chat to put it in. An item in it
+            opens its old detail drawer and its add button asks Kaira, as
+            they do from the chat. */}
         <DaySheet
           open={isDay}
           onClose={closeDay}
@@ -595,16 +655,11 @@ export default function DesktopItinerary({
           day={sheet?.day}
           disabled={disabled}
           onAskKaira={ask}
-          onOpenItem={(item) => handleOpenDayItem(sheet.leg, sheet.day, item)}
+          onOpenItem={(item) => rows.onOpenDayItem(sheet.leg, sheet.day, item)}
         />
 
-        <DetailSheet
-          open={isDetail}
-          onClose={closeDetail}
-          detail={sheet?.detail}
-          disabled={disabled}
-          onAskKaira={ask}
-        />
+        {/* The drawers the old UI kept in local state (see useDesktopDrawers). */}
+        {rows.drawers}
 
         {/* The sheet host. Above the footer and the More menu; empty and
             click-through until a sheet portals into it. */}

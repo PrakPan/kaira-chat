@@ -29,25 +29,34 @@ const FILTERS = [
   { key: "booked", label: "Booked", match: (i) => i.kind === "booked" },
 ];
 
-export default function DaySheet({
-  open,
-  onClose,
-  leg,
-  day,
+/**
+ * The day itself — header, filter chips, the list and the add button — with no
+ * container around it. DaySheet (below) puts it in a bottom sheet; the desktop
+ * itinerary drops it into the chat as a Kaira widget (ChatDayWidget). One body,
+ * so the two can't drift apart.
+ *
+ * `variant="inline"` is the chat's: no side padding of its own (the message
+ * bubble has it) and no inner scroller — a message is as tall as it is, and
+ * the chat scrolls. With no `onClose` there is no close button either; there's
+ * nothing to close about a message.
+ *
+ * Keyed by the caller on the day, so the filter starts at "All" for each day.
+ */
+export function DayContent({
+  variant = "sheet",
+  leg: l,
+  day: d,
   disabled,
+  onClose,
   onAskKaira,
   onOpenItem,
+  // Optional: the add button's own flow. The desktop itinerary opens its
+  // add-activity drawer here; without it the button asks Kaira.
+  onAddToDay = undefined,
+  // The add button's words — they have to say where the tap goes.
+  addLabel = "+ Ask Kaira to add something",
 }) {
   const [filter, setFilter] = useState("all");
-
-  // Same reason as DetailSheet: the sheet slot empties the moment this closes
-  // (or the moment an item opens the detail sheet in its place), and rendering
-  // null on that tick blanks the panel mid-slide.
-  const lastRef = useRef(null);
-  if (day && leg) lastRef.current = { day, leg };
-  const held = day && leg ? { day, leg } : lastRef.current;
-  const d = held?.day || null;
-  const l = held?.leg || null;
 
   const items = useMemo(() => {
     if (!d) return [];
@@ -57,129 +66,161 @@ export default function DaySheet({
 
   if (!d || !l) return null;
 
-  return (
-    <Sheet open={open} onClose={onClose} height="95dvh" paneHeight="82%" zIndex={1600}>
-      <div className="flex h-full flex-col">
-        {/* Header — day number first, per the design */}
-        <div className="flex-none px-[14px]">
-          <div className="flex items-start gap-[12px] pb-[11px]">
-            <span className="ttw-type-serif flex-none text-[30px] leading-none text-[#0b1220]">
-              {d.dayNumber}
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="text-[16.5px] font-[700] tracking-[-0.02em] text-[#0b1220]">
-                {d.title || "Free day"}
-              </div>
-              <div className="mt-[5px] font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
-                {d.dateMeta} · {d.items.length} ITEM
-                {d.items.length === 1 ? "" : "S"}
-              </div>
-            </div>
-            <CloseButton onClick={onClose} />
-          </div>
+  const inline = variant === "inline";
 
-          {/* The rule belongs UNDER the chips, not under the title row. */}
-          <div
-            className="flex gap-[6px] overflow-x-auto border-b border-[#e6e8ec] pb-[11px]"
-            style={{ scrollbarWidth: "none" }}
-          >
-            {FILTERS.map((f) => {
-              const active = f.key === filter;
-              return (
-                <button
-                  key={f.key}
-                  type="button"
-                  onClick={() => setFilter(f.key)}
-                  style={{
-                    border: active ? "1px solid #0b1220" : "1px solid #dcdfe5",
-                    background: active ? "#0b1220" : "#ffffff",
-                    borderRadius: 999,
-                    boxShadow: "none",
-                  }}
-                  className={`flex-none whitespace-nowrap px-[12px] py-[7px] text-[12.5px] ${
-                    active ? "text-white" : "text-[#6b7280]"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              );
-            })}
+  return (
+    <div className={inline ? "flex flex-col" : "flex h-full flex-col"}>
+      {/* Header — day number first, per the design */}
+      <div className={inline ? "flex-none" : "flex-none px-[14px]"}>
+        <div className="flex items-start gap-[12px] pb-[11px]">
+          <span className="ttw-type-serif flex-none text-[30px] leading-none text-[#0b1220]">
+            {d.dayNumber}
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="text-[16.5px] font-[700] tracking-[-0.02em] text-[#0b1220]">
+              {d.title || "Free day"}
+            </div>
+            <div className="mt-[5px] font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
+              {d.dateMeta} · {d.items.length} ITEM
+              {d.items.length === 1 ? "" : "S"}
+            </div>
           </div>
+          {onClose ? <CloseButton onClick={onClose} /> : null}
         </div>
 
-        {/* Body — the add button is the last row of the flow, not a pinned bar */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-[14px] pb-[18px] pt-[12px]">
-          <div className="flex flex-col gap-[9px]">
-            {items.length === 0 ? (
-              <div
-                style={{ border: "1px dashed #dcdfe5", borderRadius: 11, boxShadow: "none" }}
-                className="p-[18px] text-center text-[13px] text-[#8a93a6]"
+        {/* The rule belongs UNDER the chips, not under the title row. */}
+        <div
+          className="flex gap-[6px] overflow-x-auto border-b border-[#e6e8ec] pb-[11px]"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {FILTERS.map((f) => {
+            const active = f.key === filter;
+            return (
+              <button
+                key={f.key}
+                type="button"
+                onClick={() => setFilter(f.key)}
+                style={{
+                  border: active ? "1px solid #0b1220" : "1px solid #dcdfe5",
+                  background: active ? "#0b1220" : "#ffffff",
+                  borderRadius: 999,
+                  boxShadow: "none",
+                }}
+                className={`flex-none whitespace-nowrap px-[12px] py-[7px] text-[12.5px] ${
+                  active ? "text-white" : "text-[#6b7280]"
+                }`}
               >
-                Nothing here yet.
-              </div>
-            ) : (
-              items.map((item, idx) => (
-                <button
-                  key={item.id || `${item.name}-${idx}`}
-                  type="button"
-                  onClick={() => onOpenItem?.(item)}
-                  style={{
-                    border: "1px solid #e6e8ec",
-                    background: "#ffffff",
-                    borderRadius: 11,
-                    boxShadow: "none",
-                  }}
-                  className="flex w-full items-center gap-[11px] p-[11px] text-left"
-                >
-                  <div
-                    className="h-[50px] w-[50px] flex-none rounded-[9px] bg-[#eef0f4] bg-cover bg-center"
-                    style={
-                      item.imageUrl
-                        ? { backgroundImage: `url("${item.imageUrl}")` }
-                        : undefined
-                    }
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-[13.5px] font-[700] text-[#0b1220]">
-                      {item.name}
-                    </div>
-                    <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
-                      {item.meta || (item.kind === "booked" ? "BOOKED" : "ON YOUR OWN")}
-                    </div>
-                  </div>
-                  <span
-                    className="flex-none text-[14px] leading-none text-[#b8becc]"
-                    aria-hidden
-                  >
-                    ›
-                  </span>
-                </button>
-              ))
-            )}
-
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={() => {
-                onAskKaira?.(
-                  prompts.addToDay(l.city, d.dayLabel),
-                  [d.dayLabel, l.city].filter(Boolean).join(" · "),
-                );
-                onClose?.();
-              }}
-              style={{
-                border: "1.5px dashed #cfd3da",
-                background: "#ffffff",
-                borderRadius: 11,
-                boxShadow: "none",
-              }}
-              className="w-full p-[13px] text-[13.5px] font-[600] text-[#6b7280] disabled:opacity-40"
-            >
-              + Ask Kaira to add something
-            </button>
-          </div>
+                {f.label}
+              </button>
+            );
+          })}
         </div>
       </div>
+
+      {/* Body — the add button is the last row of the flow, not a pinned bar */}
+      <div
+        className={
+          inline
+            ? "pb-[2px] pt-[12px]"
+            : "min-h-0 flex-1 overflow-y-auto px-[14px] pb-[18px] pt-[12px]"
+        }
+      >
+        <div className="flex flex-col gap-[9px]">
+          {items.length === 0 ? (
+            <div
+              style={{ border: "1px dashed #dcdfe5", borderRadius: 11, boxShadow: "none" }}
+              className="p-[18px] text-center text-[13px] text-[#8a93a6]"
+            >
+              Nothing here yet.
+            </div>
+          ) : (
+            items.map((item, idx) => (
+              <button
+                key={item.id || `${item.name}-${idx}`}
+                type="button"
+                onClick={() => onOpenItem?.(item)}
+                style={{
+                  border: "1px solid #e6e8ec",
+                  background: "#ffffff",
+                  borderRadius: 11,
+                  boxShadow: "none",
+                }}
+                className="flex w-full items-center gap-[11px] p-[11px] text-left"
+              >
+                <div
+                  className="h-[50px] w-[50px] flex-none rounded-[9px] bg-[#eef0f4] bg-cover bg-center"
+                  style={
+                    item.imageUrl
+                      ? { backgroundImage: `url("${item.imageUrl}")` }
+                      : undefined
+                  }
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-[13.5px] font-[700] text-[#0b1220]">
+                    {item.name}
+                  </div>
+                  <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
+                    {item.meta || (item.kind === "booked" ? "BOOKED" : "ON YOUR OWN")}
+                  </div>
+                </div>
+                <span
+                  className="flex-none text-[14px] leading-none text-[#b8becc]"
+                  aria-hidden
+                >
+                  ›
+                </span>
+              </button>
+            ))
+          )}
+
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => {
+              if (onAddToDay) {
+                onAddToDay();
+                return;
+              }
+              onAskKaira?.(
+                prompts.addToDay(l.city, d.dayLabel),
+                [d.dayLabel, l.city].filter(Boolean).join(" · "),
+              );
+              onClose?.();
+            }}
+            style={{
+              border: "1.5px dashed #cfd3da",
+              background: "#ffffff",
+              borderRadius: 11,
+              boxShadow: "none",
+            }}
+            className="w-full p-[13px] text-[13.5px] font-[600] text-[#6b7280] disabled:opacity-40"
+          >
+            {addLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function DaySheet({ open, onClose, leg, day, ...rest }) {
+  // Same reason as DetailSheet: the sheet slot empties the moment this closes
+  // (or the moment an item opens the detail sheet in its place), and rendering
+  // null on that tick blanks the panel mid-slide.
+  const lastRef = useRef(null);
+  if (day && leg) lastRef.current = { day, leg };
+  const held = day && leg ? { day, leg } : lastRef.current;
+  if (!held?.day || !held?.leg) return null;
+
+  return (
+    <Sheet open={open} onClose={onClose} height="95dvh" paneHeight="82%" zIndex={1600}>
+      <DayContent
+        key={held.day.key}
+        leg={held.leg}
+        day={held.day}
+        onClose={onClose}
+        {...rest}
+      />
     </Sheet>
   );
 }

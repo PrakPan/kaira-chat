@@ -23,6 +23,7 @@ import { openNotification } from "../../../store/actions/notification";
 import { FaTaxi, FaWhatsapp } from "react-icons/fa";
 import useMediaQuery from "../../media";
 import BotLoginModal from "./BotLoginModal";
+import ChatDayWidget from "../../revamp/desktopItinerary/ChatDayWidget";
 import { getThemePalette } from "../../theme/cinematic/palettes";
 
 // ─── Widget environment context ───────────────────────────────────────────────
@@ -8129,6 +8130,9 @@ function NodeRenderer({
     case "Divider":
       return <hr style={{ border: "none", borderTop: "1px solid #f3f4f6", margin: "4px 0" }} />;
     case "Icon": return <IconNode node={node} />;
+    // Never from the server: the desktop itinerary's full day, which the page
+    // plays into the thread itself (ChatKitPanel's ChatLocalTurnFn).
+    case "TripDay":      return <ChatDayWidget node={node} />;
     default:
       return (
         <pre style={{

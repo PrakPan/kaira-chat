@@ -47,6 +47,12 @@ export interface Message {
     id: string;
     widget: Record<string, unknown>;
   };
+  /** A client-side message nobody streamed — the page dropped it into the
+   *  thread itself (the desktop itinerary's full day). It has no server id, so
+   *  it takes no feedback, and it is gone on reload. `localKey` names what it
+   *  shows, so showing the same thing again replaces it instead of stacking. */
+  isLocal?: boolean;
+  localKey?: string;
   progressSteps?: ProgressStep[];
   thinkingTasks?: ThinkingTask[];
   /** Duration (in seconds) of a completed reasoning workflow, restored from the

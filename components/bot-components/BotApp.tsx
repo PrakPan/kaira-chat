@@ -10,6 +10,7 @@ import {
   ChatKitPanel,
   COMPLETION_STARTED_EFFECTS,
   type ChatSendFn,
+  type ChatLocalTurnFn,
 } from "./components/ChatKitPanel";
 import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
@@ -1263,6 +1264,17 @@ export default function BotApp({
   const handleSendMessageReady = useCallback(
     (sendFn: (msg: string) => void) => {
       chatSendMessageRef.current = sendFn;
+    },
+    [],
+  );
+
+  // Desktop: the chat's way to play a turn of the page's own into the thread
+  // (ChatLocalTurnFn). The itinerary's full day goes in this way, as a short
+  // exchange beside the trip rather than a sheet over it.
+  const chatLocalTurnRef = useRef<ChatLocalTurnFn | null>(null);
+  const handleLocalTurnReady = useCallback(
+    (playFn: ChatLocalTurnFn | null) => {
+      chatLocalTurnRef.current = playFn;
     },
     [],
   );
@@ -5227,6 +5239,19 @@ Start Location: ${details.startLocation}`;
                 <DesktopItinerary
                   askKaira={handleItineraryContainerSendMessage}
                   onViewMap={handleViewMap}
+                  // Row drawers that need an account ask for one first, as
+                  // the old day-by-day's did.
+                  onLoginRequired={() => setShowApiLoginPrompt(true)}
+                  // "FULL DAY ›" plays the day into the chat as a short
+                  // exchange. Not while the thread is still being restored (it
+                  // would be written over) or the welcome screen covers it;
+                  // false sends the day to the sheet over the trip instead.
+                  onShowDayInChat={(turn: Parameters<ChatLocalTurnFn>[0]) => {
+                    const play = chatLocalTurnRef.current;
+                    if (!play || !isChatActive || isSessionRestoring) return false;
+                    play(turn);
+                    return true;
+                  }}
                   onHold={startPriceHold}
                   onShare={() => setShowShare(true)}
                   // Same gate as the old header's gear: Settings edits the
@@ -5540,6 +5565,7 @@ Start Location: ${details.startLocation}`;
                 initialPromptRequiresLogin={initialPromptRequiresLogin}
                 onInitialPromptConsumed={handleInitialPromptConsumed}
                 onSendReady={handleSendMessageReady}
+                onLocalTurnReady={handleLocalTurnReady}
                 startEmptyIntake={startEmptyIntake}
               />
             )}

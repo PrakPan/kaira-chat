@@ -206,6 +206,23 @@ export type ChatSendFn = (
   },
 ) => void;
 
+/** Plays a turn into the thread that never goes to the server: the user's
+ *  `prompt`, a beat of Kaira typing, then her `reply` and the `widget` under
+ *  it. Laid out like an itinerary CTA's send — the prompt comes to rest at the
+ *  top of the pane. A `key` replaces an earlier local turn with the same key,
+ *  so opening the same thing twice moves it to the end instead of repeating
+ *  it. */
+/** How long Kaira "types" before a local turn's reply lands. Long enough to
+ *  read as her answering, short enough not to feel like a wait. */
+const LOCAL_TURN_TYPING_MS = 650;
+
+export type ChatLocalTurnFn = (turn: {
+  prompt: string;
+  reply?: string;
+  widget: Record<string, unknown>;
+  key?: string;
+}) => void;
+
 interface ChatKitPanelProps {
   onLocationReceived: (locationData: { data: Location[] }) => void;
   onRouteReceived: (routeData: { data: Location[] }) => void;
@@ -236,6 +253,9 @@ interface ChatKitPanelProps {
    *  attachment before sending the first message. */
   initialInputText?: string | null;
   onSendReady?: (sendFn: ChatSendFn) => void;
+  /** Hands the host a way to play a client-side turn into the thread (see
+   *  ChatLocalTurnFn) — the desktop itinerary shows a full day this way. */
+  onLocalTurnReady?: (playFn: ChatLocalTurnFn | null) => void;
   onItineraryCompletionStart?: (itineraryId: string) => void;
 onItineraryCompletionDone?: (itineraryId: string, summary?: string) => void;
 onItineraryRefresh?: (itineraryId: string) => void;
@@ -909,6 +929,7 @@ export function ChatKitPanel({
   initialFiles,
   initialInputText,
   onSendReady,
+  onLocalTurnReady,
   onItineraryCompletionStart,
 onItineraryCompletionDone,
 onItineraryRefresh,
@@ -1900,7 +1921,8 @@ const sessionIdRef = useRef<string>((() => {
   const lastIntakeContextRef = useRef<string | null>(null);
   const getUserPrompts = useCallback((): string[] => {
     return (messagesRef.current || [])
-      .filter((m: any) => m?.role === "user")
+      // A local turn's prompt was never the user's to send (ChatLocalTurnFn).
+      .filter((m: any) => m?.role === "user" && !m?.isLocal)
       .map((m: any) => (typeof m?.content === "string" ? m.content : ""))
       .filter(Boolean);
   }, []);
@@ -2098,6 +2120,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
       (m) =>
         (!m?.type || m.type === "text") &&
         !m?.isStreaming &&
+        // Nor the page's own local turns (ChatLocalTurnFn): Kaira never saw them.
+        !m?.isLocal &&
         typeof m?.content === "string" &&
         m.content.trim().length > 0,
     );
@@ -3763,6 +3787,112 @@ useEffect(() => {
     onSendReady?.(sendMessage);
   }, [onSendReady, sendMessage]);
 
+  // ── A turn the page plays into the thread itself ───────────────────────────
+  // (ChatLocalTurnFn — the desktop itinerary's full day.) Laid out as an
+  // itinerary CTA's send is: the prompt is armed as the top anchor, Kaira's
+  // dots show under it for a beat, and her reply lands there. None of it goes
+  // to the server — every message is `isLocal`, and whatever reads the thread
+  // back out (the chips request, the prompt list, the status card's turn key)
+  // skips them.
+  const localTurnTimersRef = useRef(new Set<ReturnType<typeof setTimeout>>());
+  useEffect(() => {
+    const timers = localTurnTimersRef.current;
+    return () => {
+      timers.forEach(clearTimeout);
+      timers.clear();
+    };
+  }, []);
+
+  const playLocalTurn = useCallback<ChatLocalTurnFn>(
+    ({ prompt, reply, widget, key }) => {
+      const stamp = Date.now();
+      const promptId = `local-prompt-${stamp}`;
+      const typingId = `local-typing-${stamp}`;
+      const text = prompt.trim();
+      const local = (id: string, m: Omit<Message, "id" | "clientKey" | "timestamp">): Message => ({
+        ...m,
+        id,
+        clientKey: id,
+        timestamp: new Date(),
+        isLocal: true,
+        localKey: key,
+      });
+
+      // What sendMessage does for an `anchorTop` send.
+      isAtBottomRef.current = true;
+      anchorPendingRef.current = text;
+      setMessages((prev) => [
+        ...prev.filter((m) => !(m.isLocal && key && m.localKey === key)),
+        local(promptId, {
+          role: "user",
+          content: text,
+          // Tagged as the viewer's own, as useChat tags a live send — it's what
+          // draws their avatar on the bubble instead of the default profile icon.
+          ...(reduxUserId != null ? { senderUserId: reduxUserId } : {}),
+        }),
+        local(typingId, { role: "assistant", content: "", isStreaming: true }),
+      ]);
+
+      const timer = setTimeout(() => {
+        localTurnTimersRef.current.delete(timer);
+        // Still the turn on top? A message sent in the meantime has taken the
+        // anchor, and the pane is its to scroll.
+        const thread = messagesRef.current;
+        let newestUser: Message | undefined;
+        for (let i = thread.length - 1; i >= 0; i--) {
+          if (thread[i].role === "user") {
+            newestUser = thread[i];
+            break;
+          }
+        }
+        const holding = newestUser?.id === promptId;
+        // Hold the prompt where it is while the answer lays out. Following the
+        // bottom would take a day taller than the room under the prompt all
+        // the way to its last row.
+        if (holding) isAtBottomRef.current = false;
+
+        const replyId = `local-reply-${stamp}`;
+        const widgetId = `local-widget-${stamp}`;
+        // In place of the dots — which are gone if the same day was opened
+        // again meanwhile, and then so is this turn.
+        setMessages((prev) =>
+          prev.flatMap((m) => {
+            if (m.id !== typingId) return [m];
+            const out: Message[] = [];
+            if (reply) out.push(local(replyId, { role: "assistant", content: reply }));
+            out.push(
+              local(widgetId, {
+                role: "assistant",
+                content: "",
+                type: "widget",
+                widgetItem: { id: widgetId, widget: { ...widget, localId: widgetId } },
+              }),
+            );
+            return out;
+          }),
+        );
+
+        if (!holding) return;
+        // Laid out: back to following the bottom if all of it fit.
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            const c = messagesScrollRef.current;
+            if (c) isAtBottomRef.current = c.scrollHeight - c.scrollTop - c.clientHeight < 80;
+          }),
+        );
+      }, LOCAL_TURN_TYPING_MS);
+      localTurnTimersRef.current.add(timer);
+    },
+    [setMessages, reduxUserId],
+  );
+
+  // Taken back on unmount (a re-keyed chat), so the host never writes into a
+  // thread that is gone.
+  useEffect(() => {
+    onLocalTurnReady?.(playLocalTurn);
+    return () => onLocalTurnReady?.(null);
+  }, [onLocalTurnReady, playLocalTurn]);
+
   // ── Inject context when itinerary is fully completed ──────────────────────
   useEffect(() => {
     if (itineraryCompleted && !hasInjectedContextRef.current && !isStreaming) {
@@ -4601,7 +4731,8 @@ const handleShowLogin = useCallback(() => {
   // reset itself whenever the user kicks off a new turn.
   const lastUserMessageId = useMemo(() => {
     for (let i = messages.length - 1; i >= 0; i--) {
-      if (messages[i].role === "user") return messages[i].id ?? null;
+      // A local turn (the itinerary's full day) starts nothing on the server.
+      if (messages[i].role === "user" && !messages[i].isLocal) return messages[i].id ?? null;
     }
     return null;
   }, [messages]);
@@ -4890,6 +5021,10 @@ const handleShowLogin = useCallback(() => {
                 for (let j = idx + 1; j < messages.length; j++) {
                   const later = messages[j];
                   if (later.role !== "assistant") break;
+                  // A local turn's reply (the itinerary's full day) is not
+                  // Kaira's and takes no feedback itself — it must not take
+                  // the real turn's thumbs away either.
+                  if (later.isLocal) continue;
                   const eligible =
                     later.type === "widget"
                       ? later.widgetItem

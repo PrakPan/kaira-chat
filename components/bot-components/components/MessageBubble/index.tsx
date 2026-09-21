@@ -1757,7 +1757,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               disabled={widgetDisabled}
             />
             <div className="ml-1">
-              {onFeedback && message.id && (
+              {onFeedback && message.id && !message.isLocal && (
                 <FeedbackButtons
                   messageId={message.id}
                   feedback={feedback}
@@ -1836,7 +1836,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             />
           </div>
           <div className="ml-1">
-            {onFeedback && message.id && (
+            {/* A local widget (the itinerary's full day) was never sent by
+                Kaira, so there is nothing to rate. */}
+            {onFeedback && message.id && !message.isLocal && (
               <FeedbackButtons
                 messageId={message.id}
                 feedback={feedback}
@@ -2095,6 +2097,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           !streaming &&
           onFeedback &&
           message.id &&
+          // A local turn's reply was never Kaira's to rate (ChatLocalTurnFn).
+          !message.isLocal &&
           !(message.isError && message.errorVariant === "network") && (
             <FeedbackButtons
               messageId={message.id}
