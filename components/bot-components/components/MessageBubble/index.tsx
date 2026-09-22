@@ -121,6 +121,21 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
       min-height: 24px;
     }
 
+    /* The rest of a Kaira run. One reply streams as a text message plus a
+       message per widget, and each would otherwise open with a badge of its
+       own — five Kairas for one answer. Only the first message of the run
+       carries the badge (see rendersKairaBadge); these drop its row, and the
+       prelude its indent, and close up to 8px under a bubble of hers right
+       above (its 14px margin, less 6) so the run reads as one reply. Only
+       under a bubble: a bare CTA above keeps its own 8px, which the pull
+       would cut to 2.
+       The :has() one stands alone: a browser without it would throw out a
+       whole selector list that named it. */
+    .msg.kaira.msg-cont { padding-top: 0; }
+    .msg.kaira + .msg.kaira.msg-cont { margin-top: -6px; }
+    .msg.kaira.msg-cont:has(.msg-prelude) { padding-top: 0; }
+    .msg.kaira.msg-cont .msg-prelude { padding-left: 0; }
+
     @media (max-width: 767px) {
       /* Keep bubbles off the screen edges on phones… */
       .msg {
@@ -436,6 +451,48 @@ export function isButtonOnlyWidget(widget: Record<string, unknown>): boolean {
   return buttons === 1 && others === 0;
 }
 
+/** Whether MessageBubble draws Kaira's badge for this message when it opens a
+ *  run. False for what it renders bare (a button-only CTA) or not at all (the
+ *  empty husk a turn can leave behind) — neither can head a run, so the next
+ *  message still has to show the badge itself. Kept beside MessageBubble so
+ *  the two can't drift. */
+export function rendersKairaBadge(message: Message): boolean {
+  if (message.role !== "assistant") return false;
+  if (message.type === "widget" && message.widgetItem) {
+    return !isButtonOnlyWidget(message.widgetItem.widget);
+  }
+  return (
+    (message.progressSteps?.length ?? 0) > 0 ||
+    (message.thinkingTasks?.length ?? 0) > 0 ||
+    !!message.content ||
+    !!message.isStreaming ||
+    !!message.isError
+  );
+}
+
+// Kaira's badge. Pinned above her message's leading corner as a badge by
+// MessageBubbleResponsiveStyles; the inline size is what it falls back to.
+const KairaAvatar: React.FC = () => (
+  <div
+    aria-hidden
+    className="msg-avatar"
+    style={{
+      width: 30,
+      height: 30,
+      borderRadius: "50%",
+      flexShrink: 0,
+      overflow: "hidden",
+      background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)",
+    }}
+  >
+    <img
+      src="/KairaInsta.png"
+      alt="Kaira"
+      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+    />
+  </div>
+);
+
 interface MessageBubbleProps {
   message: Message;
   entities?: Record<string, { name: string; type: string }>;
@@ -470,6 +527,10 @@ interface MessageBubbleProps {
    *  consecutive CTAs (e.g. "View full itinerary" + "Confirm Itinerary…")
    *  sit side by side on one line and wrap on mobile, instead of stacking. */
   inlineGroup?: boolean;
+  /** True when an earlier Kaira message in the same run already shows her
+   *  badge. This one then drops its own and joins that reply's bubble group
+   *  (`.msg-cont` in MessageBubbleResponsiveStyles). */
+  continued?: boolean;
 }
 
 // ─── Feedback icons (thumbs up / thumbs down) ─────────────────────────────────
@@ -1677,6 +1738,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   onFeedback,
   onRetry,
   inlineGroup = false,
+  continued = false,
 }) => {
   const rendered = useMemo(
     () => renderContent(message.content, entities ?? {}),
@@ -1720,7 +1782,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     if (routeWidget) {
       return (
         <div
-          className="msg kaira"
+          className={continued ? "msg kaira msg-cont" : "msg kaira"}
           style={{
             display: "flex",
             gap: 10,
@@ -1730,24 +1792,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           }}
         >
           {/* Kaira avatar — kept so the route card still reads as her turn. */}
-          <div
-            aria-hidden
-            className="msg-avatar"
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: "50%",
-              flexShrink: 0,
-              overflow: "hidden",
-              background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)",
-            }}
-          >
-            <img
-              src="/KairaInsta.png"
-              alt="Kaira"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          </div>
+          {!continued && <KairaAvatar />}
           <div style={{ minWidth: 0, flex: 1 }}>
             {/* No beige bubble surface here — the route card renders directly so
                 it spans the full inner width. */}
@@ -1780,7 +1825,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
     return (
       <div
-        className="msg kaira"
+        className={continued ? "msg kaira msg-cont" : "msg kaira"}
         style={{
           display: "flex",
           gap: 10,
@@ -1789,26 +1834,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           animation: "msgInK 0.3s ease-out",
         }}
       >
-        {/* Kaira avatar — same gradient ring + image as text replies, so
-            content widget messages read as part of the same turn. */}
-        <div
-          aria-hidden
-          className="msg-avatar"
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: "50%",
-            flexShrink: 0,
-            overflow: "hidden",
-            background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)",
-          }}
-        >
-          <img
-            src="/KairaInsta.png"
-            alt="Kaira"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        </div>
+        {/* Kaira avatar — same gradient ring + image as text replies, shown
+            once at the head of her run (see `continued`). */}
+        {!continued && <KairaAvatar />}
         <div style={{ minWidth: 0, flex: 1 }}>
           {/* Content widgets sit on the Kaira bubble surface — inner cards
               (transport, activity, POI) stay white on top of this base. */}
@@ -1822,8 +1850,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               background: "#fafaf5",
               borderRadius: 16,
               // The squared corner points at the AUTHOR: top-left, beside
-              // Kaira's avatar. See the note on the text bubble below.
-              borderTopLeftRadius: 2,
+              // Kaira's avatar. See the note on the text bubble below. A
+              // continuation has no avatar to point at, so it stays round.
+              borderTopLeftRadius: continued ? 16 : 2,
               padding: "11px 12px",
               wordBreak: "break-word",
               overflowWrap: "anywhere",
@@ -1993,7 +2022,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   return (
     <div
-      className="msg kaira"
+      className={continued ? "msg kaira msg-cont" : "msg kaira"}
       style={{
         display: "flex",
         gap: 10,
@@ -2002,24 +2031,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         animation: "msgInK 0.3s ease-out",
       }}
     >
-      <div
-        aria-hidden
-        className="msg-avatar"
-        style={{
-          width: 30,
-          height: 30,
-          borderRadius: "50%",
-          flexShrink: 0,
-          overflow: "hidden",
-          background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)",
-        }}
-      >
-        <img
-          src="/KairaInsta.png"
-          alt="Kaira"
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        />
-      </div>
+      {!continued && <KairaAvatar />}
       <div
         className="chatWrapper"
         style={{
@@ -2073,8 +2085,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               background: "#fafaf5",
               // TL TR BR BL — square on the corner under Kaira's badge, so the
               // bubble squares up to it instead of curving away (the user's
-              // pill is the mirror: square top-right).
-              borderRadius: "0 16px 16px 16px",
+              // pill is the mirror: square top-right). A continuation has no
+              // badge above it, so it rounds all four.
+              borderRadius: continued ? 16 : "0 16px 16px 16px",
               willChange: "contents",
               transition: "opacity 0.1s ease",
               wordBreak: "break-word",
@@ -2195,11 +2208,15 @@ interface ItineraryCloneCtaProps {
   onRequestLogin?: () => void;
   /** Logged-in primary action — clone the itinerary (parent polls + skeletons). */
   onCreateVersion?: () => void | Promise<void>;
+  /** The chat's last message already shows Kaira's badge, so this pitch joins
+   *  that run instead of opening one of its own (MessageBubble's `continued`). */
+  continued?: boolean;
 }
 
 export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
   onRequestLogin,
   onCreateVersion,
+  continued = false,
 }) => {
   // Reactive auth + itinerary - re-renders on login/logout with no reload.
   const token = useSelector((state: any) => state?.auth?.token);
@@ -2275,7 +2292,7 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
 
   return (
     <div
-      className="msg kaira"
+      className={continued ? "msg kaira msg-cont" : "msg kaira"}
       style={{
         display: "flex",
         gap: 10,
@@ -2286,24 +2303,7 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
       }}
     >
       {/* Kaira avatar — identical to other messages */}
-      <div
-        aria-hidden
-        className="msg-avatar"
-        style={{
-          width: 30,
-          height: 30,
-          borderRadius: "50%",
-          flexShrink: 0,
-          overflow: "hidden",
-          background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)",
-        }}
-      >
-        <img
-          src="/KairaInsta.png"
-          alt="Kaira"
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        />
-      </div>
+      {!continued && <KairaAvatar />}
 
       {/* Card */}
       <div
@@ -2313,8 +2313,9 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
         minWidth: 0,
         overflow: "hidden",
         borderRadius: 16,
-        // Kaira's card, so Kaira's notch — top-left, at her avatar.
-        borderTopLeftRadius: 2,
+        // Kaira's card, so Kaira's notch — top-left, at her avatar (round
+        // when it continues her run and there is no avatar beside it).
+        borderTopLeftRadius: continued ? 16 : 2,
         border: "1px solid #2C3360",
         background:
           "radial-gradient(120% 140% at 100% 0%, #232a4f 0%, #181D38 55%)",

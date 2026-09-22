@@ -3,7 +3,7 @@ import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { useChat, generateSessionId, getPlatform, resolveRestoredTranscript, type UserLocationData, type MessageAttachment, type ThemeSelectedItem, Message } from "../hooks/useChat";
-import { MessageBubble, isButtonOnlyWidget, ItineraryCloneCta } from "./MessageBubble";
+import { MessageBubble, isButtonOnlyWidget, rendersKairaBadge, ItineraryCloneCta } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
 import { CHATKIT_API_DOMAIN_KEY as CHATKIT_DOMAIN_KEY } from "../lib/chatkitConfig";
 import type { Location, BotMode } from "../types";
@@ -428,6 +428,29 @@ function useUserLocationData() {
   }, []);
 
   return { userLocationData, isLoadingLocation };
+}
+
+// Message types the thread renders as cards of their own rather than through
+// MessageBubble. They carry no Kaira badge and interrupt her run.
+const CARD_MESSAGE_TYPES = new Set<Message["type"]>([
+  "intake_form",
+  "theme_form",
+  "pricing_form",
+  "login_card",
+]);
+
+// Whether whatever sits at `idx` continues a Kaira run that already shows her
+// badge: walking back through the assistant messages right before it (up to a
+// user message or a card) finds one that draws it. A single reply streams as a
+// text message plus a message per widget, so this is what keeps it under ONE
+// badge instead of one per message. Same run the feedback row keys on.
+function continuesKairaRun(messages: Message[], idx: number): boolean {
+  for (let j = idx - 1; j >= 0; j--) {
+    const m = messages[j];
+    if (m.role !== "assistant" || CARD_MESSAGE_TYPES.has(m.type)) return false;
+    if (rendersKairaBadge(m)) return true;
+  }
+  return false;
 }
 
 function getAuthToken(): string | null {
@@ -5054,6 +5077,9 @@ const handleShowLogin = useCallback(() => {
                 onFeedback={hideFeedback ? undefined : handleFeedback}
                 onRetry={onRetry}
                 inlineGroup={inlineGroup}
+                continued={
+                  msg.role === "assistant" && continuesKairaRun(messages, idx)
+                }
                 onWidgetAction={(action) => {
                   // Freeze this widget's CTAs the moment the user clicks one,
                   // regardless of which drawer or server call it triggers. The
@@ -5524,6 +5550,7 @@ const handleShowLogin = useCallback(() => {
               <ItineraryCloneCta
                 onRequestLogin={() => setShowLoginModal(true)}
                 onCreateVersion={() => setShowCloneModal(true)}
+                continued={continuesKairaRun(messages, messages.length)}
               />
             )}
 
