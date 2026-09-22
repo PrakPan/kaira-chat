@@ -9,8 +9,8 @@ import { setPendingSeed, seedChatUrl } from "../../services/heroChatHandoff";
 //
 // Rebuilt as the docked ask-bar from the cinematic theme pages
 // (components/theme/cinematic/CinematicThemeLanding.tsx → AskKairaStrip): a
-// translucent paper pill with a real free-text field, a yellow CTA and Kaira's
-// avatar. The old version was a dark lozenge carrying a sentence and one
+// translucent paper pill with the bag button, a real free-text field, a black
+// CTA and Kaira's avatar. The old version was a dark lozenge carrying a sentence and one
 // button, so the two floating bars on the site looked like two different
 // products.
 //
@@ -21,7 +21,6 @@ import { setPendingSeed, seedChatUrl } from "../../services/heroChatHandoff";
 
 const INK = "#0b1220";
 const BORDER = "#ececec";
-const YELLOW = "#f7e700";
 
 const Dock = styled.div`
   position: fixed;
@@ -77,8 +76,37 @@ const Field = styled.input`
   }
 `;
 
-/* Yellow, because this is the one action on the bar. Ink text on yellow is the
-   pairing the rest of the Kaira surfaces use for a primary CTA on paper.
+/* The askBar's bag button (CinematicThemeLanding → bagIcon), in the bar's
+   black-and-white scheme. There is no saved list on these pages, so it is just
+   a second way into /chat. */
+const Bag = styled.button`
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: ${INK};
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+  &:active {
+    transform: none;
+  }
+
+  @media screen and (min-width: 768px) {
+    width: 46px;
+    height: 46px;
+  }
+`;
+
+/* Black with white text — the one action on the bar.
    `position: relative; overflow: hidden` is what clips the sheen below. */
 const Cta = styled.button`
   position: relative;
@@ -92,13 +120,13 @@ const Cta = styled.button`
   border: none;
   cursor: pointer;
   border-radius: 999px;
-  background: ${YELLOW};
-  color: ${INK};
+  background: ${INK};
+  color: #ffffff;
   font-family: "Inter", -apple-system, sans-serif;
   font-size: 13px;
   font-weight: 700;
   padding: 11px 16px;
-  box-shadow: 0 8px 20px -10px rgba(247, 231, 0, 0.9);
+  box-shadow: 0 8px 20px -10px rgba(11, 18, 32, 0.6);
   transition: transform 0.15s cubic-bezier(0.2, 0.7, 0.3, 1);
 
   &:hover {
@@ -232,6 +260,23 @@ const Banner = (props) => {
   return (
     <Dock newYear={props.newYear}>
       <Pill>
+        <Bag type="button" onClick={openChat} aria-label="Start planning">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#ffffff"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <path d="M3 6h18" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+        </Bag>
         <Field
           type="text"
           value={draft}
