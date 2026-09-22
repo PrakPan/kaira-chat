@@ -1,37 +1,26 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  Every sentence the mobile itinerary says to Kaira, in one place.
 //
-//  On this surface there are no edit drawers: a change is a request, and Kaira
-//  is the one who makes it. Keeping the strings together means the vocabulary
+//  Adding or changing a booking opens its own flow (useBookingDrawers); what
+//  is left here is what still goes to her — a detail sheet's "Remove", the
+//  "Change" of a row with no flow of its own, a day at leisure, an activity's
+//  missing pickup. Keeping the strings together means the vocabulary
 //  stays consistent (lowercase, city-scoped) and can be tuned against the
 //  model's prompt without hunting through components.
 //
-//  The first three are the exact strings the draft-itinerary path already
-//  sends today (itineraryCity/index.jsx), so Kaira's existing handling of them
-//  carries over unchanged.
+//  changeStay and changeTransfer are the exact strings the draft-itinerary path
+//  already sends today (itineraryCity/index.jsx), so Kaira's existing handling
+//  of them carries over unchanged.
 // ─────────────────────────────────────────────────────────────────────────────
-
-// "an airport", "a station" — the hub word, lowercased, with its article.
-const hubPhrase = (hub) => {
-  const h = String(hub || "airport").toLowerCase();
-  return `${/^[aeiou]/.test(h) ? "an" : "a"} ${h}`;
-};
 
 const prompts = {
   // ── Stays ──────────────────────────────────────────────────────────────────
   changeStay: (city) => `change hotel in ${city}`,
-  addStay: (city) => `add a hotel in ${city}`,
   removeStay: (city) => `remove the hotel in ${city} from my plan`,
 
   // ── Transfers between cities ───────────────────────────────────────────────
   changeTransfer: (city) => `change transfer in ${city}`,
   changeReturn: (city) => `change my return flight to ${city}`,
-  // The origin is whatever the trip was in before this leg — the previous
-  // city, or the trip's start city on leg 1. It can be missing (a first leg
-  // the itinerary never named an origin for), and "from undefined to Kochi" is
-  // worse than not saying it.
-  addTransfer: (from, to) =>
-    from ? `add a transfer from ${from} to ${to}` : `add a transfer to ${to}`,
   removeTransfer: (city) => `remove the transfer into ${city} from my plan`,
   // The return leg is named by where it lands, like changeReturn — "remove the
   // transfer into Hampi" is the wrong journey entirely on the way home.
@@ -45,15 +34,6 @@ const prompts = {
   // otherwise send the same sentence for every one of them.
   changeHubTaxi: (hub, role, city) =>
     `change the ${String(hub || "airport").toLowerCase()} ${role} in ${city}`,
-  addTaxi: (city) => `add a taxi in ${city}`,
-  // The missing half of a journey's taxis, from the chip under its transfer
-  // card — worded like changeHubTaxi so Kaira hears the same vocabulary.
-  addHubTaxi: (hub, role, city) => `add ${hubPhrase(hub)} ${role} in ${city}`,
-  // Both halves at once — "NO TAXIS ADDED · ADD ›".
-  addTransferTaxis: (hub, from, to) =>
-    from
-      ? `add ${hubPhrase(hub)} drop in ${from} and ${hubPhrase(hub)} pickup in ${to}`
-      : `add ${hubPhrase(hub)} pickup in ${to}`,
   // "NO PICKUP · ADD ›" on an included activity.
   addActivityPickup: (name, city) =>
     `add a taxi to ${name}${city ? ` in ${city}` : ""} and back`,

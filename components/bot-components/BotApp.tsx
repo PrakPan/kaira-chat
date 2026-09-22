@@ -47,6 +47,7 @@ import ItineraryLegend from "../itinerary/itineraryCity/ItineraryLegend";
 import ArchiveChatPanel from "./components/ArchiveChatPanel";
 import CloneItineraryModal from "./components/CloneItineraryModal";
 import MobileItinerary from "../revamp/mobileItinerary/MobileItinerary";
+import { DrawerSheetContext } from "../ui/Drawer";
 import DesktopItinerary, {
   DESKTOP_DAY_ONE_ID,
 } from "../revamp/desktopItinerary/DesktopItinerary";
@@ -4618,7 +4619,13 @@ Start Location: ${details.startLocation}`;
   const mobileItineraryPanel = (
     <>
       <div style={{ display: "none" }} aria-hidden>
-        {itineraryContainerNode}
+        {/* The itinerary's add/change flows are this container's drawers
+            (opened by useBookingDrawers' URL pushes, portalled out of the
+            hidden wrapper). On the phone they rise as bottom sheets, like
+            every other panel on this surface. */}
+        <DrawerSheetContext.Provider value={true}>
+          {itineraryContainerNode}
+        </DrawerSheetContext.Provider>
       </div>
       <CartSheet
         open={showCartSheet}
@@ -4681,6 +4688,9 @@ Start Location: ${details.startLocation}`;
       <MobileItinerary
         askKaira={handleItineraryContainerSendMessage}
         onViewMap={handleViewMap}
+        // Booking drawers that need an account ask for one first, as the
+        // desktop itinerary's do.
+        onLoginRequired={() => setShowApiLoginPrompt(true)}
         // The hold, which the trip card now makes at the top of the itinerary
         // instead of the footer's ribbon. Same handler either way — it opens
         // the hold-offer card and charges the fee from there.

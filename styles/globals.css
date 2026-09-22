@@ -189,6 +189,19 @@ html.ttw-sheet-open .ttw-cart-pay-bar {
     display: none !important;
 }
 
+/* A side drawer raised as a bottom sheet (ui/Drawer's DrawerSheetContext — the
+   phone itinerary's booking flows). Those drawers were built full-height and
+   size their columns to the viewport, which in a sheet shorter than it pushes
+   their footers and inner scrollers off the bottom. The panel publishes its own
+   height as --ttw-drawer-h; point the viewport-height classes at that. */
+.ttw-drawer-sheet .h-screen,
+.ttw-drawer-sheet .h-\[100vh\] {
+    height: var(--ttw-drawer-h) !important;
+}
+.ttw-drawer-sheet .min-h-screen {
+    min-height: var(--ttw-drawer-h) !important;
+}
+
 html {
     scroll-behavior: auto !important;
     scrollbar-gutter: stable;

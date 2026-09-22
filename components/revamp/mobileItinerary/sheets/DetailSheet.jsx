@@ -21,7 +21,7 @@ import StarGlyph from "../../common/components/bookingDetail/StarGlyph";
 //      segments: [{modeLabel, modeKey, title, durationLabel}],
 //      policy, hasMap, contextLabel,
 //      live: { … }  ← see below,
-//      canChange, changeLabel, changeLabelShort, changeMessage,
+//      canChange, changeLabel, changeLabelShort, changeMessage, onChange,
 //      canRemove, removeLabel, removeMessage }
 //
 //  `live` names a booking that has a detail endpoint behind it — a transfer, a
@@ -37,8 +37,10 @@ import StarGlyph from "../../common/components/bookingDetail/StarGlyph";
 //  audit of a line item that isn't separately payable — the same rule that
 //  keeps prices off the rows keeps them out of this sheet.
 //
-//  Both footer buttons hand over to Kaira. There is no edit control anywhere on
-//  this surface; a change is a request, and she is the one who makes it.
+//  "Remove" hands over to Kaira. "Change" does too, unless the descriptor
+//  carries `onChange`: then it opens the booking's own change flow (the
+//  itinerary's hotel, transfer, taxi, activity or visa/eSIM picker, raised as a
+//  bottom sheet), the same flow the row's CHANGE button opens.
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Fallback cancellation copy by kind. Deliberately dateless: the design's
@@ -160,6 +162,12 @@ export default function DetailSheet({
     if (message) onAskKaira?.(message, d.contextLabel || d.name);
     onClose?.();
   };
+  const change = d.onChange
+    ? () => {
+        onClose?.();
+        d.onChange();
+      }
+    : act(d.changeMessage);
 
   return (
     <Sheet open={open} onClose={onClose} height="95dvh" paneHeight="78%" zIndex={zIndex}>
@@ -338,7 +346,7 @@ export default function DetailSheet({
               deleteLabel={d.removeLabel || "Remove from Itinerary"}
               deleteDisabled={disabled}
               confirmDelete={false}
-              onChange={d.canChange ? act(d.changeMessage) : undefined}
+              onChange={d.canChange ? change : undefined}
               changeLabel={d.changeLabel || "Change"}
               // A label too long for a phone's half of the bar hands in a short
               // form that swaps in under 520px, the way the POI drawer's

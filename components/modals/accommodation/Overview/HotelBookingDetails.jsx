@@ -546,7 +546,10 @@ const HotelBookingDetails = (props) => {
                 )}
               </div>
 
-              <div className="overflow-y-scroll pb-24" ref={scrollableTabRef} style={{ height: `calc(100vh - 170px)` }}>
+              {/* The drawer's height, not the viewport's: raised as a bottom
+                  sheet on the phone itinerary the panel is shorter than the
+                  screen (--ttw-drawer-h, see ui/Drawer's DrawerSheetContext). */}
+              <div className="overflow-y-scroll pb-24" ref={scrollableTabRef} style={{ height: `calc(var(--ttw-drawer-h, 100vh) - 170px)` }}>
 
                 {/* Gallery Start  */}
                 {isDesktop ? (

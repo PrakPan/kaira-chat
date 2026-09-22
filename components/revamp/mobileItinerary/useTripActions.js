@@ -14,8 +14,11 @@ import getModeAccent from "../common/components/bookingDetail/modeAccent";
 //
 //  Both surfaces draw the same legs (LegSection) and open the same day and
 //  detail sheets, so what a tap on a row means has to be written once: which
-//  sheet it opens and with what in it, and which sentence a "Change" or "Add"
-//  hands to Kaira. Only the chrome around the legs differs between the two.
+//  sheet it opens and with what in it, and which sentence the CTAs that ask
+//  Kaira hand her. Only the chrome around the legs differs between the two.
+//
+//  Not here: a row's own "Change" / "Add" / "Fix" — those open the booking
+//  flows (useBookingDrawers), on both surfaces.
 //
 //  Returns the single sheet slot and its guarded closers, the `ask` funnel, and
 //  one handler per row affordance.
@@ -89,8 +92,9 @@ export default function useTripActions({ askKaira, onViewMap }) {
   const closeDetail = useMemo(() => closeIf("detail"), [closeIf]);
   const closeMore = useMemo(() => closeIf("more"), [closeIf]);
 
-  // The single funnel for every "Change" / "Add" / "Fix" / "Remove" on this
-  // surface — so closing the sheets belongs here rather than in each button.
+  // The single funnel for everything on this surface that asks Kaira — the
+  // detail sheet's "Change" / "Remove", a day at leisure — so closing the
+  // sheets belongs here rather than in each button.
   //
   // This is not cosmetic. The sheets portal out to #modal-portal at z-1600+,
   // while Kaira's sheet lives inside the layout pane well below that. A sheet
@@ -117,91 +121,6 @@ export default function useTripActions({ askKaira, onViewMap }) {
     askKaira?.();
   }, [askKaira]);
 
-  const handleChangeStay = useCallback(
-    (leg) =>
-      ask(
-        leg.stay ? prompts.changeStay(leg.city) : prompts.addStay(leg.city),
-        `${leg.city} stay · ${leg.datesLabel || ""}`.trim(),
-      ),
-    [ask],
-  );
-
-  const handleChangeTravel = useCallback(
-    (leg) =>
-      ask(
-        prompts.changeTransfer(leg.city),
-        leg.inboundTravel?.title || `Travel into ${leg.city}`,
-      ),
-    [ask],
-  );
-
-  const handleChangeReturn = useCallback(
-    (leg) =>
-      ask(
-        prompts.changeReturn(leg.outboundTravel?.destName || "home"),
-        leg.outboundTravel?.title || "Flight home",
-      ),
-    [ask],
-  );
-
-  // ── The legs with nothing booked on them ───────────────────────────────────
-  // A route slot the trip claims and nothing fills. There is no detail sheet
-  // to open on a booking that doesn't exist, so unlike every other travel row
-  // these go straight to Kaira — the only party who can put something there.
-  const handleAddTravel = useCallback(
-    (leg) =>
-      ask(
-        prompts.addTransfer(leg.travelGap?.fromCity, leg.city),
-        `Travel into ${leg.city}`,
-      ),
-    [ask],
-  );
-
-  const handleAddReturn = useCallback(
-    (leg) =>
-      ask(
-        prompts.addTransfer(leg.city, leg.outboundGap?.destName || "home"),
-        `Travel home from ${leg.city}`,
-      ),
-    [ask],
-  );
-
-  // The add row only renders when the city HAS no taxi — a booked one takes the
-  // slot and carries its own CHANGE — so this is the add case. The change
-  // branch stays as the safety net for any caller that still routes here.
-  // The row only exists while one of this city's three cars is still missing —
-  // pickup, drop or the sightseeing car — so it always ADDS. It used to send
-  // "change the taxi" whenever the city already had one, which on a city with
-  // a sightseeing car and no airport transfers asked Kaira to redo the one
-  // booking the traveller was happy with.
-  const handleAddTaxi = useCallback(
-    (leg) => ask(prompts.addTaxi(leg.city), `Taxi in ${leg.city}`),
-    [ask],
-  );
-
-  // A dashed taxi chip under a transfer card — the half of the journey that has
-  // no car. The pickup is in the city the journey reaches; the drop is in the
-  // one it leaves (the previous city, or the traveller's start city on leg 1).
-  // On the way home the only half is the drop in the last city.
-  const handleAddJourneyTaxi = useCallback(
-    (leg, travel, chip, isReturn) => {
-      if (!chip?.ask || !travel) return;
-      const hub = travel.hub || "Airport";
-      const label = travel.title || `Taxi in ${leg.city}`;
-      if (isReturn || chip.ask === "drop") {
-        const city = isReturn ? leg.city : travel.fromCity || leg.city;
-        ask(prompts.addHubTaxi(hub, "drop", city), label);
-        return;
-      }
-      if (chip.ask === "pickup") {
-        ask(prompts.addHubTaxi(hub, "pickup", leg.city), label);
-        return;
-      }
-      ask(prompts.addTransferTaxis(hub, travel.fromCity, leg.city), label);
-    },
-    [ask],
-  );
-
   // "Day at leisure · ask Kaira" — a day with nothing in the package.
   const handleAddToDay = useCallback(
     (leg, day) =>
@@ -223,10 +142,12 @@ export default function useTripActions({ askKaira, onViewMap }) {
   // question in the conversation that the trip could answer itself — then made
   // the user wait for a reply to read their own hotel's name back to them.
   //
-  // CHANGING is still Kaira's, from the sheet's footer.
+  // CHANGING is the sheet footer's "Change". It asks Kaira, unless the caller
+  // hands in `over` — fields merged over the descriptor, where the phone puts
+  // an `onChange` that opens the booking's change flow instead (DetailSheet).
 
   const handleOpenStay = useCallback(
-    (leg) => {
+    (leg, over) => {
       if (!leg.stay) return;
       setSheet({ type: "detail", detail: {
         kind: `STAY · ${String(leg.city).toUpperCase()}`,
@@ -258,13 +179,14 @@ export default function useTripActions({ askKaira, onViewMap }) {
         changeMessage: prompts.changeStay(leg.city),
         canRemove: true,
         removeMessage: prompts.removeStay(leg.city),
+        ...over,
         },
       });
     },
     [onViewMap],
   );
 
-  const handleOpenTravel = useCallback((leg, travel) => {
+  const handleOpenTravel = useCallback((leg, travel, over) => {
     // The same sheet opens for the arrival INTO a city and for the journey
     // home, and Kaira needs to be told which: "change transfer in Hampi" is the
     // wrong journey when the row is the flight OUT of Hampi. Identity rather
@@ -322,12 +244,13 @@ export default function useTripActions({ askKaira, onViewMap }) {
       removeMessage: isReturn
         ? prompts.removeReturn(homeName)
         : prompts.removeTransfer(leg.city),
+      ...over,
       },
     });
   }, []);
 
   const handleOpenExtra = useCallback(
-    (leg, extra) =>
+    (leg, extra, over) =>
       setSheet({ type: "detail", detail: {
         // A pickup or drop says which one it is, and where it happens: only a
         // flight has an airport, and "AIRPORT DROP" over a ride to a ferry
@@ -378,6 +301,7 @@ export default function useTripActions({ askKaira, onViewMap }) {
           : prompts.changeTaxi(leg.city),
         canRemove: true,
         removeMessage: prompts.removeItem(extra.name, leg.city),
+        ...over,
         },
       }),
     [],
@@ -397,7 +321,7 @@ export default function useTripActions({ askKaira, onViewMap }) {
   // Deliberately NOT the existing VisaDetailDrawer / EsimDetailDrawer: those
   // quote a supplier price and offer to buy, and a price is the one thing that
   // must never appear on a package surface.
-  const handleOpenAncillary = useCallback((item) => {
+  const handleOpenAncillary = useCallback((item, over) => {
     const isEsim = item.type === "eSIM";
     const noun = isEsim ? "eSIM" : "Visa";
     setSheet({ type: "detail", detail: {
@@ -418,12 +342,13 @@ export default function useTripActions({ askKaira, onViewMap }) {
       changeMessage: prompts.changeAncillary(isEsim ? "eSIM" : "visa"),
       canRemove: true,
       removeMessage: prompts.removeAncillaries(isEsim ? "eSIM" : "visa"),
+      ...over,
       },
     });
   }, []);
 
   // A day item — opened from the day sheet, which knows the leg and day.
-  const handleOpenDayItem = useCallback((leg, day, item) => {
+  const handleOpenDayItem = useCallback((leg, day, item, over) => {
     const booked = item.kind === "booked";
     setSheet({ type: "detail", detail: {
       // No kicker on a booked activity: "BOOKED ACTIVITY" over its own name
@@ -477,6 +402,7 @@ export default function useTripActions({ askKaira, onViewMap }) {
         : prompts.replaceItem(item.name, leg.city),
       canRemove: true,
       removeMessage: prompts.removeItem(item.name, leg.city),
+      ...over,
       },
     });
   }, []);
@@ -494,13 +420,6 @@ export default function useTripActions({ askKaira, onViewMap }) {
     closeMore,
     ask,
     openChat,
-    handleChangeStay,
-    handleChangeTravel,
-    handleChangeReturn,
-    handleAddTravel,
-    handleAddReturn,
-    handleAddTaxi,
-    handleAddJourneyTaxi,
     handleAddToDay,
     handleAddActivityPickup,
     handleOpenStay,

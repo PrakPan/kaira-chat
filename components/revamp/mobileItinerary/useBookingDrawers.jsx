@@ -4,7 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import ActivityDetailsDrawer from "../../drawers/activityDetails/ActivityDetailsDrawer";
 import VisaDetailDrawer from "../../drawers/visaDetails/VisaDetailDrawer";
+import VisaSearchDrawer from "../../drawers/visaDetails/VisaSearchDrawer";
 import EsimDetailDrawer from "../../drawers/esimDetails/EsimDetailDrawer";
+import EsimPackagesDrawer from "../../drawers/esimDetails/EsimPackagesDrawer";
 import { MERCURY_HOST } from "../../../services/constants";
 import {
   addAncillaryBooking,
@@ -12,15 +14,23 @@ import {
 } from "../../../store/actions/ancillaryBookings";
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  useDesktopDrawers — the desktop itinerary's rows, opening the SAME drawers
-//  the old desktop day-by-day did: booking details and every change / add flow.
+//  useBookingDrawers — the itinerary's rows, opening the SAME drawers the old
+//  desktop day-by-day did: booking details and every change / add flow.
+//
+//  Desktop (DesktopItinerary) uses all of it. The phone (MobileItinerary) keeps
+//  its own detail sheets for READING a booking and takes only the change / add
+//  flows from here — every "Change", "Add" and "Fix" on its rows, and the
+//  detail sheet's own "Change" (the `onChange*` handlers below). There the
+//  drawers rise as bottom sheets: BotApp puts the ItineraryContainer that
+//  renders them under ui/Drawer's DrawerSheetContext, and `sheets` below does
+//  the same for the pickers this hook renders itself.
 //
 //  The old chain (MenuV2 → DaybyDay → ItineraryCity / CityItem / CityDay)
 //  opens nearly all of its drawers by a shallow `router.push` of query params,
 //  and the component that renders each drawer reads `router.query` and mounts
 //  it when the params name its row. Those renderers all live inside
-//  ItineraryContainer, which stays MOUNTED on desktop (display:none behind
-//  DesktopItinerary), and every drawer portals to #modal-portal — so pushing
+//  ItineraryContainer, which stays MOUNTED on both surfaces (display:none
+//  behind the new itinerary), and every drawer portals to #modal-portal — so pushing
 //  the old params from here opens the old drawers exactly as before, with the
 //  old behaviour behind them (login gates, deletes, reprices, change flows).
 //  Each push below mirrors one old handler; the file:line it mirrors is noted.
@@ -31,22 +41,28 @@ import {
 //      halves the intercity booking key is built from);
 //    • city-level drawers: `itinerary_city_id`.
 //
-//  Two drawers were local state in the old UI and can't be reached by URL, so
+//  Some drawers were local state in the old UI and can't be reached by URL, so
 //  they are rendered here instead (returned as `drawers`): the draft/pricing
-//  activity drawer (CityDay) and the visa / eSIM drawers (Bookings tab).
+//  activity drawer (CityDay), the visa / eSIM drawers (Bookings tab), and the
+//  visa / eSIM pickers those drawers' own "Change" opens.
 //
 //  A P1 draft keeps its old behaviour too: its hotel and transfer "Change"
 //  went to Kaira, and its transfers had no details to open.
 //
-//  Not here: the CTAs that SAY "ask Kaira" — the empty stay's "ASK KAIRA ›"
-//  (the rest of that card, "Add a stay", is changeStay below) and "Day at
-//  leisure · ask Kaira". Those go to the chat, as on the phone
-//  (DesktopItinerary wires them to useTripActions).
+//  Not here: the CTAs that SAY "ask Kaira" — "Day at leisure · ask Kaira ›".
+//  Those go to the chat on both surfaces (useTripActions). An empty stay's
+//  "Add a stay · ADD ›" is changeStay below.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const PUSH_OPTS = { scroll: false, shallow: true };
 
-export default function useDesktopDrawers({ askKaira, onLoginRequired, beforeOpen }) {
+export default function useBookingDrawers({
+  askKaira,
+  onLoginRequired,
+  beforeOpen,
+  // The phone: the drawers this hook renders itself open as bottom sheets.
+  sheets = false,
+}) {
   const router = useRouter();
   const dispatch = useDispatch();
   const itinerary = useSelector((s) => s.Itinerary);
@@ -58,6 +74,8 @@ export default function useDesktopDrawers({ askKaira, onLoginRequired, beforeOpe
 
   const [draftActivity, setDraftActivity] = useState({ show: false });
   const [ancillary, setAncillary] = useState(null);
+  // The visa / eSIM picker, opened straight onto a booking to replace it.
+  const [ancillaryChange, setAncillaryChange] = useState(null);
 
   const isDraft = itinerary?.status === "Draft";
   const cities = Array.isArray(itinerary?.cities) ? itinerary.cities : [];
@@ -242,6 +260,42 @@ export default function useDesktopDrawers({ askKaira, onLoginRequired, beforeOpe
     );
   };
 
+  // A car's "Change" — TransferDrawer's handleEditRoute (TransferDrawer.js:283):
+  // the city's tabbed Add Taxi drawer, on the booking's own tab, carrying the
+  // booking so the drawer changes it rather than adding a second car. The city
+  // is the key redux files the booking under, which is exactly what that
+  // drawer's selectors read; this leg is the fallback.
+  const changeTaxi = (leg, extra) => {
+    if (!extra?.bookingId) return;
+    if (!requireLogin()) return;
+    const tab =
+      extra.raw?.combo_type === "multicity"
+        ? "multicity"
+        : extra.airportRole
+          ? "airport"
+          : "sightseeing";
+    const filedUnder = ["intracity", "airport"]
+      .map((bucket) => transferBookings?.[bucket] || {})
+      .flatMap((group) =>
+        Object.keys(group).filter(
+          (key) =>
+            Array.isArray(group[key]) &&
+            group[key].some((t) => t?.id === extra.bookingId),
+        ),
+      )
+      .find((key) => cities.some((c) => String(c?.id) === String(key)));
+    push(
+      withId({
+        drawer: "addCityTaxi",
+        itinerary_city_id: filedUnder || leg.id,
+        taxiTab: tab,
+        // Only the Sightseeing tab reads it; the Airport tab finds the
+        // booking in the store itself.
+        ...(tab === "sightseeing" ? { changeBookingId: extra.bookingId } : {}),
+      }),
+    );
+  };
+
   // ── Day items ──────────────────────────────────────────────────────────────
 
   // CityDay handleDraftActivityClick (CityDay.jsx:637): while the trip is a
@@ -299,6 +353,22 @@ export default function useDesktopDrawers({ askKaira, onLoginRequired, beforeOpe
     });
   };
 
+  // A booked activity's "Change" — ActivityDetails handleChangeActivity
+  // (ActivityDetails.jsx:425): the city's activity picker on this day, carrying
+  // the booking so the pick swaps it instead of adding a second one.
+  const changeActivity = (leg, day, item) => {
+    if (!requireLogin()) return;
+    push({
+      drawer: "activity",
+      itinerary_city_id: leg.id,
+      city_id: leg.cityId,
+      // The city's own day index — the slot the activity sits in.
+      dayIdx: day?.dayIndex ?? 0,
+      date: day?.date,
+      booking_id: item?.raw?.booking?.id || item?.detailId,
+    });
+  };
+
   // ── Visa / eSIM ────────────────────────────────────────────────────────────
 
   // The Bookings tab's "View Detail" (ActivitiesBookings.js:25).
@@ -309,6 +379,25 @@ export default function useDesktopDrawers({ askKaira, onLoginRequired, beforeOpe
     setAncillary(booking);
   };
   const closeAncillary = () => setAncillary(null);
+
+  // A visa / eSIM's "Change": the drawer's own picker (VisaDetailDrawer.jsx:559),
+  // opened straight onto the booking it replaces.
+  const changeAncillary = (item) => {
+    if (!item?.id) return;
+    if (!requireLogin()) return;
+    beforeOpen?.();
+    setAncillaryChange({ type: item.type === "eSIM" ? "eSIM" : "Visa", bookingId: item.id });
+  };
+  const closeAncillaryChange = () => setAncillaryChange(null);
+
+  const onAncillaryAdded = (booking, replaceId) => {
+    if (booking?.id) dispatch(addAncillaryBooking(booking, replaceId));
+    else if (replaceId) dispatch(removeAncillaryBooking(replaceId));
+  };
+  const onAncillaryRemoved = (bookingId) => {
+    if (bookingId) dispatch(removeAncillaryBooking(bookingId));
+  };
+  const variant = sheets ? "sheet" : "drawer";
 
   const drawers = (
     <>
@@ -333,14 +422,10 @@ export default function useDesktopDrawers({ askKaira, onLoginRequired, beforeOpe
         visa={ancillary?.visa}
         bookingId={ancillary?.id}
         showManageActions
+        variant={variant}
         onHide={closeAncillary}
-        onAdded={(booking, replaceId) => {
-          if (booking?.id) dispatch(addAncillaryBooking(booking, replaceId));
-          else if (replaceId) dispatch(removeAncillaryBooking(replaceId));
-        }}
-        onRemoved={(bookingId) => {
-          if (bookingId) dispatch(removeAncillaryBooking(bookingId));
-        }}
+        onAdded={onAncillaryAdded}
+        onRemoved={onAncillaryRemoved}
         onBooked={closeAncillary}
       />
       <EsimDetailDrawer
@@ -348,16 +433,34 @@ export default function useDesktopDrawers({ askKaira, onLoginRequired, beforeOpe
         pkg={ancillary?.external_data?.package}
         bookingId={ancillary?.id}
         showManageActions
+        variant={variant}
         onHide={closeAncillary}
-        onAdded={(booking, replaceId) => {
-          if (booking?.id) dispatch(addAncillaryBooking(booking, replaceId));
-          else if (replaceId) dispatch(removeAncillaryBooking(replaceId));
-        }}
-        onRemoved={(bookingId) => {
-          if (bookingId) dispatch(removeAncillaryBooking(bookingId));
-        }}
+        onAdded={onAncillaryAdded}
+        onRemoved={onAncillaryRemoved}
         onBooked={closeAncillary}
       />
+      {ancillaryChange?.type === "Visa" ? (
+        <VisaSearchDrawer
+          show
+          bookingId={ancillaryChange.bookingId}
+          variant={variant}
+          onHide={closeAncillaryChange}
+          onAdded={onAncillaryAdded}
+          onRemoved={onAncillaryRemoved}
+          onBooked={closeAncillaryChange}
+        />
+      ) : null}
+      {ancillaryChange?.type === "eSIM" ? (
+        <EsimPackagesDrawer
+          show
+          bookingId={ancillaryChange.bookingId}
+          variant={variant}
+          onHide={closeAncillaryChange}
+          onAdded={onAncillaryAdded}
+          onRemoved={onAncillaryRemoved}
+          onBooked={closeAncillaryChange}
+        />
+      ) : null}
     </>
   );
 
@@ -395,5 +498,9 @@ export default function useDesktopDrawers({ askKaira, onLoginRequired, beforeOpe
     onOpenExtra: openTaxi,
     onOpenDayItem: openDayItem,
     onOpenAncillary: openAncillary,
+    // The phone's detail sheets' "Change" (see the header).
+    onChangeTaxi: changeTaxi,
+    onChangeActivity: changeActivity,
+    onChangeAncillary: changeAncillary,
   };
 }

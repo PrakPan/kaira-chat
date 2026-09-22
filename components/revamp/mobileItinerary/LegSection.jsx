@@ -238,58 +238,11 @@ function CityCover({ name, meta, tone, isHome }) {
 /**
  * Where you sleep — or the gap where a stay should be.
  *
- * The gap is one button on the phone, where adding a stay IS asking Kaira.
- * Given `onAskKaira` (desktop), it is two: the card adds the stay its own way
- * (`onChange`) and only "ASK KAIRA ›" asks her — the words say where the tap
- * goes, so they get their own target.
+ * The gap is one button with an "ADD ›" pill drawn like the booked stay's
+ * "CHANGE": the whole card adds the stay (`onChange`), which on the phone is
+ * asking Kaira and on desktop is the hotel drawer.
  */
-function StayCard({
-  stay,
-  tone,
-  showGap,
-  gapMeta,
-  cityName,
-  onOpen,
-  onChange,
-  onAskKaira = undefined,
-  disabled,
-}) {
-  if (showGap && onAskKaira) {
-    return (
-      <div style={T.dashed} className="flex w-full items-stretch">
-        <button
-          type="button"
-          onClick={onChange}
-          disabled={disabled}
-          style={T.bare}
-          className="flex min-w-0 flex-1 items-center gap-[10px] py-[12px] pl-[12px] pr-[4px] text-left disabled:opacity-40"
-        >
-          <div
-            className="h-[30px] w-[30px] flex-none"
-            style={{ border: "1.5px dashed #cfd3da", borderRadius: 7 }}
-          />
-          <div className="min-w-0 flex-1">
-            <div className="font-inter text-[12.5px] font-[700] text-[#0b1220]">
-              Add a stay
-            </div>
-            <div className="mt-[4px] font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
-              {gapMeta || `IN ${cityName.toUpperCase()}`}
-            </div>
-          </div>
-        </button>
-        <button
-          type="button"
-          onClick={onAskKaira}
-          disabled={disabled}
-          style={T.bare}
-          className="flex flex-none items-center py-0 pl-[6px] pr-[12px] font-mono text-[8.5px] tracking-[0.06em] text-[#6b7280] disabled:opacity-40"
-        >
-          ASK KAIRA ›
-        </button>
-      </div>
-    );
-  }
-
+function StayCard({ stay, tone, showGap, gapMeta, cityName, onOpen, onChange, disabled }) {
   if (showGap) {
     return (
       <button
@@ -311,8 +264,12 @@ function StayCard({
             {gapMeta || `IN ${cityName.toUpperCase()}`}
           </div>
         </div>
-        <span className="flex-none font-mono text-[8.5px] tracking-[0.06em] text-[#6b7280]">
-          ASK KAIRA ›
+        {/* A span, not a button: the card around it is already the button. */}
+        <span
+          style={T.pill}
+          className="flex-none px-[11px] py-[6px] font-mono text-[8.5px] tracking-[0.06em] text-[#6b7280]"
+        >
+          ADD ›
         </span>
       </button>
     );
@@ -666,10 +623,7 @@ function DayCard({
         >
           <span className="flex-none text-[13px] text-[#6b7280]">+</span>
           <span className="min-w-0 flex-1 font-inter text-[11.5px] font-[600] text-[#6b7280]">
-            Day at leisure · ask Kaira
-          </span>
-          <span className="flex-none font-mono text-[8px] tracking-[0.06em] text-[#8a93a6]">
-            3 FIT ›
+            Day at leisure · ask Kaira ›
           </span>
         </button>
       ) : null}
@@ -723,8 +677,6 @@ export default function LegSection({
   // The key of the day Kaira's last change landed on, or null.
   changedDayKey = null,
   onChangeStay,
-  // Optional: "ASK KAIRA ›" on an empty stay as its own target (see StayCard).
-  onAskStay = undefined,
   onChangeTravel,
   onAddTravel,
   onOpenTravel,
@@ -791,7 +743,6 @@ export default function LegSection({
         disabled={disabled}
         onOpen={() => onOpenStay?.(leg)}
         onChange={() => onChangeStay?.(leg)}
-        onAskKaira={onAskStay ? () => onAskStay(leg) : undefined}
       />
 
       {strandedTaxis.map((x) => (

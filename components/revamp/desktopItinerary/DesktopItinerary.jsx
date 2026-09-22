@@ -8,7 +8,7 @@ import { SheetHostContext } from "../common/components/Sheet";
 import LegSection from "../mobileItinerary/LegSection";
 import DaySheet from "../mobileItinerary/sheets/DaySheet";
 import useTripActions from "../mobileItinerary/useTripActions";
-import useDesktopDrawers from "./useDesktopDrawers";
+import useBookingDrawers from "../mobileItinerary/useBookingDrawers";
 import { TRIP_DAY_ACTION, dayTurn } from "./ChatDayWidget";
 import * as T from "../mobileItinerary/designTokens";
 import DesktopTripHeader from "./DesktopTripHeader";
@@ -28,9 +28,10 @@ import { GUTTER } from "./desktopTokens";
 //
 //  What a row DOES is desktop's own, though: booking details and every change
 //  or add flow open the same drawers the old desktop day-by-day opened (see
-//  useDesktopDrawers), not the phone's detail sheet and Kaira hand-off. The
-//  exceptions are the CTAs that say "ask Kaira" (an empty stay's "ASK KAIRA ›",
-//  a day at leisure): those ask her in the chat, with the phone's prompts.
+//  useBookingDrawers). The phone shares the change / add flows, as bottom
+//  sheets, but reads a booking in its own detail sheet. The exceptions are the
+//  CTAs that say "ask Kaira" (a day at leisure): those ask her in the chat,
+//  with the phone's prompts.
 //
 //  The full day ("FULL DAY ›") plays into the CHAT as a short exchange: the
 //  user asking "Help me plan Day 1 in Tokyo", Kaira answering, and the day as
@@ -354,16 +355,14 @@ export default function DesktopItinerary({
   );
 
   // The day sheet's slot, the Kaira funnel, and the row actions that are
-  // Kaira's on desktop too: every CTA that says "ask Kaira" (an empty stay's
-  // "ASK KAIRA ›", a day at leisure) and an activity's missing hotel pickup.
-  // They send the phone's own prompts, and the chat puts them at the top of
-  // its pane.
+  // Kaira's on desktop too: every CTA that says "ask Kaira" (a day at leisure)
+  // and an activity's missing hotel pickup. They send the phone's own prompts,
+  // and the chat puts them at the top of its pane.
   const {
     sheet,
     setSheet,
     closeDay,
     ask,
-    handleChangeStay: askStay,
     handleAddToDay: askAddToDay,
     handleAddActivityPickup,
     handleOpenDay,
@@ -386,7 +385,7 @@ export default function DesktopItinerary({
     setSheet(null);
     setMoreOpen(false);
   }, [setSheet]);
-  const rows = useDesktopDrawers({
+  const rows = useBookingDrawers({
     askKaira: ask,
     onLoginRequired,
     beforeOpen: beforeDrawer,
@@ -606,9 +605,8 @@ export default function DesktopItinerary({
                   disabled={disabled}
                   changedDayKey={changed.dayKey}
                   // The stay card, "Add a stay" included, opens the old
-                  // hotel drawer; only the empty stay's "ASK KAIRA ›" asks her.
+                  // hotel drawer.
                   onChangeStay={rows.onChangeStay}
-                  onAskStay={askStay}
                   onChangeTravel={rows.onChangeTravel}
                   onAddTravel={rows.onAddTravel}
                   onOpenTravel={rows.onOpenTravel}
@@ -658,7 +656,7 @@ export default function DesktopItinerary({
           onOpenItem={(item) => rows.onOpenDayItem(sheet.leg, sheet.day, item)}
         />
 
-        {/* The drawers the old UI kept in local state (see useDesktopDrawers). */}
+        {/* The drawers the old UI kept in local state (see useBookingDrawers). */}
         {rows.drawers}
 
         {/* The sheet host. Above the footer and the More menu; empty and

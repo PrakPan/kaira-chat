@@ -14,6 +14,7 @@ import DetailSheet from "./sheets/DetailSheet";
 import * as T from "./designTokens";
 import TripHeader from "./TripHeader";
 import useTripActions from "./useTripActions";
+import useBookingDrawers from "./useBookingDrawers";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  MobileItinerary — the whole trip on one scroll, on a phone.
@@ -25,11 +26,14 @@ import useTripActions from "./useTripActions";
 //      payable, and showing one invites an audit of a number that doesn't mean
 //      what it looks like.
 //
-//   2. EVERY CHANGE GOES THROUGH KAIRA. There is no edit drawer, no search
-//      modal, no inline picker. "Change", "Add" and "Fix" all say something to
-//      Kaira and hand the conversation over. That keeps one mental model
-//      ("ask, and she does it") instead of a different affordance per booking
-//      type, and it means the assistant always knows what the user just did.
+//   2. EVERYTHING RISES FROM THE BOTTOM. Opening a row reads the booking in a
+//      detail sheet. Adding or changing one — a row's CHANGE / ADD / Fix, and
+//      the detail sheet's own "Change" — opens the same flow the desktop
+//      itinerary's drawers do (useBookingDrawers: hotel search, transfer and
+//      taxi pickers, the activity picker), raised as a bottom sheet (ui/Drawer's
+//      DrawerSheetContext, which BotApp puts around the drawers' host). Only
+//      the CTAs that SAY "ask Kaira" — a day at leisure, an activity's missing
+//      pickup, a detail sheet's "Remove" — hand over to the chat.
 //
 //  Structural constraints from the host pane (BotApp's MobileLayout):
 //   • NO inner vertical scroller — the pane itself is the scroller, and its
@@ -134,6 +138,8 @@ export default function MobileItinerary({
   onHold = undefined,
   onDownloadPdf = undefined,
   isDownloadingPdf = false,
+  // Booking drawers that need an account ask for one first, as desktop's do.
+  onLoginRequired = undefined,
   isBusy = false,
   // { label, itineraryCityId, dayIndex, at } — where Kaira's last change
   // landed. Supplied by BotApp, which hears it from the chat's effect stream.
@@ -172,13 +178,6 @@ export default function MobileItinerary({
     closeMore,
     ask,
     openChat,
-    handleChangeStay,
-    handleChangeTravel,
-    handleChangeReturn,
-    handleAddTravel,
-    handleAddReturn,
-    handleAddTaxi,
-    handleAddJourneyTaxi,
     handleAddToDay,
     handleAddActivityPickup,
     handleOpenStay,
@@ -188,6 +187,45 @@ export default function MobileItinerary({
     handleOpenDayItem,
     handleOpenDay,
   } = useTripActions({ askKaira, onViewMap });
+
+  // Adding or changing a booking: the desktop's booking flows, as bottom
+  // sheets. A flow takes over from whichever sheet it was opened from (the
+  // detail, the day).
+  const beforeDrawer = useCallback(() => setSheet(null), [setSheet]);
+  const rows = useBookingDrawers({
+    askKaira: ask,
+    onLoginRequired,
+    beforeOpen: beforeDrawer,
+    sheets: true,
+  });
+
+  // Opening a row reads it in the detail sheet, whose "Change" opens the same
+  // flow as the row's own CHANGE rather than asking Kaira.
+  const openStay = (leg) =>
+    handleOpenStay(leg, { onChange: () => rows.onChangeStay(leg) });
+  const openTravel = (leg, travel) =>
+    handleOpenTravel(leg, travel, {
+      onChange: () =>
+        travel === leg.outboundTravel
+          ? rows.onChangeReturn(leg)
+          : rows.onChangeTravel(leg),
+    });
+  const openExtra = (leg, extra) =>
+    handleOpenExtra(leg, extra, { onChange: () => rows.onChangeTaxi(leg, extra) });
+  const openAncillary = (item) =>
+    handleOpenAncillary(item, { onChange: () => rows.onChangeAncillary(item) });
+  // Only a booked activity has a booking to change. A place or a restaurant's
+  // "Replace with something else" still asks Kaira — there is nothing booked
+  // to swap.
+  const openDayItem = (leg, day, item) =>
+    handleOpenDayItem(
+      leg,
+      day,
+      item,
+      item.kind === "booked"
+        ? { onChange: () => rows.onChangeActivity(leg, day, item) }
+        : undefined,
+    );
 
   const isDay = sheet?.type === "day";
   const isDetail = sheet?.type === "detail";
@@ -539,7 +577,7 @@ export default function MobileItinerary({
               </div>
               <button
                 type="button"
-                onClick={() => handleChangeStay(gapLeg)}
+                onClick={() => rows.onChangeStay(gapLeg)}
                 disabled={disabled}
                 style={T.primaryPill}
                 className="flex-none px-[16px] py-[8px] text-[13px] font-[800] disabled:opacity-40"
@@ -609,20 +647,20 @@ export default function MobileItinerary({
             leg={leg}
             disabled={disabled}
             changedDayKey={changed.dayKey}
-            onChangeStay={handleChangeStay}
-            onChangeTravel={handleChangeTravel}
-            onAddTravel={handleAddTravel}
-            onOpenTravel={handleOpenTravel}
-            onOpenStay={handleOpenStay}
+            onChangeStay={rows.onChangeStay}
+            onChangeTravel={rows.onChangeTravel}
+            onAddTravel={rows.onAddTravel}
+            onOpenTravel={openTravel}
+            onOpenStay={openStay}
             onOpenDay={handleOpenDay}
-            onOpenDayItem={handleOpenDayItem}
+            onOpenDayItem={openDayItem}
             onAddToDay={handleAddToDay}
             onAddActivityPickup={handleAddActivityPickup}
-            onAddTaxi={handleAddTaxi}
-            onAddJourneyTaxi={handleAddJourneyTaxi}
-            onOpenExtra={handleOpenExtra}
-            onChangeReturn={handleChangeReturn}
-            onAddReturn={handleAddReturn}
+            onAddTaxi={rows.onAddTaxi}
+            onAddJourneyTaxi={rows.onAddJourneyTaxi}
+            onOpenExtra={openExtra}
+            onChangeReturn={rows.onChangeReturn}
+            onAddReturn={rows.onAddReturn}
           />
         ))}
 
@@ -670,7 +708,7 @@ export default function MobileItinerary({
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleOpenAncillary(item)}
+                    onClick={() => openAncillary(item)}
                     style={{ border: 0, background: "none", padding: 0 }}
                     className="flex-none font-mono text-[10px] tracking-[0.06em] text-[#6b7280]"
                   >
@@ -700,7 +738,7 @@ export default function MobileItinerary({
         day={sheet?.day}
         disabled={disabled}
         onAskKaira={ask}
-        onOpenItem={(item) => handleOpenDayItem(sheet.leg, sheet.day, item)}
+        onOpenItem={(item) => openDayItem(sheet.leg, sheet.day, item)}
       />
 
       <DetailSheet
@@ -710,6 +748,10 @@ export default function MobileItinerary({
         disabled={disabled}
         onAskKaira={ask}
       />
+
+      {/* The pickers useBookingDrawers renders itself (the visa / eSIM change),
+          as sheets. The rest of its flows are the ItineraryContainer's. */}
+      {rows.drawers}
 
       <MoreSheet
         open={isMore}

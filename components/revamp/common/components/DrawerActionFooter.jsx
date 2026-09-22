@@ -27,7 +27,7 @@ const FooterBar = styled.div`
      full device width for a frame before narrowing onto the drawer. */
   width: 100vw;
   @media screen and (min-width: 984px) {
-    width: 50vw;
+    width: ${(props) => (props.$sheet ? "100vw" : "50vw")};
   }
 
   /* Leave with the panel instead of outliving it: the panel slides/fades out
@@ -35,7 +35,12 @@ const FooterBar = styled.div`
      inside the panel to be carried along. */
   transition: opacity 0.2s linear, transform 0.2s ease;
   opacity: ${(props) => (props.$leaving ? 0 : 1)};
-  transform: translateX(${(props) => (props.$leaving ? "100%" : "0")});
+  /* A drawer raised as a bottom sheet (Drawer's DrawerSheetContext) leaves
+     downwards, so the bar goes down with it. */
+  transform: ${(props) =>
+    props.$sheet
+      ? `translateY(${props.$leaving ? "100%" : "0"})`
+      : `translateX(${props.$leaving ? "100%" : "0"})`};
   pointer-events: ${(props) => (props.$leaving ? "none" : "auto")};
 `;
 
@@ -51,6 +56,7 @@ export default function DrawerActionFooter({ children, zIndex = 1502 }) {
     <FooterBar
       $zIndex={zIndex}
       $leaving={drawer ? drawer.fade !== "in" : false}
+      $sheet={drawer?.anchor === "bottom"}
       className="border-t border-[#ececec] bg-white px-2.5 md:px-5 py-3 flex flex-col gap-2.5"
     >
       {children}

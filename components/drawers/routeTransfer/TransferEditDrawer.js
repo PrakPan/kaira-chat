@@ -1491,9 +1491,13 @@ const TransferEditDrawer = (props) => {
                   }
                 }}
               />
+              {/* The route's name beside the back arrow — a single transfer
+                  and a combo alike ("Flight to Pulkovo, Train to Helsinki"),
+                  so the combo's steps don't open under a heading of their
+                  own. */}
               {currentStep >= 1 &&
               transferType === TRANSFER_TYPES.ONEWAYTRIP.name &&
-              transfers?.[selectedTransferIndex]?.transfers?.length === 1 &&
+              transfers?.[selectedTransferIndex]?.transfers?.length >= 1 &&
               transfers?.[selectedTransferIndex]?.name ? (
                 <div className="flex-1 min-w-0 font-600 text-[#0b1220] text-[18px] max-ph:text-[15px] leading-tight truncate">
                   {transfers[selectedTransferIndex].name}
@@ -4506,14 +4510,12 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
         </div>
       )} */}
 
-      {/* Expanded content */}
+      {/* Expanded content. The route's name is in the drawer's back-arrow
+          row, so the steps open straight under it. */}
       {currentStep >= 1 && (
         <>
           <div>
-            <div className="ttw-type-h3 leading-2xl"> {name}</div>
-          </div>
-          <div>
-            <div className="my-xl">
+            <div className="mb-xl">
               <div className="flex justify-center items-center">
                 {transfer.map((item, index) => (
                   <div
