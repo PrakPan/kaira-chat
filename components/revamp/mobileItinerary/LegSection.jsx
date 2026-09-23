@@ -267,7 +267,7 @@ function StayCard({ stay, tone, showGap, gapMeta, cityName, onOpen, onChange, di
         {/* A span, not a button: the card around it is already the button. */}
         <span
           style={T.pill}
-          className="flex-none px-[11px] py-[6px] font-mono text-[8.5px] tracking-[0.06em] text-[#6b7280]"
+          className="flex-none px-[11px] py-[6px] font-mono text-[8.5px] tracking-[0.06em] text-[#1a4fd6]"
         >
           ADD ›
         </span>
