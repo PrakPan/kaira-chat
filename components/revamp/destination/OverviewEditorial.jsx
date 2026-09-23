@@ -125,6 +125,7 @@ const OverviewEditorial = ({
       <div ref={imgColRef} className={styles.editorialImgCol}>
         <ImageWithSkeleton
           src={resolvedImage}
+          alt={heading}
           asBackground
           className={styles.editorialImg}
         >

@@ -76,6 +76,7 @@ const DestinationCard = ({
       <>
         <ImageWithSkeleton
           src={resolvedImage}
+          alt={title}
           asBackground
           className={styles.countryCardBg}
         />
@@ -142,6 +143,7 @@ const DestinationCard = ({
       >
         <ImageWithSkeleton
           src={resolvedImage}
+          alt={title}
           asBackground
           className="absolute inset-0 w-full h-full bg-cover bg-center"
         />

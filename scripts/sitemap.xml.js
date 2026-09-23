@@ -266,12 +266,19 @@ const generateSitemap = async () => {
     `${BASE_URL}/api/v1/website/pages/?page_type=Continent&fields=path`
   );
   const continentsData = continents.data.data.pages;
+  // `path`, not `slug`. The request above asks for `fields=path`, so `slug` is
+  // not in the response at all — `object.slug !== undefined` was false for
+  // every record and this list came out EMPTY, which is why /asia, /europe and
+  // the six other continent pages were in no sitemap at all despite being
+  // indexed and earning impressions. pages/[continent]/index.js getStaticPaths
+  // builds from `path` off this same endpoint, so reading the same field is
+  // also what keeps the sitemap and the exported routes in step.
   let continentsPaths = continentsData
-    .filter((object) => object.slug !== undefined)
+    .filter((object) => object.path)
     .map((object) => {
       return {
         title: "Continent Planner",
-        link: SITE_ORIGIN + "/" + object.slug,
+        link: SITE_ORIGIN + "/" + object.path,
         priority: "0.8",
       };
     });
@@ -322,6 +329,14 @@ const generateSitemap = async () => {
 
   let cityPaths = citiesData
     .filter((object) => object.path !== undefined)
+    // A city path is continent/country/state/city or continent/country/city.
+    // isDestinationIndexable() waves through anything <=2 segments because at
+    // that depth a path is a continent or a country, which are always
+    // indexable — so a City record carrying a malformed short path inherits
+    // that free pass. Exactly one does: "macau", which has no exported page
+    // and has been sitting in the cities sitemap returning 404 to Googlebot.
+    // The depth rule belongs to the caller that knows what type it fetched.
+    .filter((object) => object.path.split("/").length >= 3)
     .filter((object) => isDestinationIndexable(object.path))
     .map((object) => {
       return {
@@ -335,13 +350,22 @@ const generateSitemap = async () => {
     `${BASE_URL}/api/v1/website/pages/?page_type=Subregion&fields=path`
   );
   const subRegionsData = subRegions.data.data.pages;
-  let subRegionsPaths = subRegionsData.map((object) => {
-    return {
-      title: "Subregion Planner",
-      link: SITE_ORIGIN + "/" + object.path,
-      priority: "0.8",
-    };
-  });
+  // Subregions go through the same keep-list as states and cities. They were
+  // the one destination type that skipped it, and they are deep paths
+  // (asia/india/himachal_pradesh/spiti_valley), so the page itself renders
+  // <meta robots noindex,follow> from isDestinationIndexable() while the
+  // sitemap still advertised it — asking Google to crawl a URL we are telling
+  // it not to index.
+  let subRegionsPaths = subRegionsData
+    .filter((object) => object.path)
+    .filter((object) => isDestinationIndexable(object.path))
+    .map((object) => {
+      return {
+        title: "Subregion Planner",
+        link: SITE_ORIGIN + "/" + object.path,
+        priority: "0.8",
+      };
+    });
 
   // Trips list. This used to read suppliers.tarzanway.com/sales/itinerary/indexed/
   // unguarded, which mattered more than it looks: this script is the `prebuild`

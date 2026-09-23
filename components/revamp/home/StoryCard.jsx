@@ -52,7 +52,7 @@ const StoryCard = ({
         if (interactive && e.key === "Enter") onClick(e);
       }}
     >
-      <ImageWithSkeleton src={image} asBackground className={styles.img}>
+      <ImageWithSkeleton src={image} alt={moment} asBackground className={styles.img}>
         {badge ? <span className={styles.badge}>{badge}</span> : null}
       </ImageWithSkeleton>
       <div className={styles.body}>

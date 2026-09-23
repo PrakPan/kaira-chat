@@ -88,7 +88,7 @@ const PackageCard = ({
         if (!href && interactive && e.key === "Enter") onClick(e);
       }}
     >
-      <ImageWithSkeleton src={image} asBackground className={styles.img}>
+      <ImageWithSkeleton src={image} alt={title} asBackground className={styles.img}>
         {tier ? (
           <span className={tierClassName(tierVariant)}>
             {tierVariant === "popular" ? "★ " : ""}

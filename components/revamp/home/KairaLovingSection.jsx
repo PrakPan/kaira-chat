@@ -92,6 +92,7 @@ const KairaLovingSection = ({
             >
               <ImageWithSkeleton
                 src={p.img}
+                alt={p.seed}
                 asBackground
                 className={styles.pickImg}
               />

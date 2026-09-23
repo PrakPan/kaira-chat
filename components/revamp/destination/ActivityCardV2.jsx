@@ -53,6 +53,7 @@ const ActivityCardV2 = ({ item, kairaPick = false, onClick }) => {
     >
       <ImageWithSkeleton
         src={resolvedImage}
+        alt={heading}
         asBackground
         className={styles.ttdImg}
       >

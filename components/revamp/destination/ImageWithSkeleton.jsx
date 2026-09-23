@@ -19,6 +19,18 @@ const ImageWithSkeleton = ({
 }) => {
   const [loaded, setLoaded] = useState(false);
 
+  // alt="" means "decorative, skip me" to screen readers and to Google Images.
+  // That is the right value for a scrim or a spacer, and the wrong one for the
+  // destination, activity and package photos this component actually renders —
+  // every call site relied on the default and the site shipped ~10 unlabelled
+  // content images per page (512 of 513 on /blog), which is the whole of Google
+  // Images given away for free.
+  //
+  // Coerced rather than trusted: several callers hold headings that are JSX
+  // (KairaLovingSection's `title` is a fragment with a <span> in it), and a
+  // non-string here would render alt="[object Object]" — worse than empty.
+  const altText = typeof alt === "string" ? alt : "";
+
   // The URL the browser will actually request, in BOTH branches. Previously the
   // background branch used the raw `src` (bypassing the Serverless Image Handler
   // entirely, so cards shipped 1-4 MB originals) and the <img> branch preloaded
@@ -54,9 +66,17 @@ const ImageWithSkeleton = ({
   }, [src, resolvedSrc, asBackground]);
 
   if (asBackground) {
+    // A CSS background-image is not a document image: screen readers get
+    // nothing from it, and Google Images will not index it no matter what we
+    // label it. role="img" + aria-label recovers the accessible name; the
+    // image-search visibility can only be recovered by rendering these as
+    // <img> (worth doing for the destination/activity cards, but that is a
+    // layout change, not a prop).
     return (
       <div
         className={className}
+        role={altText ? "img" : undefined}
+        aria-label={altText || undefined}
         style={{
           ...style,
           backgroundImage: loaded && resolvedSrc ? `url('${resolvedSrc}')` : undefined,
@@ -74,7 +94,7 @@ const ImageWithSkeleton = ({
       {src && (
         <img
           src={resolvedSrc}
-          alt={alt}
+          alt={altText}
           onLoad={() => setLoaded(true)}
           onError={() => setLoaded(true)}
           loading="lazy"

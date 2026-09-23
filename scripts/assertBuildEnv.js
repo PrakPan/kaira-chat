@@ -82,13 +82,16 @@ if (noindex !== "true" && noindex !== "false") {
 
 // What each deploy target must be true of. `origin: null` means "not asserted".
 //
-// yourtrips is deliberately unasserted: s3-deploy.sh builds it from
-// .env.production, so it inherits thetarzanway.com as its origin and currently
-// serves your-trips.co.uk pages with thetarzanway.com canonicals. That is its
-// existing behaviour and changing it is a separate decision about whether
-// your-trips is a brand of its own or a mirror — not something this guard
-// should force by failing the build. Give it its own env file and set the
-// expectation here when that call is made.
+// yourtrips is a dead target in THIS repository. your-trips.co.uk is built and
+// deployed from its own repo, bitbucket.org/thetarzanway/ttw-your-trips, which
+// carries its own .env.production, robots.txt, s3-deploy.sh and copy of this
+// guard. Nothing about the live site comes from here any more.
+//
+// The rule below is kept only so that a `DEPLOY_TARGET=yourtrips` build run
+// from this tree by mistake cannot publish an indexable copy: it must be
+// noindexed and must not claim the your-trips origin, because the artifact it
+// would produce is The Tarzan Way's pages. To change what your-trips actually
+// serves, edit the other repo.
 const TARGET_RULES = {
   dev: {
     noindex: "true",
@@ -101,9 +104,9 @@ const TARGET_RULES = {
     why: "production is the indexable site",
   },
   yourtrips: {
-    noindex: "false",
-    origin: null,
-    why: "your-trips.co.uk builds from .env.production today",
+    noindex: "true",
+    origin: "https://thetarzanway.com",
+    why: "your-trips.co.uk is built from the ttw-your-trips repository, not this one, so a yourtrips build from this tree is a mistake and must not be indexable",
   },
 };
 

@@ -50,6 +50,7 @@ const CountryCardV2 = ({ item, hot = false, onClick }) => {
     <>
       <ImageWithSkeleton
         src={image}
+        alt={name}
         asBackground
         className={styles.countryCardBg}
       />
