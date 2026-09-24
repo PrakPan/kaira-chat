@@ -98,6 +98,9 @@ export interface ThemeForm {
    *  counters). No longer rendered; kept so un-migrated configs still typecheck. */
   paxPresets?: string[];
   allowExactDates: boolean;
+  /** True for a trip inside India — the add-ons step then offers flights only,
+   *  no visa / eSIM. Absent means abroad. */
+  domestic?: boolean;
   seedPrompts: string[]; // quick-reply chips below the composer
   hero?: ThemeFormHero; // left-panel hero on /chat
 }

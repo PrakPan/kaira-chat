@@ -1,5 +1,10 @@
 import type { FormFieldsPayload, IntakeFormState } from "./types";
 import { resolveImage } from "./constants";
+import {
+  addOnsLines,
+  addOnsRequestFields,
+  DEFAULT_ADD_ONS,
+} from "./ui/AddOnToggles";
 
 // ── Date helpers (work on ISO strings so Redux state stays serialisable) ──────
 
@@ -78,8 +83,9 @@ export function validateStep(state: IntakeFormState, step: number): boolean {
     case 2:
       return !!state.who;
     case 3:
+    case 4:
     default:
-      return true; // notes are optional
+      return true; // notes are optional; the add-on toggles always hold a value
   }
 }
 
@@ -177,7 +183,33 @@ export function composeIntakeMessage(state: IntakeFormState): string {
   if (state.notes && state.notes.trim()) {
     lines.push(`• Preferences: ${state.notes.trim()}`);
   }
+  lines.push(
+    ...addOnsLines(state.addOns ?? DEFAULT_ADD_ONS, isInternationalTrip(state)),
+  );
   return `Here are my trip details:\n${lines.join("\n")}`;
+}
+
+// Visa and eSIM only matter abroad. A trip counts as domestic only when every
+// picked destination is known to be in India; an unknown country (prefilled
+// names carry none) keeps them on offer rather than hiding them wrongly.
+export function isInternationalTrip(state: IntakeFormState): boolean {
+  const list = state.destinations?.length
+    ? state.destinations
+    : state.destination
+      ? [state.destination]
+      : [];
+  if (!list.length) return true;
+  return !list.every((d) =>
+    [d.country, d.name].some((v) => (v ?? "").trim().toLowerCase() === "india"),
+  );
+}
+
+/** The add-on answers as separate root-level request fields. */
+export function intakeAddOnFields(state: IntakeFormState): Record<string, boolean> {
+  return addOnsRequestFields(
+    state.addOns ?? DEFAULT_ADD_ONS,
+    isInternationalTrip(state),
+  );
 }
 
 // ── Partial context when the user bypasses the form ───────────────────────────
@@ -320,7 +352,7 @@ export function parseIntakeFormWidgetId(id: unknown): any | null {
 //       preferences:  { is_completed, notes },
 //   } }
 // Returns the prefilled fields plus `stepsCompleted` (step order:
-// [destination, when, who, notes]) and the `step` to open on — the first
+// [destination, when, who, notes, add-ons]) and the `step` to open on — the first
 // incomplete step, or the last step when everything is already filled.
 export function parseShowIntakeForm(
   payload: any,
@@ -370,11 +402,22 @@ export function parseShowIntakeForm(
   const pref = p.preferences;
   if (pref && typeof pref.notes === "string") out.notes = pref.notes;
 
+  // Optional add-ons prefill: { is_completed, flights, visa, esim }.
+  const a = p.add_ons;
+  if (a) {
+    out.addOns = {
+      flights: typeof a.flights === "boolean" ? a.flights : DEFAULT_ADD_ONS.flights,
+      visa: typeof a.visa === "boolean" ? a.visa : DEFAULT_ADD_ONS.visa,
+      esim: typeof a.esim === "boolean" ? a.esim : DEFAULT_ADD_ONS.esim,
+    };
+  }
+
   const stepsCompleted = [
     !!p.destination?.is_completed,
     !!p.timing?.is_completed,
     !!p.group?.is_completed,
     !!p.preferences?.is_completed,
+    !!p.add_ons?.is_completed,
   ];
 
   const firstIncomplete = stepsCompleted.findIndex((c) => !c);

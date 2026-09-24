@@ -1,8 +1,8 @@
 // components/bot-components/components/ThemeIntakeForm/ThemeIntakeForm.tsx
 //
 // The themed theme-page mini-form, rendered inside the chat stream on /chat.
-// Two steps — Step 1 = when (month → the routes that run in it), Step 2 = who's
-// coming — then one button. Pure render of a ThemeForm config (see
+// Three steps — Step 1 = when (month → the routes that run in it), Step 2 = who's
+// coming, Step 3 = add-ons (flights / visa / eSIM) — then one button. Pure render of a ThemeForm config (see
 // components/theme/cinematic/themeForms). On submit it emits the structured
 // payload { slug, window, skeleton, month, dates:[start,end], pax, items } plus
 // a readable message; the host sends both to /chatkit. Matches the theme
@@ -50,6 +50,14 @@ import {
 import { WHO_OPTIONS, WHO_WITH_PAX } from "../IntakeForm/constants";
 import Chip from "../IntakeForm/ui/Chip";
 import Stepper from "../IntakeForm/ui/Stepper";
+// The add-ons step is the main intake form's too — same toggles, same request
+// fields.
+import AddOnToggles, {
+  DEFAULT_ADD_ONS,
+  addOnsLines,
+  addOnsRequestFields,
+  type AddOns,
+} from "../IntakeForm/ui/AddOnToggles";
 
 const INK = "#0b1220";
 const MUTED = "#445069";
@@ -60,7 +68,7 @@ const SAND = "#f4f3ec";
 // treatment, so an unthemed form still renders sensibly.
 const NEUTRAL = { accent: INK, accentSoft: SAND, accentOn: "#ffffff" };
 
-const TOTAL_STEPS = 2;
+const TOTAL_STEPS = 3;
 
 /** rgba() form of a #rrggbb accent, for the CTA's coloured drop shadow. */
 const rgba = (hex: string, alpha: number): string => {
@@ -129,7 +137,13 @@ export interface ThemeIntakeFormProps {
   // Free text the reader typed into the theme page's docked ask-bar before
   // hitting "Build trip". Shown back to them and sent with the submission.
   note?: string;
-  onSubmit: (submission: ThemeFormSubmission, composedText: string) => void;
+  /** `addOnFields` are the add-on answers as separate root-level request
+   *  fields (add_flights, add_visa, add_esim) — kept out of `submission`. */
+  onSubmit: (
+    submission: ThemeFormSubmission,
+    composedText: string,
+    addOnFields: Record<string, boolean>,
+  ) => void;
 }
 
 const mono: React.CSSProperties = {
@@ -176,6 +190,9 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   // Selected quick-reply chips — toggled on/off and sent with the submission in
   // one go when the reader hits the CTA (not sent immediately on tap).
   const [selectedPrompts, setSelectedPrompts] = React.useState<string[]>([]);
+  // Step 3 — what Kaira should handle. Visa / eSIM only for a trip abroad.
+  const [addOns, setAddOns] = React.useState<AddOns>(DEFAULT_ADD_ONS);
+  const international = !form.domestic;
   const togglePrompt = (p: string) =>
     setSelectedPrompts((prev) =>
       prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p],
@@ -250,7 +267,10 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
 
   // ── Step gating ───────────────────────────────────────────────────────────
   const isLast = step === TOTAL_STEPS - 1;
-  const canAdvance = step === 0 ? !!skeleton : !!who;
+  const canAdvance = step === 0 ? !!skeleton : step === 1 ? !!who : true;
+  // Once submitted the card stays on screen at full size, but every control
+  // and CTA is disabled — no compact summary.
+  const ctaEnabled = canAdvance && !submitted;
 
   // The horizontal track holds both steps side-by-side and slides between them;
   // the viewport height follows the active step so the card grows and shrinks
@@ -347,7 +367,7 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   };
 
   const goNext = () => {
-    if (!canAdvance) return;
+    if (!ctaEnabled) return;
     if (!isLast) {
       setStep((s) => s + 1);
       return;
@@ -411,16 +431,18 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
     // The reader's own words go on their own line, ahead of the canned chips,
     // so they read as the brief rather than one more toggle.
     const noteLine = trimmedNote ? `\n• In my words: ${trimmedNote}` : "";
+    const addOnsText = `\n${addOnsLines(addOns, international).join("\n")}`;
     const composed =
       `Here are my ${form.display} trip details:\n` +
       whenLines +
       `• Travellers: ${pax}` +
       noteLine +
       promptLine +
-      savedLine;
+      savedLine +
+      addOnsText;
 
     setSubmitted(true);
-    onSubmit(submission, composed);
+    onSubmit(submission, composed, addOnsRequestFields(addOns, international));
   };
 
   const showCounters = WHO_WITH_PAX.includes(who);
@@ -768,6 +790,27 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
     </div>
   );
 
+  // ── Step 3 — what I'll handle ─────────────────────────────────────────────
+  const addOnsStep = (
+    <div>
+      <div className="text-[18px] font-extrabold tracking-tight mb-[3px]">
+        What should I handle?
+      </div>
+      <div className="text-[12px] text-[#8a93a6] mb-[14px]">
+        I&apos;ll price each one separately, so you can drop any later.
+      </div>
+      <AddOnToggles
+        value={addOns}
+        onChange={setAddOns}
+        international={international}
+        // No destination is picked on a theme form, so don't name one.
+        flightsDesc="Return + in-trip flights"
+        accent={accent}
+        disabled={submitted}
+      />
+    </div>
+  );
+
   return (
     <div style={{ width: "100%" }}>
       {/* What they typed into the theme page's ask-bar, echoed so it's clear it
@@ -830,7 +873,6 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
           borderRadius: 18,
           padding: 16,
           boxShadow: "0 8px 20px -10px rgba(11,18,32,0.15)",
-          opacity: submitted ? 0.6 : 1,
           pointerEvents: submitted ? "none" : "auto",
         }}
       >
@@ -879,7 +921,7 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
               transition: "transform .4s cubic-bezier(.2,.7,.3,1)",
             }}
           >
-            {[whenStep, whoStep].map((node, i) => (
+            {[whenStep, whoStep, addOnsStep].map((node, i) => (
               <div
                 key={i}
                 ref={(el) => {
@@ -899,7 +941,9 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
             <button
               type="button"
               onClick={() => setStep((s) => Math.max(0, s - 1))}
+              disabled={submitted}
               style={{
+                opacity: submitted ? 0.5 : 1,
                 background: "#ffffff",
                 border: `1.5px solid ${BORDER}`,
                 borderRadius: 999,
@@ -916,18 +960,18 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
           <button
             type="button"
             onClick={goNext}
-            disabled={!canAdvance}
+            disabled={!ctaEnabled}
             style={{
               flex: 1,
-              background: canAdvance ? accent : "#b8becc",
-              color: canAdvance ? accentOn : "#ffffff",
+              background: ctaEnabled ? accent : "#b8becc",
+              color: ctaEnabled ? accentOn : "#ffffff",
               border: "none",
               borderRadius: 999,
               padding: 13,
               fontSize: 14,
               fontWeight: 700,
-              cursor: canAdvance ? "pointer" : "not-allowed",
-              boxShadow: canAdvance
+              cursor: ctaEnabled ? "pointer" : "not-allowed",
+              boxShadow: ctaEnabled
                 ? `0 8px 20px -10px ${rgba(accent, 0.5)}`
                 : "none",
               transition: "background .2s",
@@ -936,7 +980,7 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
             {isLast ? form.copy.cta : "Continue →"}
           </button>
         </div>
-        {isLast && !who && (
+        {step === 1 && !who && (
           <div
             style={{
               fontSize: 11,

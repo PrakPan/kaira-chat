@@ -1,5 +1,7 @@
 // Shared types for the in-chat intake form.
 
+import type { AddOns } from "./ui/AddOnToggles";
+
 export type WhenMode = "dates" | "flexible" | "surprise";
 
 export interface Destination {
@@ -29,7 +31,7 @@ export interface IntakeFormState {
   loading: boolean;
   /** Per-step completion flags driven by the backend `show_intake_form`
    *  effect's `is_completed` markers — indexes match the step order
-   *  [destination, when, who, notes]. */
+   *  [destination, when, who, notes, add-ons]. */
   stepsCompleted: boolean[];
   /** Primary destination — mirrors `destinations[0]`; drives the left hero
    *  image and the BotApp panel gate. */
@@ -47,6 +49,9 @@ export interface IntakeFormState {
   children: number;
   infants: number;
   notes: string;
+  /** Final step — flights / visa / eSIM toggles. Sent as separate root-level
+   *  request fields (add_flights, add_visa, add_esim), not only in the text. */
+  addOns: AddOns;
   featured: Destination[];
   /** Context-aware suggestion chips for the notes step, fetched from
    *  `/api/v1/itinerary/onboarding/context-chips/` when the form is received.

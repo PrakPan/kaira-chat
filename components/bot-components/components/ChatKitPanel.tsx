@@ -60,7 +60,7 @@ import type { IntakeFormState } from "./IntakeForm/types";
 import PricingFormCard from "./PricingForm";
 import OtpCard from "./IntakeForm/OtpCard";
 import { parseFormFields, parseShowIntakeForm, parseIntakeFormWidgetId, isIntakeFormWidgetId, composePartialIntakeContext } from "./IntakeForm/intakePrompt";
-import { TOTAL_STEPS } from "./IntakeForm/constants";
+import { NOTES_STEP } from "./IntakeForm/constants";
 import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, isPricingFormWidgetId } from "./PricingForm/pricingPrompt";
 import ReleaseItineraryCta from "./ReleaseItineraryCta";
 import { isStaffEmail } from "../../../utils/staffUser";
@@ -203,6 +203,9 @@ export type ChatSendFn = (
      *  the itinerary's own CTAs, whose message the user never typed and whose
      *  answer wants the whole pane — see sizeTopAnchor. */
     anchorTop?: boolean;
+    // Extra root-level request fields (e.g. the forms' add_flights / add_visa /
+    // add_esim), merged onto the body as-is.
+    extraBody?: Record<string, unknown>;
   },
 ) => void;
 
@@ -2175,9 +2178,9 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
       contextChipsSignatureRef.current = null;
       return;
     }
-    // Only ask for chips on the last (notes) step.
-    const onLastStep = intakeStep === TOTAL_STEPS - 1;
-    if (!onLastStep) return;
+    // Only ask for chips on the notes step (no longer the last — add-ons follow).
+    const onNotesStep = intakeStep === NOTES_STEP;
+    if (!onNotesStep) return;
     // The three compulsory steps must be filled before we ask for chips.
     if (!intakeDestinationName || !intakeWho) return;
     // Skip if we already fetched for this exact set of answers.
@@ -3305,6 +3308,9 @@ const sendMessage = useCallback(
       formSubmitted?: boolean;
       intakePayload?: Record<string, unknown>;
       anchorTop?: boolean;
+      // Extra root-level request fields (e.g. the forms' add_flights / add_visa /
+      // add_esim), merged onto the body as-is.
+      extraBody?: Record<string, unknown>;
     },
   ) => {
     setQuickReplies([]);
@@ -3404,6 +3410,7 @@ const sendMessage = useCallback(
       formSubmitted: opts?.formSubmitted,
       contextPrefix: intakeContextPrefix,
       intakePayload: opts?.intakePayload,
+      extraBody: opts?.extraBody,
     });
   },
   [rawSendMessage, clearTopAnchor],
@@ -3415,8 +3422,11 @@ const sendMessage = useCallback(
 // the inline sign-in card (login_card) and replays the message after verify —
 // so we never inject an OTP card from the client here.
 const handleIntakeComplete = useCallback(
-  (composed: string) => {
-    sendMessage(composed, undefined, undefined, { formSubmitted: true });
+  (composed: string, addOnFields?: Record<string, boolean>) => {
+    sendMessage(composed, undefined, undefined, {
+      formSubmitted: true,
+      extraBody: addOnFields,
+    });
   },
   [sendMessage],
 );
@@ -3428,10 +3438,16 @@ const handleIntakeComplete = useCallback(
 // flow. The composed text stays fully readable on its own — the backend may read
 // either — but `intake` is what the routing is meant to key off.
 const handleThemedFormSubmit = useCallback(
-  (submission: ThemeFormSubmission, composed: string) => {
+  (
+    submission: ThemeFormSubmission,
+    composed: string,
+    addOnFields?: Record<string, boolean>,
+  ) => {
     sendMessage(composed, undefined, undefined, {
       formSubmitted: true,
       intakePayload: submission as unknown as Record<string, unknown>,
+      // Add-ons go at the body root, separate from `intake`.
+      extraBody: addOnFields,
     });
   },
   [sendMessage],

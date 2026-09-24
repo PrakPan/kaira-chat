@@ -6985,38 +6985,20 @@ function PaymentCard({
 // carrying { url, filename }. Render a polished, responsive download card and
 // trigger a browser download via a transient anchor element on click.
 
-function PdfDownloadCard({
-  node,
-  button,
-}: {
-  node: WidgetNode;
-  button: WidgetNode;
-}) {
-  const payload = ((button.onClickAction as any)?.payload ?? {}) as {
-    url?: string;
-    filename?: string;
-  };
-
-  const titleNode = findNodesByType(node, "Title")[0];
-  const captionNode = findNodesByType(node, "Caption")[0];
-  const title = ((titleNode?.value as string) ?? "Your Itinerary PDF").trim();
-  const filename =
-    payload.filename ??
-    ((captionNode?.value as string) ?? "itinerary.pdf").trim();
-  const buttonLabel = (button.label as string) ?? "Download PDF";
-
+// The server returns a relative path (e.g. "/api/v1/itinerary/123/pdf").
+// Prefix with MERCURY_HOST and fetch with auth so the browser can preview
+// the PDF in a new tab once the response arrives. Shared by the PDF card and
+// the next-steps card so both download the same way.
+function usePdfDownload() {
   const [downloading, setDownloading] = useState(false);
 
-  // The server returns a relative path (e.g. "/api/v1/itinerary/123/pdf").
-  // Prefix with MERCURY_HOST and fetch with auth so the browser can preview
-  // the PDF in a new tab once the response arrives.
-  const handleDownload = async () => {
-    if (!payload.url || downloading) return;
+  const download = async (url: string | undefined, filename?: string) => {
+    if (!url || downloading) return;
     setDownloading(true);
     try {
-      const isAbsolute = /^https?:\/\//i.test(payload.url);
-      const path = payload.url.startsWith("/") ? payload.url : `/${payload.url}`;
-      const fullUrl = isAbsolute ? payload.url : `${MERCURY_HOST}${path}`;
+      const isAbsolute = /^https?:\/\//i.test(url);
+      const path = url.startsWith("/") ? url : `/${url}`;
+      const fullUrl = isAbsolute ? url : `${MERCURY_HOST}${path}`;
       const authToken =
         (typeof window !== "undefined" && localStorage.getItem("access_token")) || "";
       const res = await fetch(fullUrl, {
@@ -7043,6 +7025,32 @@ function PdfDownloadCard({
       setDownloading(false);
     }
   };
+
+  return { downloading, download };
+}
+
+function PdfDownloadCard({
+  node,
+  button,
+}: {
+  node: WidgetNode;
+  button: WidgetNode;
+}) {
+  const payload = ((button.onClickAction as any)?.payload ?? {}) as {
+    url?: string;
+    filename?: string;
+  };
+
+  const titleNode = findNodesByType(node, "Title")[0];
+  const captionNode = findNodesByType(node, "Caption")[0];
+  const title = ((titleNode?.value as string) ?? "Your Itinerary PDF").trim();
+  const filename =
+    payload.filename ??
+    ((captionNode?.value as string) ?? "itinerary.pdf").trim();
+  const buttonLabel = (button.label as string) ?? "Download PDF";
+
+  const { downloading, download } = usePdfDownload();
+  const handleDownload = () => download(payload.url, filename);
 
   return (
     <div
@@ -7753,228 +7761,569 @@ function PlanNewTripCard({
   );
 }
 
-// ─── WhatsApp contact card ───────────────────────────────────────────────────
-// Detects a Card whose primary action is `contact.whatsapp` and renders a
-// branded WhatsApp CTA. The card itself triggers the wa.me deep-link so the
-// surrounding chat doesn't need to know about the action shape.
+// ─── Next-steps / contact card ───────────────────────────────────────────────
+// A Card carrying a WhatsApp CTA, or several of the "move forward" CTAs
+// (Download PDF, Chat on WhatsApp, Pay Lock-in Fee). Every Button the server
+// sends is rendered, each bound to its own action:
+//   contact.whatsapp → wa.me deep link
+//   pdf.download     → the same authed fetch the PDF card uses
+//   payment.start    → payment.hold when it carries a lock-in fee (straight to
+//                      the gateway, like the cart bar's Hold), else the cart
+//   anything else    → the regular ButtonNode
+// The hold CTA leads; the rest sit beneath it as secondary actions.
 
-function findWhatsappContactButton(node: WidgetNode): WidgetNode | null {
-  if (
-    node.type === "Button" &&
-    normalizeActionType((node.onClickAction as any)?.type) === "contact.whatsapp"
-  ) {
-    return node;
-  }
-  for (const child of (node.children ?? []) as WidgetNode[]) {
-    const hit = findWhatsappContactButton(child);
-    if (hit) return hit;
+const NEXT_STEP_ACTIONS = new Set([
+  "contact.whatsapp",
+  "pdf.download",
+  "payment.start",
+  "payment.hold",
+]);
+
+function findNextStepButtons(node: WidgetNode): WidgetNode[] | null {
+  const buttons = findNodesByType(node, "Button");
+  const types = buttons.map((b) =>
+    normalizeActionType((b.onClickAction as any)?.type),
+  );
+  if (types.includes("contact.whatsapp")) return buttons;
+  if (buttons.length >= 2 && types.every((t) => NEXT_STEP_ACTIONS.has(t))) {
+    return buttons;
   }
   return null;
 }
 
-function WhatsappContactCard({
+function widgetNodeText(raw: unknown): string {
+  if (typeof raw === "string") return raw.trim();
+  if (typeof raw === "number") return String(raw);
+  if (Array.isArray(raw)) {
+    return raw
+      .map((v) => (typeof v === "string" ? v : typeof v === "number" ? String(v) : ""))
+      .filter(Boolean)
+      .join(" · ");
+  }
+  return "";
+}
+
+// Server labels lead with an emoji ("📄 Download PDF"); the card draws its own
+// icons, so drop it.
+function stripLeadingEmoji(label: string): string {
+  return label
+    .replace(/^(?:[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|\uFE0F|\u200D|\s)+/, "")
+    .trim();
+}
+
+const NEXT_STEP_FONT = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+
+function isLockInPayment(button: WidgetNode): boolean {
+  const action = button.onClickAction as
+    | { type?: string; payload?: Record<string, unknown> }
+    | undefined;
+  const type = normalizeActionType(action?.type);
+  if (type === "payment.hold") return true;
+  if (type !== "payment.start") return false;
+  const payload = action?.payload ?? {};
+  return Number(payload.lockInFee) > 0;
+}
+
+function NextStepsCard({
   node,
-  button,
+  buttons,
+  onAction,
 }: {
   node: WidgetNode;
-  button: WidgetNode;
+  buttons: WidgetNode[];
+  onAction?: WidgetRendererProps["onAction"];
 }) {
-  const [hovered, setHovered] = useState(false);
+  const { downloading, download } = usePdfDownload();
 
-  const titleNodes = findNodesByType(node, "Title");
-  const captionNodes = findNodesByType(node, "Caption");
-  const textNodes = findNodesByType(node, "Text");
+  // Whether the hold is already paid — the live cart first (same source the
+  // cart bar and PaymentCard read), the server's snapshot as the fallback for
+  // a cart that hasn't loaded.
+  const cart = useSelector((s: any) => s?.Cart);
+  const lockIn = getLockInState(cart);
+  const hasLiveCart = !!cart && !cart.error && cart.lock_in_fee !== undefined;
 
-  const asText = (raw: unknown): string => {
-    if (typeof raw === "string") return raw.trim();
-    if (typeof raw === "number") return String(raw);
-    if (Array.isArray(raw)) {
-      return raw
-        .map((v) => (typeof v === "string" ? v : typeof v === "number" ? String(v) : ""))
-        .filter(Boolean)
-        .join(" · ");
+  const titleNode = findNodesByType(node, "Title")[0];
+  const sublineNode =
+    findNodesByType(node, "Caption")[0] ?? findNodesByType(node, "Text")[0];
+  const headline = widgetNodeText(titleNode?.value) || "Talk to a travel expert";
+  const subline = widgetNodeText(sublineNode?.value);
+
+  const holdButton = buttons.find(isLockInPayment);
+  const secondary = buttons.filter((b) => b !== holdButton);
+
+  const holdPayload = ((holdButton?.onClickAction as any)?.payload ?? {}) as Record<
+    string,
+    unknown
+  >;
+  const holdPaid = hasLiveCart ? lockIn.paid : holdPayload.lockInFeePaid === true;
+  const holdUntilLabel = lockIn.holdUntil
+    ? lockIn.holdUntil.toLocaleDateString("en-IN", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+      })
+    : null;
+  const holdDays = Math.max(1, Math.round(LOCK_IN_HOLD_HOURS / 24));
+
+  const run = (button: WidgetNode) => {
+    const action = button.onClickAction as
+      | { type: string; payload?: Record<string, unknown> }
+      | undefined;
+    if (!action) return;
+    const type = normalizeActionType(action.type) || action.type;
+    const payload = (action.payload ?? {}) as Record<string, unknown>;
+
+    if (type === "contact.whatsapp") {
+      openWhatsAppFromAction({ ...action, type });
+      return;
     }
-    return "";
+    if (type === "pdf.download") {
+      download(payload.url as string | undefined, payload.filename as string | undefined);
+      return;
+    }
+    if (button === holdButton) {
+      // Paid already → nothing to hold; open the cart for the balance instead.
+      onAction?.({ type: holdPaid ? "payment.start" : "payment.hold", payload });
+      return;
+    }
+    onAction?.({ ...action, type });
   };
 
-  const click = button.onClickAction as
-    | { type: string; payload?: Record<string, unknown> }
-    | undefined;
-  const payload = (click?.payload ?? {}) as Record<string, unknown>;
-  const phone =
-    typeof payload.phone === "string"
-      ? (payload.phone as string).replace(/[^\d]/g, "")
-      : "";
+  const holdLabel = stripLeadingEmoji(widgetNodeText(holdButton?.label)) || "Hold price";
+  // "Pay Lock-in Fee (INR 999.00)" → "INR 999.00" for the ticket's fee chip.
+  const holdFee = (holdLabel.match(/\(([^)]+)\)\s*$/) ?? [])[1] ?? "";
 
-  const headline =
-    asText(titleNodes[0]?.value) ||
-    asText(payload.headline) ||
-    "Talk to a travel expert";
-  const subline =
-    asText(captionNodes[0]?.value) ||
-    asText(textNodes[0]?.value) ||
-    asText(payload.context) ||
-    "Chat with our team on WhatsApp for instant help with your itinerary.";
-  const buttonLabel = (button.label as string) || "Chat on WhatsApp";
+  const whatsappOnly =
+    !holdButton &&
+    secondary.length === 1 &&
+    normalizeActionType((secondary[0].onClickAction as any)?.type) === "contact.whatsapp";
 
-  const handleClick = () => {
-    openWhatsAppFromAction(click);
+  // Tile copy per action — the server label is the title, this is the hint.
+  const tileMeta = (type: string) => {
+    if (type === "contact.whatsapp") {
+      return { hint: "Talk to a travel expert", tint: "#e7f8ee", fg: "#128C46" };
+    }
+    if (type === "pdf.download") {
+      return { hint: "Save a copy to share", tint: "#fff6c2", fg: "#8a6d00" };
+    }
+    return { hint: "Review and pay", tint: "#fff6c2", fg: "#8a6d00" };
   };
+
+  const renderTile = (btn: WidgetNode, i: number) => {
+    const type = normalizeActionType((btn.onClickAction as any)?.type);
+    if (!NEXT_STEP_ACTIONS.has(type)) {
+      return <ButtonNode key={i} node={btn} onAction={onAction} />;
+    }
+    const isPdf = type === "pdf.download";
+    const busy = isPdf && downloading;
+    const meta = tileMeta(type);
+    const fallback =
+      type === "contact.whatsapp" ? "Chat on WhatsApp" : isPdf ? "Download PDF" : "Make Payment";
+    const label = stripLeadingEmoji(widgetNodeText(btn.label)) || fallback;
+    return (
+      <button
+        key={i}
+        type="button"
+        onClick={() => run(btn)}
+        disabled={busy}
+        aria-busy={busy}
+        className="ttw-ns-tile"
+        style={{
+          flex: "1 1 190px",
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          padding: "12px 12px 12px 12px",
+          borderRadius: 14,
+          border: "1px solid #ece9df",
+          background: "#FFFFFF",
+          cursor: busy ? "progress" : "pointer",
+          textAlign: "left",
+          fontFamily: NEXT_STEP_FONT,
+          boxSizing: "border-box",
+          opacity: busy ? 0.75 : 1,
+        }}
+      >
+        <span
+          aria-hidden="true"
+          style={{
+            flexShrink: 0,
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            background: meta.tint,
+            color: meta.fg,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {type === "contact.whatsapp" ? (
+            <FaWhatsapp size={21} />
+          ) : isPdf ? (
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <path d="M9 14l3 3 3-3" />
+              <path d="M12 11v6" />
+            </svg>
+          ) : (
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <line x1="2" y1="10" x2="22" y2="10" />
+            </svg>
+          )}
+        </span>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#0b1220", lineHeight: 1.3 }}>
+            {busy ? "Preparing PDF…" : label}
+          </span>
+          <span style={{ display: "block", marginTop: 2, fontSize: 12, color: "#6b7280", lineHeight: 1.35 }}>
+            {meta.hint}
+          </span>
+        </span>
+        <svg
+          className="ttw-ns-chevron"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#9ca3af"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          style={{ flexShrink: 0 }}
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+    );
+  };
+
+  const styles = (
+    <style>{`
+      .ttw-ns-tile { transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+      .ttw-ns-tile:hover:not(:disabled) { border-color: #d9d3bf; box-shadow: 0 6px 16px rgba(17,24,39,.07); transform: translateY(-1px); }
+      .ttw-ns-tile:hover:not(:disabled) .ttw-ns-chevron { transform: translateX(2px); }
+      .ttw-ns-chevron { transition: transform .15s ease; }
+      .ttw-ns-cta { transition: filter .15s ease, transform .15s ease, box-shadow .15s ease; }
+      .ttw-ns-cta:hover { filter: brightness(1.04); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+      .ttw-ns-tile:active:not(:disabled), .ttw-ns-cta:active { transform: scale(0.98); }
+      .ttw-ns-tile:focus-visible, .ttw-ns-cta:focus-visible { outline: 2px solid #0b1220; outline-offset: 2px; }
+    `}</style>
+  );
+
+  // ── WhatsApp-only: a single branded CTA card ──
+  if (whatsappOnly) {
+    const btn = secondary[0];
+    const label = stripLeadingEmoji(widgetNodeText(btn.label)) || "Chat on WhatsApp";
+    return (
+      <div
+        style={{
+          position: "relative",
+          marginTop: 10,
+          marginBottom: 4,
+          width: "100%",
+          boxSizing: "border-box",
+          borderRadius: 18,
+          overflow: "hidden",
+          padding: 18,
+          fontFamily: NEXT_STEP_FONT,
+          background: "linear-gradient(140deg, #f2fcf6 0%, #dcf7e7 55%, #c4f0d6 100%)",
+          border: "1px solid rgba(37, 211, 102, 0.28)",
+          boxShadow: "0 8px 22px rgba(18, 140, 70, 0.10)",
+        }}
+      >
+        {styles}
+        <FaWhatsapp
+          aria-hidden="true"
+          size={120}
+          style={{ position: "absolute", right: -22, bottom: -26, color: "rgba(37, 211, 102, 0.12)" }}
+        />
+        <div style={{ position: "relative", display: "flex", alignItems: "flex-start", gap: 12 }}>
+          <span
+            aria-hidden="true"
+            style={{
+              flexShrink: 0,
+              width: 44,
+              height: 44,
+              borderRadius: 14,
+              background: "#25D366",
+              color: "#FFFFFF",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 6px 14px rgba(18, 140, 70, 0.30)",
+            }}
+          >
+            <FaWhatsapp size={24} />
+          </span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 16, fontWeight: 500, color: "#053d2a", lineHeight: 1.35 }}>
+              {headline}
+            </div>
+            {subline && (
+              <div style={{ marginTop: 4, fontSize: 13, color: "#256b4c", lineHeight: 1.5 }}>
+                {subline}
+              </div>
+            )}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => run(btn)}
+          className="ttw-ns-cta"
+          style={{
+            position: "relative",
+            marginTop: 14,
+            width: "100%",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            minHeight: 46,
+            padding: "11px 18px",
+            border: "none",
+            borderRadius: 9999,
+            background: "#128C46",
+            color: "#FFFFFF",
+            fontFamily: NEXT_STEP_FONT,
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: "pointer",
+            boxShadow: "0 4px 12px rgba(18, 140, 70, 0.28)",
+          }}
+        >
+          <FaWhatsapp size={18} aria-hidden="true" />
+          {label}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div
-      role="button"
-      tabIndex={0}
-      onClick={handleClick}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          handleClick();
-        }
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      aria-label={phone ? `${buttonLabel} (+${phone})` : buttonLabel}
       style={{
-        position: "relative",
         marginTop: 10,
         marginBottom: 4,
         width: "100%",
         boxSizing: "border-box",
-        padding: 18,
         borderRadius: 18,
-        background:
-          "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 45%, #a7f3d0 100%)",
-        border: "1px solid rgba(37, 211, 102, 0.35)",
-        boxShadow: hovered
-          ? "0 12px 28px rgba(37, 211, 102, 0.28)"
-          : "0 4px 12px rgba(37, 211, 102, 0.16)",
-        cursor: "pointer",
-        outline: "none",
         overflow: "hidden",
-        transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        transition:
-          "transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease",
+        background: "#FFFFFF",
+        border: "1px solid #efe8cf",
+        boxShadow: "0 1px 2px rgba(17, 24, 39, 0.04), 0 10px 26px rgba(17, 24, 39, 0.06)",
+        fontFamily: NEXT_STEP_FONT,
       }}
     >
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          top: -60,
-          right: -50,
-          width: 180,
-          height: 180,
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle at center, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%)",
-          pointerEvents: "none",
-        }}
-      />
+      {styles}
+
+      {/* Header — warm brand wash with a soft glow */}
       <div
         style={{
           position: "relative",
-          display: "flex",
-          alignItems: "center",
-          gap: 14,
+          overflow: "hidden",
+          padding: "16px 16px 14px",
+          background: "linear-gradient(135deg, #FFFDF3 0%, #FFF6C7 100%)",
+          borderBottom: "1px solid #f3eac4",
         }}
       >
         <div
           aria-hidden="true"
           style={{
-            flex: "0 0 auto",
-            width: 48,
-            height: 48,
-            borderRadius: 14,
-            background: "#25D366",
-            color: "#FFFFFF",
+            position: "absolute",
+            top: -70,
+            right: -50,
+            width: 190,
+            height: 190,
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(247,231,0,0.35) 0%, rgba(247,231,0,0) 70%)",
+            pointerEvents: "none",
+          }}
+        />
+        <span
+          style={{
+            position: "relative",
             display: "inline-flex",
             alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 6px 14px rgba(18, 140, 70, 0.32)",
+            gap: 5,
+            padding: "3px 9px",
+            borderRadius: 9999,
+            background: "#0b1220",
+            color: "#f7e700",
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
           }}
         >
-          <FaWhatsapp size={26} />
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" />
+          </svg>
+          Next steps
+        </span>
+        <div
+          style={{
+            position: "relative",
+            marginTop: 10,
+            fontSize: 17,
+            fontWeight: 500,
+            color: "#0b1220",
+            lineHeight: 1.3,
+          }}
+        >
+          {headline}
         </div>
-
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-              fontSize: 15,
-              fontWeight: 700,
-              color: "#064e3b",
-              lineHeight: 1.3,
-              marginBottom: 4,
-            }}
-          >
-            {headline}
+        {subline && (
+          <div style={{ position: "relative", marginTop: 4, fontSize: 13, color: "#5b5a52", lineHeight: 1.5 }}>
+            {subline}
           </div>
+        )}
+      </div>
+
+      <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+        {/* Hold — a soft indigo "ticket" with notched edges so the offer reads first */}
+        {holdButton && (
           <div
             style={{
-              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-              fontSize: 12.5,
-              color: "#065f46",
-              lineHeight: 1.5,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
+              position: "relative",
+              borderRadius: 14,
+              padding: "14px 16px",
+              background: holdPaid
+                ? "linear-gradient(135deg, #F2FCF6 0%, #DCF7E7 100%)"
+                : "linear-gradient(135deg, #F6F8FF 0%, #E9EEFF 100%)",
+              border: `1px solid ${holdPaid ? "#A7E3C1" : "#D5DDFB"}`,
+              color: "#0b1220",
               overflow: "hidden",
             }}
           >
-            {subline}
-          </div>
-        </div>
-      </div>
+            {[{ left: -8 }, { right: -8 }].map((side, i) => (
+              <span
+                key={i}
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  width: 16,
+                  height: 16,
+                  marginTop: -8,
+                  borderRadius: "50%",
+                  background: "#FFFFFF",
+                  border: `1px solid ${holdPaid ? "#A7E3C1" : "#D5DDFB"}`,
+                  boxSizing: "border-box",
+                  ...side,
+                }}
+              />
+            ))}
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span
+                aria-hidden="true"
+                style={{
+                  flexShrink: 0,
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  background: holdPaid ? "#1f8a5a" : "#f7e700",
+                  color: holdPaid ? "#FFFFFF" : "#0b1220",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: holdPaid
+                    ? "0 4px 10px rgba(31,138,90,0.25)"
+                    : "0 0 0 4px #FFFFFF, 0 4px 12px rgba(59,76,160,0.18)",
+                }}
+              >
+                {holdPaid ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="4" y="11" width="16" height="10" rx="2" />
+                    <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                  </svg>
+                )}
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 14.5, fontWeight: 600, lineHeight: 1.3 }}>
+                  {holdPaid
+                    ? holdUntilLabel
+                      ? `Price held until ${holdUntilLabel}`
+                      : "Your price is held"
+                    : `Lock today's price for ${holdDays} days`}
+                </div>
+                <div style={{ marginTop: 3, fontSize: 12, color: holdPaid ? "#3f6b55" : "#5b6488", lineHeight: 1.4 }}>
+                  {holdPaid
+                    ? "Pay the balance whenever you're ready."
+                    : "Prices can change. The fee adjusts against your trip."}
+                </div>
+              </div>
+            </div>
 
-      <div
-        style={{
-          position: "relative",
-          marginTop: 14,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 12,
-          flexWrap: "wrap",
-        }}
-      >
-        {phone ? (
-          <span
-            style={{
-              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-              fontSize: 11.5,
-              fontWeight: 500,
-              color: "#047857",
-              letterSpacing: 0.3,
-            }}
-          >
-          </span>
-        ) : (
-          <span />
+            <div
+              aria-hidden="true"
+              style={{ margin: "12px 4px", borderTop: `1.5px dashed ${holdPaid ? "rgba(31,138,90,0.28)" : "rgba(59,76,160,0.25)"}` }}
+            />
+
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              {!holdPaid && holdFee && (
+                <div style={{ flex: "1 1 0", minWidth: 96 }}>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "#6b74a0",
+                    }}
+                  >
+                    Lock-in fee
+                  </div>
+                  <div style={{ marginTop: 1, fontSize: 15, fontWeight: 700, color: "#0b1220", lineHeight: 1.2 }}>
+                    {holdFee}
+                  </div>
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => run(holdButton)}
+                className="ttw-ns-cta"
+                style={{
+                  flex: holdPaid || !holdFee ? "1 1 100%" : "0 0 auto",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                  minHeight: 42,
+                  padding: "10px 18px",
+                  border: holdPaid ? "1px solid #A7E3C1" : "none",
+                  borderRadius: 9999,
+                  background: holdPaid ? "#FFFFFF" : "#0b1220",
+                  color: holdPaid ? "#0b1220" : "#FFFFFF",
+                  boxShadow: holdPaid ? "none" : "0 4px 12px rgba(11,18,32,0.18)",
+                  fontFamily: NEXT_STEP_FONT,
+                  fontSize: 13.5,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {holdPaid ? "View cart" : holdFee ? "Lock price" : holdLabel}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </button>
+            </div>
+          </div>
         )}
-        <span
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "10px 18px",
-            borderRadius: 9999,
-            background: "#128C46",
-            color: "#FFFFFF",
-            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-            fontSize: 13,
-            fontWeight: 600,
-            letterSpacing: 0.2,
-            boxShadow: hovered
-              ? "0 8px 18px rgba(18, 140, 70, 0.36)"
-              : "0 3px 8px rgba(18, 140, 70, 0.22)",
-            transition: "box-shadow 0.18s ease, transform 0.18s ease",
-            transform: hovered ? "translateX(2px)" : "translateX(0)",
-          }}
-        >
-          <FaWhatsapp size={15} />
-          {buttonLabel}
-        </span>
+
+        {secondary.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            {secondary.map(renderTile)}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -7983,11 +8332,12 @@ function WhatsappContactCard({
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
 function CardNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
-  // WhatsApp contact card — checked first so the branded design wins over the
-  // generic drawer-button fallback when both patterns are present.
-  const whatsappButton = findWhatsappContactButton(node);
-  if (whatsappButton) {
-    return <WhatsappContactCard node={node} button={whatsappButton} />;
+  // Next-steps / WhatsApp contact card — checked first so a card mixing PDF,
+  // WhatsApp and lock-in CTAs isn't claimed by the single-purpose PDF or
+  // payment cards below, which would drop the other buttons.
+  const nextStepButtons = findNextStepButtons(node);
+  if (nextStepButtons) {
+    return <NextStepsCard node={node} buttons={nextStepButtons} onAction={onAction} />;
   }
 
   // "Start Planning New Trip" hero card. Checked first so the polished design

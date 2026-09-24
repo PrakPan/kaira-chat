@@ -17,13 +17,15 @@ interface PricingFormCardProps {
 const YesNo: React.FC<{
   value: boolean | null;
   onChange: (v: boolean) => void;
-}> = ({ value, onChange }) => {
+  disabled?: boolean;
+}> = ({ value, onChange, disabled }) => {
   const opt = (label: string, on: boolean) => {
     const active = value === on;
     return (
       <button
         type="button"
         onClick={() => onChange(on)}
+        disabled={disabled}
         className="px-[15px] py-[7px] rounded-[9px] text-[12.5px] font-bold transition-all"
         style={{
           background: active ? "#0f1a2e" : "#fff",
@@ -52,7 +54,8 @@ const Row: React.FC<{
   hint?: string;
   value: boolean | null;
   onChange: (v: boolean) => void;
-}> = ({ icon, tint, label, hint, value, onChange }) => (
+  disabled?: boolean;
+}> = ({ icon, tint, label, hint, value, onChange, disabled }) => (
   <div className="flex items-center justify-between gap-3 py-[11px] border-b border-[#f4f3ec] last:border-b-0">
     <div className="flex items-center gap-[11px] min-w-0">
       <span
@@ -72,7 +75,7 @@ const Row: React.FC<{
         )}
       </div>
     </div>
-    <YesNo value={value} onChange={onChange} />
+    <YesNo value={value} onChange={onChange} disabled={disabled} />
   </div>
 );
 
@@ -90,8 +93,10 @@ const PricingFormCard: React.FC<PricingFormCardProps> = ({ onComplete }) => {
   const dispatch = useDispatch();
   const state = useSelector((s: any) => s.PricingForm as PricingFormState);
 
-  const update = (partial: Partial<PricingFormState>) =>
+  const update = (partial: Partial<PricingFormState>) => {
+    if (state?.completed) return;
     dispatch(updatePricingForm(partial));
+  };
 
   if (!state) return null;
 
@@ -100,29 +105,9 @@ const PricingFormCard: React.FC<PricingFormCardProps> = ({ onComplete }) => {
     return <PricingFormSkeleton />;
   }
 
-  // ── Completed: compact, non-interactive summary ──────────────────────────────
-  if (state.completed) {
-    const parts = [
-      ...(state.startCity ? [`From ${state.startCity}`] : []),
-      `Flights ${state.addFlights ? "✓" : "✕"}`,
-      ...(state.isInternational
-        ? [`Visa ${state.addVisa ? "✓" : "✕"}`, `eSIM ${state.addEsim ? "✓" : "✕"}`]
-        : []),
-    ];
-    return (
-      <div
-        className="rounded-[16px] p-3 mb-3 ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto max-ph:rounded-none"
-        style={{ background: "#fff", border: "1px solid #ececec", maxWidth: 480 }}
-      >
-        <div className="text-[11px] font-extrabold text-[#1f8a5a] uppercase tracking-wide mb-2">
-          ✓ Final details locked
-        </div>
-        <div className="text-[13.5px] font-semibold text-[#0b1220] leading-relaxed">
-          {parts.join(" · ")}
-        </div>
-      </div>
-    );
-  }
+  // ── Completed: no compact summary. The card keeps rendering the full form
+  // with every control and the CTA disabled.
+  const locked = !!state.completed;
 
   // ── Departure-city search state (single-select) ──────────────────────────────
   const query = state.startCityQuery ?? "";
@@ -147,7 +132,7 @@ const PricingFormCard: React.FC<PricingFormCardProps> = ({ onComplete }) => {
       startCityCompleted: false,
     });
 
-  const canSubmit = canSubmitPricing(state);
+  const canSubmit = canSubmitPricing(state) && !locked;
 
   const submit = () => {
     if (!canSubmit) return;
@@ -198,8 +183,12 @@ const PricingFormCard: React.FC<PricingFormCardProps> = ({ onComplete }) => {
         </div> */}
       </div>
 
-      {/* Body */}
-      <div className="px-4 py-[14px]">
+      {/* Body — inputs stay visible once submitted but can't be touched. */}
+      <div
+        className="px-4 py-[14px]"
+        style={locked ? { pointerEvents: "none" } : undefined}
+        aria-disabled={locked || undefined}
+      >
         {/* ── Departure city — prefilled tag + editable City search ──────────── */}
         <div className="mb-[6px]">
           <div className="text-[11px] font-extrabold uppercase tracking-wide text-[#8a92a3] mb-[8px]">
@@ -259,6 +248,7 @@ const PricingFormCard: React.FC<PricingFormCardProps> = ({ onComplete }) => {
             hint="Include return flights in your quote."
             value={state.addFlights}
             onChange={(v) => update({ addFlights: v })}
+            disabled={locked}
           />
           {state.isInternational && (
             <>
@@ -275,6 +265,7 @@ const PricingFormCard: React.FC<PricingFormCardProps> = ({ onComplete }) => {
                 hint="Guidance and paperwork support."
                 value={state.addVisa}
                 onChange={(v) => update({ addVisa: v })}
+                disabled={locked}
               />
               <Row
                 tint="#dcfce7"
@@ -290,6 +281,7 @@ const PricingFormCard: React.FC<PricingFormCardProps> = ({ onComplete }) => {
                 hint="Stay connected the moment you land."
                 value={state.addEsim}
                 onChange={(v) => update({ addEsim: v })}
+                disabled={locked}
               />
             </>
           )}

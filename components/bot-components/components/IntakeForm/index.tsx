@@ -9,28 +9,40 @@ import {
 } from "../../../../services/analyticsFunnel";
 import type { IntakeFormState } from "./types";
 import { TOTAL_STEPS } from "./constants";
-import { composeIntakeMessage, validateStep, whenSummary, paxLabel } from "./intakePrompt";
+import {
+  composeIntakeMessage,
+  intakeAddOnFields,
+  validateStep,
+} from "./intakePrompt";
 
-// Step index → the funnel stage completing that step reports. Index 3 (notes)
-// is the final step, so finishing it *is* finishing the form.
-const STEP_STAGE = [
+// Step index → the funnel stage completing that step reports. Notes (3) has no
+// stage of its own in the chat_intake funnel; add-ons (4) is the final step, so
+// finishing it *is* finishing the form.
+const STEP_STAGE: Array<string | null> = [
   "chat_intake_destination_completed",
   "chat_intake_when_completed",
   "chat_intake_who_completed",
+  null,
   "chat_intake_form_completed",
 ];
-const STEP_NAME = ["destination", "when", "who", "notes"];
+const STEP_NAME = ["destination", "when", "who", "notes", "add_ons"];
 import StepProgress from "./ui/StepProgress";
 import IntakeFormSkeleton from "./ui/IntakeFormSkeleton";
 import DestinationStep from "./steps/DestinationStep";
 import WhenStep from "./steps/WhenStep";
 import WhoStep from "./steps/WhoStep";
 import NotesStep from "./steps/NotesStep";
+import AddOnsStep from "./steps/AddOnsStep";
 
 interface IntakeFormCardProps {
-  /** Called with the composed message after the form is submitted. The parent
-   *  decides whether to send it directly or gate it behind login first. */
-  onComplete: (composedMessage: string) => void;
+  /** Called with the composed message after the form is submitted, plus the
+   *  add-on answers as separate request fields (add_flights, add_visa,
+   *  add_esim). The parent decides whether to send it directly or gate it
+   *  behind login first. */
+  onComplete: (
+    composedMessage: string,
+    addOnFields: Record<string, boolean>,
+  ) => void;
   /** When provided, this card is FROZEN: it renders from the snapshot instead
    *  of the live Redux slice and is fully non-interactive. Used for a
    *  previously-shown intake card once a newer intake-form widget takes over
@@ -52,9 +64,12 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete, snapshot })
   // reads and writes the shared slice.
   const frozen = !!snapshot;
   const state = snapshot ?? liveState;
+  // A submitted form stays on screen at full size, but nothing in it can be
+  // changed or re-sent — same as a frozen card.
+  const locked = frozen || !!state?.completed;
 
   const update = (partial: Partial<IntakeFormState>) => {
-    if (frozen) return;
+    if (locked) return;
     dispatch(updateIntakeForm(partial));
   };
 
@@ -105,6 +120,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete, snapshot })
       children: s.children ?? null,
       infants: s.infants ?? null,
       has_notes: !!s.notes?.trim(),
+      add_ons: s.addOns ?? null,
     };
   };
 
@@ -193,28 +209,32 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete, snapshot })
   }, [step, state]);
 
   const goBack = () => {
-    if (frozen) return;
+    if (locked) return;
     if (step > 0) update({ step: step - 1 });
   };
 
   const goNext = () => {
-    if (frozen) return;
+    if (locked) return;
     if (!canAdvance) return;
     // Report the stage this step satisfies before advancing, so a drop-off is
     // always attributable to the step the user was actually looking at.
-    reportIntakeStage(STEP_STAGE[step], {
-      step_index: step,
-      step_name: STEP_NAME[step],
-      ...intakeSnapshot(),
-    });
+    const stage = STEP_STAGE[step];
+    if (stage) {
+      reportIntakeStage(stage, {
+        step_index: step,
+        step_name: STEP_NAME[step],
+        ...intakeSnapshot(),
+      });
+    }
     if (!isLast) {
       update({ step: step + 1 });
       return;
     }
     // Final step → compose + hand off to the parent (which sends or gates login).
     const composed = composeIntakeMessage(state);
+    const addOnFields = intakeAddOnFields(state);
     update({ completed: true, active: false });
-    onComplete(composed);
+    onComplete(composed, addOnFields);
   };
 
   if (!state) return null;
@@ -224,26 +244,8 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete, snapshot })
     return <IntakeFormSkeleton />;
   }
 
-  // ── Completed: show a compact, non-interactive summary ──────────────────────
-  if (state.completed) {
-    return (
-      <div
-        className="rounded-[16px] h-[11vh] p-3 mb-3 ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto max-ph:rounded-none"
-        style={{ background: "#fff", border: "1px solid #ececec", maxWidth: 480 }}
-      >
-        <div className="text-[11px] font-extrabold text-[#1f8a5a] uppercase tracking-wide mb-2">
-          ✓ Trip details locked
-        </div>
-        <div className="text-[13.5px] font-semibold text-[#0b1220] leading-relaxed">
-          {(state.destinations?.length
-            ? state.destinations.map((d) => d.name).join(", ")
-            : state.destination?.name) || "-"}{" "}
-          · {whenSummary(state)} ·{" "}
-          {state.who ? paxLabel(state) : "just me"}
-        </div>
-      </div>
-    );
-  }
+  // ── Completed: no compact summary. The card keeps rendering the full form
+  // on its last step with every control and CTA disabled (`locked`).
 
   return (
     <>
@@ -328,6 +330,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete, snapshot })
             <WhenStep key="w" state={state} update={update} />,
             <WhoStep key="who" state={state} update={update} />,
             <NotesStep key="n" state={state} update={update} />,
+            <AddOnsStep key="a" state={state} update={update} disabled={locked} />,
           ].map((node, i) => (
             <div
               key={i}
@@ -335,6 +338,9 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete, snapshot })
                 stepRefs.current[i] = el;
               }}
               className="min-w-full px-2 py-[18px] self-start"
+              // Locked: inputs stay visible but can't be touched.
+              style={locked ? { pointerEvents: "none" } : undefined}
+              aria-disabled={locked || undefined}
             >
               {node}
             </div>
@@ -350,8 +356,14 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete, snapshot })
           <button
             type="button"
             onClick={goBack}
+            disabled={locked}
             className="px-4 py-[11px] rounded-[11px] text-[13px] font-semibold text-[#445069] transition-all"
-            style={{ background: "#fff", border: "1.5px solid #ececec" }}
+            style={{
+              background: "#fff",
+              border: "1.5px solid #ececec",
+              opacity: locked ? 0.5 : 1,
+              cursor: locked ? "not-allowed" : "pointer",
+            }}
           >
             Back
           </button>
@@ -359,12 +371,12 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete, snapshot })
         <button
           type="button"
           onClick={goNext}
-          disabled={frozen || !canAdvance}
+          disabled={locked || !canAdvance}
           className="flex-1 px-3 py-[11px] rounded-[11px] text-[13.5px] font-bold text-white inline-flex items-center justify-center gap-[7px] transition-all"
           style={{
-            background: !frozen && canAdvance ? "#0f1a2e" : "#b8becc",
-            cursor: !frozen && canAdvance ? "pointer" : "not-allowed",
-            boxShadow: !frozen && canAdvance ? "0 8px 18px -6px rgba(11,18,32,.25)" : "none",
+            background: !locked && canAdvance ? "#0f1a2e" : "#b8becc",
+            cursor: !locked && canAdvance ? "pointer" : "not-allowed",
+            boxShadow: !locked && canAdvance ? "0 8px 18px -6px rgba(11,18,32,.25)" : "none",
           }}
         >
           {isLast ? "Done" : "Continue"}

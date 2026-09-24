@@ -1069,6 +1069,10 @@ export function useChat({
         // items). Attached to the first request body as `intake` — the backend
         // reads it to pick the route instead of parsing free text.
         intakePayload?: Record<string, unknown>;
+        // Extra root-level request fields — the intake / theme forms' add-on
+        // answers (add_flights, add_visa, add_esim) ride here, separate from
+        // both the message text and `intake`.
+        extraBody?: Record<string, unknown>;
       },
     ) => {
       const trimmed = content.trim();
@@ -1167,6 +1171,9 @@ export function useChat({
       // top-level copies (added by buildFirstMessageBody from themeItems/themeSlug)
       // to avoid sending the items array twice. The plain-seed flow, which has no
       // intake payload, keeps the top-level slug/items.
+      if (opts?.extraBody) {
+        Object.assign(body as Record<string, unknown>, opts.extraBody);
+      }
       if (opts?.intakePayload) {
         const b = body as Record<string, unknown>;
         b.intake = opts.intakePayload;
