@@ -256,6 +256,8 @@ const TripsHub = ({
   // Which theme chip is pressed when the page opens. /trips passes one so the
   // reader lands on a readable set rather than the whole corpus.
   defaultTheme = null,
+  // [{ id, label }] for the destination chip row — /trips only.
+  destinations = null,
 }) => (
   <Wrapper>
     {crumbs.length > 0 && (
@@ -284,6 +286,7 @@ const TripsHub = ({
           cards={section.items}
           lengthBuckets={LENGTH_BUCKETS}
           defaultTheme={defaultTheme}
+          destinations={destinations}
         >
           {(isVisible, visibleCount, selKey) => (
             <CardsGrid

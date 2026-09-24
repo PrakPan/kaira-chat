@@ -124,7 +124,7 @@ export async function getStaticProps({ params }) {
     .filter(Boolean)
     .join(", ")
     .concat(
-      ". Real trips our team built and released, with stays, transfers and activities already planned — customise any of them free."
+      ". Real trips put together by our team, with stays, transfers and activities already planned — customise any of them free."
     );
 
   const title = `${label} Itineraries & Trip Packages${

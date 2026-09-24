@@ -683,7 +683,7 @@ export const TripSiblings = ({ siblings, region }) => {
         <SeeAll href="/trips">See all trips →</SeeAll>
       </Head>
       <SectionNote>
-        Released plans for the same destination, at different lengths — each one
+        More plans for the same destination, at different lengths — each one
         priced and ready to copy.
       </SectionNote>
       <div className={revamp.ttwRevamp}>

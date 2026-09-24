@@ -31,6 +31,7 @@ const TripsIndex = ({
   sections,
   schema,
   defaultTheme,
+  filterDestinations,
 }) => (
   <Layout staticnav page="Trips Index">
     <Head>
@@ -53,6 +54,7 @@ const TripsIndex = ({
       chips={chips}
       sections={sections}
       defaultTheme={defaultTheme}
+      destinations={filterDestinations}
     />
   </Layout>
 );
@@ -82,6 +84,7 @@ export async function getStaticProps() {
 
   const destinations = [...byDestination.entries()]
     .map(([slug, rows]) => ({
+      slug,
       href: `/trips/${slug}`,
       label: destinationLabel(slug),
       count: rows.length,
@@ -92,11 +95,11 @@ export async function getStaticProps() {
   const total = [...byDestination.values()].reduce((sum, rows) => sum + rows.length, 0);
 
   const description =
-    `${total} trip itineraries across ${destinations.length} destinations, each one built and ` +
-    "released by our travel team with stays, transfers and activities already planned. " +
+    `${total} trip itineraries across ${destinations.length} destinations, each one put ` +
+    "together by our travel team with stays, transfers and activities already planned. " +
     "Open any of them as a starting point and reshape it free before you book.";
 
-  // Every released trip, newest first — not a 48-row sample. The filter bar
+  // Every trip, newest first — not a 48-row sample. The filter bar
   // above them is what makes that readable: the page opens on one theme (see
   // `defaultTheme`), so the reader meets a few hundred trips of one kind rather
   // than all 1,718 at once, and the other themes are one chip away.
@@ -125,13 +128,16 @@ export async function getStaticProps() {
       description,
       chips: {
         title: "Browse by destination",
-        note: `All ${destinations.length} destinations we have released trips for, most trips first.`,
+        note: `All ${destinations.length} destinations we have trips for, most trips first.`,
         items: destinations.map(({ href, label, count }) => ({ href, label, count })),
       },
       defaultTheme,
+      // The filter bar's destination row, most trips first — it shows the top
+      // few as chips and handles ?destination=<slug> for the rest.
+      filterDestinations: destinations.map(({ slug, label }) => ({ id: slug, label })),
       sections: [
         {
-          title: "Every trip we've released",
+          title: "Every trip itinerary",
           items: all.map(tripCard).filter(Boolean),
         },
       ],

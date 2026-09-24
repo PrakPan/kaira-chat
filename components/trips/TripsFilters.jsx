@@ -1,7 +1,8 @@
 // Filter bar for the trips hubs.
 //
-// Three dimensions, in the order a traveller actually decides them: what the
-// trip is for, how long, and the vibe. They come from what the corpus can
+// On /trips a destination row comes first (where), then three dimensions in
+// the order a traveller actually decides them: what the trip is for, how long,
+// and the vibe. They come from what the corpus can
 // prove — theme (see lib/seo/tripTheme) and duration are on essentially every
 // row, while experience_filters is populated on about a quarter of them.
 //
@@ -23,8 +24,17 @@
 // `defaultTheme` opens the page on one theme rather than on the whole corpus:
 // /trips now carries all 1,718 trips, and an unfiltered wall of them is not a
 // page anyone reads. The chips are the way in, so one of them starts pressed.
+//
+// The selection lives in the query string too — ?destination=thailand,
+// ?theme=family, ?length=week, ?vibe=hidden-gem — so a filtered view can be
+// linked to (ads, WhatsApp, the blog). A URL carrying any of them opens on
+// exactly that selection and skips `defaultTheme`; ?theme=all is how the URL
+// says "no theme" when the page would otherwise press one. The served HTML is
+// the same for every query string — this is a static export — so the URL is
+// only read after hydration, and the default view flashes first.
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/router";
 import styled from "styled-components";
 import { themeLabel } from "../../lib/seo/tripTheme";
 
@@ -157,13 +167,25 @@ const tally = (items, pick) => {
 
 const matches = (card, sel) => {
   const f = card?.filters || {};
+  if (sel.destination && f.destination !== sel.destination) return false;
   if (sel.theme && f.theme !== sel.theme) return false;
   if (sel.length && f.length !== sel.length) return false;
   if (sel.vibe && !(f.vibes || []).includes(sel.vibe)) return false;
   return true;
 };
 
-const EMPTY_SEL = { theme: null, length: null, vibe: null };
+const EMPTY_SEL = { destination: null, theme: null, length: null, vibe: null };
+const KEYS = Object.keys(EMPTY_SEL);
+
+// Vibes are free text ("Hidden Gem"); the URL carries them as "hidden-gem".
+const slugify = (value) =>
+  String(value).trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+const sameSel = (a, b) => KEYS.every((k) => a[k] === b[k]);
+
+// Enough to cover where most of the demand is without the row turning into the
+// 146-name wall the destination index at the foot of the page already is.
+const TOP_DESTINATIONS = 8;
 
 /**
  * Renders the bar and hands the caller the per-card verdict.
@@ -178,10 +200,27 @@ const TripsFilters = ({
   cards = [],
   lengthBuckets = [],
   defaultTheme = null,
+  // Every destination, [{ id, label }], most trips first; the row shows the
+  // top TOP_DESTINATIONS. Only /trips passes these — on a destination hub every
+  // card is the same destination.
+  destinations = null,
   children,
 }) => {
-  const [sel, setSel] = useState({ ...EMPTY_SEL, theme: defaultTheme });
+  const router = useRouter();
+  const initialSel = useMemo(
+    () => ({ ...EMPTY_SEL, theme: defaultTheme }),
+    [defaultTheme],
+  );
+  const [sel, setSel] = useState(initialSel);
+  // Set once the query string has been read, so the write-back below never
+  // runs on the pre-hydration default and wipes the reader's ?destination=.
+  const [fromUrl, setFromUrl] = useState(false);
+  const lastWritten = useRef(null);
 
+  const destinationCounts = useMemo(
+    () => tally(cards, (c) => [c?.filters?.destination]),
+    [cards],
+  );
   const themes = useMemo(
     () => tally(cards, (c) => [c?.filters?.theme]),
     [cards],
@@ -195,11 +234,99 @@ const TripsFilters = ({
     [cards],
   );
 
+  // Read the query string once the router is ready. On these static pages
+  // isReady stays false until Next's own post-hydration navigation when there
+  // IS a query string, and replacing the URL before that races it.
+  //
+  // window.location rather than router.query: on /trips/[destination] the
+  // route param is also called `destination`, and it is not a filter.
+  useEffect(() => {
+    if (!router.isReady || fromUrl) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const has = KEYS.some((k) => params.get(k));
+
+    if (has) {
+      const vibeSlug = params.get("vibe");
+      const themeParam = (params.get("theme") || "").toLowerCase();
+      const destParam = (params.get("destination") || "").toLowerCase();
+      const lengthParam = (params.get("length") || "").toLowerCase();
+
+      // Values the cards can't satisfy are dropped, not applied — a stale or
+      // mistyped link should open on a full page, not on "No trips match".
+      const next = {
+        destination:
+          destinations && destinationCounts.has(destParam) ? destParam : null,
+        theme: themes.has(themeParam) ? themeParam : null,
+        length: lengthBuckets.some((b) => b.id === lengthParam) ? lengthParam : null,
+        vibe: vibeSlug
+          ? [...vibes.keys()].find((v) => slugify(v) === vibeSlug.toLowerCase()) || null
+          : null,
+      };
+      // Nothing usable (?destination=nowhere) keeps the default view; the
+      // write-back below then strips the dead param from the URL.
+      if (KEYS.some((k) => next[k]) || themeParam === "all") {
+        lastWritten.current = window.location.search;
+        setSel(next);
+      }
+    }
+    setFromUrl(true);
+  }, [router.isReady, fromUrl, destinations, destinationCounts, themes, vibes, lengthBuckets]);
+
+  // Mirror the selection back into the URL. replace, not push: a chip tap is
+  // not a page the back button should step through. Other params (utm_*,
+  // gclid) are kept — this page takes ad traffic.
+  useEffect(() => {
+    if (!fromUrl) return;
+
+    const params = new URLSearchParams(window.location.search);
+    KEYS.forEach((k) => params.delete(k));
+
+    if (!sameSel(sel, initialSel)) {
+      if (sel.destination) params.set("destination", sel.destination);
+      if (sel.theme) params.set("theme", sel.theme);
+      if (sel.length) params.set("length", sel.length);
+      if (sel.vibe) params.set("vibe", slugify(sel.vibe));
+      // Nothing pressed at all, on a page that opens with a theme pressed:
+      // without this the URL would reload onto the default theme again.
+      if (!KEYS.some((k) => sel[k]) && defaultTheme) params.set("theme", "all");
+    }
+
+    const qs = params.toString();
+    const search = qs ? `?${qs}` : "";
+    if (search === window.location.search || search === lastWritten.current) return;
+    lastWritten.current = search;
+
+    router.replace(
+      `${window.location.pathname}${search}${window.location.hash}`,
+      undefined,
+      { shallow: true, scroll: false },
+    );
+    // `router` is left out on purpose: its identity changes on every replace,
+    // which would re-run this for a selection that hasn't changed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sel, fromUrl, initialSel, defaultTheme]);
+
   const toggle = (key, value) =>
     setSel((prev) => ({ ...prev, [key]: prev[key] === value ? null : value }));
 
   const visible = cards.filter((c) => matches(c, sel));
-  const active = !!(sel.theme || sel.length || sel.vibe);
+  const active = KEYS.some((k) => sel[k]);
+
+  // The top destinations as quick chips. A destination picked from the URL
+  // that isn't among them still gets its chip, so the pressed state is visible
+  // and can be undone.
+  const destinationEntries = (() => {
+    if (!destinations?.length) return [];
+    const ids = destinations
+      .filter((d) => destinationCounts.get(d.id))
+      .slice(0, TOP_DESTINATIONS)
+      .map((d) => d.id);
+    if (sel.destination && !ids.includes(sel.destination)) ids.push(sel.destination);
+    return ids.map((id) => [id, destinationCounts.get(id)]);
+  })();
+  const destinationLabelFor = (id) =>
+    destinations?.find((d) => d.id === id)?.label || id;
 
   // The six most common vibes. The tail is long and thin (Isolated is on 121
   // of 1,718) and a row of fourteen chips is the clutter this bar replaced.
@@ -241,6 +368,7 @@ const TripsFilters = ({
   return (
     <>
       <Bar>
+        {row("Where", destinationEntries, "destination", destinationLabelFor)}
         {row(
           "Trip for",
           [...themes.entries()].sort((a, b) => b[1] - a[1]),
@@ -271,7 +399,7 @@ const TripsFilters = ({
       {children(
         (card) => matches(card, sel),
         visible.length,
-        `${sel.theme || ""}|${sel.length || ""}|${sel.vibe || ""}`,
+        KEYS.map((k) => sel[k] || "").join("|"),
       )}
     </>
   );

@@ -173,7 +173,7 @@ const TripSeoPage = ({
   const description = [
     routeLine,
     perPerson ? `From ${formatINR(perPerson)} per person` : null,
-    groupType ? `Built for a ${String(groupType).toLowerCase()} group and released as a real trip` : null,
+    groupType ? `Built for a ${String(groupType).toLowerCase()} group by our travel team` : null,
   ]
     .filter(Boolean)
     .join(" · ");
