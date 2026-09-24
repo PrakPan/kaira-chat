@@ -15,6 +15,15 @@ import React from "react";
 export const GUTTER = "24px";
 
 /**
+ * The desktop pane's type is drawn in the phone's px sizes (shared
+ * LegSection), which read small beside the chat, so the pane — and its cart
+ * bar, on the map too — is CSS-zoomed as a whole. Zoom rather than new sizes
+ * keeps the phone untouched and the design's proportions intact. 1.3 and 1.2
+ * were tried and read too big.
+ */
+export const PANE_ZOOM = 1.1;
+
+/**
  * Kaira's portrait as the design draws it: a CSS background over her pale
  * blue, so a slow image load never leaves an empty ring. A <span> rather than
  * an <img> because styles.css and Bootstrap both put bare `img {}` rules on

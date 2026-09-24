@@ -53,6 +53,7 @@ import DesktopItinerary, {
 } from "../revamp/desktopItinerary/DesktopItinerary";
 import DesktopCartFooter from "../revamp/desktopItinerary/DesktopCartFooter";
 import PaneModal from "../revamp/desktopItinerary/PaneModal";
+import { PANE_ZOOM } from "../revamp/desktopItinerary/desktopTokens";
 import kairaPrompts from "../revamp/mobileItinerary/kairaPrompts";
 import {
   lockDocumentScroll,
@@ -1009,6 +1010,21 @@ export default function BotApp({
       isMobile || !leftPanelBox
         ? undefined
         : { left: leftPanelBox.left, width: leftPanelBox.width, right: "auto" },
+    [isMobile, leftPanelBox],
+  );
+  // The map's copy of the desktop itinerary's cart bar, zoomed like the pane's
+  // own (PANE_ZOOM). Zoom scales `left` and `width` too, so they are given in
+  // zoomed px to land on the same panel box.
+  const mapCartBarStyle = React.useMemo<React.CSSProperties | undefined>(
+    () =>
+      isMobile || !leftPanelBox
+        ? undefined
+        : {
+            zoom: PANE_ZOOM,
+            left: leftPanelBox.left / PANE_ZOOM,
+            width: leftPanelBox.width / PANE_ZOOM,
+            right: "auto",
+          },
     [isMobile, leftPanelBox],
   );
 
@@ -5508,7 +5524,7 @@ Start Location: ${details.startLocation}`;
                   // design between the trip and its map. Still fixed over the
                   // map (ctaBarStyle); View Cart opens the payment drawer.
                   variant="desktopItinerary"
-                  barStyle={ctaBarStyle}
+                  barStyle={mapCartBarStyle}
                   viewMode="itinerary"
                 />
               )}

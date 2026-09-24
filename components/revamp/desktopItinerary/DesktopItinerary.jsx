@@ -13,7 +13,7 @@ import { TRIP_DAY_ACTION, dayTurn } from "./ChatDayWidget";
 import * as T from "../mobileItinerary/designTokens";
 import DesktopTripHeader from "./DesktopTripHeader";
 import DesktopTripCard from "./DesktopTripCard";
-import { GUTTER } from "./desktopTokens";
+import { GUTTER, PANE_ZOOM } from "./desktopTokens";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  DesktopItinerary — the itinerary pane of the desktop chat page, as "Kaira E
@@ -44,11 +44,9 @@ import { GUTTER } from "./desktopTokens";
 //  Sheet.jsx).
 // ─────────────────────────────────────────────────────────────────────────────
 
-// The pane's type is drawn in the phone's px sizes (shared LegSection), which
-// read small beside the chat, so the header, body, footer and More menu are
-// CSS-zoomed as a whole. Zoom rather than new sizes keeps the phone untouched
-// and the design's proportions (spacing, icons, pills) intact.
-const PANE_ZOOM = { zoom: 1.1 };
+// The header, body, footer and More menu are CSS-zoomed as a whole (see
+// PANE_ZOOM in desktopTokens).
+const ZOOM = { zoom: PANE_ZOOM };
 
 // How far below the top of the scroller a leg comes to rest.
 const ANCHOR_GAP = 8;
@@ -171,7 +169,7 @@ function MoreMenu({ onClose, onDownloadPdf, isDownloadingPdf, onShare, onSetting
         role="menu"
         className="ttw-menu-in absolute flex flex-col"
         style={{
-          ...PANE_ZOOM,
+          ...ZOOM,
           zIndex: 31,
           // In zoomed px, like the header it hangs from.
           top: 64,
@@ -560,7 +558,7 @@ export default function DesktopItinerary({
         className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-white font-inter leading-[normal]"
         style={{ isolation: "isolate" }}
       >
-        <div style={PANE_ZOOM}>
+        <div style={ZOOM}>
           {ready ? (
             <DesktopTripHeader
               title={trip.title}
@@ -590,7 +588,7 @@ export default function DesktopItinerary({
             <div
               ref={contentRef}
               className="flex flex-col gap-[11px]"
-              style={{ padding: `16px ${GUTTER} 24px`, ...PANE_ZOOM }}
+              style={{ padding: `16px ${GUTTER} 24px`, ...ZOOM }}
             >
               {!isArchive ? (
                 <DesktopTripCard
@@ -641,7 +639,7 @@ export default function DesktopItinerary({
           ) : null}
         </div>
 
-        <div style={PANE_ZOOM}>{footer}</div>
+        <div style={ZOOM}>{footer}</div>
 
         {moreOpen ? (
           <MoreMenu
