@@ -48,7 +48,7 @@ import { GUTTER } from "./desktopTokens";
 // read small beside the chat, so the header, body, footer and More menu are
 // CSS-zoomed as a whole. Zoom rather than new sizes keeps the phone untouched
 // and the design's proportions (spacing, icons, pills) intact.
-const PANE_ZOOM = { zoom: 1.3 };
+const PANE_ZOOM = { zoom: 1.1 };
 
 // How far below the top of the scroller a leg comes to rest.
 const ANCHOR_GAP = 8;
