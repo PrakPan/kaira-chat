@@ -216,10 +216,10 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
       { label: "Great Ocean Road drive", prompt: PROMPTS.greatOceanRoad },
     ],
     images: [
-      { image: IMG.heroMcg, caption: "The 'G, Boxing Day" },
-      { image: IMG.heroHarbour, caption: "Sydney, the harbour" },
-      { image: IMG.heroQueenstown, caption: "Queenstown, South Island" },
-      { image: IMG.heroBondi, caption: "Bondi to Coogee" },
+      { image: IMG.heroMcg, caption: "The 'G, Boxing Day", where: "Melbourne" },
+      { image: IMG.heroHarbour, caption: "Sydney, the harbour", where: "Sydney" },
+      { image: IMG.heroQueenstown, caption: "Queenstown, South Island", where: "Queenstown" },
+      { image: IMG.heroBondi, caption: "Bondi to Coogee", where: "Sydney" },
     ],
   },
   sections: [
@@ -265,6 +265,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "Walk the rooms and the turf of the 100,000-seat 'G.",
           tag: "Melbourne",
           activityId: ACTIVITY.mcgTour,
+          where: "Melbourne",
         },
         {
           image: IMG.actOperaHouse,
@@ -272,6 +273,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "Inside the sails, with the stories behind the shell.",
           tag: "Sydney",
           activityId: ACTIVITY.operaHouse,
+          where: "Sydney",
         },
         {
           image: IMG.actThunderJet,
@@ -279,6 +281,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "Spins and 270° turns past the Opera House and the Bridge.",
           tag: "Sydney",
           activityId: ACTIVITY.thunderJet,
+          where: "Sydney",
         },
         {
           image: IMG.actBlueMountains,
@@ -286,6 +289,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "The Three Sisters, a waterfall walk and lunch. A full day out.",
           tag: "Day tour",
           activityId: ACTIVITY.blueMountains,
+          where: "Blue Mountains",
         },
         {
           image: IMG.actPenguinParade,
@@ -293,6 +297,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "Phillip Island at dusk, when the little penguins come ashore.",
           tag: "Melbourne",
           activityId: ACTIVITY.penguinParade,
+          where: "Melbourne",
         },
         {
           image: IMG.actGreatOceanRoad,
@@ -300,6 +305,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "The Twelve Apostles at sunset, koalas on the way.",
           tag: "Day tour",
           activityId: ACTIVITY.greatOceanRoad,
+          where: "Great Ocean Road",
         },
         {
           image: IMG.actSkyfeast,
@@ -307,6 +313,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "The revolving buffet, 250m over the city.",
           tag: "Sydney",
           activityId: ACTIVITY.skyfeast,
+          where: "Sydney",
         },
       ],
     },
@@ -337,6 +344,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
         title: "Boxing Day Test · Day 1 ticket",
         meta: "We'll sort seats and the Melbourne leg around it",
         prompt: PROMPTS.boxingDayTicket,
+        where: "Melbourne",
       },
     },
     // ── Where to stand at midnight (POIs, sand) ──
@@ -357,6 +365,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
             kind: "poi",
             label: "Mrs Macquarie's Point",
             short: "Mrs Macquarie's Point",
+            where: "Sydney",
           },
         },
         {
@@ -369,6 +378,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
             kind: "poi",
             label: "Midnight harbour cruise",
             short: "Midnight harbour cruise",
+            where: "Sydney",
           },
         },
         {
@@ -381,6 +391,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
             kind: "poi",
             label: "Taronga Zoo lawns",
             short: "Taronga Zoo lawns",
+            where: "Sydney",
           },
         },
       ],
@@ -399,6 +410,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "Full-throttle through the canyon that invented bungy.",
           tag: "Queenstown",
           activityId: ACTIVITY.kawarauJet,
+          where: "Queenstown",
         },
         {
           image: IMG.nzSkydive,
@@ -406,6 +418,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "Out the door at 15,000ft, with the Remarkables below.",
           tag: "Queenstown",
           activityId: ACTIVITY.tandemSkydive,
+          where: "Queenstown",
         },
         {
           image: IMG.nzWalterPeak,
@@ -413,6 +426,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "Across the lake on a coal steamer, lunch at the farm.",
           tag: "Queenstown",
           activityId: ACTIVITY.walterPeak,
+          where: "Queenstown",
         },
         {
           image: IMG.nzHobbiton,
@@ -420,6 +434,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "The Shire, hobbit holes and a pint at the Green Dragon.",
           tag: "Auckland",
           activityId: ACTIVITY.hobbiton,
+          where: "Auckland",
         },
         {
           image: IMG.nzGlowworm,
@@ -427,6 +442,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "Drifting under a ceiling of live constellations at Waitomo.",
           tag: "Waitomo",
           activityId: ACTIVITY.glowwormCave,
+          where: "Waitomo",
         },
         {
           image: IMG.nzHookerValley,
@@ -434,6 +450,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           line: "Three swing bridges to a glacier lake under Mount Cook.",
           tag: "Mount Cook",
           activityId: ACTIVITY.hookerValley,
+          where: "Mount Cook",
         },
       ],
     },
@@ -487,7 +504,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           rating: "4.5",
           reviews: "1,124",
           prompt: PROMPTS.quay,
-          item: { kind: "restaurant", label: "Quay", short: "Quay" },
+          item: { kind: "restaurant", label: "Quay", short: "Quay", where: "Sydney" },
         },
         {
           image: IMG.eatMrWong,
@@ -497,7 +514,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           rating: "4.4",
           reviews: "4,153",
           prompt: PROMPTS.mrWong,
-          item: { kind: "restaurant", label: "Mr Wong", short: "Mr Wong" },
+          item: { kind: "restaurant", label: "Mr Wong", short: "Mr Wong", where: "Sydney" },
         },
         {
           image: IMG.eatRouleGalette,
@@ -511,6 +528,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
             kind: "restaurant",
             label: "Roule Galette",
             short: "Roule Galette",
+            where: "Melbourne",
           },
         },
         {
@@ -521,7 +539,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           rating: "4.6",
           reviews: "17,312",
           prompt: PROMPTS.fergburger,
-          item: { kind: "restaurant", label: "Fergburger", short: "Fergburger" },
+          item: { kind: "restaurant", label: "Fergburger", short: "Fergburger", where: "Queenstown" },
         },
       ],
     },
@@ -881,6 +899,7 @@ const AustraliaNewZealandThemePage = ({
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
+        onBuildAround={(item) => openThemeForm(THEME_SLUG, [item])}
       />
       {/* Detail drawers are retired on this page — a click anywhere on a
           card adds or removes it, so nothing opens a drawer. Uncomment to

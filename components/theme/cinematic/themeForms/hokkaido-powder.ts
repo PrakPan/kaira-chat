@@ -58,6 +58,7 @@ const hokkaidoPowderForm: ThemeForm = {
       tag: "MOST PICKED",
       nights: 9,
       skeleton: "sapporo_niseko",
+      covers: ["Sapporo", "Niseko", "Otaru", "Noboribetsu", "Furano", "Biei", "Japan"],
       fareNote: "Post-New-Year lull is the cheapest window for this one.",
     },
     {
@@ -67,6 +68,7 @@ const hokkaidoPowderForm: ThemeForm = {
       tag: "BY RAIL",
       nights: 11,
       skeleton: "tokyo_hakodate_sapporo",
+      covers: ["Tokyo", "Hakodate", "Sapporo", "Noboribetsu", "Otaru", "Furano", "Biei", "Japan"],
       fareNote: "One JR Pass covers the Seikan Tunnel run both ways.",
     },
     {
@@ -76,6 +78,7 @@ const hokkaidoPowderForm: ThemeForm = {
       tag: "FESTIVAL",
       nights: 8,
       skeleton: "sapporo_otaru_noboribetsu",
+      covers: ["Sapporo", "Otaru", "Noboribetsu", "Furano", "Biei", "Japan"],
       // The festival runs the first full week of February, so this route only
       // shows for February and lands on the real dates of whichever year the
       // reader is booking.
@@ -90,6 +93,7 @@ const hokkaidoPowderForm: ThemeForm = {
       tag: "QUIET",
       nights: 7,
       skeleton: "sapporo_niseko_noboribetsu",
+      covers: ["Sapporo", "Niseko", "Noboribetsu", "Otaru", "Japan"],
       months: [12, 3],
       fareNote: "Shoulder months - quietest slopes and the best value.",
     },

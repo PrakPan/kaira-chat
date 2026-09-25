@@ -110,10 +110,10 @@ const northernLightsConfig: CinematicThemeConfig = {
       { label: "What does it cost?", prompt: PROMPTS.cost },
     ],
     images: [
-      { image: img("Sleep Beneath The Aurora.jpg"), caption: "Glass igloo, Finland" },
-      { image: img("The Tromsø Aurora Escape.jpg"), caption: "Tromsø, Norway" },
-      { image: img("Abisko Under The Lights.jpg"), caption: "Abisko, Sweden" },
-      { image: img("Iceland's Winter Spectacle.jpg"), caption: "Iceland, winter" },
+      { image: img("Sleep Beneath The Aurora.jpg"), caption: "Glass igloo, Finland", where: "Finnish Lapland" },
+      { image: img("The Tromsø Aurora Escape.jpg"), caption: "Tromsø, Norway", where: "Tromsø" },
+      { image: img("Abisko Under The Lights.jpg"), caption: "Abisko, Sweden", where: "Abisko" },
+      { image: img("Iceland's Winter Spectacle.jpg"), caption: "Iceland, winter", where: "Iceland" },
     ],
   },
   sections: [
@@ -129,30 +129,35 @@ const northernLightsConfig: CinematicThemeConfig = {
           name: "Sleep beneath the aurora",
           line: "Glass roof. Lights overhead.",
           tag: "Glamping · Finland",
+          where: "Finnish Lapland",
         },
         {
           image: img("Ruska Marathon -- Run Under the Lights.png"),
           name: "Ruska Marathon - run under the lights",
           line: "Arctic race. Aurora above.",
           tag: "Running · Active",
+          where: "Finnish Lapland",
         },
         {
           image: img("Husky Safari -- Run With the Pack.png"),
           name: "Husky safari - run with the pack",
           line: "The Arctic in motion.",
           tag: "Adventure · Lapland",
+          where: "Lapland",
         },
         {
           image: img("Inside Santa's Homeland.jpg"),
           name: "Inside Santa's homeland",
           line: "Magic beyond the postcards.",
           tag: "Family · Magical",
+          where: "Rovaniemi",
         },
         {
           image: img("Arctic Cabin Escape.png"),
           name: "Arctic cabin escape",
           line: "Hot tub. Wilderness. Aurora.",
           tag: "Glamping · Norway",
+          where: "Tromsø",
         },
       ],
     },
@@ -255,30 +260,35 @@ const northernLightsConfig: CinematicThemeConfig = {
           name: "The husky trail after dark",
           line: "Led by paws and instinct.",
           tag: "Essential",
+          where: "Lapland",
         },
         {
           image: img("Chasing The Aurora By Snowmobile.png"),
           name: "Chasing the aurora by snowmobile",
           line: "Far from roads. Closer to wonder.",
           tag: "Arctic night",
+          where: "Lapland",
         },
         {
           image: img("Ice Fishing on a Frozen Lake.jpg"),
           name: "Ice fishing on a frozen lake",
           line: "The Arctic at its quietest.",
           tag: "Lapland",
+          where: "Lapland",
         },
         {
           image: img("A Day With Arctic Herders.png"),
           name: "A day with Arctic herders",
           line: "Life at the edge of winter.",
           tag: "Culture",
+          where: "Lapland",
         },
         {
           image: img("Arctic Sauna Under the Stars.png"),
           name: "Arctic sauna under the stars",
           line: "The Nordic evening perfected.",
           tag: "Wellness",
+          where: "Lapland",
         },
       ],
     },
@@ -379,6 +389,7 @@ const NorthernLightsThemePage = ({
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
+        onBuildAround={(item) => openThemeForm(THEME_SLUG, [item])}
       />
     </Layout>
   );

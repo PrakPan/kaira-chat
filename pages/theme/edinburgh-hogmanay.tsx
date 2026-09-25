@@ -186,10 +186,10 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
     ],
     // Desktop-only Kaira polaroid collage.
     images: [
-      { image: PIC.torchlight, caption: "Dec 29, Torchlight" },
-      { image: PIC.streetParty, caption: "Dec 31, The Bells" },
-      { image: PIC.castleDawn, caption: "Edinburgh Castle" },
-      { image: PIC.firstFootin, caption: "Jan 1, First Footin" },
+      { image: PIC.torchlight, caption: "Dec 29, Torchlight", where: "Edinburgh" },
+      { image: PIC.streetParty, caption: "Dec 31, The Bells", where: "Edinburgh" },
+      { image: PIC.castleDawn, caption: "Edinburgh Castle", where: "Edinburgh" },
+      { image: PIC.firstFootin, caption: "Jan 1, First Footin", where: "Edinburgh" },
     ],
   },
   sections: [
@@ -246,6 +246,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           line: "The official Street Party + Castle fireworks.",
           tag: "Kaira's pick",
           activityId: ACTIVITY.spectacle,
+          where: "Edinburgh",
         },
         {
           image: TICKET_IMG.harryPotter,
@@ -253,6 +254,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           line: "The Potter trail plus Edinburgh Castle.",
           tag: "Day tour",
           activityId: ACTIVITY.harryPotter,
+          where: "Edinburgh",
         },
         {
           image: TICKET_IMG.concert,
@@ -260,6 +262,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           line: "Live music under the Castle on the bells.",
           tag: "Dec 31",
           activityId: ACTIVITY.concert,
+          where: "Edinburgh",
         },
         {
           image: TICKET_IMG.ceilidh,
@@ -267,6 +270,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           line: "Proper Scottish dancing into the new year.",
           tag: "Dec 31",
           activityId: ACTIVITY.ceilidh,
+          where: "Edinburgh",
         },
       ],
     },
@@ -359,6 +363,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           line: "The volcano over the city. 45 minutes up.",
           tag: "Sunrise",
           prompt: PROMPTS.arthursSeat,
+          where: "Edinburgh",
           objectPosition: "center 30%",
         },
         {
@@ -367,6 +372,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           line: "The Crown Jewels, before the crowds.",
           tag: "Half day",
           prompt: PROMPTS.edinburghCastle,
+          where: "Edinburgh",
           objectPosition: "center 20%",
         },
         {
@@ -375,6 +381,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           line: "The Highlands under winter snow.",
           tag: "Day trip",
           prompt: PROMPTS.lochNessGlencoe,
+          where: "Scottish Highlands",
           objectPosition: "center 40%",
         },
         {
@@ -383,6 +390,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           line: "The distilleries worth the drive.",
           tag: "Day trip",
           prompt: PROMPTS.speyside,
+          where: "Speyside",
           objectPosition: "center 30%",
         },
       ],
@@ -708,6 +716,7 @@ const EdinburghHogmanayThemePage = ({
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
+        onBuildAround={(item) => openThemeForm(THEME_SLUG, [item])}
       />
       {/* Detail drawers are retired on this page — a click anywhere on a
           card adds or removes it, so nothing opens a drawer. Uncomment to

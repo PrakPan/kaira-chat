@@ -40,6 +40,12 @@ export interface CinematicSelectableItem {
   label: string;
   short: string;
   id?: string;
+  // Where the traveller has to be for this — the most specific place a route
+  // would need to include ("Krabi", "Ubud", "Sapporo"), or the country for
+  // something usable anywhere in it (a rail pass). The theme form matches it
+  // against each route's `covers` to offer only routes that fit the picks.
+  // Absent on a card nobody tagged; the form then can't vouch for any route.
+  where?: string;
 }
 
 // What a prompt states about the trip it asks for. A card whose copy reads
@@ -106,6 +112,8 @@ export interface CinematicPromptCard {
   // CTA toggles this item into the saved list (with a "selected" treatment)
   // instead of seeding `prompt`. Takes priority over `prompt`/`activityId`.
   item?: CinematicSelectableItem;
+  // Where this is — copied onto the saved item (see CinematicSelectableItem).
+  where?: string;
 }
 
 // Horizontal "Step into the scene" card — thumbnail + meta + price. The
@@ -166,6 +174,9 @@ export interface CinematicListRow {
   // provider source to the detail endpoint when the catalog requires it.
   activityId?: string;
   activitySource?: string;
+  // Where this is, when the row sits in a selectable section (see
+  // CinematicSelectableItem.where).
+  where?: string;
 }
 
 // Dark checklist row ("The Santa bit, done properly"): emoji + name + meta.
@@ -228,6 +239,8 @@ export interface CinematicEatCard {
   // Same contract as CinematicPromptCard.item — toggles this restaurant into
   // the saved list when the page supplies a selection handler.
   item?: CinematicSelectableItem;
+  // Where this is. Falls back to `city` when absent.
+  where?: string;
 }
 
 // Visa country card ("Your visa, handled"): the country, the cities it covers,
@@ -303,6 +316,8 @@ export interface CinematicFeatureCta {
   // long-tail-charter cards rely on — the pill has always said "+ Add", and now
   // that the detail drawer is retired it does exactly that.
   item?: CinematicSelectableItem;
+  // Where this is (see CinematicSelectableItem.where).
+  where?: string;
 }
 
 // Numbered row in a `steps` section ("Sketch it. I'll finish it."): the
@@ -541,6 +556,8 @@ export interface CinematicHeroImage {
   // an existing config becomes selectable without being rewritten; a polaroid
   // with neither stays purely decorative.
   item?: CinematicSelectableItem;
+  // Where the scene is (see CinematicSelectableItem.where).
+  where?: string;
   /** @deprecated Ignored. The hero polaroids no longer navigate — they save
    *  the scene they show. Existing configs may still carry this; it has no
    *  effect. */

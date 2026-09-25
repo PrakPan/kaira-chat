@@ -93,10 +93,10 @@ const greeceConfig: CinematicThemeConfig = {
       { label: "A romantic Greece for 2", prompt: PROMPTS.romantic },
     ],
     images: [
-      { image: img("Santorini.jpg"), caption: "Santorini, caldera" },
-      { image: img("Athens.jpg"), caption: "Athens, the Acropolis" },
-      { image: img("Crete.jpg"), caption: "Crete, the south" },
-      { image: img("Mykonos.jpg"), caption: "Mykonos, quiet side" },
+      { image: img("Santorini.jpg"), caption: "Santorini, caldera", where: "Santorini" },
+      { image: img("Athens.jpg"), caption: "Athens, the Acropolis", where: "Athens" },
+      { image: img("Crete.jpg"), caption: "Crete, the south", where: "Crete" },
+      { image: img("Mykonos.jpg"), caption: "Mykonos, quiet side", where: "Mykonos" },
     ],
   },
   sections: [
@@ -110,30 +110,35 @@ const greeceConfig: CinematicThemeConfig = {
         {
           image: img("Athens.jpg"),
           name: "Athens - ruins and rooftops",
+          where: "Athens",
           line: "2,500 years. Still buzzing.",
           tag: "History · City",
         },
         {
           image: img("Santorini.jpg"),
           name: "Santorini - blue domes, real story",
+          where: "Santorini",
           line: "The photo is real. Book early.",
           tag: "Scenic · Romantic",
         },
         {
           image: img("Crete.jpg"),
           name: "Crete - more than a beach",
+          where: "Crete",
           line: "Biggest island. Wildly underrated.",
           tag: "Culture · Beach",
         },
         {
           image: img("Meteora.jpg"),
           name: "Meteora - monasteries on cliffs",
+          where: "Meteora",
           line: "Built on nothing. Literally.",
           tag: "UNESCO",
         },
         {
           image: img("Mykonos.jpg"),
           name: "Mykonos - beyond the party",
+          where: "Mykonos",
           line: "The calm side of Mykonos.",
           tag: "Beach",
         },
@@ -149,30 +154,35 @@ const greeceConfig: CinematicThemeConfig = {
         {
           image: img("Easter in Greece.png"),
           name: "Easter in Greece - nothing like it",
+          where: "Greece",
           line: "Bigger than Christmas.",
           tag: "Apr – May",
         },
         {
           image: img("Epidaurus.png"),
           name: "Epidaurus - the original theatre",
+          where: "Epidaurus",
           line: "2,400 years old.",
           tag: "Jun – Aug",
         },
         {
           image: img("Thessaloniki.jpg"),
           name: "Thessaloniki - where Greeks holiday",
+          where: "Thessaloniki",
           line: "More food per street.",
           tag: "Year-round",
         },
         {
           image: img("Hydra.jpg"),
           name: "Hydra - no cars, just donkeys",
+          where: "Hydra",
           line: "90 minutes from Athens.",
           tag: "Day trip",
         },
         {
           image: img("Delphi.jpg"),
           name: "Delphi - where gods were consulted",
+          where: "Delphi",
           line: "The centre of the ancient world.",
           tag: "Day trip",
         },
@@ -232,30 +242,35 @@ const greeceConfig: CinematicThemeConfig = {
         {
           image: img("Acropolis.jpg"),
           name: "Acropolis - 8am, no one else",
+          where: "Athens",
           line: "You and the Parthenon.",
           tag: "Athens",
         },
         {
           image: img("Catamaran.jpg"),
           name: "Catamaran - Santorini from the sea",
+          where: "Santorini",
           line: "Better from the water.",
           tag: "Santorini",
         },
         {
           image: img("Samaria Gorge.png"),
           name: "Samaria Gorge - hike, then beach",
+          where: "Crete",
           line: "16km. Worth every step.",
           tag: "Crete",
         },
         {
           image: img("Cook Greek — In a Local Home.png"),
           name: "Cook Greek - in a local home",
+          where: "Greece",
           line: "A Greek grandmother's kitchen.",
           tag: "Food",
         },
         {
           image: img("Sail the Cyclades — Your Own Route.png"),
           name: "Sail the Cyclades - your own route",
+          where: "Cyclades",
           line: "New island every morning.",
           tag: "Sailing",
         },
@@ -357,6 +372,7 @@ const GreeceIslandsThemePage = ({
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
+        onBuildAround={(item) => openThemeForm(THEME_SLUG, [item])}
       />
     </Layout>
   );

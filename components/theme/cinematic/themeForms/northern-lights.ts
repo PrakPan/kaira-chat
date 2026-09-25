@@ -75,6 +75,7 @@ const northernLightsForm: ThemeForm = {
       tag: "MOST POPULAR",
       nights: 7,
       skeleton: "finland_helsinki_rovaniemi",
+      covers: ["Finland", "Finnish Lapland", "Lapland", "Rovaniemi", "Helsinki"],
       fareNote:
         "Finnair DEL⇄HEL direct - best connectivity. Christmas week peaks.",
     },
@@ -85,6 +86,7 @@ const northernLightsForm: ThemeForm = {
       tag: "ADVENTURE",
       nights: 7,
       skeleton: "norway_oslo_bergen_tromso",
+      covers: ["Norway", "Tromsø", "Lapland", "Oslo", "Bergen"],
       fareNote: "One-stop DEL/BOM→OSL; Jan–Feb best aurora.",
     },
     {
@@ -94,6 +96,7 @@ const northernLightsForm: ThemeForm = {
       tag: "GUIDED",
       nights: 7,
       skeleton: "iceland_ring_south",
+      covers: ["Iceland", "Reykjavik"],
       fareNote: "Via a Europe hub; private driver-guide along the south coast.",
     },
     {
@@ -103,6 +106,7 @@ const northernLightsForm: ThemeForm = {
       tag: "OFF-GRID",
       nights: 6,
       skeleton: "sweden_stockholm_abisko",
+      covers: ["Sweden", "Abisko", "Lapland", "Stockholm"],
       fareNote: "One-stop DEL/BOM→ARN; March cheapest.",
     },
   ],

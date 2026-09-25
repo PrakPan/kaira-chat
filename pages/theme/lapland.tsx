@@ -164,10 +164,10 @@ const laplandConfig: CinematicThemeConfig = {
     ],
     // Desktop-only Kaira + polaroid collage — each polaroid opens its destination.
     images: [
-      { image: IMG.finland, caption: "Aurora, Finland", href: "/europe/finland" },
-      { image: IMG.rovaniemi, caption: "Santa's Rovaniemi", href: "/europe/finland" },
-      { image: IMG.tromso, caption: "Husky trails, Norway", href: "/europe/norway" },
-      { image: IMG.kiruna, caption: "Deep north, Sweden", href: "/europe/sweden" },
+      { image: IMG.finland, caption: "Aurora, Finland", where: "Finland", href: "/europe/finland" },
+      { image: IMG.rovaniemi, caption: "Santa's Rovaniemi", where: "Rovaniemi", href: "/europe/finland" },
+      { image: IMG.tromso, caption: "Husky trails, Norway", where: "Norway", href: "/europe/norway" },
+      { image: IMG.kiruna, caption: "Deep north, Sweden", where: "Sweden", href: "/europe/sweden" },
     ],
   },
   sections: [
@@ -229,6 +229,7 @@ const laplandConfig: CinematicThemeConfig = {
           image: `${CDN}/media/website/lapland-2026/Rovaniemi.png`,
           gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
           prompt: PROMPTS.baseRovaniemi,
+          where: "Rovaniemi",
         },
         {
           name: "Saariselkä",
@@ -237,6 +238,7 @@ const laplandConfig: CinematicThemeConfig = {
           image: IMG.finland,
           gradient: "linear-gradient(150deg, #16324f, #1f8a5a 140%)",
           prompt: PROMPTS.baseSaariselka,
+          where: "Saariselkä",
         },
         {
           name: "Levi",
@@ -245,6 +247,7 @@ const laplandConfig: CinematicThemeConfig = {
           image: IMG.kiruna,
           gradient: "linear-gradient(150deg, #1a2436, #3d4f7a)",
           prompt: PROMPTS.baseLevi,
+          where: "Levi",
         },
         {
           name: "Kakslauttanen",
@@ -253,6 +256,7 @@ const laplandConfig: CinematicThemeConfig = {
           image: IMG.tromso,
           gradient: "linear-gradient(150deg, #0e1530, #445069)",
           prompt: PROMPTS.baseKakslauttanen,
+          where: "Kakslauttanen",
         },
         {
           name: "Helsinki",
@@ -261,6 +265,7 @@ const laplandConfig: CinematicThemeConfig = {
           image: `${CDN}/media/website/lapland-2026/Helsinki.png`,
           gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
           prompt: PROMPTS.baseHelsinki,
+          where: "Helsinki",
         },
       ],
     },
@@ -363,6 +368,7 @@ const laplandConfig: CinematicThemeConfig = {
           image: IMG.finland,
           gradient: "linear-gradient(140deg, #0e1530, #445069)",
           activityId: "6610b432-c665-4d37-96dc-092738b66881",
+          where: "Rovaniemi",
         },
         {
           name: "Husky trail after dark",
@@ -371,6 +377,7 @@ const laplandConfig: CinematicThemeConfig = {
           image: IMG.tromso,
           gradient: "linear-gradient(140deg, #1a2436, #3d4f7a)",
           activityId: "897a7ac8-e8e5-4911-912d-41494c71d5fb",
+          where: "Rovaniemi",
         },
         {
           name: "Arctic Lights Chase & Photo Safari",
@@ -379,6 +386,7 @@ const laplandConfig: CinematicThemeConfig = {
           image: IMG.rovaniemi,
           gradient: "linear-gradient(140deg, #16324f, #1f8a5a 160%)",
           activityId: "6610b432-c665-4d37-96dc-092738b66881",
+          where: "Rovaniemi",
         },
         {
           name: "Break through the frozen Bothnian Sea",
@@ -387,6 +395,7 @@ const laplandConfig: CinematicThemeConfig = {
           image: IMG.sweden,
           gradient: "linear-gradient(140deg, #16324f, #3d4f7a)",
           activityId: "470fb6f1-064a-4f83-8e8b-867aeeb106a8",
+          where: "Rovaniemi",
         },
         {
           name: "Snowmobile safari & fireside feast",
@@ -395,6 +404,7 @@ const laplandConfig: CinematicThemeConfig = {
           image: IMG.kiruna,
           gradient: "linear-gradient(140deg, #0e1530, #1f8a5a 170%)",
           activityId: "5c910808-12d9-4eca-869b-1d14d73a307f",
+          where: "Rovaniemi",
         },
         {
           name: "Meet Arctic wildlife in the snow",
@@ -403,6 +413,7 @@ const laplandConfig: CinematicThemeConfig = {
           image: IMG.norway,
           gradient: "linear-gradient(140deg, #b84034, #f0e9d6 200%)",
           activityId: "afd2220f-5a46-43f3-9b28-e3226320b2fa",
+          where: "Rovaniemi",
         },
       ],
     },
@@ -717,6 +728,7 @@ const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) =>
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
+        onBuildAround={(item) => openThemeForm(THEME_SLUG, [item])}
       />
       {/* Detail drawers are retired on this page — a click anywhere on a
           card adds or removes it, so nothing opens a drawer. Uncomment to

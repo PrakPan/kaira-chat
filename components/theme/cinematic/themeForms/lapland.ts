@@ -64,6 +64,7 @@ const laplandForm: ThemeForm = {
       tag: "FAMILY PICK",
       nights: 6,
       skeleton: "santa_town",
+      covers: ["Rovaniemi", "Finland"],
       // Only fires when December is the chosen month; in January or March the
       // same trip simply departs mid-month, which is the quiet way to do it.
       anchor: { month: 12, day: 22, note: "Christmas in Rovaniemi" },
@@ -76,6 +77,7 @@ const laplandForm: ThemeForm = {
       tag: "MOST PICKED",
       nights: 5,
       skeleton: "aurora_glass",
+      covers: ["Saariselkä", "Kakslauttanen", "Finland"],
       fareNote: "Glass igloos are the first thing to sell out in any month.",
     },
     {
@@ -85,6 +87,7 @@ const laplandForm: ThemeForm = {
       tag: "SEE MORE",
       nights: 7,
       skeleton: "nordic_slow",
+      covers: ["Helsinki", "Rovaniemi", "Finland"],
       fareNote: "Finnair DEL⇄HEL direct, then the overnight train or a hop north.",
     },
   ],

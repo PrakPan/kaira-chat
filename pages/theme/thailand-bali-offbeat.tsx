@@ -207,10 +207,10 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
     ],
     // Desktop-only Kaira polaroid collage (hidden on mobile).
     images: [
-      { image: IMG.hongLagoon, caption: "Krabi, the Hong lagoon" },
-      { image: IMG.eastBaliPalaces, caption: "East Bali, the water palaces" },
-      { image: IMG.giliSunrise, caption: "Gili T, first light" },
-      { image: IMG.kelingking, caption: "Nusa Penida, Kelingking" },
+      { image: IMG.hongLagoon, caption: "Krabi, the Hong lagoon", where: "Krabi" },
+      { image: IMG.eastBaliPalaces, caption: "East Bali, the water palaces", where: "East Bali" },
+      { image: IMG.giliSunrise, caption: "Gili T, first light", where: "Gili Trawangan" },
+      { image: IMG.kelingking, caption: "Nusa Penida, Kelingking", where: "Nusa Penida" },
     ],
   },
   sections: [
@@ -260,6 +260,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           line: "The hidden lagoon before the speedboats find it - one boat, one crew, snorkel stops in between.",
           tag: "Krabi",
           activityId: ACTIVITY.hongLagoon,
+          where: "Krabi",
         },
         {
           image: IMG.mangroveKayak,
@@ -267,6 +268,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           line: "Paddle through limestone caves and mangrove channels, barbecue under the karsts after.",
           tag: "Krabi",
           activityId: ACTIVITY.mangroveKayak,
+          where: "Krabi",
         },
         {
           image: IMG.cookingClass,
@@ -274,6 +276,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           line: "Market first, wok second. The four dishes you'll actually cook again at home.",
           tag: "Krabi",
           activityId: ACTIVITY.cookingClass,
+          where: "Krabi",
         },
         {
           image: IMG.khaoHonNak,
@@ -281,6 +284,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           line: "A limestone ridge nobody climbs, panoramic at the top, lunch waiting at the bottom.",
           tag: "Krabi",
           activityId: ACTIVITY.khaoHonNak,
+          where: "Krabi",
         },
         {
           image: IMG.tukTukNight,
@@ -288,6 +292,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           line: "Lit temples after dark and the stalls locals queue at - four hours, no bus.",
           tag: "Chiang Mai",
           activityId: ACTIVITY.tukTukNight,
+          where: "Chiang Mai",
         },
         {
           image: IMG.taladNoi,
@@ -295,6 +300,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           line: "The old Chinatown alleys - murals, mechanic shops and a shrine at the end.",
           tag: "Bangkok",
           activityId: ACTIVITY.taladNoi,
+          where: "Bangkok",
         },
         {
           image: IMG.ubudWaterfalls,
@@ -302,6 +308,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           line: "Private car, three waterfalls, and Tirta Empul before the tour buses arrive.",
           tag: "Ubud",
           activityId: ACTIVITY.ubudWaterfalls,
+          where: "Ubud",
         },
         {
           image: IMG.eastBaliPalaces,
@@ -309,6 +316,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           line: "The gates of heaven and two royal water palaces, small group, east-side pace.",
           tag: "East Bali",
           activityId: ACTIVITY.eastBaliPalaces,
+          where: "East Bali",
         },
       ],
     },
@@ -366,6 +374,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           badge: "Boat from Bali",
           line: "No cars, no motorbikes. Bicycles, turtles off the beach, and a sunset side everyone walks to.",
           activityId: ISLAND.giliTrawangan,
+          where: "Gili Trawangan",
         },
         {
           image: IMG.lembongan,
@@ -375,6 +384,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           badge: "40 min from Sanur",
           line: "The yellow bridge, mangrove channels and a coastline of secluded coves - Bali without Bali's traffic.",
           activityId: ISLAND.lembongan,
+          where: "Nusa Lembongan",
         },
         {
           image: IMG.penida,
@@ -384,6 +394,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           badge: "Day or overnight",
           line: "Kelingking cliff, Diamond Beach and jungle in between. Stay the night and you'll have it at dawn.",
           activityId: ISLAND.penida,
+          where: "Nusa Penida",
         },
         {
           image: IMG.kohYaoNoi,
@@ -393,6 +404,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           badge: "Ferry from Krabi",
           line: "Between Phuket and Krabi and ignored by both. Rubber plantations, longtails, and no beach clubs.",
           activityId: ISLAND.kohYaoNoi,
+          where: "Koh Yao Noi",
         },
       ],
     },
@@ -418,6 +430,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
             kind: "poi",
             label: "Tirta Gangga (Karangasem)",
             short: "Tirta Gangga",
+            where: "East Bali",
             id: POI.tirtaGangga,
           },
         },
@@ -431,6 +444,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
             kind: "activity",
             label: "Ubud waterfall circuit",
             short: "Ubud waterfalls",
+            where: "Ubud",
             id: BALI_ACTIVITY.ubudWaterfallTour,
           },
         },
@@ -443,6 +457,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
             kind: "poi",
             label: "Kelingking cliff (Nusa Penida)",
             short: "Kelingking cliff",
+            where: "Nusa Penida",
             id: POI.kelingking,
           },
         },
@@ -456,6 +471,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
             kind: "activity",
             label: "Uluwatu at sunset (Jimbaran)",
             short: "Uluwatu sunset",
+            where: "Uluwatu",
             id: BALI_ACTIVITY.uluwatuSunset,
           },
         },
@@ -469,6 +485,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
             kind: "activity",
             label: "Gili Trawangan sunrise SUP",
             short: "Gili T sunrise",
+            where: "Gili Trawangan",
             id: BALI_ACTIVITY.giliSunrise,
           },
         },
@@ -529,6 +546,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           rating: "5.0",
           reviews: "2,118",
           href: `${PAGE}?restaurant_id=${RESTAURANT.karaweik}`,
+          where: "Koh Tao",
         },
         {
           image: IMG.anandinii,
@@ -538,6 +556,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           rating: "5.0",
           reviews: "911",
           href: `${PAGE}?restaurant_id=${RESTAURANT.anandinii}`,
+          where: "Sidemen",
         },
         {
           image: IMG.citrusVine,
@@ -547,6 +566,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           rating: "5.0",
           reviews: "838",
           href: `${PAGE}?restaurant_id=${RESTAURANT.citrusVine}`,
+          where: "Sidemen",
         },
         {
           image: IMG.greenMelon,
@@ -556,6 +576,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           rating: "5.0",
           reviews: "688",
           href: `${PAGE}?restaurant_id=${RESTAURANT.greenMelon}`,
+          where: "Amed",
         },
         {
           image: IMG.nokkamin,
@@ -565,6 +586,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           rating: "5.0",
           reviews: "227",
           href: `${PAGE}?restaurant_id=${RESTAURANT.nokkamin}`,
+          where: "Ko Lipe",
         },
         {
           image: IMG.littleHill,
@@ -574,6 +596,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           rating: "5.0",
           reviews: "125",
           href: `${PAGE}?restaurant_id=${RESTAURANT.littleHill}`,
+          where: "Munduk",
         },
       ],
     },
@@ -910,6 +933,7 @@ const ThailandBaliOffbeatThemePage = ({
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
+        onBuildAround={(item) => openThemeForm(THEME_SLUG, [item])}
       />
     </Layout>
   );

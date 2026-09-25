@@ -52,6 +52,7 @@ const christmasMarketsForm: ThemeForm = {
       tag: "CLASSIC",
       nights: 8,
       skeleton: "strasbourg_cologne_amsterdam",
+      covers: ["Strasbourg", "Cologne", "Amsterdam", "France", "Germany", "Netherlands"],
       months: [11, 12],
       // The Rhine markets close on 23 December, so the December run starts on
       // the 21st: the last market days, then Christmas itself.
@@ -65,6 +66,7 @@ const christmasMarketsForm: ThemeForm = {
       tag: "STORYBOOK",
       nights: 9,
       skeleton: "munich_salzburg_vienna",
+      covers: ["Munich", "Salzburg", "Vienna", "Germany", "Austria"],
       months: [11, 12],
       // 24 Dec – 2 Jan: Christmas in Salzburg, New Year's Eve in Vienna, and a
       // last day on the 2nd rather than a flight out on New Year's morning.
@@ -78,6 +80,7 @@ const christmasMarketsForm: ThemeForm = {
       tag: "MOST POPULAR",
       nights: 10,
       skeleton: "prague_vienna_budapest",
+      covers: ["Prague", "Vienna", "Budapest", "Dresden", "Czech Republic", "Austria", "Hungary"],
       months: [12],
       // Was the 27th, which started after Christmas. From the 23rd the ten
       // nights hold both the 25th and the Bells on the 31st.
@@ -94,6 +97,7 @@ const christmasMarketsForm: ThemeForm = {
       // of checking out the morning after the fireworks.
       nights: 9,
       skeleton: "prague_vienna",
+      covers: ["Prague", "Vienna", "Dresden", "Czech Republic", "Austria"],
       months: [12],
       anchor: { month: 12, day: 24, note: "Christmas Eve in, then the Bells" },
       fareNote: "Christmas + NYE hit; PRG in / VIE out.",

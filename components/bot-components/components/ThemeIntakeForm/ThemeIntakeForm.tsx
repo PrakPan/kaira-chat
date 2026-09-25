@@ -28,6 +28,7 @@ import type {
   ThemeRoute,
 } from "../../../theme/cinematic/themeForms/types";
 import {
+  monthDates,
   resolveSeason,
   routeDates,
   toIso,
@@ -124,11 +125,52 @@ const routeCovers = (skeleton: string, label: string): boolean => {
   );
 };
 
+// Saved kinds that say nothing about location unless tagged — a hero scene, a
+// ticket. Left out of the route match when they carry no `where`. Anything
+// else untagged (an activity, a restaurant) can't be placed, so no route can
+// be vouched for and the form lets Kaira build one around the picks.
+const LOCATIONLESS_KINDS = new Set(["scene", "ticket"]);
+
+/** True when the route reaches a pick's `where`: listed in the route's
+ *  `covers` (compared as slugs), or — for a route with no `covers` — named in
+ *  its skeleton. An untagged pick fits nothing. */
+const routeReaches = (route: ThemeRoute, where?: string): boolean => {
+  const place = slugify(where || "");
+  if (!place) return false;
+  if (route.covers?.length) {
+    return route.covers.some((c) => slugify(c) === place);
+  }
+  return routeCovers(route.skeleton, where || "");
+};
+
+/** Distinct `where` places across the picks, in pick order. */
+const placeNames = (items: ThemeSelectedItemLike[]): string[] => {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const it of items) {
+    const w = (it.where || "").trim();
+    if (!w || seen.has(slugify(w))) continue;
+    seen.add(slugify(w));
+    out.push(w);
+  }
+  return out;
+};
+
+/** "Krabi, Ubud and Chiang Mai". */
+const joinPlaces = (places: string[]): string =>
+  places.length <= 1
+    ? places.join("")
+    : `${places.slice(0, -1).join(", ")} and ${places[places.length - 1]}`;
+
+// Trip lengths offered when no route fits and the reader sets the length.
+const PICKS_NIGHTS = [5, 7, 10, 14];
+
 export interface ThemeSelectedItemLike {
   kind?: string;
   label?: string;
   short?: string;
   id?: string;
+  where?: string;
 }
 
 export interface ThemeIntakeFormProps {
@@ -169,10 +211,58 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   const windows = form.dateWindows ?? [];
   const legacy = months.length === 0;
 
+  // De-dupe saved items (a place can be reachable from more than one section).
+  const uniqueItems: ThemeSelectedItemLike[] = React.useMemo(() => {
+    const out: ThemeSelectedItemLike[] = [];
+    const seen = new Set<string>();
+    for (const it of items) {
+      const key = it.id
+        ? `id:${it.id}`
+        : `${(it.kind || "").toLowerCase()}:${(it.label || it.short || "")
+            .trim()
+            .toLowerCase()}`;
+      if (!key.trim() || key === ":" || seen.has(key)) continue;
+      seen.add(key);
+      out.push(it);
+    }
+    return out;
+  }, [items]);
+
+  // ── Which routes the picks allow ──────────────────────────────────────────
+  // Picks that name a place narrow the month's routes to those whose `covers`
+  // reach every one of them. Visa picks never steer the route (they ride along
+  // as `visaCountries`), and untagged scenes / tickets say nothing about
+  // location, so both are left out of the match.
+  const visaPicks = React.useMemo(
+    () => uniqueItems.filter((it) => (it.kind || "").toLowerCase() === "visa"),
+    [uniqueItems],
+  );
+  const routePicks = React.useMemo(
+    () =>
+      uniqueItems.filter((it) => {
+        const kind = (it.kind || "").toLowerCase();
+        if (kind === "visa") return false;
+        return !!it.where || !LOCATIONLESS_KINDS.has(kind);
+      }),
+    [uniqueItems],
+  );
+  const routeFitsPicks = React.useCallback(
+    (r: ThemeRoute) => routePicks.every((p) => routeReaches(r, p.where)),
+    [routePicks],
+  );
+
   const [step, setStep] = React.useState(0);
   // First month + first route are pre-selected so the reader can submit in one
   // tap (per _STRUCTURE.md behaviour).
-  const [monthKey, setMonthKey] = React.useState(months[0]?.key ?? "");
+  // With picks, open on the first month that has a route reaching all of them.
+  const [monthKey, setMonthKey] = React.useState(
+    () =>
+      (routePicks.length
+        ? months.find((m) => m.routes.some(routeFitsPicks))?.key
+        : undefined) ??
+      months[0]?.key ??
+      "",
+  );
   const [routeKey, setRouteKey] = React.useState(
     months[0]?.routes[0]?.key ?? "",
   );
@@ -181,6 +271,8 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   // ISO date-only strings ("YYYY-MM-DD"), or null — the shape Calendar emits.
   const [fromDate, setFromDate] = React.useState<string | null>(null);
   const [toDate, setToDate] = React.useState<string | null>(null);
+  // Trip length when no route fits the picks and Kaira builds one around them.
+  const [picksNights, setPicksNights] = React.useState(7);
   const [submitted, setSubmitted] = React.useState(false);
   // Who's coming — same fields and defaults as the main intake form's slice.
   const [who, setWho] = React.useState("");
@@ -212,9 +304,19 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   // Derived rather than reset in an effect: when the reader switches to a month
   // that doesn't run their route, the first route of the new month simply takes
   // over on the same render, and switching back restores their pick.
-  const route: ThemeRoute | null = month
-    ? (month.routes.find((r) => r.key === routeKey) ?? month.routes[0] ?? null)
-    : null;
+  // Only the routes that reach every pick. When none do there's no route to
+  // choose: step 1 asks for a month and a length, and Kaira builds the route
+  // around the picks ("from picks").
+  const visibleRoutes: ThemeRoute[] = month
+    ? routePicks.length
+      ? month.routes.filter(routeFitsPicks)
+      : month.routes
+    : [];
+  const fromPicks = !legacy && routePicks.length > 0 && visibleRoutes.length === 0;
+  const route: ThemeRoute | null = fromPicks
+    ? null
+    : (visibleRoutes.find((r) => r.key === routeKey) ?? visibleRoutes[0] ?? null);
+  const picksPlaces = placeNames(routePicks);
   const win = legacy ? (windows[winIdx] ?? windows[0]) : undefined;
 
   const planKey = legacy ? (win?.key ?? "") : (route?.key ?? "");
@@ -227,12 +329,13 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   // they're the window's stored range.
   const planDates = React.useMemo<[string, string]>(() => {
     if (legacy) return [win?.range[0] ?? "", win?.range[1] ?? ""];
+    if (fromPicks && month) return monthDates(month, picksNights);
     if (!route || !month) return ["", ""];
     return routeDates(route, month);
     // `month.key` and `route.key` identify the pair; the objects are rebuilt on
     // every resolveSeason() call, so keying on them directly would thrash.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [legacy, win?.key, route?.key, month?.key]);
+  }, [legacy, win?.key, route?.key, month?.key, fromPicks, picksNights]);
 
   // The reader's own dates win over the plan's default range once BOTH ends
   // are picked. The route is unaffected — they've changed the length of the
@@ -244,7 +347,11 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   // Always derived from `dates`, so an exact-date pick can never be sent
   // alongside the plan's stored `nights` (e.g. 9 picked nights on an 8-night
   // route). The plan's own value is only a fallback for a malformed range.
-  const planNights = legacy ? (win?.nights ?? 0) : (route?.nights ?? 0);
+  const planNights = legacy
+    ? (win?.nights ?? 0)
+    : fromPicks
+      ? picksNights
+      : (route?.nights ?? 0);
   const nights = useExact
     ? nightsBetween(dates[0], dates[1])
     : nightsBetween(dates[0], dates[1]) || planNights;
@@ -314,24 +421,7 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
     return () => ro.disconnect();
     // Re-measured on every input that changes a step's height, so the box is
     // correct even if the observer is coalesced or misses a frame.
-  }, [step, who, adults, children, infants, exactOpen, monthKey, routeKey, winIdx, selectedPrompts.length]);
-
-  // De-dupe saved items (a place can be reachable from more than one section).
-  const uniqueItems: ThemeSelectedItemLike[] = React.useMemo(() => {
-    const out: ThemeSelectedItemLike[] = [];
-    const seen = new Set<string>();
-    for (const it of items) {
-      const key = it.id
-        ? `id:${it.id}`
-        : `${(it.kind || "").toLowerCase()}:${(it.label || it.short || "")
-            .trim()
-            .toLowerCase()}`;
-      if (!key.trim() || key === ":" || seen.has(key)) continue;
-      seen.add(key);
-      out.push(it);
-    }
-    return out;
-  }, [items]);
+  }, [step, who, adults, children, infants, exactOpen, monthKey, routeKey, winIdx, selectedPrompts.length, picksNights, fromPicks]);
 
   // Second pass, against the route the reader just chose. Some theme pages let
   // you save the same cities the route is built from (Christmas markets' "Which
@@ -376,14 +466,16 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   };
 
   const submit = () => {
-    if (submitted || !skeleton) return;
+    if (submitted || (!skeleton && !fromPicks)) return;
 
     const pax = travellersLabel({ who, adults, children, infants });
 
     const submission: ThemeFormSubmission = {
       slug: form.slug,
-      window: planKey,
-      skeleton,
+      // No route when none reaches the picks — the backend builds one from them.
+      window: fromPicks ? undefined : planKey,
+      skeleton: fromPicks ? undefined : skeleton,
+      routeMode: fromPicks ? "from_picks" : "route",
       month: legacy ? undefined : month?.key,
       monthLabel: legacy ? undefined : month?.long,
       dates,
@@ -397,6 +489,9 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
       items: dedupedItems.length ? dedupedItems : undefined,
       prompts: selectedPrompts.length ? selectedPrompts : undefined,
       note: trimmedNote || undefined,
+      visaCountries: visaPicks.length
+        ? visaPicks.map((v) => v.short || v.label || "").filter(Boolean)
+        : undefined,
     };
 
     // Include the plan's blurb so the message reads with the chosen route
@@ -407,7 +502,15 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
     // otherwise the message would read "The Last Hurrah · 6N" over a 9-night
     // range and the two would contradict each other.
     const nightsWord = nights === 1 ? "night" : "nights";
-    const whenLines = useExact
+    const whenLines = fromPicks
+      ? `• When: ${formatLong(dates[0])} to ${formatLong(dates[1])} · ${nights} ${nightsWord}` +
+        (useExact
+          ? ` (my exact dates)`
+          : ` (I'm going in ${month?.long ?? ""} - shift the dates within that month if it prices better)`) +
+        `\n• Plan: no set route - build it around my picks` +
+        (picksPlaces.length ? ` in ${picksPlaces.join(", ")}` : "") +
+        `\n`
+      : useExact
       ? `• When: ${formatLong(dates[0])} to ${formatLong(dates[1])} · ${nights} ${nightsWord} ` +
         `(my exact dates - use these, not the route's usual length)\n` +
         `• Plan: ${routeTitle(planLabel)}${routeLine}\n`
@@ -532,8 +635,67 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
         </>
       )}
 
+      {/* No route reaches every pick: nothing to choose here. Say so, and ask
+          for the trip length the route would otherwise have supplied. */}
+      {fromPicks && (
+        <div
+          style={{
+            marginTop: 13,
+            background: accentSoft,
+            border: `1px solid ${rgba(accent, 0.35)}`,
+            borderRadius: 13,
+            padding: "11px 12px",
+          }}
+        >
+          <div style={{ ...mono, color: accent, fontSize: 8.5, marginBottom: 4 }}>
+            Built around your picks
+          </div>
+          <div style={{ fontSize: 12.5, lineHeight: 1.45, color: INK }}>
+            {picksPlaces.length
+              ? `No set route reaches ${joinPlaces(picksPlaces)}${
+                  months.length > 1 ? ` in ${month?.long ?? "this month"}` : ""
+                }, so I'll plan one around them.`
+              : "I'll plan the route around what you saved."}
+          </div>
+          <div style={{ ...mono, color: FAINT, fontSize: 8.5, margin: "11px 0 7px" }}>
+            How long?
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {PICKS_NIGHTS.map((n) => {
+              const on = n === picksNights;
+              return (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => {
+                    setPicksNights(n);
+                    setExactOpen(false);
+                  }}
+                  aria-pressed={on}
+                  style={{
+                    background: on ? accent : "#ffffff",
+                    color: on ? accentOn : INK,
+                    border: `1.5px solid ${on ? accent : BORDER}`,
+                    borderRadius: 999,
+                    padding: "7px 13px",
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all .15s",
+                  }}
+                >
+                  {on ? "✓ " : ""}
+                  {n} nights
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* The routes that run in the chosen month (or, on a legacy config, the
-          stored windows). */}
+          stored windows) — narrowed to the ones that reach the picks. */}
+      {!fromPicks && (
       <div
         style={{
           ...mono,
@@ -542,8 +704,15 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
           margin: legacy ? "0 0 7px" : "13px 0 7px",
         }}
       >
-        {legacy ? "Pick a route" : `Routes that run in ${month?.long ?? ""}`}
+        {legacy
+          ? "Pick a route"
+          : routePicks.length
+            ? `Routes in ${month?.long ?? ""} that reach your ${
+                routePicks.length === 1 ? "pick" : "picks"
+              }`
+            : `Routes that run in ${month?.long ?? ""}`}
       </div>
+      )}
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         {legacy
           ? windows.map((w, i) => (
@@ -562,7 +731,7 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
                 }}
               />
             ))
-          : (month?.routes ?? []).map((r) => (
+          : visibleRoutes.map((r) => (
               <RouteRow
                 key={r.key}
                 on={r.key === route?.key}
@@ -686,8 +855,8 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
                 <strong>
                   {nights} {nights === 1 ? "night" : "nights"}
                 </strong>{" "}
-                · {formatShort(dates[0])} to {formatLong(dates[1])} ·{" "}
-                {routeTitle(planLabel)}
+                · {formatShort(dates[0])} to {formatLong(dates[1])}
+                {planLabel ? ` · ${routeTitle(planLabel)}` : ""}
               </>
             ) : (
               <>

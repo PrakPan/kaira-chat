@@ -275,22 +275,22 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
     images: [
       {
         image: `${IMAGE_BASE}/DDLJ2.png`,
-        caption: "Switzerland, DDLJ",
+        caption: "Switzerland, DDLJ", where: "Switzerland",
         href: "/europe/switzerland",
       },
       {
         image: `${IMAGE_BASE}/ZNMD.png`,
-        caption: "Spain, ZNMD",
+        caption: "Spain, ZNMD", where: "Spain",
         href: "/europe/spain",
       },
       {
         image: `${IMAGE_BASE}/MammaMia.png`,
-        caption: "Greece, Mamma Mia",
+        caption: "Greece, Mamma Mia", where: "Greece",
         href: "/europe/greece",
       },
       {
         image: `${IMAGE_BASE}/EatPrayLove.png`,
-        caption: "Bali, Eat Pray Love",
+        caption: "Bali, Eat Pray Love", where: "Bali",
         href: "/asia/indonesia/bali",
       },
     ],
@@ -334,6 +334,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
             kind: "activity",
             label: "Hobbiton Movie Set day trip, New Zealand",
             short: "Hobbiton Movie Set",
+            where: "Hobbiton",
           },
         },
         {
@@ -345,6 +346,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
             kind: "activity",
             label: "Warner Bros. Studio Tour London - The Making of Harry Potter",
             short: "WB Studio Tour London",
+            where: "London",
           },
         },
       ],
@@ -472,30 +474,35 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           name: "Diving the volcanic caldera",
           line: "Mamma Mia's cliffs, seen from underneath the water.",
           tag: "Santorini",
+          where: "Santorini",
         },
         {
           image: PHOTO.parkGuell,
           name: "Park Güell, ticketed",
           line: "Gaudí's park - the Barcelona ZNMD keeps coming back to.",
           tag: "Barcelona",
+          where: "Barcelona",
         },
         {
           image: PHOTO.stockhornBungee,
           name: "Bungee at the Stockhorn",
           line: "DDLJ country, with the whole valley in the drop.",
           tag: "Interlaken",
+          where: "Interlaken",
         },
         {
           image: PHOTO.lutschineRafting,
           name: "Rafting the Lütschine",
           line: "The river that runs through every meadow shot in the film.",
           tag: "Interlaken",
+          where: "Interlaken",
         },
         {
           image: PHOTO.ubudGates,
           name: "Ubud in a day",
           line: "The rice terraces and temples that open the Bali half.",
           tag: "Bali",
+          where: "Ubud",
         },
       ],
     },
@@ -521,6 +528,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           image: TABLE.scalaLucerne,
           name: "Scala - Art Deco Hotel Montana",
           city: "Lucerne",
+          where: "Lucerne",
           line: "The lake through the window, on DDLJ's opening leg.",
           rating: "4.8",
           reviews: "517",
@@ -532,7 +540,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           line: "Tapas standing at the bar - ZNMD's Barcelona, loud and late.",
           rating: "4.7",
           reviews: "4,156",
-          item: { kind: "restaurant", label: "Bodega Biarritz 1881, Barcelona", short: "Bodega Biarritz", id: "c7a78d29-2440-480d-82fb-03b6818f5098" },
+          item: { kind: "restaurant", label: "Bodega Biarritz 1881, Barcelona", short: "Bodega Biarritz", id: "c7a78d29-2440-480d-82fb-03b6818f5098", where: "Barcelona" },
         },
         {
           image: TABLE.cafeDeFlore,
@@ -541,7 +549,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           line: "The Left Bank café the whole film keeps circling back to.",
           rating: "4.0",
           reviews: "8,194",
-          item: { kind: "restaurant", label: "Café de Flore, Paris", short: "Café de Flore", id: "360f50df-7bc4-4bdf-8ebb-311eff624290" },
+          item: { kind: "restaurant", label: "Café de Flore, Paris", short: "Café de Flore", id: "360f50df-7bc4-4bdf-8ebb-311eff624290", where: "Paris" },
         },
         {
           image: TABLE.boroughMarket,
@@ -550,7 +558,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           line: "The Leaky Cauldron's doorway is here. So is the best food in London.",
           rating: "4.6",
           reviews: "82,729",
-          item: { kind: "restaurant", label: "Borough Market, London", short: "Borough Market", id: "bf1f6659-7574-4b70-b1cf-c7ac082090d5" },
+          item: { kind: "restaurant", label: "Borough Market, London", short: "Borough Market", id: "bf1f6659-7574-4b70-b1cf-c7ac082090d5", where: "London" },
         },
         {
           image: TABLE.waroengBernadette,
@@ -559,7 +567,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           line: "Balinese home cooking, in the lanes the Bali half wanders.",
           rating: "4.8",
           reviews: "3,093",
-          item: { kind: "restaurant", label: "Waroeng Bernadette, Ubud", short: "Waroeng Bernadette", id: "7677bdc9-2890-48dc-a561-3d69f49f2417" },
+          item: { kind: "restaurant", label: "Waroeng Bernadette, Ubud", short: "Waroeng Bernadette", id: "7677bdc9-2890-48dc-a561-3d69f49f2417", where: "Ubud" },
         },
         {
           image: TABLE.karmaOia,
@@ -568,7 +576,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           line: "Dinner in Oia as the caldera goes pink - the Greek-island evening.",
           rating: "4.6",
           reviews: "1,318",
-          item: { kind: "restaurant", label: "Karma, Oia, Santorini", short: "Karma, Oia", id: "e78b5312-f113-4095-84ec-c3113557f7d7" },
+          item: { kind: "restaurant", label: "Karma, Oia, Santorini", short: "Karma, Oia", id: "e78b5312-f113-4095-84ec-c3113557f7d7", where: "Santorini" },
         },
       ],
     },
@@ -1115,6 +1123,7 @@ const FilmyGetawaysThemePage = ({
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
+        onBuildAround={(item) => openThemeForm(THEME_SLUG, [item])}
       />
     </Layout>
   );

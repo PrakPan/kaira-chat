@@ -258,10 +258,10 @@ const hokkaidoConfig: CinematicThemeConfig = {
       { label: "First time in Japan", prompt: PROMPTS.firstTimeJapan },
     ],
     images: [
-      { image: IMG.heroNiseko, caption: "Niseko, powder" },
-      { image: IMG.heroSnowFestival, caption: "Sapporo, Snow Festival" },
-      { image: IMG.heroShinkansen, caption: "The Shinkansen" },
-      { image: IMG.heroOnsen, caption: "Onsen, snow country" },
+      { image: IMG.heroNiseko, caption: "Niseko, powder", where: "Niseko" },
+      { image: IMG.heroSnowFestival, caption: "Sapporo, Snow Festival", where: "Sapporo" },
+      { image: IMG.heroShinkansen, caption: "The Shinkansen", where: "Hakodate" },
+      { image: IMG.heroOnsen, caption: "Onsen, snow country", where: "Noboribetsu" },
     ],
   },
   sections: [
@@ -283,31 +283,31 @@ const hokkaidoConfig: CinematicThemeConfig = {
           image: CAT.nyMoiwa,
           tag: "31 Dec · Sapporo",
           name: "New Year's first lights at Mt. Moiwa",
-          item: { kind: "activity", label: "New Year's Eve at Mt. Moiwa ropeway (Sapporo)", short: "NYE · Mt. Moiwa" },
+          item: { kind: "activity", label: "New Year's Eve at Mt. Moiwa ropeway (Sapporo)", short: "NYE · Mt. Moiwa", where: "Sapporo" },
         },
         {
           image: CAT.nyShrine,
           tag: "1 Jan · Hatsumode",
           name: "First shrine visit at Hokkaidō Shrine",
-          item: { kind: "activity", label: "Hatsumode at Hokkaidō Shrine on 1 January (Sapporo)", short: "Hatsumode · Hokkaidō Shrine" },
+          item: { kind: "activity", label: "Hatsumode at Hokkaidō Shrine on 1 January (Sapporo)", short: "Hatsumode · Hokkaidō Shrine", where: "Sapporo" },
         },
         {
           image: CAT.nyHirafu,
           tag: "1 Jan · Powder",
           name: "New Year's Day on the mountain",
-          item: { kind: "activity", label: "New Year's Day ski at Niseko Grand Hirafu", short: "1 Jan · Grand Hirafu" },
+          item: { kind: "activity", label: "New Year's Day ski at Niseko Grand Hirafu", short: "1 Jan · Grand Hirafu", where: "Niseko" },
         },
         {
           image: CAT.nySoba,
           tag: "NYE dinner",
           name: "Toshikoshi soba, done right",
-          item: { kind: "activity", label: "Toshikoshi soba dinner on New Year's Eve (Sapporo)", short: "NYE · Toshikoshi soba" },
+          item: { kind: "activity", label: "Toshikoshi soba dinner on New Year's Eve (Sapporo)", short: "NYE · Toshikoshi soba", where: "Sapporo" },
         },
         {
           image: CAT.nyNoboribetsu,
           tag: "2 Jan · Onsen",
           name: "First bath of the year at Noboribetsu",
-          item: { kind: "activity", label: "Hatsuburo, first onsen of the year at Noboribetsu", short: "2 Jan · Noboribetsu onsen" },
+          item: { kind: "activity", label: "Hatsuburo, first onsen of the year at Noboribetsu", short: "2 Jan · Noboribetsu onsen", where: "Noboribetsu" },
         },
       ],
     },
@@ -357,6 +357,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "The historic port, then the night view from Mt. Hakodate.",
           tag: "Hakodate",
           activityId: ACTIVITY.hakodateRopeway,
+          where: "Hakodate",
           meta: "On request · 2 hours",
           objectPosition: "center 50%",
         },
@@ -366,6 +367,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Penguins in the snow and a woodland of little log cabins.",
           tag: "Furano",
           activityId: ACTIVITY.asahiyamaFurano,
+          where: "Furano",
           meta: "₹6,227 · ★ 4.2 · Full day",
         },
         {
@@ -374,6 +376,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "A caldera lake and the steaming Hell Valley.",
           tag: "Day tour",
           activityId: ACTIVITY.lakeToyaNoboribetsu,
+          where: "Noboribetsu",
           meta: "On request · 10 hours",
         },
         {
@@ -382,6 +385,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "The famous cobalt-blue pond, frozen and lit in winter.",
           tag: "Biei",
           activityId: ACTIVITY.asahiyamaBluePond,
+          where: "Biei",
           meta: "₹7,240 · 10 hours",
         },
         {
@@ -390,6 +394,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Hokkaido's best onsen town and its volcanic scenery.",
           tag: "Day tour",
           activityId: ACTIVITY.lakeToyaNoboribetsu,
+          where: "Noboribetsu",
           meta: "On request · 10 hours",
         },
       ],
@@ -421,6 +426,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
         title: "JR Pass · 14 days",
         meta: "Covers the Shinkansen both ways",
         activityId: ACTIVITY.jrPass,
+        where: "Japan",
       },
     },
     // ── Which mountain is yours (POIs, sand) ──
@@ -439,7 +445,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "The powder capital - long groomers and legendary tree runs.",
           tag: "Niseko",
           prompt: PROMPTS.niseko,
-          item: { kind: "poi", label: "Niseko Tokyu Grand Hirafu", short: "Niseko · Grand Hirafu" },
+          item: { kind: "poi", label: "Niseko Tokyu Grand Hirafu", short: "Niseko · Grand Hirafu", where: "Niseko" },
         },
         {
           image: IMG.mtnOkurayama,
@@ -447,7 +453,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Ride to the Olympic ski jump for the view over Sapporo.",
           tag: "Sapporo",
           prompt: PROMPTS.okura,
-          item: { kind: "poi", label: "Okurayama Ski Jump Stadium", short: "Okurayama Ski Jump" },
+          item: { kind: "poi", label: "Okurayama Ski Jump Stadium", short: "Okurayama Ski Jump", where: "Sapporo" },
         },
         {
           image: IMG.mtnTakino,
@@ -455,7 +461,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Snow play, tubing and gentle cross-country near the city.",
           tag: "Sapporo",
           prompt: PROMPTS.takino,
-          item: { kind: "poi", label: "Takino Suzuran Hillside Park", short: "Takino Suzuran Park" },
+          item: { kind: "poi", label: "Takino Suzuran Hillside Park", short: "Takino Suzuran Park", where: "Sapporo" },
         },
         {
           image: CAT.mtnTeine,
@@ -463,7 +469,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "The 1972 Olympic downhill runs with the bay below, 40 minutes from the city.",
           tag: "Sapporo",
           prompt: PROMPTS.teine,
-          item: { kind: "poi", label: "Sapporo Teine", short: "Sapporo Teine" },
+          item: { kind: "poi", label: "Sapporo Teine", short: "Sapporo Teine", where: "Sapporo" },
         },
       ],
     },
@@ -484,7 +490,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Japan's only beer museum, with a tasting room to warm up in.",
           tag: "Sapporo",
           prompt: PROMPTS.beerMuseum,
-          item: { kind: "poi", label: "Sapporo Beer Museum", short: "Sapporo Beer Museum" },
+          item: { kind: "poi", label: "Sapporo Beer Museum", short: "Sapporo Beer Museum", where: "Sapporo" },
           objectPosition: "center 20%"
         },
         {
@@ -494,7 +500,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Uni, crab and a steaming seafood breakfast bowl.",
           tag: "Sapporo",
           prompt: PROMPTS.nijoMarket,
-          item: { kind: "poi", label: "Nijo Fish Market", short: "Nijo Fish Market" },
+          item: { kind: "poi", label: "Nijo Fish Market", short: "Nijo Fish Market", where: "Sapporo" },
           objectPosition: "center 60%"
         },
         {
@@ -504,7 +510,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "A covered street of shops and izakayas for a snowy evening.",
           tag: "Sapporo",
           prompt: PROMPTS.tanukikoji,
-          item: { kind: "poi", label: "Tanukikoji Arcade", short: "Tanukikoji Arcade" },
+          item: { kind: "poi", label: "Tanukikoji Arcade", short: "Tanukikoji Arcade", where: "Sapporo" },
           objectPosition: "center 20%"
         },
         {
@@ -514,7 +520,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "A quiet, snow-covered shrine in Maruyama Park.",
           tag: "Sapporo",
           prompt: PROMPTS.hokkaidoShrine,
-          item: { kind: "poi", label: "Hokkaidō Shrine", short: "Hokkaidō Shrine" },
+          item: { kind: "poi", label: "Hokkaidō Shrine", short: "Hokkaidō Shrine", where: "Sapporo" },
           objectPosition: "center 40%"
         },
         {
@@ -524,7 +530,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Historic bayside warehouses, lit up over the winter harbour.",
           tag: "Hakodate",
           prompt: PROMPTS.kanemori,
-          item: { kind: "poi", label: "Kanemori Red Brick Warehouse", short: "Kanemori Warehouse" },
+          item: { kind: "poi", label: "Kanemori Red Brick Warehouse", short: "Kanemori Warehouse", where: "Hakodate" },
           objectPosition: "center 40%"
         },
         {
@@ -534,7 +540,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "The star-shaped fort, best seen under snow from above.",
           tag: "Hakodate",
           prompt: PROMPTS.goryokaku,
-          item: { kind: "poi", label: "Goryōkaku Tower", short: "Goryōkaku Tower" },
+          item: { kind: "poi", label: "Goryōkaku Tower", short: "Goryōkaku Tower", where: "Hakodate" },
         },
       ],
     },
@@ -601,7 +607,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           rating: "4.4",
           reviews: "12,000",
           prompt: PROMPTS.beerGarden,
-          item: { kind: "restaurant", label: "Sapporo Beer Garden", short: "Sapporo Beer Garden" },
+          item: { kind: "restaurant", label: "Sapporo Beer Garden", short: "Sapporo Beer Garden", where: "Sapporo" },
         },
         {
           image: IMG.eatEbisoba,
@@ -611,7 +617,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           rating: "4.5",
           reviews: "3,800",
           prompt: PROMPTS.ebisoba,
-          item: { kind: "restaurant", label: "Ebisoba Ichigen", short: "Ebisoba Ichigen" },
+          item: { kind: "restaurant", label: "Ebisoba Ichigen", short: "Ebisoba Ichigen", where: "Sapporo" },
         },
         {
           image: IMG.eatSoupCurry,
@@ -621,7 +627,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           rating: "4.5",
           reviews: "5,100",
           prompt: PROMPTS.soupCurry,
-          item: { kind: "restaurant", label: "Soup Curry Suage", short: "Soup Curry Suage" },
+          item: { kind: "restaurant", label: "Soup Curry Suage", short: "Soup Curry Suage", where: "Sapporo" },
         },
         {
           image: IMG.eatMenyaSaimi,
@@ -631,7 +637,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           rating: "4.6",
           reviews: "6,400",
           prompt: PROMPTS.menyaSaimi,
-          item: { kind: "restaurant", label: "Menya Saimi", short: "Menya Saimi" },
+          item: { kind: "restaurant", label: "Menya Saimi", short: "Menya Saimi", where: "Sapporo" },
         },
         {
           image: IMG.eatAfuri,
@@ -641,7 +647,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           rating: "4.4",
           reviews: "9,200",
           prompt: PROMPTS.afuri,
-          item: { kind: "restaurant", label: "Afuri", short: "Afuri" },
+          item: { kind: "restaurant", label: "Afuri", short: "Afuri", where: "Tokyo" },
         },
         {
           image: IMG.eatUniMurakami,
@@ -651,7 +657,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           rating: "4.5",
           reviews: "2,600",
           prompt: PROMPTS.uniMurakami,
-          item: { kind: "restaurant", label: "Uni Murakami", short: "Uni Murakami" },
+          item: { kind: "restaurant", label: "Uni Murakami", short: "Uni Murakami", where: "Hakodate" },
         },
       ],
     },
@@ -1054,6 +1060,7 @@ const HokkaidoPowderThemePage = ({
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
+        onBuildAround={(item) => openThemeForm(THEME_SLUG, [item])}
       />
       {/* Detail drawers are retired on this page — a click anywhere on a
           card adds or removes it, so nothing opens a drawer. Uncomment to

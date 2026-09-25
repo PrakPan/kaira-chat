@@ -214,6 +214,59 @@ const addCtaStyle = (
 const addCtaLabel = (selected: boolean, noun?: string) =>
   selected ? "✓ Added" : noun ? `+ Add ${noun}` : "+ Add";
 
+// Stamp a card's `where` onto the item it saves, unless the item already names
+// its own. The theme form matches `where` against each route's `covers`.
+function withWhere(
+  item: CinematicSelectableItem | undefined,
+  where: string | undefined,
+): CinematicSelectableItem | undefined {
+  if (!item || item.where || !where) return item;
+  return { ...item, where };
+}
+
+// "Plan a trip around this" — opens the theme form with ONLY this item saved,
+// so the form offers just the routes that reach it (or, when none do, asks for
+// dates and lets Kaira build the route around it). Provided by the page via
+// `onBuildAround`; cards render nothing without it.
+const BuildAroundContext = React.createContext<
+  ((item: CinematicSelectableItem) => void) | null
+>(null);
+
+const BuildAroundLink: React.FC<{
+  item: CinematicSelectableItem | undefined;
+  onDark?: boolean;
+  align?: "center" | "left";
+  className?: string;
+}> = ({ item, onDark, align = "center", className = "" }) => {
+  const buildAround = React.useContext(BuildAroundContext);
+  if (!buildAround || !item) return null;
+  return (
+    <span
+      role="button"
+      tabIndex={0}
+      onClick={(e) => {
+        // Cards are buttons themselves (save / open drawer) — keep this click
+        // from reaching them.
+        e.stopPropagation();
+        buildAround(item);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          buildAround(item);
+        }
+      }}
+      className={`block text-[11.5px] font-semibold underline underline-offset-[3px] ${
+        align === "center" ? "text-center" : "text-left"
+      } ${className}`}
+      style={{ color: onDark ? "rgba(255,255,255,0.72)" : MUTED, cursor: "pointer" }}
+    >
+      Plan a trip around this →
+    </span>
+  );
+};
+
 // Primary card action ("Create this plan →", "Book this itinerary →") — an
 // accent-filled pill that spans the card foot.
 const primaryCtaStyle = (palette: ResolvedPalette): React.CSSProperties => ({
@@ -581,15 +634,17 @@ const CinematicHero: React.FC<{
                 // the caption names the scene, which every existing config
                 // already carries — so the collage becomes selectable without
                 // any page being rewritten.
-                const item =
+                const item = withWhere(
                   img.item ??
-                  (img.caption
-                    ? {
-                        kind: "scene",
-                        label: img.caption,
-                        short: img.caption,
-                      }
-                    : undefined);
+                    (img.caption
+                      ? {
+                          kind: "scene",
+                          label: img.caption,
+                          short: img.caption,
+                        }
+                      : undefined),
+                  img.where,
+                );
                 const selectable = !!(item && selection);
                 const selected = selectable
                   ? selection!.isSelected(item!)
@@ -723,16 +778,18 @@ const PromptCard: React.FC<{
   // The saved item: an explicit card.item wins; else derive from the card when
   // the section is selectable. An activity card carries its catalog id so the
   // element id rides along in the request.
-  const item =
+  const item = withWhere(
     card.item ??
-    (sectionSelectable
-      ? {
-          kind: itemKind ?? "poi",
-          label: card.name,
-          short: card.tag ?? card.name,
-          ...(card.activityId ? { id: card.activityId } : {}),
-        }
-      : undefined);
+      (sectionSelectable
+        ? {
+            kind: itemKind ?? "poi",
+            label: card.name,
+            short: card.tag ?? card.name,
+            ...(card.activityId ? { id: card.activityId } : {}),
+          }
+        : undefined),
+    card.where,
+  );
   const selectable = !!(item && selection);
   const selected = selectable ? selection!.isSelected(item!) : false;
   const toggle = () => item && selection && selection.toggle(item);
@@ -900,6 +957,9 @@ const PromptCard: React.FC<{
           >
             {selectable ? addCtaLabel(selected, addNoun) : ctaLabel}
           </span>
+          {selectable && (
+            <BuildAroundLink item={item} onDark={onDark} className="mt-[9px]" />
+          )}
         </div>
       )}
     </div>
@@ -1646,14 +1706,17 @@ const ListRow: React.FC<{
   const selection = useThemeSelection();
   const palette = usePalette();
   const elementId = row.activityId ?? drawerIdFromHref(row.href);
-  const item = sectionSelectable
-    ? {
-        kind: itemKind ?? "poi",
-        label: row.name,
-        short: row.name,
-        ...(elementId ? { id: elementId } : {}),
-      }
-    : undefined;
+  const item = withWhere(
+    sectionSelectable
+      ? {
+          kind: itemKind ?? "poi",
+          label: row.name,
+          short: row.name,
+          ...(elementId ? { id: elementId } : {}),
+        }
+      : undefined,
+    row.where,
+  );
   const selectable = !!(item && selection);
   const selected = selectable ? selection!.isSelected(item!) : false;
   const toggle = () => item && selection && selection.toggle(item);
@@ -1733,6 +1796,9 @@ const ListRow: React.FC<{
           >
             {row.line}
           </div>
+        )}
+        {selectable && (
+          <BuildAroundLink item={item} align="left" className="mt-[5px]" />
         )}
       </div>
       {selectable ? (
@@ -2108,16 +2174,19 @@ const EatsSection: React.FC<{
       >
         {section.cards.map((card, i) => {
           const hrefId = drawerIdFromHref(card.href);
-          const item =
+          const item = withWhere(
             card.item ??
-            (section.selectable
-              ? {
-                  kind: section.itemKind ?? "restaurant",
-                  label: card.name,
-                  short: card.name,
-                  ...(hrefId ? { id: hrefId } : {}),
-                }
-              : undefined);
+              (section.selectable
+                ? {
+                    kind: section.itemKind ?? "restaurant",
+                    label: card.name,
+                    short: card.name,
+                    ...(hrefId ? { id: hrefId } : {}),
+                  }
+                : undefined),
+            // An eat card's mono `city` label is already its location.
+            card.where ?? card.city,
+          );
           const selectable = !!(item && selection);
           const selected = selectable ? selection!.isSelected(item!) : false;
           const toggle = () => item && selection && selection.toggle(item);
@@ -2215,6 +2284,9 @@ const EatsSection: React.FC<{
                   ? addCtaLabel(selected, section.addNoun)
                   : section.ctaLabel}
               </span>
+            )}
+            {selectable && (
+              <BuildAroundLink item={item} onDark className="mt-[9px]" />
             )}
           </div>
         </button>
@@ -2636,16 +2708,18 @@ const FeatureCtaCard: React.FC<{
   // This card has always worn a "+ Add" pill; with the drawer retired it now
   // does what the pill says. An explicit `item` wins, else the card's own title
   // names what gets saved (and its activity id rides along when it has one).
-  const item =
+  const item = withWhere(
     cta.item ??
-    (cta.title
-      ? {
-          kind: "ticket",
-          label: cta.title,
-          short: cta.title,
-          ...(cta.activityId ? { id: cta.activityId } : {}),
-        }
-      : undefined);
+      (cta.title
+        ? {
+            kind: "ticket",
+            label: cta.title,
+            short: cta.title,
+            ...(cta.activityId ? { id: cta.activityId } : {}),
+          }
+        : undefined),
+    cta.where,
+  );
   const selectable = !!(item && selection);
   const selected = selectable ? selection!.isSelected(item!) : false;
   const act = () => {
@@ -3559,6 +3633,9 @@ export interface CinematicThemeLandingProps {
   // `note` is whatever the reader typed into the ask-bar, forwarded so the
   // form's submission carries it.
   onBuild?: (note?: string) => void;
+  // "Plan a trip around this" on a saveable card — opens the themed mini-form
+  // with only that item. Omit to hide the link.
+  onBuildAround?: (item: CinematicSelectableItem) => void;
 }
 
 const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
@@ -3567,6 +3644,7 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
   onSelectActivity,
   selection,
   onBuild,
+  onBuildAround,
 }) => {
   // Preload the LCP image: the first card of the first section (the hero
   // collage is desktop-only, so on mobile that card is the largest paint).
@@ -3607,6 +3685,7 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
   return (
   <PaletteContext.Provider value={palette}>
   <ThemeSelectionProvider value={selection ?? null}>
+  <BuildAroundContext.Provider value={onBuildAround ?? null}>
   <div
     // The phone bar gains a third row (the saved-items summary) once something
     // is saved, so the gutter under the page has to grow with it or the last
@@ -3748,6 +3827,7 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
       />
     )}
   </div>
+  </BuildAroundContext.Provider>
   </ThemeSelectionProvider>
   </PaletteContext.Provider>
   );

@@ -109,6 +109,7 @@ const thailandBachelorForm: ThemeForm = {
       tag: "NOBODY MOVES",
       nights: 5,
       skeleton: "phuket_one_base",
+      covers: ["Thailand", "Phuket", "Phi Phi", "Hong Island", "Phang Nga Bay"],
       fareNote:
         "The biggest single-base group pick (58 trips, avg 12 pax). Nobody changes hotels.",
     },
@@ -119,6 +120,7 @@ const thailandBachelorForm: ThemeForm = {
       tag: "MOST PICKED",
       nights: 6,
       skeleton: "phuket_krabi",
+      covers: ["Thailand", "Phuket", "Krabi", "Phi Phi", "Hong Island", "Phang Nga Bay", "Railay"],
       fareNote:
         "The most-booked two-base group route (46 trips, avg 8 pax). HKT in / KBV out, one ferry.",
     },
@@ -129,6 +131,7 @@ const thailandBachelorForm: ThemeForm = {
       tag: "CITY + BEACH",
       nights: 7,
       skeleton: "bangkok_phuket",
+      covers: ["Thailand", "Bangkok", "Phuket", "Phi Phi", "Hong Island", "Phang Nga Bay", "Pattaya"],
       fareNote:
         "BKK in / HKT out. Easiest when the group lands in waves - Bangkok absorbs staggered arrivals.",
     },
@@ -139,6 +142,7 @@ const thailandBachelorForm: ThemeForm = {
       tag: "VILLA HEAVY",
       nights: 8,
       skeleton: "krabi_koh_samui",
+      covers: ["Thailand", "Krabi", "Phi Phi", "Hong Island", "Phang Nga Bay", "Railay", "Koh Samui"],
       fareNote:
         "KBV in / USM out. Samui seas stay calmer. Jan villas for 8+ book four months ahead.",
     },

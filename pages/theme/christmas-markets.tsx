@@ -218,21 +218,25 @@ const christmasMarketsConfig: CinematicThemeConfig = {
       {
         image: IMG.heroVienna,
         caption: "Vienna, Rathausplatz",
+        where: "Vienna",
         href: "/europe/austria",
       },
       {
         image: IMG.heroStrasbourg,
         caption: "Strasbourg, Grande Île",
+        where: "Strasbourg",
         href: "/europe/france",
       },
       {
         image: IMG.heroPrague,
         caption: "Prague, Old Town",
+        where: "Prague",
         href: "/europe/czech-republic",
       },
       {
         image: IMG.heroBudapest,
         caption: "Budapest, Vörösmarty",
+        where: "Budapest",
         href: "/europe/hungary",
       },
     ],
@@ -285,6 +289,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           line: "The castle complex, told by someone who lives it.",
           tag: "Prague",
           activityId: ACTIVITY.pragueCastle,
+          where: "Prague",
         },
         {
           image: IMG.expSchonbrunn,
@@ -292,6 +297,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           line: "Watch the apple strudel pulled paper-thin.",
           tag: "Vienna",
           activityId: ACTIVITY.strudelShow,
+          where: "Vienna",
         },
         {
           image: IMG.expNightWatchman,
@@ -299,6 +305,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           line: "A lantern-lit walk through the old town after dark.",
           tag: "Germany",
           activityId: ACTIVITY.nightWatchman,
+          where: "Dresden",
         },
         {
           image: IMG.expReichstag,
@@ -306,6 +313,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           line: "Berlin's glass dome and the halls of power.",
           tag: "Berlin",
           activityId: ACTIVITY.reichstag,
+          where: "Berlin",
         },
         {
           image: IMG.expSpanishRiding,
@@ -313,6 +321,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           line: "Behind the scenes with the Lipizzaner horses.",
           tag: "Vienna",
           activityId: ACTIVITY.spanishRiding,
+          where: "Vienna",
           objectPosition: "center 90%"
         },
         {
@@ -321,6 +330,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           line: "Festive lights from the water.",
           tag: "Amsterdam",
           activityId: ACTIVITY.canalCruise,
+          where: "Amsterdam",
         },
       ],
     },
@@ -348,6 +358,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           badge: "Kaira's pick",
           line: "Rathausplatz glows; the smaller Spittelberg lanes steal the show.",
           href: `${PAGE}?city_id=${CITY.vienna}`,
+          where: "Vienna",
         },
         {
           image: IMG.marketPrague,
@@ -356,6 +367,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           name: "Prague",
           line: "Old Town Square, a giant tree, and mulled honey wine.",
           href: `${PAGE}?city_id=${CITY.prague}`,
+          where: "Prague",
         },
         {
           image: IMG.marketDresden,
@@ -364,6 +376,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           name: "Dresden",
           line: "The Striezelmarkt - Germany's oldest, and its Stollen.",
           href: `${PAGE}?city_id=${CITY.dresden}`,
+          where: "Dresden",
         },
         {
           image: IMG.marketStrasbourg,
@@ -372,6 +385,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           name: "Strasbourg",
           line: "The oldest of them all, wrapped around the cathedral.",
           href: `${PAGE}?city_id=${CITY.strasbourg}`,
+          where: "Strasbourg",
         },
       ],
     },
@@ -427,6 +441,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           image: IMG.eatCafeCentral,
           name: "Café Central",
           city: "Vienna",
+          where: "Vienna",
           line: "A grand coffeehouse under vaulted ceilings.",
           rating: "4.4",
           reviews: "35,000",
@@ -436,6 +451,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           image: IMG.eatCafeLouvre,
           name: "Café Louvre",
           city: "Prague",
+          where: "Prague",
           line: "Coffee, cake and history since 1902.",
           rating: "4.6",
           reviews: "18,000",
@@ -445,6 +461,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           image: IMG.eatPfund,
           name: "Pfunds Molkerei",
           city: "Dresden",
+          where: "Dresden",
           line: "The world's most beautiful dairy shop.",
           rating: "4.5",
           reviews: "9,500",
@@ -454,6 +471,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           image: IMG.eatWinkel,
           name: "Winkel 43",
           city: "Amsterdam",
+          where: "Amsterdam",
           line: "The apple pie people queue in the cold for.",
           rating: "4.5",
           reviews: "6,800",
@@ -463,6 +481,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           image: IMG.eatCambrinus,
           name: "Cambrinus",
           city: "Bruges",
+          where: "Bruges",
           line: "Belgian beer and comfort food by the fire.",
           rating: "4.4",
           reviews: "7,200",
@@ -860,6 +879,7 @@ const ChristmasMarketsThemePage = ({
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
+        onBuildAround={(item) => openThemeForm(THEME_SLUG, [item])}
       />
       {/* Detail drawers are retired on this page — a click anywhere on a
           card adds or removes it, so nothing opens a drawer. Uncomment to

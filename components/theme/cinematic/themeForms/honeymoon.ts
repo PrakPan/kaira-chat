@@ -108,6 +108,7 @@ const honeymoonForm: ThemeForm = {
       tag: "MOST PICKED",
       nights: 7,
       skeleton: "uluwatu_seminyak_ubud",
+      covers: ["Indonesia", "Bali", "Uluwatu", "Jimbaran", "Seminyak", "Ubud", "Nusa Penida"],
       fareNote:
         "The most-booked honeymoon we run (1,927 couple trips). One stop to DPS; single in/out airport.",
     },
@@ -118,6 +119,7 @@ const honeymoonForm: ThemeForm = {
       tag: "MOST PRIVATE",
       nights: 6,
       skeleton: "maldives_one_island",
+      covers: ["Maldives", "Male"],
       fareNote:
         "Direct DEL/BOM→MLE, seaplane each way. Dec–Mar villas go six months out; visa-free.",
     },
@@ -128,6 +130,7 @@ const honeymoonForm: ThemeForm = {
       tag: "TWO MOODS",
       nights: 7,
       skeleton: "bali_santorini",
+      covers: ["Indonesia", "Greece", "Bali", "Ubud", "Seminyak", "Jimbaran", "Nusa Penida", "Santorini"],
       // Santorini's hotels and ferries close over winter.
       months: [5, 6, 7, 8, 9, 10],
       fareNote:
@@ -140,6 +143,7 @@ const honeymoonForm: ThemeForm = {
       tag: "RUINS & WINE",
       nights: 8,
       skeleton: "santorini_athens",
+      covers: ["Greece", "Santorini", "Athens"],
       months: [5, 6, 7, 8, 9, 10],
       fareNote: "JTR in / ATH out. Schengen only - file 20+ days ahead.",
     },

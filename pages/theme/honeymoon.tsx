@@ -218,10 +218,10 @@ const honeymoonConfig: CinematicThemeConfig = {
     ],
     // Desktop-only Kaira polaroid collage — each polaroid opens its destination.
     images: [
-      { image: IMG.maldives, caption: "Maldives, overwater", href: "/asia/maldives" },
-      { image: IMG.bali, caption: "Bali, Uluwatu", href: "/asia/indonesia" },
-      { image: IMG.santorini, caption: "Santorini, the caldera", href: "/europe/greece" },
-      { image: CAT.seychelles, caption: "Seychelles, granite beaches", href: "/africa/seychelles" },
+      { image: IMG.maldives, caption: "Maldives, overwater", where: "Maldives", href: "/asia/maldives" },
+      { image: IMG.bali, caption: "Bali, Uluwatu", where: "Bali", href: "/asia/indonesia" },
+      { image: IMG.santorini, caption: "Santorini, the caldera", where: "Santorini", href: "/europe/greece" },
+      { image: CAT.seychelles, caption: "Seychelles, granite beaches", where: "Seychelles", href: "/africa/seychelles" },
     ],
   },
   sections: [
@@ -252,6 +252,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "Cliff temple at golden hour, then grilled seafood on the sand.",
           tag: "Jimbaran",
           activityId: ACTIVITY.jimbaranSunset,
+          where: "Jimbaran",
         },
         {
           image: CAT.veniceGondola,
@@ -259,6 +260,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "The one cliché worth doing - with live commentary.",
           tag: "Venice",
           activityId: ACTIVITY.veniceGondola,
+          where: "Venice",
         },
         {
           image: CAT.seineDinner,
@@ -266,6 +268,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "The city lit up, a table for two on the water.",
           tag: "Paris",
           activityId: ACTIVITY.seineDinner,
+          where: "Paris",
         },
         {
           image: CAT.dubaiSky,
@@ -273,6 +276,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "A table 50 metres up. The stopover that upgrades the trip.",
           tag: "Dubai",
           activityId: ACTIVITY.dubaiSky,
+          where: "Dubai",
         },
         {
           image: CAT.tokyoYakatabune,
@@ -280,6 +284,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "A traditional boat, kaiseki courses, the skyline drifting by.",
           tag: "Tokyo",
           activityId: ACTIVITY.tokyoYakatabune,
+          where: "Tokyo",
         },
         {
           image: CAT.mykonosSunset,
@@ -287,6 +292,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "The Aegean at dusk, drinks included.",
           tag: "Mykonos",
           activityId: ACTIVITY.mykonosSunset,
+          where: "Mykonos",
         },
         {
           image: CAT.dinnerUbud,
@@ -294,6 +300,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "Six courses above the Ubud valley, under the stars. 3 hours.",
           tag: "Ubud",
           activityId: DINNER.ubud,
+          where: "Ubud",
         },
         {
           image: CAT.dinnerSeminyak,
@@ -301,6 +308,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "Ocean views, live violin, and a table set on the sand.",
           tag: "Seminyak",
           activityId: DINNER.seminyak,
+          where: "Seminyak",
         },
         {
           image: CAT.dinnerNusaPenida,
@@ -308,6 +316,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "Three courses on the quietest of the three islands.",
           tag: "Nusa Penida",
           activityId: DINNER.nusaPenida,
+          where: "Nusa Penida",
         },
         {
           image: CAT.dinnerSantorini,
@@ -315,6 +324,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "An intimate table with the caldera going gold behind it.",
           tag: "Santorini",
           activityId: DINNER.santorini,
+          where: "Santorini",
         },
       ],
     },
@@ -411,6 +421,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "One boat, one day - the caldera, a hot-spring swim, and the sunset everyone comes for.",
           tag: "Santorini",
           activityId: ACTIVITY.santoriniVolcano,
+          where: "Santorini",
         },
         {
           image: CAT.santoriniScuba,
@@ -418,6 +429,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "A dive inside an active volcano's crater - one of the few places on earth you can.",
           tag: "Santorini",
           activityId: ACTIVITY.santoriniScuba,
+          where: "Santorini",
         },
         {
           image: CAT.ubudWaterfalls,
@@ -425,6 +437,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "Your own car and guide through Ubud's postcard sights, paced so it never feels like a checklist.",
           tag: "Ubud",
           activityId: ACTIVITY.ubudWaterfalls,
+          where: "Ubud",
         },
         {
           image: CAT.baliCooking,
@@ -432,6 +445,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "A market walk, then a hands-on class - the one thing you can actually take home.",
           tag: "Bali",
           activityId: ACTIVITY.baliCooking,
+          where: "Bali",
         },
         {
           image: CAT.nusaPenida,
@@ -439,6 +453,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "Cliffs, hidden beaches and the view every Bali feed is built from - transfers done for you.",
           tag: "Bali",
           activityId: ACTIVITY.nusaPenida,
+          where: "Nusa Penida",
         },
         {
           image: CAT.exploreMale,
@@ -446,6 +461,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "A slow walk through the smallest, densest capital in the world - an easy half-day off the resort.",
           tag: "Maldives",
           activityId: ACTIVITY.exploreMale,
+          where: "Male",
         },
         {
           image: CAT.baliHighlights,
@@ -453,6 +469,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "The rice terraces, temples and swings - one car, one day, all of it.",
           tag: "Ubud",
           activityId: ACTIVITY.baliHighlights,
+          where: "Ubud",
         },
         {
           image: CAT.phuketIslands,
@@ -460,6 +477,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "The blue-water triple with buffet lunch on board.",
           tag: "Phuket",
           activityId: ACTIVITY.phuketIslands,
+          where: "Phuket",
         },
         {
           image: CAT.lucerneHangGliding,
@@ -467,6 +485,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "Two harnesses, one lake, the story you'll tell for years.",
           tag: "Lucerne",
           activityId: ACTIVITY.lucerneHangGliding,
+          where: "Lucerne",
         },
         {
           image: CAT.pilatusGolden,
@@ -474,6 +493,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "Boat out, cogwheel up, cable car down - the classic Swiss day.",
           tag: "Zurich",
           activityId: ACTIVITY.pilatusGolden,
+          where: "Lucerne",
         },
         {
           image: CAT.hoiAnAncientTown,
@@ -481,6 +501,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "Lantern streets, Marble Mountain and dinner on the way back.",
           tag: "Da Nang",
           activityId: ACTIVITY.hoiAnAncientTown,
+          where: "Hoi An",
         },
         {
           image: CAT.athensAcropolis,
@@ -488,6 +509,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           line: "The Parthenon before the cruise crowds, museum after.",
           tag: "Athens",
           activityId: ACTIVITY.athensAcropolis,
+          where: "Athens",
         },
       ],
     },
@@ -1017,6 +1039,7 @@ const HoneymoonThemePage = ({
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
+        onBuildAround={(item) => openThemeForm(THEME_SLUG, [item])}
       />
       {/* Detail drawers are retired on this page — a click anywhere on a
           card adds or removes it, so nothing opens a drawer. Uncomment to

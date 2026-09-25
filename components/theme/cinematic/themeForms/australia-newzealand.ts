@@ -62,6 +62,7 @@ const australiaNewZealandForm: ThemeForm = {
       tag: "MOST PICKED",
       nights: 10,
       skeleton: "melbourne_sydney",
+      covers: ["Melbourne", "Sydney", "Blue Mountains", "Great Ocean Road", "Australia"],
       months: [12],
       // Lands on the 23rd so the 10 nights cover both the 26th and the 31st.
       anchor: { month: 12, day: 23, note: "Boxing Day Test + Sydney NYE" },
@@ -74,6 +75,7 @@ const australiaNewZealandForm: ThemeForm = {
       tag: "SEE BOTH",
       nights: 14,
       skeleton: "melbourne_sydney_queenstown",
+      covers: ["Melbourne", "Sydney", "Blue Mountains", "Great Ocean Road", "Queenstown", "Mount Cook", "Australia", "New Zealand"],
       months: [12],
       anchor: { month: 12, day: 22, note: "Boxing Day Test + Sydney NYE" },
       fareNote: "Add the trans-Tasman hop; book the NZ leg early.",
@@ -85,6 +87,7 @@ const australiaNewZealandForm: ThemeForm = {
       tag: "NYE + DRIVE",
       nights: 9,
       skeleton: "sydney_melbourne_great_ocean_road",
+      covers: ["Sydney", "Melbourne", "Blue Mountains", "Great Ocean Road", "Australia"],
       months: [12],
       // Straight after Christmas — the fireworks fall on night five.
       anchor: { month: 12, day: 27, note: "Sydney NYE" },
@@ -98,6 +101,7 @@ const australiaNewZealandForm: ThemeForm = {
       tag: "CLASSIC",
       nights: 9,
       skeleton: "sydney_melbourne",
+      covers: ["Sydney", "Melbourne", "Blue Mountains", "Great Ocean Road", "Australia"],
       months: [1, 2, 3],
     },
     {
@@ -107,6 +111,7 @@ const australiaNewZealandForm: ThemeForm = {
       tag: "THE LOT",
       nights: 14,
       skeleton: "sydney_melbourne_queenstown",
+      covers: ["Sydney", "Melbourne", "Blue Mountains", "Great Ocean Road", "Queenstown", "Mount Cook", "Australia", "New Zealand"],
       months: [1, 2, 3],
     },
     {
@@ -116,6 +121,7 @@ const australiaNewZealandForm: ThemeForm = {
       tag: "ROAD TRIP",
       nights: 8,
       skeleton: "melbourne_great_ocean_road",
+      covers: ["Melbourne", "Great Ocean Road", "Australia"],
       months: [1, 2, 3],
     },
   ],

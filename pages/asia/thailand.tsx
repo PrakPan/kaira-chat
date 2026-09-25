@@ -318,10 +318,10 @@ const thailandConfig: CinematicThemeConfig = {
     ],
     // Desktop-only Kaira polaroid collage. Each one saves the scene it shows.
     images: [
-      { image: IMG.hong, caption: "Krabi, the Hong lagoon" },
-      { image: IMG.heritageLanterns, caption: "Chiang Mai, Yi Peng" },
-      { image: IMG.grandPalace, caption: "Bangkok, the Grand Palace" },
-      { image: IMG.bond, caption: "Phang Nga, by canoe" },
+      { image: IMG.hong, caption: "Krabi, the Hong lagoon", where: "Krabi" },
+      { image: IMG.heritageLanterns, caption: "Chiang Mai, Yi Peng", where: "Chiang Mai" },
+      { image: IMG.grandPalace, caption: "Bangkok, the Grand Palace", where: "Bangkok" },
+      { image: IMG.bond, caption: "Phang Nga, by canoe", where: "Phuket" },
     ],
   },
   sections: [
@@ -363,6 +363,7 @@ const thailandConfig: CinematicThemeConfig = {
             label:
               "Yi Peng - Heritage Sky Lanterns, Chiang Mai (24–25 Nov 2026)",
             short: "Heritage Sky Lanterns",
+            where: "Chiang Mai",
           },
         },
         {
@@ -375,6 +376,7 @@ const thailandConfig: CinematicThemeConfig = {
             label:
               "Yi Peng - Heaven Lantern Festival with Khantoke dinner, Chiang Mai (24–25 Nov 2026)",
             short: "Heaven Lantern Festival",
+            where: "Chiang Mai",
           },
         },
         {
@@ -387,6 +389,7 @@ const thailandConfig: CinematicThemeConfig = {
             label:
               "Chiang Mai Sky Festival lantern release (early November 2026)",
             short: "Chiang Mai Sky Festival",
+            where: "Chiang Mai",
           },
         },
       ],
@@ -468,6 +471,7 @@ const thailandConfig: CinematicThemeConfig = {
           line: "Private island-hopping into the hidden lagoon, snorkel stops on the way back.",
           tag: "Krabi",
           activityId: ACTIVITY.hongLagoon,
+          where: "Krabi",
         },
         {
           image: IMG.bond,
@@ -475,6 +479,7 @@ const thailandConfig: CinematicThemeConfig = {
           line: "Big boat out to Phang Nga Bay, then the sea caves by canoe.",
           tag: "Phuket",
           activityId: ACTIVITY.jamesBond,
+          where: "Phuket",
         },
         {
           image: IMG.plankton,
@@ -482,6 +487,7 @@ const thailandConfig: CinematicThemeConfig = {
           line: "Islands and sunset first, then glowing water after dark.",
           tag: "Krabi",
           activityId: ACTIVITY.plankton,
+          where: "Krabi",
         },
         {
           image: IMG.cook,
@@ -489,6 +495,7 @@ const thailandConfig: CinematicThemeConfig = {
           line: "Market first, wok second - four dishes you'll cook again at home.",
           tag: "Krabi",
           activityId: ACTIVITY.cookingClass,
+          where: "Krabi",
         },
         {
           image: IMG.trek,
@@ -496,6 +503,7 @@ const thailandConfig: CinematicThemeConfig = {
           line: "A limestone ridge nobody climbs, panoramic at the top, lunch at the bottom.",
           tag: "Krabi",
           activityId: ACTIVITY.khaoHonNak,
+          where: "Krabi",
         },
         {
           image: IMG.chiangDao,
@@ -503,6 +511,7 @@ const thailandConfig: CinematicThemeConfig = {
           line: "Limestone caves and waterfall climbs, a full day out of the city.",
           tag: "Chiang Mai",
           activityId: ACTIVITY.chiangDao,
+          where: "Chiang Mai",
         },
         {
           image: IMG.cityTour,
@@ -510,6 +519,7 @@ const thailandConfig: CinematicThemeConfig = {
           line: "Build the day yourself - temples, markets, and the lantern-release spots in November.",
           tag: "Chiang Mai",
           activityId: ACTIVITY.cityTour,
+          where: "Chiang Mai",
         },
         {
           image: IMG.chiangRai,
@@ -517,6 +527,7 @@ const thailandConfig: CinematicThemeConfig = {
           line: "The White Temple, the Blue Temple and the hills between them.",
           tag: "Chiang Mai",
           activityId: ACTIVITY.chiangRai,
+          where: "Chiang Mai",
         },
         {
           image: IMG.grandPalace,
@@ -529,6 +540,7 @@ const thailandConfig: CinematicThemeConfig = {
             kind: "activity",
             label: "Grand Palace, floating and railway markets (Bangkok)",
             short: "Grand Palace + markets",
+            where: "Bangkok",
           },
         },
         {
@@ -537,6 +549,7 @@ const thailandConfig: CinematicThemeConfig = {
           line: "The wholesale market at dawn, then the city's green lung on two wheels.",
           tag: "Bangkok",
           activityId: ACTIVITY.khlongToei,
+          where: "Bangkok",
         },
         {
           image: IMG.kite,
@@ -544,6 +557,7 @@ const thailandConfig: CinematicThemeConfig = {
           line: "One hour, one instructor, and the wind on the east shore.",
           tag: "Koh Phangan",
           activityId: ACTIVITY.kitesurf,
+          where: "Koh Phangan",
         },
       ],
     },
@@ -631,6 +645,7 @@ const thailandConfig: CinematicThemeConfig = {
           rating: "5.0",
           reviews: "2,118",
           href: `${PAGE}?restaurant_id=${RESTAURANT.karaweik}`,
+          where: "Koh Tao",
         },
         {
           image: IMG.chaixi,
@@ -640,6 +655,7 @@ const thailandConfig: CinematicThemeConfig = {
           rating: "5.0",
           reviews: "569",
           href: `${PAGE}?restaurant_id=${RESTAURANT.chaixi}`,
+          where: "Koh Tao",
         },
         {
           image: IMG.nokkamin,
@@ -649,6 +665,7 @@ const thailandConfig: CinematicThemeConfig = {
           rating: "5.0",
           reviews: "227",
           href: `${PAGE}?restaurant_id=${RESTAURANT.nokkamin}`,
+          where: "Ko Lipe",
         },
         {
           image: IMG.kohMook,
@@ -658,6 +675,7 @@ const thailandConfig: CinematicThemeConfig = {
           rating: "5.0",
           reviews: "200",
           href: `${PAGE}?restaurant_id=${RESTAURANT.kohMook}`,
+          where: "Koh Muk",
         },
         {
           image: IMG.chanjao,
@@ -667,6 +685,7 @@ const thailandConfig: CinematicThemeConfig = {
           rating: "5.0",
           reviews: "40",
           href: `${PAGE}?restaurant_id=${RESTAURANT.chanjao}`,
+          where: "Koh Muk",
         },
         {
           image: IMG.tangBbq,
@@ -676,6 +695,7 @@ const thailandConfig: CinematicThemeConfig = {
           rating: "5.0",
           reviews: "24",
           href: `${PAGE}?restaurant_id=${RESTAURANT.tangBbq}`,
+          where: "Koh Jum",
         },
         {
           image: IMG.villageFarm,
@@ -685,6 +705,7 @@ const thailandConfig: CinematicThemeConfig = {
           rating: "4.9",
           reviews: "25,761",
           href: `${PAGE}?restaurant_id=${RESTAURANT.villageFarm}`,
+          where: "Kanchanaburi",
         },
       ],
     },
@@ -1069,6 +1090,7 @@ const ThailandCountryPage = ({
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
+        onBuildAround={(item) => openThemeForm(THEME_SLUG, [item])}
       />
     </Layout>
   );

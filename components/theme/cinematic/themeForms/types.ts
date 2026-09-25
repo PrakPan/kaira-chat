@@ -49,6 +49,11 @@ export interface ThemeRoute {
   tag?: string; // small badge, e.g. "MOST PICKED"
   nights: number;
   skeleton: string; // routing key — passed through untouched, never displayed
+  // Every place (the page's card `where` values) this route visits or
+  // reasonably day-trips to, plus the country it's in so country-wide picks
+  // fit. The form offers only the routes that cover all of the reader's picks.
+  // Absent → the skeleton's own tokens are used (see routeFitsPicks).
+  covers?: string[];
   // Months (1–12) this route runs in. Omit for "every month of the season".
   months?: number[];
   // A fixed-date event this route is built around. When the reader picks the
@@ -109,8 +114,13 @@ export interface ThemeForm {
 // the reader's saved selection from the theme page (may be empty).
 export interface ThemeFormSubmission {
   slug: string;
-  window: string; // chosen routes[].key (or legacy date_windows[].key)
-  skeleton: string; // chosen routes[].skeleton (routing key)
+  // The chosen route. Both absent when `routeMode` is "from_picks" — no route
+  // reached every saved pick, so the backend builds one around them.
+  window?: string; // chosen routes[].key (or legacy date_windows[].key)
+  skeleton?: string; // chosen routes[].skeleton (routing key)
+  // "route" — the reader picked `window`/`skeleton`. "from_picks" — none of
+  // the theme's routes covers all the saved picks; build from `items`.
+  routeMode?: "route" | "from_picks";
   // The month the reader picked, resolved forward from today — "2027-01" plus
   // its readable form. Absent on the legacy dateWindows path and when the
   // reader overrides everything with exact dates.
@@ -132,7 +142,17 @@ export interface ThemeFormSubmission {
   adults?: number;
   children?: number;
   infants?: number;
-  items?: Array<{ kind?: string; label?: string; short?: string; id?: string }>;
+  // Each saved pick, with `where` (its place) when the card was tagged.
+  items?: Array<{
+    kind?: string;
+    label?: string;
+    short?: string;
+    id?: string;
+    where?: string;
+  }>;
+  // Countries the reader saved a visa card for — visa help to include. Visa
+  // picks never narrow the routes.
+  visaCountries?: string[];
   // Quick-reply chips the reader toggled on in the form (seed_prompts).
   prompts?: string[];
   // Free text the reader typed into the theme page's docked ask-bar before

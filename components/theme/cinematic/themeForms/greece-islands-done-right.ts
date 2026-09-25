@@ -66,6 +66,7 @@ const greeceIslandsForm: ThemeForm = {
       tag: "MOST POPULAR",
       nights: 7,
       skeleton: "classic_7",
+      covers: ["Athens", "Santorini", "Mykonos", "Cyclades", "Hydra", "Delphi", "Epidaurus", "Greece"],
       fareNote: "Peak Jun–Aug; fares + island hotels surge, book early.",
     },
     {
@@ -75,6 +76,7 @@ const greeceIslandsForm: ThemeForm = {
       tag: "SLOW HOP",
       nights: 9,
       skeleton: "cyclades_9",
+      covers: ["Athens", "Santorini", "Mykonos", "Naxos", "Cyclades", "Hydra", "Delphi", "Epidaurus", "Greece"],
       fareNote: "Shoulder May/Oct - cheaper, ferries running, fewer crowds.",
     },
     {
@@ -84,6 +86,7 @@ const greeceIslandsForm: ThemeForm = {
       tag: "SEE MORE",
       nights: 10,
       skeleton: "crete_10",
+      covers: ["Athens", "Crete", "Santorini", "Cyclades", "Hydra", "Delphi", "Epidaurus", "Greece"],
       fareNote: "Sep shoulder ideal; Crete adds a domestic flight.",
     },
   ],

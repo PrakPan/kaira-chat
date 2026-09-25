@@ -90,6 +90,7 @@ const thailandForm: ThemeForm = {
       tag: "NOVEMBER ONLY",
       nights: 6,
       skeleton: "chiangmai_chiangrai_bangkok",
+      covers: ["Thailand", "Chiang Mai", "Chiang Rai", "Bangkok", "Kanchanaburi"],
       months: [11],
       // Yi Peng 2026. An anchor rather than a plain November route: the festival
       // is two fixed nights on the Lanna full moon, and a mid-month departure
@@ -109,6 +110,7 @@ const thailandForm: ThemeForm = {
       tag: "SLOWEST",
       nights: 9,
       skeleton: "krabi_lanta_kohjum",
+      covers: ["Thailand", "Krabi", "Koh Lanta", "Koh Jum", "Koh Muk"],
       months: [11, 12, 1, 2, 3, 4],
       fareNote:
         "KBV both ends, ferries between. Pure Andaman, so the dry months only.",
@@ -120,6 +122,7 @@ const thailandForm: ThemeForm = {
       tag: "FIRST TIME",
       nights: 5,
       skeleton: "bangkok_phuket",
+      covers: ["Thailand", "Bangkok", "Phuket", "Kanchanaburi"],
       months: [11, 12, 1, 2, 3, 4],
       fareNote:
         "BKK in / HKT out. The shortest sensible first trip - two bases, one internal flight.",
@@ -131,6 +134,7 @@ const thailandForm: ThemeForm = {
       tag: "GROUPS",
       nights: 7,
       skeleton: "bangkok_pattaya_phuket",
+      covers: ["Thailand", "Bangkok", "Pattaya", "Phuket", "Kanchanaburi"],
       months: [11, 12, 1, 2, 3, 4],
       fareNote:
         "Pattaya is a road transfer from Bangkok, not a flight, which is what keeps this one cheap.",
@@ -142,6 +146,7 @@ const thailandForm: ThemeForm = {
       tag: "ACTIVE",
       nights: 8,
       skeleton: "krabi_chiangmai",
+      covers: ["Thailand", "Krabi", "Chiang Mai"],
       months: [11, 12, 1, 2, 3],
       fareNote:
         "KBV in / CNX out via BKK. Half sea, half hills - the caves and the ridge trek both want dry ground.",
@@ -153,6 +158,7 @@ const thailandForm: ThemeForm = {
       tag: "QUIETER",
       nights: 8,
       skeleton: "bangkok_samui_phangan",
+      covers: ["Thailand", "Bangkok", "Koh Samui", "Koh Phangan", "Koh Tao", "Kanchanaburi"],
       // Was Jun–Sep, as the monsoon fallback for when the Andaman shuts. It is
       // re-gated to the dry months because that is when it is actually booked:
       // across trips since 2023, Koh Samui appears in 200 November itineraries,

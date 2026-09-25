@@ -121,6 +121,7 @@ const filmyGetawaysForm: ThemeForm = {
       tag: "MOST PICKED",
       nights: 7,
       skeleton: "switzerland_ddlj",
+      covers: ["Switzerland", "Lucerne", "Wengen", "Interlaken", "Montreux"],
       fareNote:
         "ZRH in / GVA out, direct from DEL and BOM. All Swiss rail on a Travel Pass; Wengen is car-free, so the last leg is the Lauterbrunnen cog.",
     },
@@ -132,6 +133,7 @@ const filmyGetawaysForm: ThemeForm = {
       nights: 10,
       months: [4, 5, 6, 9, 10],
       skeleton: "znmd_spain",
+      covers: ["Spain", "Barcelona", "Costa Brava", "Valencia", "Seville"],
       fareNote:
         "BCN in / MAD out, one stop via DXB, DOH or IST. Self-drive from Barcelona to Valencia - the drive is the film.",
     },
@@ -143,6 +145,7 @@ const filmyGetawaysForm: ThemeForm = {
       nights: 8,
       months: [3, 4, 5, 6],
       skeleton: "yjhd_india",
+      covers: ["India", "Manali", "Delhi", "Udaipur"],
       fareNote:
         "Domestic - DEL in / UDR out. Bhuntar flights cancel often, so the Delhi–Manali road is the reliable default.",
     },
@@ -154,6 +157,7 @@ const filmyGetawaysForm: ThemeForm = {
       nights: 6,
       months: [11, 12, 1, 2],
       skeleton: "dch_goa",
+      covers: ["India", "Mumbai", "Goa"],
       fareNote:
         "Domestic - BOM in / GOX out. Chapora Fort is the wall shot and stays in the North Goa block.",
     },
@@ -165,6 +169,7 @@ const filmyGetawaysForm: ThemeForm = {
       nights: 7,
       months: [3, 4, 5, 6, 9, 10, 11],
       skeleton: "jabwemet_hills",
+      covers: ["India", "Shimla", "Manali"],
       fareNote:
         "Domestic loop out of DEL. The Kalka–Shimla toy train is the hero transfer, never a car - it books out early.",
     },
@@ -176,6 +181,7 @@ const filmyGetawaysForm: ThemeForm = {
       nights: 8,
       months: [4, 5, 6, 7, 8, 9, 10],
       skeleton: "tamasha_corsica",
+      covers: ["France", "Corsica", "Ajaccio", "Porto", "Bonifacio"],
       fareNote:
         "No direct India–Corsica: route via Nice or Paris, then AJA in and out. Car-only on the island - rail reaches neither Porto nor Bonifacio.",
     },
@@ -186,6 +192,7 @@ const filmyGetawaysForm: ThemeForm = {
       tag: "ONE CITY",
       nights: 6,
       skeleton: "midnight_paris",
+      covers: ["France", "Paris"],
       fareNote:
         "CDG in and out, direct from DEL and BOM. Single-city by design - Versailles and Giverny are day trips, not second overnights.",
     },
@@ -197,6 +204,7 @@ const filmyGetawaysForm: ThemeForm = {
       nights: 12,
       months: [4, 5, 6, 9, 10],
       skeleton: "eatpraylove_bali_italy",
+      covers: ["Italy", "Indonesia", "Rome", "Bali", "Ubud", "Seminyak"],
       fareNote:
         "FCO in / DPS out - Italy first, Bali second, because the flight home from Denpasar is the short one. Naples and Pompeii are day trips out of Rome.",
     },
@@ -208,6 +216,7 @@ const filmyGetawaysForm: ThemeForm = {
       nights: 8,
       months: [5, 6, 7, 8, 9, 10],
       skeleton: "mammamia_greece",
+      covers: ["Greece", "Athens", "Skopelos", "Skiathos"],
       fareNote:
         "ATH in and out, then the ~50m hop to Skiathos and a ~1h ferry. Skopelos holds the chapel and is the anchor.",
     },
@@ -219,6 +228,7 @@ const filmyGetawaysForm: ThemeForm = {
       nights: 8,
       months: [5, 6, 7, 8, 9],
       skeleton: "harrypotter_scotland",
+      covers: ["United Kingdom", "Scotland", "Edinburgh", "Fort William", "Glasgow", "Glenfinnan", "Glencoe"],
       fareNote:
         "EDI in / GLA out; the Highlands leg is a private car, not rail. The Jacobite steam train sells out months ahead - book it before the trip is confirmed.",
     },
@@ -230,6 +240,7 @@ const filmyGetawaysForm: ThemeForm = {
       nights: 10,
       months: [11, 12, 1, 2, 3, 4],
       skeleton: "lotr_newzealand",
+      covers: ["New Zealand", "Auckland", "Hobbiton", "Wellington", "Queenstown", "Glenorchy", "Milford Sound"],
       fareNote:
         "AKL in and out - Queenstown has no long-haul, so the loop closes at Auckland. Hobbiton is a day trip from Auckland, ~2h each way.",
     },

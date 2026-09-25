@@ -202,10 +202,10 @@ const thailandBachelorConfig: CinematicThemeConfig = {
     ],
     // Desktop-only Kaira polaroid collage — each polaroid opens its destination.
     images: [
-      { image: IMG.yona, caption: "Phuket, floating club", href: "/asia/thailand" },
-      { image: IMG.sevenIslandSunset, caption: "Krabi, longtails", href: "/asia/thailand" },
-      { image: IMG.iconsiam, caption: "Bangkok, the river", href: "/asia/thailand" },
-      { image: IMG.jungleClub, caption: "Koh Samui, above Chaweng", href: "/asia/thailand" },
+      { image: IMG.yona, caption: "Phuket, floating club", where: "Phuket", href: "/asia/thailand" },
+      { image: IMG.sevenIslandSunset, caption: "Krabi, longtails", where: "Krabi", href: "/asia/thailand" },
+      { image: IMG.iconsiam, caption: "Bangkok, the river", where: "Bangkok", href: "/asia/thailand" },
+      { image: IMG.jungleClub, caption: "Koh Samui, above Chaweng", where: "Koh Samui", href: "/asia/thailand" },
     ],
   },
   sections: [
@@ -258,6 +258,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           line: "A converted barge anchored off Patong. Infinity pools, a DJ, and nobody has to drive home.",
           tag: "Phuket",
           activityId: ACTIVITY.yona,
+          where: "Phuket",
         },
         {
           image: IMG.hongSpeedboat,
@@ -265,6 +266,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           line: "Lagoons you swim into through a gap in the rock. Lunch on the sand, back by four.",
           tag: "Krabi",
           activityId: ACTIVITY.hongSpeedboat,
+          where: "Krabi",
         },
         {
           image: IMG.phiPhiCatamaran,
@@ -272,6 +274,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           line: "The big one - Maya Bay, Bamboo Island, snorkelling stops. A premium boat so the group isn't crammed.",
           tag: "Krabi",
           activityId: ACTIVITY.phiPhiCatamaran,
+          where: "Krabi",
         },
         {
           image: IMG.sevenIslandSunset,
@@ -279,6 +282,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           line: "Sunset over seven islands, then plankton glowing on the ride back. Quietly the best night of the trip.",
           tag: "Krabi",
           activityId: ACTIVITY.sevenIslandSunset,
+          where: "Krabi",
         },
         {
           image: IMG.raftingZipline,
@@ -286,6 +290,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           line: "White water, treetops and mud in one day. The correct answer to a group that can't sit still.",
           tag: "Phuket",
           activityId: ACTIVITY.raftingZipline,
+          where: "Phuket",
         },
         {
           image: IMG.chaoPhraya,
@@ -293,6 +298,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           line: "Buffet, live band, temples lit along the river. Easy first night while the group lands in waves.",
           tag: "Bangkok",
           activityId: ACTIVITY.chaoPhraya,
+          where: "Bangkok",
         },
         {
           image: IMG.jamesBond,
@@ -300,6 +306,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           line: "Phang Nga Bay's limestone stacks and sea caves by canoe. Go early - the tour fleet arrives at eleven.",
           tag: "Phuket",
           activityId: ACTIVITY.jamesBond,
+          where: "Phuket",
         },
       ],
     },
@@ -330,6 +337,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
         title: "Private long-tail charter",
         meta: "Full day · your group only · no shared boat",
         activityId: ACTIVITY.longtailCharter,
+        where: "Phuket",
       },
     },
     // ── Which island is yours (each row opens its tour) ──
@@ -351,6 +359,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           badge: "Loudest after dark",
           line: "Maya Bay by day, a beach party every night. 2h from Phuket - the one everybody pictures.",
           activityId: ISLAND.phiPhi,
+          where: "Phi Phi",
         },
         {
           image: IMG.hongIsland,
@@ -359,6 +368,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           name: "Hong Islands",
           line: "A ring of limestone with a lagoon in the middle. 45 min from Krabi, calm and shallow.",
           activityId: ISLAND.hong,
+          where: "Hong Island",
         },
         {
           image: IMG.phangNga,
@@ -367,6 +377,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           name: "Phang Nga Bay",
           line: "Four hundred islands, sea caves, and the stack from the Bond film. Best from a canoe at dawn.",
           activityId: ISLAND.phangNga,
+          where: "Phang Nga Bay",
         },
         {
           image: IMG.railay,
@@ -375,6 +386,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           name: "Railay",
           line: "No roads in. Climbers on the cliffs, one bar on the sand, and the boat stops at sunset.",
           activityId: ISLAND.railay,
+          where: "Railay",
         },
       ],
     },
@@ -397,6 +409,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           badge: "★ 4.6 · 27.9k",
           line: "Forty-five metres of white marble on a hill, with the whole island underneath. Cover your knees. · Phuket",
           href: `${PAGE}?poi_id=${POI.bigBuddha}`,
+          where: "Phuket",
         },
         {
           image: IMG.watArun,
@@ -406,6 +419,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           badge: "★ 4.6 · 32.2k",
           line: "The Temple of Dawn across the river. Go at 7am - empty, cool, and the light is why people photograph it. · Bangkok",
           href: `${PAGE}?poi_id=${POI.watArun}`,
+          where: "Bangkok",
         },
         {
           image: IMG.chatuchak,
@@ -415,6 +429,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           badge: "★ 4.4 · 43.1k",
           line: "Ten thousand stalls. Someone in the group will buy a hammock they cannot carry home. · Bangkok",
           href: `${PAGE}?poi_id=${POI.chatuchak}`,
+          where: "Bangkok",
         },
         {
           image: IMG.sanctuary,
@@ -424,6 +439,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           badge: "★ 4.6 · 28.7k",
           line: "An entire temple carved from teak, still unfinished after forty years. Genuinely worth the detour. · Pattaya",
           href: `${PAGE}?poi_id=${POI.sanctuary}`,
+          where: "Pattaya",
         },
         {
           image: IMG.lumphini,
@@ -433,6 +449,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           badge: "★ 4.5 · 31k",
           line: "Where the city goes to run at six. Monitor lizards in the lake, and shade when the heat is unreasonable. · Bangkok",
           href: `${PAGE}?poi_id=${POI.lumphini}`,
+          where: "Bangkok",
         },
         {
           image: IMG.iconsiam,
@@ -442,6 +459,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           badge: "★ 4.7 · 54.4k",
           line: "Riverfront mall with an indoor floating market on the ground floor. Air conditioning as an activity. · Bangkok",
           href: `${PAGE}?poi_id=${POI.iconsiam}`,
+          where: "Bangkok",
         },
       ],
     },
@@ -500,6 +518,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           rating: "4.4",
           reviews: "3,030",
           href: `${PAGE}?restaurant_id=${RESTAURANT.vertigo}`,
+          where: "Bangkok",
         },
         {
           image: IMG.maggieChoo,
@@ -509,6 +528,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           rating: "4.4",
           reviews: "1,142",
           href: `${PAGE}?restaurant_id=${RESTAURANT.maggieChoo}`,
+          where: "Bangkok",
         },
         {
           image: IMG.phiPhiReggae,
@@ -518,6 +538,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           rating: "4.4",
           reviews: "1,033",
           href: `${PAGE}?restaurant_id=${RESTAURANT.phiPhiReggae}`,
+          where: "Phi Phi",
         },
         {
           image: IMG.jungleClub,
@@ -527,6 +548,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           rating: "4.4",
           reviews: "3,965",
           href: `${PAGE}?restaurant_id=${RESTAURANT.jungleClub}`,
+          where: "Koh Samui",
         },
         {
           image: IMG.laeLay,
@@ -536,6 +558,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           rating: "4.2",
           reviews: "971",
           href: `${PAGE}?restaurant_id=${RESTAURANT.laeLay}`,
+          where: "Krabi",
         },
         {
           image: IMG.yaowarat,
@@ -545,6 +568,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           rating: "4.6",
           reviews: "874",
           href: `${PAGE}?restaurant_id=${RESTAURANT.yaowarat}`,
+          where: "Bangkok",
         },
       ],
     },
@@ -914,6 +938,7 @@ const ThailandBachelorThemePage = ({
         onSelectPrompt={handleSelectPrompt}
         selection={selection}
         onBuild={handleBuild}
+        onBuildAround={(item) => openThemeForm(THEME_SLUG, [item])}
       />
       {/* Detail drawers are retired on this page — a click anywhere on a
           card adds or removes it, so nothing opens a drawer. Uncomment to

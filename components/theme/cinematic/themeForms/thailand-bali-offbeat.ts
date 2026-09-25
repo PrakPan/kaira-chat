@@ -110,6 +110,7 @@ const thailandBaliOffbeatForm: ThemeForm = {
       tag: "KAIRA'S PICK",
       nights: 12,
       skeleton: "krabi_ubud_amed",
+      covers: ["Thailand", "Indonesia", "Krabi", "Ubud", "Sidemen", "East Bali", "Amed", "Uluwatu"],
       months: [11, 12, 1, 2, 3, 4],
       fareNote:
         "KBV in / DPS out, one flight between. Andaman-dependent - gated to the dry months on purpose.",
@@ -121,6 +122,7 @@ const thailandBaliOffbeatForm: ThemeForm = {
       tag: "YEAR ROUND",
       nights: 13,
       skeleton: "chiang_mai_bangkok_gili",
+      covers: ["Thailand", "Indonesia", "Chiang Mai", "Bangkok", "Gili Trawangan"],
       fareNote:
         "CNX in / LOP or DPS out. Nothing on this route depends on the Andaman, so it holds up in any month.",
     },
@@ -131,6 +133,7 @@ const thailandBaliOffbeatForm: ThemeForm = {
       tag: "SLOWEST",
       nights: 11,
       skeleton: "ubud_amed_nusas",
+      covers: ["Indonesia", "Ubud", "Sidemen", "East Bali", "Amed", "Nusa Lembongan", "Nusa Penida", "Uluwatu"],
       fareNote:
         "DPS both ends, boats between. Driest Jun–Sep, which is exactly when Thailand's west coast isn't.",
     },
@@ -141,6 +144,7 @@ const thailandBaliOffbeatForm: ThemeForm = {
       tag: "NOBODY MOVES",
       nights: 10,
       skeleton: "koh_yao_lembongan",
+      covers: ["Thailand", "Indonesia", "Koh Yao Noi", "Nusa Lembongan", "Nusa Penida"],
       months: [11, 12, 1, 2, 3, 4],
       fareNote:
         "Two bases, two boats, zero itinerary. Koh Yao Noi is Andaman, so the dry months only.",
