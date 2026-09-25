@@ -8,6 +8,7 @@ import * as ga from "../../services/ga/Index";
 import { logEvent } from "../../services/ga/Index";
 import { CLIENT_ID, CLIENT_SECRET } from "../../services/constants";
 import { openNotification } from "./notification";
+import { clearUserSession } from "../../services/userSession";
 
 
 //Open login modal
@@ -72,21 +73,25 @@ export const authSuccess = (token) => {
 //Set user name and email
 export const setUserDetails = (userdetails) => {
   try {
-    userdetails.email && localStorage.setItem("email", userdetails.email);
-    userdetails.name && localStorage.setItem("name", userdetails.name);
-    userdetails.country && localStorage.setItem("country", userdetails.country);
-    userdetails.phone && localStorage.setItem("phone", userdetails.phone);
-    userdetails.is_phone_verified &&
-      localStorage.setItem("is_phone_verified", userdetails.is_phone_verified);
-    userdetails.is_email_verified &&
-      localStorage.setItem("is_email_verified", userdetails.is_email_verified);
-    userdetails.whatsapp_opt_in &&
-      localStorage.setItem("whatsapp_opt_in", userdetails.whatsapp_opt_in);
-    userdetails.email_last_verified_on &&
-      localStorage.setItem(
-        "email_last_verified_on",
-        userdetails.email_last_verified_on
-      );
+    // Persist every field the payload carries — including false/null. The old
+    // `value && setItem` skipped falsy values, so turning WhatsApp off or a
+    // re-unverified phone reverted to the stale cached value on reload.
+    const PERSISTED = [
+      "email",
+      "name",
+      "country",
+      "phone",
+      "is_phone_verified",
+      "is_email_verified",
+      "whatsapp_opt_in",
+      "email_last_verified_on",
+    ];
+    for (const key of PERSISTED) {
+      const v = userdetails[key];
+      if (v === undefined) continue;
+      if (v === null) localStorage.removeItem(key);
+      else localStorage.setItem(key, v);
+    }
 
     // Resolve the profile image from whichever key the payload carries.
     const newImage =
@@ -167,9 +172,16 @@ export const authLogout = () => {
 };
 
 //Logout / refresh after token expires
+// One timer for the window. Each login used to add another that was never
+// cancelled, so after "log out → sign in as someone else" the previous
+// account's timer still fired at ITS expiry and logged the new user out.
+let authTimeoutId = null;
 export const checkAuthTimeout = (expirationTime) => {
   return (dispatch) => {
-    setTimeout(() => {
+    if (authTimeoutId) clearTimeout(authTimeoutId);
+    authTimeoutId = setTimeout(() => {
+      authTimeoutId = null;
+      clearUserSession();
       dispatch(authLogout());
     }, expirationTime * 1000);
   };
@@ -208,15 +220,7 @@ export const checkAuthState = () => {
       //Token expired
       const expirationDate = new Date(localStorage.getItem("expirationDate"));
       if (expirationDate <= new Date()) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("name");
-        localStorage.removeItem("email");
-        localStorage.removeItem("phone");
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("expirationDate");
-        localStorage.removeItem("MyPlans");
-        localStorage.removeItem("user_image");
-        localStorage.removeItem("is_new_user");
+        clearUserSession();
 
         dispatch(authLogout());
         //refresh token
@@ -333,6 +337,10 @@ export const auth = (
 
           const responseData = response.data;
 
+          // Start from a clean slate so nothing of a previously signed-in
+          // account in this window survives into this one.
+          clearUserSession();
+
           const userdata = {
             name: responseData.data.user?.name,
             country: responseData.data.user?.country ?? "",
@@ -446,6 +454,7 @@ export const googleAuth = (response) => {
               status: "",
             },
           });
+          clearUserSession(); // see auth(): no previous account carries over
 
           const userdata = {
             name: res.data.name,
@@ -509,6 +518,7 @@ export const fbAuth = (response) => {
       .get("?access_token=" + response.accessToken)
       .then((res) => {
         if (res.status === 200) {
+          clearUserSession(); // see auth(): no previous account carries over
           const userdata = {
             name: res.data.name,
             phone: res.data.phone,
@@ -588,15 +598,30 @@ export const changeUserDetails = (userdetails,trackUserAccountUpdate) => {
         );
         localStorage.setItem(
           "email_last_verified_on",
-          responseData.data.email_last_verified_on
+          responseData.data.user?.email_last_verified_on ??
+            responseData.data.email_last_verified_on
         );
-        // Keep redux in sync with the server's image state on every update.
-        dispatch(setUserDetails({ ...userdetails, profile_pic: profilePic ?? null }));
+        // Keep redux in sync with the server (falling back to what we sent for
+        // any field the response leaves out), image state included.
+        const user = responseData.data.user || {};
+        const synced = { ...userdetails };
+        for (const key of [
+          "name",
+          "country",
+          "phone",
+          "email",
+          "whatsapp_opt_in",
+          "is_phone_verified",
+          "is_email_verified",
+        ]) {
+          if (user[key] !== undefined) synced[key] = user[key];
+        }
+        dispatch(setUserDetails({ ...synced, profile_pic: profilePic ?? null }));
         dispatch(authSetLoginMessage(null));
         dispatch(authCloseLogin());
       })
       .catch((err) => {
-        if (err?.response?.data?.errors[0]?.phone)
+        if (err?.response?.data?.errors?.[0]?.phone)
           dispatch(authMobileFail(err.response.data.errors[0].phone[0]));
         //Invalid / already taken  mobile
         else dispatch(authMobileFail());

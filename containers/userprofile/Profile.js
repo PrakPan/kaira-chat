@@ -42,6 +42,57 @@ const ImageNameContainer = styled.div`
   }
 `;
 
+// Defined at module scope: created inside the component they were new types
+// on every render, so React remounted their subtree — including an open
+// EditInput, which lost the typed value and any pending OTP.
+const Name = styled.p`
+  font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
+  margin: 0 0 0 0;
+  font-weight: 700;
+  @media screen and (min-width: 768px) {
+    font-size: ${(props) => props.theme.fontsizes.desktop.text.two};
+    margin: 1rem;
+  }
+`;
+
+const DetailsContainer = styled.div`
+  text-align: center;
+  padding: 2rem 0;
+  @media screen and (min-width: 768px) {
+    text-align: left;
+  }
+`;
+
+const SectionHeading = styled.p`
+  font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
+  @media screen and (min-width: 768px) {
+    font-size: ${(props) => props.theme.fontsizes.desktop.text.one};
+  }
+`;
+
+const DetailHeading = styled.p`
+  font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  text-align: left;
+  @media screen and (min-width: 768px) {
+    font-size: ${(props) => props.theme.fontsizes.desktop.text.three};
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
+`;
+
+const DetailText = styled.p`
+  font-size: ${(props) => props.theme.fontsizes.mobile.text.three};
+  font-weight: 300;
+  color: #a0a0a0;
+  @media screen and (min-width: 768px) {
+    font-size: ${(props) => props.theme.fontsizes.desktop.text.three};
+    float: left;
+    display: inline;
+  }
+`;
+
 const Profile = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [editImage, setEditImage] = useState(false);
@@ -72,11 +123,24 @@ const Profile = (props) => {
     props.getCountryCodes();
   }, []);
 
+  // Mirror the stored value (auth hydrates after mount), but only PUT when the
+  // user actually toggles. This used to fire on mount too, re-saving
+  // name/country/whatsapp from a possibly not-yet-hydrated store.
   useEffect(() => {
-    handleSave();
-  }, [whatsapp]);
+    setWhatsapp(!!props.whatsapp_opt_in);
+  }, [props.whatsapp_opt_in]);
+
+  const toggleWhatsapp = () => {
+    const next = !whatsapp;
+    setWhatsapp(next);
+    props.changeUserDetails(
+      { name: props.name, country: props.country, whatsapp_opt_in: next },
+      trackUserAccountUpdate
+    );
+  };
 
   useEffect(() => {
+    if (!file) return;
     const maxSize = 5 * 1024 * 1024;
     let timeOut;
     if (file && file.size > maxSize) {
@@ -95,11 +159,13 @@ const Profile = (props) => {
   }, [file]);
 
   useEffect(() => {
-    document.addEventListener("click", (e) => {
+    const closeImageMenu = (e) => {
       if (imageEditRef.current && !imageEditRef.current.contains(e.target)) {
         setEditImage(false);
       }
-    });
+    };
+    document.addEventListener("click", closeImageMenu);
+    return () => document.removeEventListener("click", closeImageMenu);
   }, []);
 
   const onFileChange = (e) => {
@@ -171,57 +237,6 @@ const Profile = (props) => {
     fileInputRef.current.click();
   };
 
-  const handleSave = () => {
-    props.changeUserDetails({name:props.name,country:props.country, whatsapp_opt_in: whatsapp },trackUserAccountUpdate);
-  };
-
-  const Name = styled.p`
-    font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
-    margin: 0 0 0 0;
-    font-weight: 700;
-    @media screen and (min-width: 768px) {
-      font-size: ${(props) => props.theme.fontsizes.desktop.text.two};
-      margin: 1rem;
-    }
-  `;
-
-  const DetailsContainer = styled.div`
-    text-align: center;
-    padding: 2rem 0;
-    @media screen and (min-width: 768px) {
-      text-align: left;
-    }
-  `;
-
-  const SectionHeading = styled.p`
-    font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
-    @media screen and (min-width: 768px) {
-      font-size: ${(props) => props.theme.fontsizes.desktop.text.one};
-    }
-  `;
-
-  const DetailHeading = styled.p`
-    font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    text-align: left;
-    @media screen and (min-width: 768px) {
-      font-size: ${(props) => props.theme.fontsizes.desktop.text.three};
-      text-align: left;
-      margin-bottom: 0.5rem;
-    }
-  `;
-
-  const DetailText = styled.p`
-    font-size: ${(props) => props.theme.fontsizes.mobile.text.three};
-    font-weight: 300;
-    color: #a0a0a0;
-    @media screen and (min-width: 768px) {
-      font-size: ${(props) => props.theme.fontsizes.desktop.text.three};
-      float: left;
-      display: inline;
-    }
-  `;
 
   const userData={
     name:props.name,
@@ -444,34 +459,7 @@ const Profile = (props) => {
 
           <div className="flex flex-row items-center justify-start gap-3 mb-4">
             <div
-              onClick={() => {
-                // const RequestData={
-                //   name:props.name,
-                //   whatsapp_opt_in:!whatsapp,
-                //   country:props.country
-                // }
-                // axiosuserinstance
-                //   .put("/", RequestData, {
-                //     headers: {
-                //       Authorization: `Bearer ${token}`,
-                //     },
-                //   })
-                //   .then((res) => {
-                //     setUserDetails(res.data);
-                //     setLoading(false);
-                //     closeEdit(false);
-                //   })
-                //   .catch((err) => {
-                //     setLoading(false);
-                //     closeEdit(false);
-                //     if (err?.response?.data?.name) {
-                //       console.log(err.response.data.name[0]);
-                //     } else {
-                //       console.log(err?.response?.data);
-                //     }
-                //   });
-                setWhatsapp((prev) => !prev)
-              }}
+              onClick={toggleWhatsapp}
               className={`w-5 h-5 flex items-center justify-center rounded-md border-2 border-black cursor-pointer ${
                 whatsapp && "bg-black"
               }`}

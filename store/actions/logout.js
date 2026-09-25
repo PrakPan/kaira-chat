@@ -1,6 +1,7 @@
 import * as actionTypes from "./actionsTypes";
 import { CLIENT_ID, CLIENT_SECRET } from "../../services/constants";
 import { logoutinstance } from "../../services/user/auth";
+import { clearUserSession } from "../../services/userSession";
 
 export const authLogout = () => {
   return {
@@ -28,31 +29,15 @@ export const logout = () => {
         headers: headers,
       })
       .then((response) => {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("name");
-        localStorage.removeItem("email");
-        localStorage.removeItem("phone");
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("expirationDate");
-        localStorage.removeItem("MyPlans");
-        localStorage.removeItem("user_image");
-        localStorage.removeItem("is_new_user");
-
-
+        clearUserSession();
         dispatch(authLogout());
       })
       .catch((err) => {
-      
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("name");
-        localStorage.removeItem("email");
-        localStorage.removeItem("phone");
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("expirationDate");
-        localStorage.removeItem("MyPlans");
-        localStorage.removeItem("user_image");
-        localStorage.removeItem("is_new_user");
-
+        // The server call failing (e.g. an already-expired token) must still
+        // log the user out locally — this used to clear storage but leave redux
+        // signed in.
+        clearUserSession();
+        dispatch(authLogout());
       });
   };
 };

@@ -116,6 +116,7 @@ import {
 } from "../../store/actions/chatState";
 import axios from "axios";
 import { MERCURY_HOST, CHATKIT_API_URL } from "../../services/constants";
+import { clearUserSession } from "../../services/userSession";
 import SmallGallery from "../../containers/newitinerary/overview/SmallGallery";
 import NewSummaryContainers from "../../containers/itinerary/NewSummaryContainers";
 import HoldOfferOverlay from "./components/HoldOfferOverlay";
@@ -7274,11 +7275,7 @@ export const MobileHeaderMenu = React.memo(
     };
 
     const handleLogout = () => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("user_image");
-      localStorage.removeItem("is_new_user");
+      clearUserSession();
       try {
         dispatch({ type: "AUTH_LOGOUT" });
       } catch {

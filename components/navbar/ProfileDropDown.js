@@ -325,7 +325,10 @@ const ProfileDropDown = (props) => {
     // },
   ];
 
-  if (!props.token) LinksArr = LinksArr.filter((e) => e.link != "/dashboard");
+  // Hidden when logged out, and on the dashboard itself — it would just
+  // navigate to the page the user is already on.
+  if (!props.token || router.pathname === "/dashboard")
+    LinksArr = LinksArr.filter((e) => e.link != "/dashboard");
 
   let AuthMenu = (
     <ProfileContainer

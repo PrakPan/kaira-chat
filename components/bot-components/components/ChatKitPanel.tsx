@@ -65,6 +65,7 @@ import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, i
 import ReleaseItineraryCta from "./ReleaseItineraryCta";
 import { isStaffEmail } from "../../../utils/staffUser";
 import { pushUrlDetached } from "../../../helper/historyUrl";
+import { clearUserSession } from "../../../services/userSession";
 
 // Caps on what rides along to the context-chips endpoint as `user_conversation`.
 // A long thread is mostly itinerary edits; the recent turns are what say what
@@ -469,25 +470,11 @@ function getAuthToken(): string | null {
 }
 
 // Drops a session the backend has rejected. Clears every key getAuthToken reads
-// plus the profile keys the app's own logout clears, so nothing keeps treating
+// and every profile key (the shared user-session list), so nothing keeps treating
 // the dead token as a live login. Local only — the token is already invalid, so
 // there's nothing to revoke server-side.
-const STALE_SESSION_KEYS = [
-  "token",
-  "authToken",
-  "access_token",
-  "name",
-  "email",
-  "phone",
-  "user_id",
-  "expirationDate",
-  "MyPlans",
-  "user_image",
-  "is_new_user",
-];
 function clearStaleSessionStorage() {
-  if (typeof window === "undefined") return;
-  for (const key of STALE_SESSION_KEYS) localStorage.removeItem(key);
+  clearUserSession();
 }
 
 // `prompt_login` reasons meaning "the token you sent is no good" (as opposed to

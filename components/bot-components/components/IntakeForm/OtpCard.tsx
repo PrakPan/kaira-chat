@@ -9,6 +9,7 @@ import { getCountryCodes } from "../../../../store/actions/countryCodes";
 import { countryKeyFromLocation } from "../../../../services/userLocationBootstrap";
 import { useAnalytics } from "../../../../hooks/useAnalytics";
 import CountryCodeDropdown from "../../../userauth/CountryDropdown";
+import { getPhonePlaceholder } from "../../../../utils/phone";
 
 interface OtpCardProps {
   /** Fired once after a successful verify (token present in auth state). */
@@ -838,7 +839,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
                     sendOtp();
                   }
                 }}
-                placeholder="98XXX XXXXX"
+                placeholder={getPhonePlaceholder(extension)}
                 className="flex-1 min-w-0 outline-none rounded-[14px] px-[16px] py-[13px] text-[16px] font-semibold tabular-nums"
                 style={{
                   background: "#fff",
@@ -940,7 +941,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
                 letterSpacing: "0.1em",
               }}
             >
-              10,000+ holidays planned · GST invoice · secure payments
+              10,000+ holidays planned · secure payments
             </div>
           </div>
         </>

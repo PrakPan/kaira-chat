@@ -10,7 +10,6 @@ import BotLoginModal from "../BotLoginModal";
 import {
   getUserAvatarColor,
   getUserInitial,
-  clearUserAvatarColor,
 } from "../../utils/avatarColor";
 import {
   Thread,
@@ -30,6 +29,7 @@ import {
 } from "../kairaIcons";
 import { useTripsCount } from "../../hooks/useTripsCount";
 import { CHATKIT_API_URL } from "../../../../services/constants";
+import { clearUserSession } from "../../../../services/userSession";
 
 const SIDEBAR_WIDTH_EXPANDED = 288;
 const SIDEBAR_WIDTH_COLLAPSED = 76;
@@ -268,12 +268,7 @@ const SidebarFooter: React.FC<{
   }, [token]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user_image");
-    localStorage.removeItem("is_new_user");
-    clearUserAvatarColor(); // ← next user gets a fresh letter-avatar color
+    clearUserSession(); // every user key, incl. the letter-avatar color
     setLocalImg(null); // ← clears the avatar immediately
     try {
       dispatch((authaction as any).authLogout?.() ?? { type: "AUTH_LOGOUT" });
@@ -398,7 +393,13 @@ const SidebarFooter: React.FC<{
       <>
         {loginModal}
         <div className="flex flex-col items-center gap-1.5">
-          <SidebarTooltip label={name || "Profile"}>{avatar}</SidebarTooltip>
+          <SidebarTooltip label={name || "Profile"}>
+            <Link href="/dashboard" passHref legacyBehavior>
+              <a aria-label="Go to dashboard" onClick={stopPropagation}>
+                {avatar}
+              </a>
+            </Link>
+          </SidebarTooltip>
           <SidebarTooltip
             label={tripsCount !== null ? `My trips (${tripsCount})` : "My trips"}
           >
@@ -424,13 +425,18 @@ const SidebarFooter: React.FC<{
   return (
     <>
       {loginModal}
-      <div className="kaira-profile-row">
-        {avatar}
-        <div className="flex-1 min-w-0">
-          <div className="kaira-profile-name">{name || "My Profile"}</div>
-          <div className="kaira-mono kaira-profile-meta">Signed in</div>
-        </div>
-      </div>
+      <Link href="/dashboard" passHref legacyBehavior>
+        <a
+          className="kaira-profile-row"
+          aria-label="Go to dashboard"
+        >
+          {avatar}
+          <div className="flex-1 min-w-0">
+            <div className="kaira-profile-name">{name || "My Profile"}</div>
+            <div className="kaira-mono kaira-profile-meta">Signed in</div>
+          </div>
+        </a>
+      </Link>
 
       <Link href="/dashboard" passHref legacyBehavior>
         <a className="kaira-footer-link">

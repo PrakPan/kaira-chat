@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CountryCodeDropdown from "../../userauth/CountryDropdown";
+import { countryFromDialCode, getPhonePlaceholder } from "../../../utils/phone";
 import { FiChevronDown } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
@@ -43,20 +44,18 @@ const LeadPaxDetails = ({ input, setInput }) => {
 
   // The flag selector only writes isd_code when the user actively picks a
   // country, so an untouched selector would submit no country code at all.
-  // Default it to India up front (matching the flag shown by default), and
-  // when re-opening with a saved code, reflect that country in the flag.
+  // Default it to the flag shown by default (India) up front, and when
+  // re-opening with a saved code, reflect that country in the flag (+44 → UK,
+  // not the first alphabetical +44 country).
   useEffect(() => {
     if (!CountryCodes) return;
     if (!input.isd_code) {
-      if (CountryCodes["India"]) {
-        setExtension("India");
-        setInput((prev) => ({ ...prev, isd_code: CountryCodes["India"].label }));
+      if (CountryCodes[extension]) {
+        setInput((prev) => ({ ...prev, isd_code: CountryCodes[extension].label }));
       }
       return;
     }
-    const match = Object.keys(CountryCodes).find(
-      (key) => CountryCodes[key].label === input.isd_code
-    );
+    const match = countryFromDialCode(input.isd_code, CountryCodes);
     if (match) setExtension(match);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [CountryCodes]);
@@ -226,7 +225,7 @@ const LeadPaxDetails = ({ input, setInput }) => {
                   className={inputBase}
                   name="contact_number"
                   type="tel"
-                  placeholder="Enter Contact Number"
+                  placeholder={getPhonePlaceholder(extension)}
                   value={input.contact_number}
                   onChange={handleChange}
                 />

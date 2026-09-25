@@ -5,6 +5,7 @@ import * as authaction from "../../store/actions/auth";
 import * as otpaction from "../../store/actions/getOtp";
 import Link from "next/link";
 import CountryCodeDropdown from "./CountryDropdown";
+import { getPhonePlaceholder, splitPhone, toNationalDigits } from "../../utils/phone";
 import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
 import OTPInput from "react-otp-input";
 import { BiError } from "react-icons/bi";
@@ -99,26 +100,19 @@ const LogIn = React.memo((props) => {
   const minutes = String(Math.floor(counter / 60)).padStart(2, "0");
   const seconds = String(counter % 60).padStart(2, "0");
 
-  const separateCountryCode = (phoneNumber) => {
-    const pattern = /^(\+\d{1,3})(\d{10})$/;
-    const match = phoneNumber.match(pattern);
-    if (match) return { countryCode: match[1], number: match[2] };
-    return null;
-  };
-
+  // Swap the dial code in front of whatever local number is typed. The old
+  // version only handled exactly-10-digit numbers, so a second country pick
+  // stacked codes ("+91+44") or kept the previous code on the number.
   const handleExtensionChangeOption = (country) => {
     setExtension(country);
     if (!props.CountryCodes || !props.CountryCodes[country]) return;
-    if (phone.length <= 10) {
-      setPhone(props.CountryCodes[country].label + phone);
-      return;
-    }
-    const mobile = separateCountryCode(phone);
-    if (mobile) {
-      setPhone(props.CountryCodes[country].label + mobile.number);
-    } else {
-      setPhone(props.CountryCodes[country].label);
-    }
+    const parsed = splitPhone(phone, props.CountryCodes, extension);
+    const national = parsed
+      ? parsed.number
+      : toNationalDigits(phone, country);
+    // Nothing typed yet: leave it empty so the country's placeholder shows —
+    // otpHandler prefixes the code on submit.
+    setPhone(national ? props.CountryCodes[country].label + national : "");
   };
 
   const handleMobileBlur = () => {
@@ -200,16 +194,14 @@ const LogIn = React.memo((props) => {
   };
 
   const otpHandler = (token) => {
-    const phoneNumber = phone.trim();
-    let mobile = phoneNumber;
-    if (phoneNumber.length <= 10) {
-      mobile = props.CountryCodes
-        ? props.CountryCodes[extension].label + phoneNumber
-        : `+91${phoneNumber}`;
-      setPhone(mobile);
-    } else {
-      setPhone(phoneNumber);
-    }
+    // A number without its own "+code" always gets the selected country's
+    // code — not only when it happens to be ≤10 characters long.
+    const phoneNumber = phone.replace(/[^\d+]/g, "");
+    const dialCode = props.CountryCodes?.[extension]?.label || "+91";
+    const mobile = phoneNumber.startsWith("+")
+      ? phoneNumber
+      : dialCode + toNationalDigits(phoneNumber, extension);
+    setPhone(mobile);
     const data = { token, mobile, whatsapp };
     props.onOtp && props.onOtp(data);
     if (recaptchaRef.current) recaptchaRef.current.reset();
@@ -297,8 +289,6 @@ const LogIn = React.memo((props) => {
   const trustStrip = (
     <div className="flex flex-wrap justify-center gap-x-2 gap-y-1 mt-4 pt-3 border-t border-[#E5E7EB] text-[11px] text-[#6B7280]">
       <span>🔒 Secure</span>
-      <span>·</span>
-      <span>📄 GST invoice</span>
       <span>·</span>
       <span>🛡 10,000+ trips planned</span>
     </div>
@@ -404,7 +394,7 @@ const LogIn = React.memo((props) => {
           ref={mobileRef}
           type="tel"
           inputMode="numeric"
-          placeholder="98XXX XXXXX"
+          placeholder={getPhonePlaceholder(extension)}
           maxLength={15}
           className="flex-1 px-3 py-3 border-none outline-none text-[15px] font-inherit min-w-0"
           value={phone}

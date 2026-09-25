@@ -542,6 +542,13 @@
   gap: 11px;
   padding: 9px 10px;
   border-radius: var(--k-r-md);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.kaira-scope .kaira-profile-row:hover {
+  background: var(--k-paper-2);
 }
 
 .kaira-scope .kaira-avatar {
