@@ -83,7 +83,6 @@ export function validateStep(state: IntakeFormState, step: number): boolean {
     case 2:
       return !!state.who;
     case 3:
-    case 4:
     default:
       return true; // notes are optional; the add-on toggles always hold a value
   }
@@ -352,7 +351,7 @@ export function parseIntakeFormWidgetId(id: unknown): any | null {
 //       preferences:  { is_completed, notes },
 //   } }
 // Returns the prefilled fields plus `stepsCompleted` (step order:
-// [destination, when, who, notes, add-ons]) and the `step` to open on — the first
+// [destination, when, who, notes]) and the `step` to open on — the first
 // incomplete step, or the last step when everything is already filled.
 export function parseShowIntakeForm(
   payload: any,
@@ -417,7 +416,6 @@ export function parseShowIntakeForm(
     !!p.timing?.is_completed,
     !!p.group?.is_completed,
     !!p.preferences?.is_completed,
-    !!p.add_ons?.is_completed,
   ];
 
   const firstIncomplete = stepsCompleted.findIndex((c) => !c);

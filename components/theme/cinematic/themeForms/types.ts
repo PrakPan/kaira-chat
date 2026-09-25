@@ -114,13 +114,17 @@ export interface ThemeForm {
 // the reader's saved selection from the theme page (may be empty).
 export interface ThemeFormSubmission {
   slug: string;
-  // The chosen route. Both absent when `routeMode` is "from_picks" — no route
-  // reached every saved pick, so the backend builds one around them.
+  // The chosen route. For "from_picks" these are the built route's own key
+  // ("__picks") and a synthetic skeleton ("picks_krabi_chiang_mai") — not a
+  // config route; read `stops` instead.
   window?: string; // chosen routes[].key (or legacy date_windows[].key)
   skeleton?: string; // chosen routes[].skeleton (routing key)
-  // "route" — the reader picked `window`/`skeleton`. "from_picks" — none of
-  // the theme's routes covers all the saved picks; build from `items`.
+  // "route" — the reader picked one of the theme's routes. "from_picks" — none
+  // of them covers all the saved picks, so the form built one from the picks.
   routeMode?: "route" | "from_picks";
+  // The built route's stops in order, with nights per stop (only for
+  // "from_picks"). Nights come from how long real trips stay in each place.
+  stops?: Array<{ place: string; nights: number }>;
   // The month the reader picked, resolved forward from today — "2027-01" plus
   // its readable form. Absent on the legacy dateWindows path and when the
   // reader overrides everything with exact dates.

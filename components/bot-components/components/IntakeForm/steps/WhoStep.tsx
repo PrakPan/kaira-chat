@@ -3,14 +3,19 @@ import type { IntakeFormState } from "../types";
 import { WHO_OPTIONS, WHO_WITH_PAX } from "../constants";
 import Chip from "../ui/Chip";
 import Stepper from "../ui/Stepper";
+import { isInternationalTrip } from "../intakePrompt";
+import AddOnToggles, { DEFAULT_ADD_ONS } from "../ui/AddOnToggles";
 
 interface StepProps {
   state: IntakeFormState;
   update: (partial: Partial<IntakeFormState>) => void;
+  disabled?: boolean;
 }
 
-/** Step 3 — who's coming, with pax counters for group types. */
-const WhoStep: React.FC<StepProps> = ({ state, update }) => {
+/** Step 3 — who's coming, with pax counters for group types, then what Kaira
+ *  should handle beyond the itinerary: flights, and for a trip abroad, visa
+ *  assistance and an eSIM. */
+const WhoStep: React.FC<StepProps> = ({ state, update, disabled }) => {
   const showCounters = WHO_WITH_PAX.includes(state.who);
 
   const pickWho = (who: string) => {
@@ -70,6 +75,17 @@ const WhoStep: React.FC<StepProps> = ({ state, update }) => {
           ))}
         </div>
       )}
+
+      <div className="text-[11px] font-extrabold uppercase tracking-wide text-[#8a93a6] mt-[18px] mb-[8px]">
+        I&apos;ll also handle
+      </div>
+      <AddOnToggles
+        value={state.addOns ?? DEFAULT_ADD_ONS}
+        onChange={(addOns) => update({ addOns })}
+        international={isInternationalTrip(state)}
+        toName={state.destinations?.[0]?.name || state.destination?.name}
+        disabled={disabled}
+      />
     </div>
   );
 };

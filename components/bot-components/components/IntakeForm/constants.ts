@@ -120,7 +120,7 @@ export const NOTE_HINTS = [
   "relaxed pace",
 ];
 
-export const TOTAL_STEPS = 5;
+export const TOTAL_STEPS = 4;
 
-// Step order: destination, when, who, notes, add-ons.
+// Step order: destination, when, who (+ add-ons), notes.
 export const NOTES_STEP = 3;

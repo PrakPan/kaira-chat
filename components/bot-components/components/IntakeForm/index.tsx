@@ -15,24 +15,22 @@ import {
   validateStep,
 } from "./intakePrompt";
 
-// Step index → the funnel stage completing that step reports. Notes (3) has no
-// stage of its own in the chat_intake funnel; add-ons (4) is the final step, so
-// finishing it *is* finishing the form.
+// Step index → the funnel stage completing that step reports. Index 3 (notes)
+// is the final step, so finishing it *is* finishing the form. The add-on
+// toggles (flights / visa / eSIM) sit on the who step, under the pax counters.
 const STEP_STAGE: Array<string | null> = [
   "chat_intake_destination_completed",
   "chat_intake_when_completed",
   "chat_intake_who_completed",
-  null,
   "chat_intake_form_completed",
 ];
-const STEP_NAME = ["destination", "when", "who", "notes", "add_ons"];
+const STEP_NAME = ["destination", "when", "who", "notes"];
 import StepProgress from "./ui/StepProgress";
 import IntakeFormSkeleton from "./ui/IntakeFormSkeleton";
 import DestinationStep from "./steps/DestinationStep";
 import WhenStep from "./steps/WhenStep";
 import WhoStep from "./steps/WhoStep";
 import NotesStep from "./steps/NotesStep";
-import AddOnsStep from "./steps/AddOnsStep";
 
 interface IntakeFormCardProps {
   /** Called with the composed message after the form is submitted, plus the
@@ -328,9 +326,8 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete, snapshot })
           {[
             <DestinationStep key="d" state={state} update={update} />,
             <WhenStep key="w" state={state} update={update} />,
-            <WhoStep key="who" state={state} update={update} />,
+            <WhoStep key="who" state={state} update={update} disabled={locked} />,
             <NotesStep key="n" state={state} update={update} />,
-            <AddOnsStep key="a" state={state} update={update} disabled={locked} />,
           ].map((node, i) => (
             <div
               key={i}

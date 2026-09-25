@@ -10,8 +10,8 @@ export const initialIntakeFormState = {
   // renders a skeleton loader until the prefill (form_fields / widget) lands.
   loading: false,
   // Per-step completion flags from the backend `show_intake_form` effect.
-  // Indexes match step order: [destination, when, who, notes, add-ons].
-  stepsCompleted: [false, false, false, false, false],
+  // Indexes match step order: [destination, when, who, notes].
+  stepsCompleted: [false, false, false, false],
   // Selected destination — drives the in-chat form AND the left image panel.
   destination: null, // { name, image, country, resource_id, latitude, longitude }
   // Full multi-select list; `destination` mirrors destinations[0].
@@ -27,7 +27,7 @@ export const initialIntakeFormState = {
   children: 0,
   infants: 0,
   notes: "",
-  // Final step — flights / visa / eSIM toggles. Mirrors DEFAULT_ADD_ONS in
+  // Flights / visa / eSIM toggles on the who step. Mirrors DEFAULT_ADD_ONS in
   // components/bot-components/components/IntakeForm/ui/AddOnToggles.tsx.
   addOns: { flights: true, visa: false, esim: false },
   // Featured destination tiles shown in step 1 (defaults live in the
