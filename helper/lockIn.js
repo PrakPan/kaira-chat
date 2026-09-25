@@ -102,7 +102,33 @@ export function getLockInState(cart) {
     : null;
   const holdExpired = !!holdUntil && holdUntil.getTime() <= Date.now();
 
-  return { fee, paid, paidAmount, required, paidAt, holdUntil, holdExpired };
+  // The balance has been paid through the cart's "full" sale — the same test
+  // the cart drawer's `hasFullPaymentCompleted` makes. A hold is only ever the
+  // first step towards that payment, so once it has gone through the hold is
+  // spent: the trip is no longer "held", whatever the hold's clock says.
+  const fullPaid = !!cart?.sales?.some(
+    (sale) =>
+      sale?.payment_type === "full_payment" && sale?.status === "Completed",
+  );
+  // …and nothing is owed on top of it. `total_payable_amount` is already net
+  // of what was collected, so an item added after paying leaves it above 0 and
+  // the trip is not fully paid any more.
+  const fullyPaid = fullPaid && Math.round(totalPayable) <= 0;
+  // A paid hold still standing between the traveller and the balance.
+  const holding = paid && !holdExpired && !fullPaid;
+
+  return {
+    fee,
+    paid,
+    paidAmount,
+    required,
+    paidAt,
+    holdUntil,
+    holdExpired,
+    fullPaid,
+    fullyPaid,
+    holding,
+  };
 }
 
 export default getLockInState;

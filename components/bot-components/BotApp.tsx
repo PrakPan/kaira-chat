@@ -4575,6 +4575,9 @@ Start Location: ${details.startLocation}`;
       openPaymentDrawer();
     },
     onHold: startPriceHold,
+    // The desktop footer's EXPIRED · REPRICE pill.
+    onReprice: handleReprice,
+    isRepricing,
     onViewBookings: itineraryIsComplete ? handleViewBookings : undefined,
     // Only the hold ribbon reads this — see `tripHasDeparted`.
     tripStartDate: itineraryRedux?.start_date ?? null,
@@ -5279,6 +5282,8 @@ Start Location: ${details.startLocation}`;
                     return true;
                   }}
                   onHold={startPriceHold}
+                  onReprice={handleReprice}
+                  isRepricing={isRepricing}
                   onShare={() => setShowShare(true)}
                   // Same gate as the old header's gear: Settings edits the
                   // live itinerary, which a draft or an archive doesn't have.
@@ -6076,6 +6081,12 @@ interface BottomCTABarProps {
    * same button again is one screen too many.
    */
   onHold?: () => void;
+  /**
+   * Re-quotes a lapsed trip. Only the desktopItinerary variant reads it, for
+   * the design's EXPIRED · REPRICE pill beside the total.
+   */
+  onReprice?: () => void;
+  isRepricing?: boolean;
   onGetInTouch?: () => void;
   /** Archive-only: opens the clone popup from "Get this trip!". */
   onGetThisTrip?: () => void;
@@ -6501,6 +6512,8 @@ export const BottomCTABar = React.memo(
     onConfirm,
     onViewCart,
     onHold,
+    onReprice,
+    isRepricing,
     tripStartDate,
     onGetInTouch,
     onGetThisTrip,
@@ -6828,7 +6841,7 @@ export const BottomCTABar = React.memo(
     if (variant === "desktopItinerary") {
       const money = (n: number) =>
         `${currencySymbol}${formatCurrencyValue(Math.round(n), currency?.currency)}`;
-      const held = lockIn.paid && !lockIn.holdExpired;
+      const held = lockIn.holding;
       return (
         <DesktopCartFooter
           barStyle={barStyle}
@@ -6849,6 +6862,22 @@ export const BottomCTABar = React.memo(
           onHold={onHold}
           held={held}
           heldUntil={held ? lockIn.holdUntil : null}
+          fullyPaid={lockIn.fullyPaid}
+          // The footer tests this against the clock itself, so the pill turns
+          // up the moment the quote lapses. Withheld where the trip card
+          // withholds its own: a live hold (those prices are frozen), a
+          // departed trip (the cart offers Update Dates, not a reprice), and
+          // hidden prices.
+          quoteDeadline={
+            !held &&
+            !lockIn.fullPaid &&
+            !tripHasDeparted(tripStartDate) &&
+            !cart?.are_prices_hidden
+              ? quoteDeadline
+              : null
+          }
+          onReprice={onReprice}
+          isRepricing={!!isRepricing}
           onViewCart={onReviewPay || onViewCart}
           cartError={!!cart?.error}
           onGetInTouch={onGetInTouch}

@@ -1,7 +1,15 @@
 import React from "react";
 import * as T from "../mobileItinerary/designTokens";
-import { GUTTER, KairaAvatar } from "./desktopTokens";
-import useCountdown from "./useCountdown";
+import {
+  CheckGlyph,
+  EXPIRED,
+  EXPIRED_TINT,
+  GUTTER,
+  KairaAvatar,
+  RepriceGlyph,
+  fullyPaidPill,
+} from "./desktopTokens";
+import useCountdown, { useHasPassed } from "./useCountdown";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  The desktop itinerary's footer, as "Kaira E Desktop" draws it:
@@ -17,6 +25,9 @@ import useCountdown from "./useCountdown";
 //
 //  "Inclusive of N bookings" opens the cart, as the design has it: the count is
 //  what the total is made of, and the cart is where they are listed.
+//
+//  Once the quote lapses the hold pill's slot becomes the design's red
+//  "↻ EXPIRED · REPRICE", which re-quotes the trip from right here.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function DesktopCartFooter({
@@ -31,11 +42,19 @@ export default function DesktopCartFooter({
   // no paid-at time — the pill then says HELD without a clock.
   held = false,
   heldUntil = null,
+  // Paid in full with nothing owing: FULLY PAID in the hold pill's place.
+  fullyPaid = false,
+  // When today's prices stop standing, or null where a lapse isn't the
+  // traveller's to reprice (see BottomCTABar). Tested live against the clock.
+  quoteDeadline = null,
+  onReprice = undefined,
+  isRepricing = false,
   onViewCart,
   cartError = false,
   onGetInTouch,
 }) {
   const heldClock = useCountdown(held ? heldUntil : null);
+  const expired = useHasPassed(quoteDeadline) && !!total && !!onReprice;
 
   return (
     <div
@@ -67,7 +86,33 @@ export default function DesktopCartFooter({
             <span className="text-[20px] font-[800] text-[#0b1220]">—</span>
           )}
 
-          {holdFee ? (
+          {expired ? (
+            <button
+              type="button"
+              onClick={onReprice}
+              disabled={isRepricing}
+              className="inline-flex flex-none items-center gap-[7px] whitespace-nowrap font-mono text-[8px] font-[600] tracking-[0.06em]"
+              style={{
+                border: `1.5px solid ${EXPIRED}`,
+                background: EXPIRED_TINT,
+                borderRadius: 999,
+                padding: "4px 11px 4px 9px",
+                color: EXPIRED,
+                boxShadow: "none",
+              }}
+            >
+              <RepriceGlyph />
+              {isRepricing ? "CHECKING…" : "EXPIRED · REPRICE"}
+            </button>
+          ) : fullyPaid && total ? (
+            <span
+              className="inline-flex flex-none items-center gap-[7px] whitespace-nowrap font-mono text-[8px] font-[600] tracking-[0.06em]"
+              style={{ ...fullyPaidPill, padding: "4px 11px 4px 9px" }}
+            >
+              <CheckGlyph />
+              FULLY PAID
+            </span>
+          ) : holdFee ? (
             <button
               type="button"
               onClick={onHold}

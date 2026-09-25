@@ -324,6 +324,9 @@ export default function DesktopItinerary({
   // Charges the lock-in fee (BotApp's startPriceHold). Absent means no hold can
   // be taken, so the card's offer is withheld rather than drawn dead.
   onHold = undefined,
+  // Re-quotes a lapsed trip (BotApp's handleReprice) — the trip card's REPRICE.
+  onReprice = undefined,
+  isRepricing = false,
   onShare = undefined,
   onSettings = undefined,
   onDownloadPdf = undefined,
@@ -597,6 +600,8 @@ export default function DesktopItinerary({
                   totalStr={totalStr}
                   holdFeeStr={showHold ? holdFeeStr : null}
                   onHold={onHold}
+                  onReprice={onReprice}
+                  isRepricing={isRepricing}
                   gapLeg={gapLeg}
                   onFixGap={() => gapLeg && rows.onChangeStay(gapLeg)}
                   disabled={disabled}

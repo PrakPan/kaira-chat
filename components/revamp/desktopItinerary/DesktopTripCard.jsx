@@ -2,8 +2,16 @@ import React from "react";
 import * as T from "../mobileItinerary/designTokens";
 import { formatDateRange } from "../../../lib/itineraryFormat";
 import { LOCK_IN_HOLD_HOURS } from "../../../helper/lockIn";
-import { KairaAvatar } from "./desktopTokens";
-import useCountdown from "./useCountdown";
+import {
+  CheckGlyph,
+  ClockGlyph,
+  EXPIRED,
+  EXPIRED_TINT,
+  KairaAvatar,
+  RepriceGlyph,
+  fullyPaidPill,
+} from "./desktopTokens";
+import useCountdown, { formatExpiredAt, useHasPassed } from "./useCountdown";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  The trip-total card at the top of the desktop itinerary, as "Kaira E
@@ -11,13 +19,27 @@ import useCountdown from "./useCountdown";
 //
 //    TRIP TOTAL · 28 BOOKINGS                     ⛨ KAIRA PROTECTED
 //    ₹6,63,378/-   ● HELD TODAY · 07:12:45
-//    (Kaira) Fares can move tomorrow, I can freeze…      [🔒 LOCK IT · ₹999]
+//    (Kaira) Fares can move tomorrow, I can hold all…      [🔒 LOCK IT · ₹999]
 //    ○ Geneva has no stay / 4 nights open · 28 Sep–2 Oct               [Fix]
 //
 //  The clock is the cart's real `price_valid_until`, not the prototype's
 //  midnight: quotes stand for a day from when they were priced, so it is
 //  "held today" in the sense the design means, and it runs out when the price
 //  actually does. Once a hold is paid it counts down the hold instead.
+//
+//  When that clock runs out the card turns over, as the design's expired state
+//  draws it — the ink pill becomes a red "PRICES EXPIRED · 12:00 AM" and the
+//  hold offer gives way to Kaira's REPRICE strip:
+//
+//    ₹6,63,378/-   ◷ PRICES EXPIRED · 12:00 AM
+//    (Kaira) Prices expired at 12:00 AM. Fares may have moved…   [↻ REPRICE]
+//
+//  Paid in full, the card says so instead of any clock — a green "✓ FULLY
+//  PAID" pill and a line that asks for nothing more. A hold the balance has
+//  been paid through is spent, so it never reads HELD.
+//
+//  A paid hold still running outranks it: those prices are frozen by the hold,
+//  and telling someone who paid for that they've expired would be false.
 //
 //  Still one price on the surface, per the package rule — this total and the
 //  footer's are the same figure.
@@ -63,17 +85,41 @@ export default function DesktopTripCard({
   // otherwise, and the strip stands down with it.
   holdFeeStr = null,
   onHold,
+  // BotApp's handleReprice. Absent means nothing to reprice with, and the
+  // expired pill is still drawn but the strip's button is left out.
+  onReprice = undefined,
+  isRepricing = false,
   gapLeg = null,
   onFixGap,
   disabled = false,
 }) {
   const locked = !!trip.hold?.locked;
+  const fullyPaid = !!trip.fullyPaid && !!totalStr;
   const holdClock = useCountdown(locked ? trip.hold?.until : null);
   const quoteClock = useCountdown(!locked ? trip.quoteDeadline : null);
 
+  // The held line names the hours left on the hold, read off the same live
+  // clock as the pill beside the total ("67:16:25" → 67), so the two agree.
+  // Under an hour it says "the next hour"; a hold with no paid-at time has no
+  // window to name, so the line just asks for the balance.
+  const holdHoursLeft = holdClock ? parseInt(holdClock, 10) : null;
+  const heldLine = `Prices are held for this trip. Please complete the remaining payment${
+    holdHoursLeft === null
+      ? "."
+      : holdHoursLeft < 1
+        ? " within the next hour."
+        : ` within the next ${holdHoursLeft} hour${holdHoursLeft === 1 ? "" : "s"}.`
+  }`;
+  const quotePassed = useHasPassed(
+    !locked && trip.repriceable ? trip.quoteDeadline : null,
+  );
+  // Only beside a real price — an expired em-dash says nothing.
+  const expired = quotePassed && !!totalStr && !isDraft;
+  const expiredAt = expired ? formatExpiredAt(trip.quoteDeadline) : "";
+
   // A clock only beside a real price: "HELD TODAY" over an em-dash is a claim
   // about a number that isn't there.
-  const timer = !totalStr
+  const timer = !totalStr || fullyPaid
     ? null
     : locked
       ? holdClock
@@ -93,9 +139,20 @@ export default function DesktopTripCard({
 
   const holdHours = LOCK_IN_HOLD_HOURS;
   const holdLine =
-    count > 0
-      ? `Fares can move tomorrow, I can freeze all ${count} for ${holdHours} hours.`
-      : `Fares can move tomorrow, I can freeze them for ${holdHours} hours.`;
+    count > 1
+      ? `Fares can move tomorrow, I can hold all ${count} bookings for ${holdHours} hours.`
+      : count === 1
+        ? `Fares can move tomorrow, I can hold the booking for ${holdHours} hours.`
+        : `Fares can move tomorrow, I can hold them for ${holdHours} hours.`;
+
+  const expiredWhen = /:/.test(expiredAt) ? `at ${expiredAt}` : `on ${expiredAt}`;
+  const expiredLine = isRepricing
+    ? count > 0
+      ? `Re-checking all ${count} prices with suppliers…`
+      : "Re-checking prices with suppliers…"
+    : `Prices expired ${expiredWhen}. Fares may have moved, I'll re-check ${
+        count > 1 ? `all ${count} bookings` : count === 1 ? "the booking" : "them"
+      } before you book.`;
 
   const gapNights = gapLeg?.nights || 0;
   const gapMeta = gapLeg
@@ -142,7 +199,29 @@ export default function DesktopTripCard({
             "—"
           )}
         </span>
-        {timer ? (
+        {expired ? (
+          <span
+            className="inline-flex flex-none items-center gap-[6px] font-mono text-[8px] font-[600] tracking-[0.06em]"
+            style={{
+              border: `1.5px solid ${EXPIRED}`,
+              background: EXPIRED_TINT,
+              borderRadius: 999,
+              padding: "4px 10px",
+              color: EXPIRED,
+            }}
+          >
+            <ClockGlyph />
+            {expiredAt ? `PRICES EXPIRED · ${expiredAt}` : "PRICES EXPIRED"}
+          </span>
+        ) : fullyPaid ? (
+          <span
+            className="inline-flex flex-none items-center gap-[6px] font-mono text-[8px] font-[600] tracking-[0.06em]"
+            style={{ ...fullyPaidPill, padding: "4px 10px" }}
+          >
+            <CheckGlyph />
+            FULLY PAID
+          </span>
+        ) : timer ? (
           <span
             className="inline-flex flex-none items-center gap-[6px] font-mono text-[8px] font-[600] tracking-[0.06em] text-[#f7e700]"
             style={{ background: T.INK, borderRadius: 999, padding: "5px 11px" }}
@@ -157,7 +236,41 @@ export default function DesktopTripCard({
         ) : null}
       </div>
 
-      {holdFeeStr ? (
+      {expired ? (
+        <div
+          className="flex items-center gap-[9px]"
+          style={{
+            background: "#ffffff",
+            border: "1px solid rgba(184,64,52,.28)",
+            borderRadius: 999,
+            padding: onReprice ? "5px 6px 5px 5px" : "5px 12px 5px 5px",
+          }}
+        >
+          <KairaAvatar size={22} ring={`1.5px solid ${EXPIRED}`} />
+          <span className="min-w-0 flex-1 truncate text-[11.5px] text-[#445069]">
+            {expiredLine}
+          </span>
+          {onReprice ? (
+            <button
+              type="button"
+              onClick={onReprice}
+              disabled={isRepricing}
+              className="inline-flex flex-none items-center gap-[6px] font-mono text-[8px] font-[600] tracking-[0.06em]"
+              style={{
+                border: 0,
+                background: T.INK,
+                borderRadius: 999,
+                padding: "6px 12px",
+                color: T.YELLOW,
+                boxShadow: "none",
+              }}
+            >
+              <RepriceGlyph />
+              {isRepricing ? "CHECKING…" : "REPRICE"}
+            </button>
+          ) : null}
+        </div>
+      ) : holdFeeStr ? (
         <div
           className="flex items-center gap-[9px]"
           style={{
@@ -190,6 +303,24 @@ export default function DesktopTripCard({
             {`LOCK IT · ${holdFeeStr}`}
           </button>
         </div>
+      ) : fullyPaid ? (
+        <div
+          className="flex items-center gap-[9px]"
+          style={{
+            background: "rgba(31,138,90,.07)",
+            border: "1px solid rgba(31,138,90,.25)",
+            borderRadius: 999,
+            padding: "5px 12px 5px 5px",
+          }}
+        >
+          <KairaAvatar size={22} ring={`1.5px solid ${T.GREEN}`} />
+          <span
+            className="min-w-0 flex-1 truncate text-[11.5px] font-[600]"
+            style={{ color: T.GREEN }}
+          >
+            This trip is fully paid. Nothing more is due.
+          </span>
+        </div>
       ) : locked ? (
         <div
           className="flex items-center gap-[9px]"
@@ -205,7 +336,7 @@ export default function DesktopTripCard({
             className="min-w-0 flex-1 truncate text-[11.5px] font-[600]"
             style={{ color: T.GREEN }}
           >
-            Every price is frozen. If a fare jumps while held, the difference is on me.
+            {heldLine}
           </span>
         </div>
       ) : null}

@@ -23,6 +23,57 @@ export const GUTTER = "24px";
  */
 export const PANE_ZOOM = 1.1;
 
+/** The red "Kaira E Desktop" marks lapsed prices in — the cart's PRICES EXPIRED. */
+export const EXPIRED = "#b84034";
+export const EXPIRED_TINT = "rgba(184,64,52,.07)";
+
+const glyph = {
+  width: 10,
+  height: 10,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2.4,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  "aria-hidden": true,
+  className: "flex-none",
+};
+
+/** The clock on the trip card's PRICES EXPIRED pill. */
+export const ClockGlyph = () => (
+  <svg {...glyph}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 6v6l4 2" />
+  </svg>
+);
+
+/** The tick on the FULLY PAID pill. */
+export const CheckGlyph = () => (
+  <svg {...glyph}>
+    <path d="M20 6 9 17l-5-5" />
+  </svg>
+);
+
+/**
+ * The FULLY PAID pill, in the card and the footer alike: green, the colour the
+ * surface already uses for a paid hold, where HELD's ink pill sat.
+ */
+export const fullyPaidPill = {
+  border: "1.5px solid #1f8a5a",
+  background: "rgba(31,138,90,.08)",
+  borderRadius: 999,
+  color: "#1f8a5a",
+};
+
+/** The circular arrow on every REPRICE button. */
+export const RepriceGlyph = () => (
+  <svg {...glyph}>
+    <path d="M21 12a9 9 0 1 1-3-6.7L21 8" />
+    <path d="M21 3v5h-5" />
+  </svg>
+);
+
 /**
  * Kaira's portrait as the design draws it: a CSS background over her pale
  * blue, so a slow image load never leaves an empty ring. A <span> rather than
