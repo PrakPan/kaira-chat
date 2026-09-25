@@ -26,7 +26,9 @@ const CANONICAL = `${SITE_ORIGIN}/trips`;
 
 const TripsIndex = ({
   title,
+  heading,
   description,
+  intro,
   chips,
   sections,
   schema,
@@ -49,8 +51,8 @@ const TripsIndex = ({
     </Head>
 
     <TripsHub
-      title="Trip itineraries"
-      intro={description}
+      title={heading}
+      intro={intro}
       chips={chips}
       sections={sections}
       defaultTheme={defaultTheme}
@@ -94,10 +96,35 @@ export async function getStaticProps() {
 
   const total = [...byDestination.values()].reduce((sum, rows) => sum + rows.length, 0);
 
+  const totalLabel = total.toLocaleString("en-IN");
+
+  // Wording from Search Console + Keyword Planner (India, Sep 2026):
+  //  - "travel itinerary" 4,400/mo, "tour itinerary" 1,600, "trip itinerary"
+  //    1,300, all LOW competition, and no page of ours targets them. That is
+  //    what this page is: a library of itineraries.
+  //  - "trip planner" (14,800) belongs to the homepage ("AI Trip Planner with
+  //    Human Expertise"); repeating it here would split that query.
+  //  - Our own queries say "<place> trip plan" far more than "itinerary", and
+  //    ask about cost ("vietnam trip cost for 3 person"), so "trip plans" and
+  //    "prices" are in the copy. Nobody searches "day-wise" as a lead word.
+  //  - The destination names lead the description because the destination is
+  //    what people search with ("vietnam itinerary" 5,400, "kerala itinerary"
+  //    3,600). Taken from the trip counts so they follow the corpus.
+  const topNames = destinations.slice(0, 4).map((d) => d.label);
+
+  // The meta description, kept under ~155 characters so it isn't cut off.
   const description =
-    `${total} trip itineraries across ${destinations.length} destinations, each one put ` +
-    "together by our travel team with stays, transfers and activities already planned. " +
-    "Open any of them as a starting point and reshape it free before you book.";
+    `${totalLabel} travel itineraries for ${destinations.length} destinations, including ` +
+    `${topNames.slice(0, -1).join(", ")} and ${topNames[topNames.length - 1]}. ` +
+    "Hotels, transfers, activities and per-person prices included.";
+
+  // The visible intro under the H1 — longer than the meta description, because
+  // it can say what the snippet has no room for: how to use the page.
+  const intro =
+    `${totalLabel} trip plans across ${destinations.length} destinations, each with ` +
+    "its hotels, transfers and activities laid out day by day and a per-person " +
+    "price. Filter by where you want to go, who you're travelling with and how " +
+    "long you have, then open any itinerary and customise it free.";
 
   // Every trip, newest first — not a 48-row sample. The filter bar
   // above them is what makes that readable: the page opens on one theme (see
@@ -124,10 +151,13 @@ export async function getStaticProps() {
 
   return {
     props: {
-      title: `Trip Itineraries — ${total} Ready Trip Plans | The Tarzan Way`,
+      // 60 characters: the keyword pair first, the brand last.
+      title: "Travel Itineraries & Trip Plans with Prices | The Tarzan Way",
+      heading: "Travel itineraries & trip plans",
       description,
+      intro,
       chips: {
-        title: "Browse by destination",
+        title: "Travel itineraries by destination",
         note: `All ${destinations.length} destinations we have trips for, most trips first.`,
         items: destinations.map(({ href, label, count }) => ({ href, label, count })),
       },
@@ -137,7 +167,7 @@ export async function getStaticProps() {
       filterDestinations: destinations.map(({ slug, label }) => ({ id: slug, label })),
       sections: [
         {
-          title: "Every trip itinerary",
+          title: "Find an itinerary by destination, trip type and length",
           items: all.map(tripCard).filter(Boolean),
         },
       ],

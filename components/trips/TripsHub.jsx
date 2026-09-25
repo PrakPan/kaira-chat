@@ -73,6 +73,23 @@ const Intro = styled.p`
   max-width: 62ch;
 `;
 
+// The link back to the destination page(s) this hub belongs to — one quiet
+// line under the intro, not a block competing with the trips.
+const Guides = styled.p`
+  font-size: 14.5px;
+  color: #5c6470;
+  margin: 10px 0 0;
+
+  a {
+    color: #0b1220;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  a:hover {
+    color: #1f6feb;
+  }
+`;
+
 const SectionTitle = styled.h2`
   font-size: clamp(20px, 2.2vw, 26px);
   font-weight: 600;
@@ -251,6 +268,8 @@ const TripsHub = ({
   crumbs = [],
   title,
   intro,
+  // [{ href, label }] destination pages to link back to — hubs only.
+  guides = [],
   sections = [],
   chips = null,
   // Which theme chip is pressed when the page opens. /trips passes one so the
@@ -273,6 +292,21 @@ const TripsHub = ({
 
     <Title>{title}</Title>
     {intro && <Intro>{intro}</Intro>}
+    {guides.length > 0 && (
+      <Guides>
+        {guides.length === 1 ? "Still deciding? Read our " : "Travel guides: "}
+        {guides.map((guide, index) => (
+          <span key={guide.href}>
+            {index > 0 && " · "}
+            <Link href={guide.href}>
+              {guides.length === 1
+                ? `${guide.label} travel guide & trip packages`
+                : guide.label}
+            </Link>
+          </span>
+        ))}
+      </Guides>
+    )}
 
     {sections.map((section) => (
       <section key={section.title}>

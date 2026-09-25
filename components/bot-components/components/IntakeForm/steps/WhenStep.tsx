@@ -103,7 +103,7 @@ const WhenStep: React.FC<StepProps> = ({ state, update }) => {
             <Stepper
               value={state.flexNights}
               min={2}
-              max={30}
+              // max={30}
               onChange={(flexNights) => update({ flexNights })}
             />
           </div>

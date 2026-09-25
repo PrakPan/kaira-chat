@@ -1,6 +1,6 @@
 // Destination hub — /trips/<destination>
 //
-// These target the head terms ("bali tour packages", "thailand itinerary") that
+// These target the head terms ("vietnam itinerary", "kerala trip plan") that
 // the long-tail leaf pages cannot, and they are what stops the 1,718 leaves
 // being orphans: every leaf links up to its hub, and the hub links back down to
 // all of them, so nothing is more than three clicks from home.
@@ -24,13 +24,23 @@ import { SITE_ORIGIN } from "../../../lib/seo/tripsIndexed";
 // pulls `fs` into the client bundle.
 // import { tripCard } from "../../../lib/seo/tripsCards";
 import { breadcrumbSchema } from "../../../lib/seo/tripsJsonLd";
+import { HUB_PAGES } from "../../../lib/seo/tripsHubs";
 import {
   destinationLabel,
   formatINR,
   roundedPerPerson,
 } from "../../../lib/seo/tripsFormat";
 
-const DestinationHub = ({ label, url, title, description, sections, schema }) => {
+const DestinationHub = ({
+  label,
+  url,
+  title,
+  heading,
+  description,
+  sections,
+  guides,
+  schema,
+}) => {
   const canonical = `${SITE_ORIGIN}${url}`;
 
   return (
@@ -54,8 +64,9 @@ const DestinationHub = ({ label, url, title, description, sections, schema }) =>
           { name: "Trips", href: "/trips" },
           { name: label },
         ]}
-        title={`${label} itineraries`}
+        title={heading}
         intro={description}
+        guides={guides}
         sections={sections}
       />
     </Layout>
@@ -116,20 +127,55 @@ export async function getStaticProps({ params }) {
         ? `${shortest + 1} days`
         : null;
 
+  // Worded for what people actually search, per Keyword Planner (India,
+  // Sep 2026): "vietnam itinerary" 5,400/mo, "kerala itinerary" 3,600,
+  // "kerala trip plan" 2,900, "bali itinerary" 2,400, "bali itinerary 7 days"
+  // 1,300. So the hub leads with "<Place> Itinerary" and "trip plans".
+  //
+  // "Packages" is deliberately left to the destination page
+  // (/asia/vietnam is "Vietnam Trip Packages & Itineraries from India"): two
+  // of our own pages with the same title words split one query between them.
+  // The hub is the day-wise plans; the destination page is the package pitch,
+  // and the two link to each other (see `guides`).
+  const count = rows.length;
+  const plans = count === 1 ? "Trip Plan" : "Trip Plans";
+
+  // ~60 characters is what a result shows before truncating, so the count and
+  // the keyword go first and the length range stays out of the title.
+  // "with Prices" only where it still fits — a long name ("Singapore Malaysia")
+  // would otherwise push the brand, and then the count, out of the snippet.
+  const titleCore = `${label} Itinerary: ${count} ${plans}`;
+  const title = `${titleCore}${
+    titleCore.length <= 34 ? " with Prices" : ""
+  } | The Tarzan Way`;
+
+  const heading = `${label} itineraries & trip plans`;
+
+  // Doubles as the meta description, so kept near 155 characters.
   const description = [
-    `${rows.length} ${label} ${rows.length === 1 ? "itinerary" : "itineraries"}`,
-    lengths ? `from ${lengths}` : null,
-    from ? `starting at ${from} per person` : null,
+    `${count} ${label} ${count === 1 ? "itinerary" : "itineraries"}`,
+    lengths,
+    from ? `from ${from} per person` : null,
   ]
     .filter(Boolean)
     .join(", ")
     .concat(
-      ". Real trips put together by our team, with stays, transfers and activities already planned — customise any of them free."
+      ". Stays, transfers and activities planned day by day — customise any plan free."
     );
 
-  const title = `${label} Itineraries & Trip Packages${
-    lengths ? ` — ${lengths}` : ""
-  } | The Tarzan Way`;
+  // Back up to the destination page(s) this hub belongs to. Those pages link
+  // down here already (TripsHubCta); this is the other direction. /trips
+  // hubs are recrawled daily, and several destination pages have not been
+  // since June, so the link helps them as much as it helps the reader.
+  const guides = (HUB_PAGES[params.destination] || []).map((path) => ({
+    href: `/${path}`,
+    label: path
+      .split("/")
+      .pop()
+      .split("_")
+      .map((w) => (w === "and" ? w : w.charAt(0).toUpperCase() + w.slice(1)))
+      .join(" "),
+  }));
 
   const url = `/trips/${params.destination}`;
 
@@ -138,10 +184,12 @@ export async function getStaticProps({ params }) {
       label,
       url,
       title,
+      heading,
       description,
+      guides,
       sections: [
         {
-          title: `All ${label} trips`,
+          title: `All ${label} trip plans`,
           items: rows.map(tripCard).filter(Boolean),
         },
       ],

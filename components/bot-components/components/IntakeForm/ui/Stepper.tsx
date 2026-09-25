@@ -19,7 +19,7 @@ const Stepper: React.FC<StepperProps> = ({
   sub,
 }) => {
   const dec = () => onChange(Math.max(min, value - 1));
-  const inc = () => onChange(Math.min(max, value + 1));
+  const inc = () => onChange(value + 1);
   const btn =
     "w-[30px] h-[30px] grid place-items-center rounded-full border-[1.5px] text-[16px] font-extrabold transition-all";
 
@@ -52,14 +52,14 @@ const Stepper: React.FC<StepperProps> = ({
       <button
         type="button"
         onClick={inc}
-        disabled={value >= max}
+        // disabled={value >= max}
         className={btn}
         style={{
           background: "#fff",
           borderColor: "#ececec",
           color: "#1a2436",
-          opacity: value >= max ? 0.35 : 1,
-          cursor: value >= max ? "not-allowed" : "pointer",
+          // opacity: value >= max ? 0.35 : 1,
+          cursor: "pointer",
         }}
       >
         +
