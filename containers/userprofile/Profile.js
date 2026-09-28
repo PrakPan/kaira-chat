@@ -245,7 +245,7 @@ const Profile = (props) => {
     <section className={styles.card}>
       <div className={styles.head}>
         <div className={styles.headText}>
-          <span className={styles.eyebrow}>Account</span>
+          {/* <span className={styles.eyebrow}>Account</span> */}
           <h1 className={styles.title}>
             Your <span className={styles.serif}>profile</span>
           </h1>

@@ -152,8 +152,8 @@ export async function getStaticProps() {
   return {
     props: {
       // 60 characters: the keyword pair first, the brand last.
-      title: "Travel Itineraries & Trip Plans with Prices | The Tarzan Way",
-      heading: "Travel itineraries & trip plans",
+      title: "Handcrafted Travel Itineraries & Holiday Plans | The Tarzan Way",
+      heading: "Handcrafted Travel Itineraries",
       description,
       intro,
       chips: {
