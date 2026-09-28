@@ -94,11 +94,11 @@ export function useHasPassed(deadline) {
   return !!ms && passed;
 }
 
-const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 /**
  * When a quote ran out, the way the expired pill names it: "12:00 AM" if it
- * was today, "24 SEP" if it was earlier — a bare time from last week would
+ * was today, "24 Sep" if it was earlier — a bare time from last week would
  * read as this morning. In the viewer's own clock, like the countdown before it.
  */
 export const formatExpiredAt = (deadline) => {

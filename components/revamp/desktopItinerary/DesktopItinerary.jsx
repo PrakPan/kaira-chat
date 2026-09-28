@@ -327,6 +327,9 @@ export default function DesktopItinerary({
   // Re-quotes a lapsed trip (BotApp's handleReprice) — the trip card's REPRICE.
   onReprice = undefined,
   isRepricing = false,
+  // A fully-paid trip's voucher (BotApp's handleDownloadVoucher).
+  onDownloadVoucher = undefined,
+  isDownloadingVoucher = false,
   onShare = undefined,
   onSettings = undefined,
   onDownloadPdf = undefined,
@@ -602,6 +605,8 @@ export default function DesktopItinerary({
                   onHold={onHold}
                   onReprice={onReprice}
                   isRepricing={isRepricing}
+                  onDownloadVoucher={onDownloadVoucher}
+                  isDownloadingVoucher={isDownloadingVoucher}
                   gapLeg={gapLeg}
                   onFixGap={() => gapLeg && rows.onChangeStay(gapLeg)}
                   disabled={disabled}

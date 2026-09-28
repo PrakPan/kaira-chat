@@ -66,6 +66,42 @@ export const fullyPaidPill = {
   color: "#1f8a5a",
 };
 
+/** The arrow on DOWNLOAD VOUCHER. */
+export const DownloadGlyph = () => (
+  <svg {...glyph}>
+    <path d="M12 3v12" />
+    <path d="m7 10 5 5 5-5" />
+    <path d="M5 21h14" />
+  </svg>
+);
+
+/**
+ * DOWNLOAD VOUCHER, in the card's fully-paid line and beside the footer's
+ * FULLY PAID pill: the ink pill REPRICE uses, the surface's one action voice.
+ */
+export function VoucherButton({ onClick, busy = false, padding = "6px 12px" }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={busy}
+      className="inline-flex flex-none items-center gap-[6px] whitespace-nowrap font-mono text-[8px] font-[600] tracking-[0.06em]"
+      style={{
+        border: 0,
+        background: "#0b1220",
+        borderRadius: 999,
+        padding,
+        color: "#f7e700",
+        boxShadow: "none",
+        cursor: busy ? "default" : "pointer",
+      }}
+    >
+      <DownloadGlyph />
+      {busy ? "PREPARING…" : "DOWNLOAD VOUCHER"}
+    </button>
+  );
+}
+
 /** The circular arrow on every REPRICE button. */
 export const RepriceGlyph = () => (
   <svg {...glyph}>

@@ -66,6 +66,7 @@ import CartChip from "../revamp/mobileItinerary/CartChip";
 import TripChangeBar from "../revamp/mobileItinerary/TripChangeBar";
 import {
   downloadItineraryPdf,
+  downloadVoucherPdf,
   PdfAuthError,
 } from "../../services/itinerary/exportPdf";
 
@@ -3825,6 +3826,52 @@ export default function BotApp({
   // The design's More sheet lists it, and MoreSheet hides any row whose handler
   // is missing — so without this wired the row simply wasn't there.
   const [isDownloadingPdf, setIsDownloadingPdf] = React.useState(false);
+
+  // DOWNLOAD VOUCHER, offered on a fully-paid trip (desktop trip card and
+  // footer). Same gates as the PDF export: login prompt before the request,
+  // and again on a 401/403; anything else is an error toast.
+  const [isDownloadingVoucher, setIsDownloadingVoucher] = React.useState(false);
+  const handleDownloadVoucher = React.useCallback(async () => {
+    if (isDownloadingVoucher || !activeItineraryId) return;
+    const token =
+      authToken ||
+      (typeof window !== "undefined"
+        ? localStorage.getItem("access_token")
+        : null);
+    if (!token) {
+      setShowApiLoginPrompt(true);
+      return;
+    }
+    setIsDownloadingVoucher(true);
+    try {
+      await downloadVoucherPdf(
+        activeItineraryId,
+        token,
+        `${itineraryRedux?.name || "trip"} voucher`,
+      );
+    } catch (err) {
+      if (err instanceof PdfAuthError) {
+        setShowApiLoginPrompt(true);
+      } else {
+        console.error("Could not download the voucher:", err);
+        dispatch(
+          openNotification({
+            type: "error",
+            heading: "Couldn't download",
+            text: "The voucher didn't come through. Please try again.",
+          }),
+        );
+      }
+    } finally {
+      setIsDownloadingVoucher(false);
+    }
+  }, [
+    activeItineraryId,
+    authToken,
+    dispatch,
+    isDownloadingVoucher,
+    itineraryRedux?.name,
+  ]);
   const handleDownloadPdf = React.useCallback(async () => {
     if (isDownloadingPdf || !activeItineraryId) return;
     const token =
@@ -4578,6 +4625,9 @@ Start Location: ${details.startLocation}`;
     // The desktop footer's EXPIRED · REPRICE pill.
     onReprice: handleReprice,
     isRepricing,
+    // The desktop footer's DOWNLOAD VOUCHER, beside FULLY PAID.
+    onDownloadVoucher: handleDownloadVoucher,
+    isDownloadingVoucher,
     onViewBookings: itineraryIsComplete ? handleViewBookings : undefined,
     // Only the hold ribbon reads this — see `tripHasDeparted`.
     tripStartDate: itineraryRedux?.start_date ?? null,
@@ -4714,6 +4764,10 @@ Start Location: ${details.startLocation}`;
         // instead of the footer's ribbon. Same handler either way — it opens
         // the hold-offer card and charges the fee from there.
         onHold={startPriceHold}
+        onReprice={handleReprice}
+        isRepricing={isRepricing}
+        onDownloadVoucher={handleDownloadVoucher}
+        isDownloadingVoucher={isDownloadingVoucher}
         onShare={() => setShowShare(true)}
         onSettings={handleMobileSettings}
         isBusy={pricingStatus === "PENDING"}
@@ -5284,6 +5338,8 @@ Start Location: ${details.startLocation}`;
                   onHold={startPriceHold}
                   onReprice={handleReprice}
                   isRepricing={isRepricing}
+                  onDownloadVoucher={handleDownloadVoucher}
+                  isDownloadingVoucher={isDownloadingVoucher}
                   onShare={() => setShowShare(true)}
                   // Same gate as the old header's gear: Settings edits the
                   // live itinerary, which a draft or an archive doesn't have.
@@ -6087,6 +6143,9 @@ interface BottomCTABarProps {
    */
   onReprice?: () => void;
   isRepricing?: boolean;
+  /** desktopItinerary only: DOWNLOAD VOUCHER beside the FULLY PAID pill. */
+  onDownloadVoucher?: () => void;
+  isDownloadingVoucher?: boolean;
   onGetInTouch?: () => void;
   /** Archive-only: opens the clone popup from "Get this trip!". */
   onGetThisTrip?: () => void;
@@ -6514,6 +6573,8 @@ export const BottomCTABar = React.memo(
     onHold,
     onReprice,
     isRepricing,
+    onDownloadVoucher,
+    isDownloadingVoucher,
     tripStartDate,
     onGetInTouch,
     onGetThisTrip,
@@ -6863,6 +6924,8 @@ export const BottomCTABar = React.memo(
           held={held}
           heldUntil={held ? lockIn.holdUntil : null}
           fullyPaid={lockIn.fullyPaid}
+          onDownloadVoucher={onDownloadVoucher}
+          isDownloadingVoucher={!!isDownloadingVoucher}
           // The footer tests this against the clock itself, so the pill turns
           // up the moment the quote lapses. Withheld where the trip card
           // withholds its own: a live hold (those prices are frozen), a

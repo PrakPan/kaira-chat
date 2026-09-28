@@ -7,6 +7,7 @@ import {
   GUTTER,
   KairaAvatar,
   RepriceGlyph,
+  VoucherButton,
   fullyPaidPill,
 } from "./desktopTokens";
 import useCountdown, { useHasPassed } from "./useCountdown";
@@ -44,6 +45,9 @@ export default function DesktopCartFooter({
   heldUntil = null,
   // Paid in full with nothing owing: FULLY PAID in the hold pill's place.
   fullyPaid = false,
+  // The voucher, offered beside FULLY PAID.
+  onDownloadVoucher = undefined,
+  isDownloadingVoucher = false,
   // When today's prices stop standing, or null where a lapse isn't the
   // traveller's to reprice (see BottomCTABar). Tested live against the clock.
   quoteDeadline = null,
@@ -105,6 +109,7 @@ export default function DesktopCartFooter({
               {isRepricing ? "CHECKING…" : "EXPIRED · REPRICE"}
             </button>
           ) : fullyPaid && total ? (
+            <>
             <span
               className="inline-flex flex-none items-center gap-[7px] whitespace-nowrap font-mono text-[8px] font-[600] tracking-[0.06em]"
               style={{ ...fullyPaidPill, padding: "4px 11px 4px 9px" }}
@@ -112,6 +117,14 @@ export default function DesktopCartFooter({
               <CheckGlyph />
               FULLY PAID
             </span>
+            {onDownloadVoucher ? (
+              <VoucherButton
+                onClick={onDownloadVoucher}
+                busy={isDownloadingVoucher}
+                padding="5px 11px"
+              />
+            ) : null}
+            </>
           ) : holdFee ? (
             <button
               type="button"

@@ -3,14 +3,14 @@ import * as T from "../mobileItinerary/designTokens";
 import { GUTTER } from "./desktopTokens";
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  The desktop itinerary's header — "Kaira E Desktop" as drawn: logo tile, trip
-//  name, pax and dates in mono, "More", and the leg chips with "Map".
+//  The desktop itinerary's header — "Kaira E Desktop" as drawn, less its logo
+//  tile (removed on request): trip name, pax and dates in mono, "More", and the leg chips with "Map".
 //
 //  Not the phone's TripHeader: that one is sticky inside the page's own scroll
 //  and set a size up for a thumb. Here the header sits above the pane's
 //  scroller, so it never needs to stick, and it keeps the design's desktop
 //  sizes. It shares the same content column as the rows below it (GUTTER), so
-//  the tile lines up with the cards under it at every pane width.
+//  the name lines up with the cards under it at every pane width.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function DesktopTripHeader({
@@ -31,13 +31,6 @@ export default function DesktopTripHeader({
       style={{ borderBottom: "1px solid #ececec", padding: `12px ${GUTTER} 10px` }}
     >
       <div className="flex items-center gap-[10px]">
-        <div
-          className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-[9px] bg-[#0b1220]"
-          style={{ transform: "rotate(-4deg)" }}
-          aria-hidden
-        >
-          <span className="text-[18px] font-[900] leading-none text-[#f7e700]">t</span>
-        </div>
         <div className="min-w-0 flex-1">
           <div className="truncate text-[13px] font-[700] tracking-[-0.02em] text-[#0b1220]">
             {title || "Your trip"}

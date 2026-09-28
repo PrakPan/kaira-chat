@@ -2,7 +2,7 @@ import React from "react";
 import * as T from "./designTokens";
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  TripHeader — the trip's own header: logo tile, name, pax/dates, "More",
+//  TripHeader — the trip's own header: name, pax/dates, "More",
 //  and the leg-nav strip with the Map button.
 //
 //  Shared rather than local to MobileItinerary because the MAP tab needs the
@@ -31,13 +31,6 @@ export default function TripHeader({
       className={`${sticky ? "sticky top-0 z-[30]" : ""} border-b border-[#ececec] bg-white px-[14px] pb-[9px] pt-[10px]`}
     >
       <div className="flex items-center gap-[11px]">
-        <div
-          className="flex h-[32px] w-[32px] flex-none items-center justify-center rounded-[9px] bg-[#0b1220]"
-          style={{ transform: "rotate(-4deg)" }}
-          aria-hidden
-        >
-          <span className="text-[19px] font-[900] leading-none text-[#f7e700]">t</span>
-        </div>
         <div className="min-w-0 flex-1">
           <div className="truncate text-[14px] font-[700] tracking-[-0.02em] text-[#0b1220]">
             {title || "Your trip"}

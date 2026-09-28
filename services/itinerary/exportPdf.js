@@ -48,18 +48,63 @@ export const fetchItineraryPdf = async (itineraryId, token) => {
  * necessarily finished reading it, and revoking too early produces an empty
  * download on Safari.
  */
+const saveBlob = (blob, filename) => {
+  const objectUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = objectUrl;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+};
+
 export const downloadItineraryPdf = async (
   itineraryId,
   token,
   filename = "itinerary",
 ) => {
   const blob = await fetchItineraryPdf(itineraryId, token);
-  const objectUrl = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = objectUrl;
-  anchor.download = `${filename || "itinerary"}.pdf`;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+  saveBlob(blob, `${filename || "itinerary"}.pdf`);
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Booking voucher — a fully-paid trip's voucher PDF. Same bearer contract and
+//  the same PdfAuthError split as the export above.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const voucherPdfUrl = (itineraryId) => {
+  const host = (MERCURY_HOST || "").replace(/\/$/, "");
+  if (!itineraryId || !host) return null;
+  return `${host}/api/v1/itinerary/${itineraryId}/export-voucher/`;
+};
+
+/**
+ * The server names the file ("TTW_Voucher_<client>.pdf") in
+ * Content-Disposition. That header only reaches script when CORS exposes it,
+ * so it is read when present and the caller's name is the fallback.
+ */
+const filenameFrom = (res) => {
+  const cd = res.headers.get("Content-Disposition") || "";
+  const m = cd.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i);
+  return m ? decodeURIComponent(m[1]) : null;
+};
+
+/** Fetches the voucher and saves it. Throws PdfAuthError on 401/403. */
+export const downloadVoucherPdf = async (
+  itineraryId,
+  token,
+  filename = "voucher",
+) => {
+  const url = voucherPdfUrl(itineraryId);
+  if (!url || !token) throw new PdfAuthError();
+
+  const res = await fetch(url, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (res.status === 401 || res.status === 403) throw new PdfAuthError();
+  if (!res.ok) throw new Error(`Voucher download failed: ${res.status}`);
+  const blob = await res.blob();
+  saveBlob(blob, filenameFrom(res) || `${filename || "voucher"}.pdf`);
 };

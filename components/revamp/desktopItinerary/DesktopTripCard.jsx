@@ -9,6 +9,7 @@ import {
   EXPIRED_TINT,
   KairaAvatar,
   RepriceGlyph,
+  VoucherButton,
   fullyPaidPill,
 } from "./desktopTokens";
 import useCountdown, { formatExpiredAt, useHasPassed } from "./useCountdown";
@@ -89,10 +90,20 @@ export default function DesktopTripCard({
   // expired pill is still drawn but the strip's button is left out.
   onReprice = undefined,
   isRepricing = false,
+  // Downloads the trip's voucher — the fully-paid line's button. Absent means
+  // no voucher to offer, and the line stands alone.
+  onDownloadVoucher = undefined,
+  isDownloadingVoucher = false,
   gapLeg = null,
   onFixGap,
   disabled = false,
+  // The phone's card (MobileItinerary): Kaira's line wraps instead of being
+  // cut off with "…", and the strip is a rounded box rather than a pill so a
+  // second line has somewhere to sit. Desktop has the width for one line.
+  wrap = false,
 }) {
+  const lineCls = wrap ? "leading-[1.4]" : "truncate";
+  const stripRadius = wrap ? 16 : 999;
   const locked = !!trip.hold?.locked;
   const fullyPaid = !!trip.fullyPaid && !!totalStr;
   const holdClock = useCountdown(locked ? trip.hold?.until : null);
@@ -103,7 +114,12 @@ export default function DesktopTripCard({
   // Under an hour it says "the next hour"; a hold with no paid-at time has no
   // window to name, so the line just asks for the balance.
   const holdHoursLeft = holdClock ? parseInt(holdClock, 10) : null;
-  const heldLine = `Prices are held for this trip. Please complete the remaining payment${
+  // On the phone (`wrap`) each line keeps only its first sentence — the rest
+  // ran to three lines at phone width. The pill beside the total still carries
+  // the clock, the expiry date and the action.
+  const heldLine = wrap
+    ? "Prices are held for this trip."
+    : `Prices are held for this trip. Please complete the remaining payment${
     holdHoursLeft === null
       ? "."
       : holdHoursLeft < 1
@@ -138,8 +154,10 @@ export default function DesktopTripCard({
       : `${label} · PRICING YOUR TRIP…`;
 
   const holdHours = LOCK_IN_HOLD_HOURS;
-  const holdLine =
-    count > 1
+  // The phone has ~150px beside LOCK IT, so it gets the offer alone.
+  const holdLine = wrap
+    ? `Hold prices for ${holdHours} hours.`
+    : count > 1
       ? `Fares can move tomorrow, I can hold all ${count} bookings for ${holdHours} hours.`
       : count === 1
         ? `Fares can move tomorrow, I can hold the booking for ${holdHours} hours.`
@@ -150,9 +168,9 @@ export default function DesktopTripCard({
     ? count > 0
       ? `Re-checking all ${count} prices with suppliers…`
       : "Re-checking prices with suppliers…"
-    : `Prices expired ${expiredWhen}. Fares may have moved, I'll re-check ${
-        count > 1 ? `all ${count} bookings` : count === 1 ? "the booking" : "them"
-      } before you book.`;
+    : `This price expired ${expiredWhen}. Click on re-price to update ${
+        count > 1 ? `all ${count} bookings` : count === 1 ? "the booking" : "your bookings"
+      }.`;
 
   const gapNights = gapLeg?.nights || 0;
   const gapMeta = gapLeg
@@ -242,13 +260,15 @@ export default function DesktopTripCard({
           style={{
             background: "#ffffff",
             border: "1px solid rgba(184,64,52,.28)",
-            borderRadius: 999,
+            borderRadius: stripRadius,
             padding: onReprice ? "5px 6px 5px 5px" : "5px 12px 5px 5px",
           }}
         >
           <KairaAvatar size={22} ring={`1.5px solid ${EXPIRED}`} />
-          <span className="min-w-0 flex-1 truncate text-[11.5px] text-[#445069]">
-            {expiredLine}
+          <span className={`min-w-0 flex-1 ${lineCls} text-[11.5px] text-[#445069]`}>
+            {wrap && !isRepricing
+              ? `This price expired ${expiredWhen}.`
+              : expiredLine}
           </span>
           {onReprice ? (
             <button
@@ -276,12 +296,12 @@ export default function DesktopTripCard({
           style={{
             background: "#fafaf5",
             border: "1px solid #ececec",
-            borderRadius: 999,
+            borderRadius: stripRadius,
             padding: "5px 6px 5px 5px",
           }}
         >
           <KairaAvatar size={22} ring={`1.5px solid ${T.YELLOW}`} />
-          <span className="min-w-0 flex-1 truncate text-[11.5px] text-[#445069]">
+          <span className={`min-w-0 flex-1 ${lineCls} text-[11.5px] text-[#445069]`}>
             {holdLine}
           </span>
           <button
@@ -309,17 +329,22 @@ export default function DesktopTripCard({
           style={{
             background: "rgba(31,138,90,.07)",
             border: "1px solid rgba(31,138,90,.25)",
-            borderRadius: 999,
-            padding: "5px 12px 5px 5px",
+            borderRadius: stripRadius,
+            padding: onDownloadVoucher ? "5px 6px 5px 5px" : "5px 12px 5px 5px",
           }}
         >
           <KairaAvatar size={22} ring={`1.5px solid ${T.GREEN}`} />
           <span
-            className="min-w-0 flex-1 truncate text-[11.5px] font-[600]"
+            className={`min-w-0 flex-1 ${lineCls} text-[11.5px] font-[600]`}
             style={{ color: T.GREEN }}
           >
-            This trip is fully paid. Nothing more is due.
+            {wrap
+              ? "This trip is fully paid."
+              : "This trip is fully paid. Nothing more is due."}
           </span>
+          {onDownloadVoucher ? (
+            <VoucherButton onClick={onDownloadVoucher} busy={isDownloadingVoucher} />
+          ) : null}
         </div>
       ) : locked ? (
         <div
@@ -327,13 +352,13 @@ export default function DesktopTripCard({
           style={{
             background: "rgba(31,138,90,.07)",
             border: "1px solid rgba(31,138,90,.25)",
-            borderRadius: 999,
+            borderRadius: stripRadius,
             padding: "5px 12px 5px 5px",
           }}
         >
           <KairaAvatar size={22} ring={`1.5px solid ${T.GREEN}`} />
           <span
-            className="min-w-0 flex-1 truncate text-[11.5px] font-[600]"
+            className={`min-w-0 flex-1 ${lineCls} text-[11.5px] font-[600]`}
             style={{ color: T.GREEN }}
           >
             {heldLine}
