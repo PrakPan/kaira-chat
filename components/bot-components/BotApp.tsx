@@ -946,6 +946,15 @@ export default function BotApp({
   // from the gear) so a reason can never carry over into the next one.
   const [settingsReason, setSettingsReason] = useState<string | null>(null);
   const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
+  // The phone's trip settings sheet covers the trip like every other bottom
+  // sheet, so it holds the shared document lock too — without it a drag beside
+  // the sheet scrolled the itinerary underneath. Phones only: on desktop the
+  // modal sits in the pane and <main> is a fixed frame with nothing to freeze.
+  React.useLayoutEffect(() => {
+    if (!showSettings) return undefined;
+    if (!window.matchMedia("(max-width: 768px)").matches) return undefined;
+    return lockDocumentScroll();
+  }, [showSettings]);
   // Opened by the archive bar's "Get this trip!" — the same popup the archive
   // chat panel's clone card opens.
   const [showArchiveCloneModal, setShowArchiveCloneModal] = useState(false);
@@ -5933,14 +5942,16 @@ Start Location: ${details.startLocation}`;
               height="max-content"
               paddingX="0px"
               paddingY="0px"
-              borderRadius="20px"
+              borderRadius="22px 22px 0 0"
             >
+              {/* The same Kaira card as desktop, in a bottom sheet. */}
               <Settings
                 setShowSettings={setShowSettings}
                 isHotelsPresent={isHotelsPresent}
                 handleApply={settingsHandleApply}
                 maxAdults={true}
                 maxRooms={true}
+                variant="kaira"
                 {...settingsCopy}
               />
             </BottomModal>
@@ -8480,6 +8491,12 @@ const MobileLayout = React.memo(
                 // child of a -webkit-overflow-scrolling:touch pane is placed
                 // against the scrolled content on iOS.
                 <div className="sticky top-0 z-40 flex items-center justify-between gap-3 bg-white px-[18px] py-[16px] border-b border-slate-100 rounded-t-[20px]">
+                  {/* Grab handle, as on every other phone sheet. In the sticky
+                      header so it stays at the sheet's top edge on scroll. */}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute left-1/2 top-[7px] h-[4px] w-[40px] -translate-x-1/2 rounded-full bg-[#dcdfe5]"
+                  />
                   {/* Same weight and tracking as the "Route" heading directly
                       below it, so the sheet's chrome doesn't outweigh the
                       content it is introducing. */}

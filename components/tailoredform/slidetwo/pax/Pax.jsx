@@ -26,7 +26,11 @@ const Pax = (props) => {
 
   const [showError, setShowError] = useState(false);
 
+  // Not for the kaira variant: KairaModal closes on its own scrim, and on a
+  // phone it is portalled to <body>, outside containerRef — so every tap inside
+  // it (Add room, the steppers) read as "outside" and shut it.
   useEffect(() => {
+    if (props?.variant === "kaira") return undefined;
     const handleClickOutside = (event) => {
       if (
         containerRef.current &&
@@ -38,7 +42,7 @@ const Pax = (props) => {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [props?.variant]);
 
   useEffect(() => {
     if (props?.isOpenModal && props?.hideOpenModel && !isRoomExpanded) {

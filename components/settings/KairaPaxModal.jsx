@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
+import useMediaQuery from "../../hooks/useMedia";
 import { KairaActions, KairaCloseButton, KairaTitle } from "./KairaSettings";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -15,6 +17,9 @@ import { KairaActions, KairaCloseButton, KairaTitle } from "./KairaSettings";
 //  `position: fixed; inset: 0`, like the ModalWithBackdrop it replaces: inside
 //  the desktop Settings card that resolves to the itinerary pane (PaneModal's
 //  layer is its containing block), so it centres over the trip, not the chat.
+//  On a phone the card sits in a BottomModal whose `transform` would make the
+//  sheet the containing block and clip this to it, so there it is portalled to
+//  <body> and rises from the bottom of the viewport as a sheet instead.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const INK = "#0b1220";
@@ -29,8 +34,14 @@ export function KairaModal({
   applyLabel = "Apply",
   children,
 }) {
-  return (
-    <div className="fixed inset-0 font-inter leading-[normal]" style={{ zIndex: 60 }}>
+  // Behaviour only (where to mount), and the modal only opens on a tap, so the
+  // hook's pre-hydration `false` never paints.
+  const isDesktop = useMediaQuery("(min-width:767px)");
+  const modal = (
+    <div
+      className="fixed inset-0 font-inter leading-[normal]"
+      style={{ zIndex: isDesktop ? 60 : 3100 }}
+    >
       <button
         type="button"
         aria-label="Close"
@@ -45,22 +56,51 @@ export function KairaModal({
           background: "rgba(11,18,32,0.22)",
         }}
       />
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-[16px]">
+      {/* Desktop: a centred card. Phone: a bottom sheet, like the settings
+          sheet it opens from and the date picker beside it. */}
+      <div
+        className={`pointer-events-none absolute inset-0 flex justify-center ${
+          isDesktop ? "items-center p-[16px]" : "items-end"
+        }`}
+      >
         <div
           role="dialog"
           aria-modal="true"
-          className="ttw-pane-sheet-up pointer-events-auto flex flex-col bg-white"
-          style={{
-            width: "min(420px, 100%)",
-            maxHeight: "100%",
-            borderRadius: 22,
-            boxShadow: "0 30px 80px -30px rgba(11,18,32,.3)",
-            overflow: "hidden",
-          }}
+          className={`${
+            isDesktop ? "ttw-pane-sheet-up" : "ttw-sheet-up"
+          } pointer-events-auto flex flex-col bg-white`}
+          style={
+            isDesktop
+              ? {
+                  width: "min(420px, 100%)",
+                  maxHeight: "100%",
+                  borderRadius: 22,
+                  boxShadow: "0 30px 80px -30px rgba(11,18,32,.3)",
+                  overflow: "hidden",
+                }
+              : {
+                  width: "100%",
+                  maxHeight: "92dvh",
+                  borderRadius: "22px 22px 0 0",
+                  boxShadow: "0 -12px 40px -20px rgba(11,18,32,.3)",
+                  overflow: "hidden",
+                }
+          }
         >
-          <div className="flex flex-none items-start gap-[12px] px-[24px] pb-[16px] pt-[24px]">
+          {isDesktop ? null : (
+            <div
+              aria-hidden
+              className="mx-auto mt-[8px] h-[4px] w-[38px] flex-none rounded-full"
+              style={{ background: "#dcdfe5" }}
+            />
+          )}
+          <div
+            className={`flex flex-none items-start gap-[12px] px-[24px] pb-[16px] ${
+              isDesktop ? "pt-[24px]" : "pt-[14px]"
+            }`}
+          >
             <div className="min-w-0 flex-1">
-              <KairaTitle {...title} />
+              <KairaTitle {...title} oneLine />
               {subtitle ? (
                 <div className="mt-[5px] text-[12.5px] text-[#6b7280]">{subtitle}</div>
               ) : null}
@@ -73,13 +113,22 @@ export function KairaModal({
           >
             {children}
           </div>
-          <div className="flex-none px-[24px] pb-[24px] pt-[16px]">
+          <div
+            className="flex-none px-[24px] pt-[16px]"
+            style={{
+              paddingBottom: isDesktop
+                ? 24
+                : "calc(16px + env(safe-area-inset-bottom))",
+            }}
+          >
             <KairaActions onCancel={onClose} onPrimary={onApply} primaryLabel={applyLabel} />
           </div>
         </div>
       </div>
     </div>
   );
+  if (isDesktop || typeof document === "undefined") return modal;
+  return createPortal(modal, document.body);
 }
 
 /** A bordered block — one room, or the traveller counts. */

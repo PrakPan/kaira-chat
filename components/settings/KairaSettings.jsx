@@ -193,11 +193,20 @@ export function KairaCloseButton({ onClick, label = "Close" }) {
   );
 }
 
-/** Title in the design's voice: bold sans with one serif-italic word. */
-export function KairaTitle({ lead, emphasis, trail }) {
+/**
+ * Title in the design's voice: bold sans with one serif-italic word.
+ * `oneLine` keeps it to a single line on a phone by scaling the type with the
+ * viewport (≈17.5px on a 375px phone, back to 23px by ~470px) instead of
+ * wrapping; desktop is untouched.
+ */
+export function KairaTitle({ lead, emphasis, trail, oneLine = false }) {
   return (
     <div
-      className="text-[23px] font-[800]"
+      className={`text-[23px] font-[800] ${
+        oneLine
+          ? "max-ph:whitespace-nowrap max-ph:text-[length:clamp(15px,calc(6.2vw_-_5.5px),23px)]"
+          : ""
+      }`}
       style={{ letterSpacing: "-0.035em", color: INK, lineHeight: 1.15 }}
     >
       {lead}{" "}
@@ -275,6 +284,7 @@ export default function KairaSettingsCard({
             lead={heading?.lead ?? "Update your"}
             emphasis={heading?.emphasis ?? "trip"}
             trail={heading?.trail ?? "preferences"}
+            oneLine
           />
           <div className="mt-[5px] text-[12.5px] text-[#6b7280]">
             {subheading ?? "Adjust dates, travellers and inclusions, I'll reprice it for you."}
