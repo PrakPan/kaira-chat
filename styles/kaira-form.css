@@ -1011,6 +1011,19 @@
   cursor: progress;
 }
 
+/* In the desktop itinerary pane (PaneModal, see DateRangeSheet) the picker
+   centres on the pane, which is only half the window: below the ~620px two
+   months need, show one, as the phone does. */
+@container ttw-pane (max-width: 619.98px) {
+  .kform-datesheet .kform-cal-title--second,
+  .kform-datesheet .kform-cal-month:nth-child(2) {
+    display: none;
+  }
+  .kform-datesheet .kform-cal-months {
+    gap: 0;
+  }
+}
+
 @media (max-width: 767.98px) {
   .kform-datesheet {
     align-items: flex-end;

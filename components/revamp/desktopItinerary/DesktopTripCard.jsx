@@ -42,6 +42,13 @@ import useCountdown, { formatExpiredAt, useHasPassed } from "./useCountdown";
 //  A paid hold still running outranks it: those prices are frozen by the hold,
 //  and telling someone who paid for that they've expired would be false.
 //
+//  While the cart is being priced — a reprice, an edit, the first fetch — the
+//  total is a loader rather than an em-dash, and Kaira says what she's doing:
+//
+//    TRIP TOTAL · UPDATING PRICES…
+//    ░░░░░░░░░░   ↻ CHECKING PRICES
+//    (Kaira) Re-checking prices with suppliers…
+//
 //  Still one price on the surface, per the package rule — this total and the
 //  footer's are the same figure.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -102,6 +109,9 @@ export default function DesktopTripCard({
   // second line has somewhere to sit. Desktop has the width for one line.
   wrap = false,
 }) {
+  // A loader only where a price is on its way: not on a draft (priced once
+  // confirmed) and not once one is already on the card.
+  const pricing = !!trip.pricing && !totalStr && !isDraft;
   const lineCls = wrap ? "leading-[1.4]" : "truncate";
   const stripRadius = wrap ? 16 : 999;
   const locked = !!trip.hold?.locked;
@@ -149,9 +159,11 @@ export default function DesktopTripCard({
   const count = trip.bookingsCount;
   const kicker = isDraft
     ? `${label} · PRICED ONCE YOU CONFIRM`
-    : count > 0
-      ? `${label} · ${count} BOOKING${count === 1 ? "" : "S"}`
-      : `${label} · PRICING YOUR TRIP…`;
+    : pricing
+      ? `${label} · UPDATING PRICES…`
+      : count > 0
+        ? `${label} · ${count} BOOKING${count === 1 ? "" : "S"}`
+        : `${label} · PRICING YOUR TRIP…`;
 
   const holdHours = LOCK_IN_HOLD_HOURS;
   // The phone has ~150px beside LOCK IT, so it gets the offer alone.
@@ -164,6 +176,13 @@ export default function DesktopTripCard({
         : `Fares can move tomorrow, I can hold them for ${holdHours} hours.`;
 
   const expiredWhen = /:/.test(expiredAt) ? `at ${expiredAt}` : `on ${expiredAt}`;
+  const pricingLine = isRepricing
+    ? count > 0 && !wrap
+      ? `Re-checking all ${count} prices with suppliers…`
+      : "Re-checking prices with suppliers…"
+    : wrap
+      ? "Updating your trip's prices…"
+      : "Updating your trip's prices, this takes a few seconds…";
   const expiredLine = isRepricing
     ? count > 0
       ? `Re-checking all ${count} prices with suppliers…`
@@ -207,17 +226,35 @@ export default function DesktopTripCard({
       </div>
 
       <div className="flex flex-wrap items-center gap-[10px]">
-        <span className="text-[25px] font-[800] tracking-[-0.035em] text-[#0b1220]">
-          {totalStr ? (
-            <>
-              {totalStr}
-              <span className="text-[14px] font-[700]">/-</span>
-            </>
-          ) : (
-            "—"
-          )}
-        </span>
-        {expired ? (
+        {pricing ? (
+          <span
+            role="status"
+            aria-label="Updating prices"
+            className="block h-[30px] w-[150px] animate-pulse rounded-[8px] bg-[#f1f2f4]"
+          />
+        ) : (
+          <span className="text-[25px] font-[800] tracking-[-0.035em] text-[#0b1220]">
+            {totalStr ? (
+              <>
+                {totalStr}
+                <span className="text-[14px] font-[700]">/-</span>
+              </>
+            ) : (
+              "—"
+            )}
+          </span>
+        )}
+        {pricing ? (
+          <span
+            className="inline-flex flex-none items-center gap-[6px] font-mono text-[8px] font-[600] tracking-[0.06em] text-[#8a93a6]"
+            style={{ border: "1px solid #e6e8ec", background: "#fafafa", borderRadius: 999, padding: "4px 10px" }}
+          >
+            <span className="inline-flex animate-spin" aria-hidden>
+              <RepriceGlyph />
+            </span>
+            CHECKING PRICES
+          </span>
+        ) : expired ? (
           <span
             className="inline-flex flex-none items-center gap-[6px] font-mono text-[8px] font-[600] tracking-[0.06em]"
             style={{
@@ -254,7 +291,31 @@ export default function DesktopTripCard({
         ) : null}
       </div>
 
-      {expired ? (
+      {pricing ? (
+        <div
+          className="flex items-center gap-[9px]"
+          style={{
+            background: "#fafaf5",
+            border: "1px solid #ececec",
+            borderRadius: stripRadius,
+            padding: "5px 12px 5px 5px",
+          }}
+        >
+          <KairaAvatar size={22} ring={`1.5px solid ${T.YELLOW}`} />
+          <span className={`min-w-0 flex-1 ${lineCls} text-[11.5px] text-[#445069]`}>
+            {pricingLine}
+          </span>
+          <span className="flex flex-none items-center gap-[3px]" aria-hidden>
+            {[0, 150, 300].map((d) => (
+              <span
+                key={d}
+                className="block h-[4px] w-[4px] animate-pulse rounded-full bg-[#8a93a6]"
+                style={{ animationDelay: `${d}ms` }}
+              />
+            ))}
+          </span>
+        </div>
+      ) : expired ? (
         <div
           className="flex items-center gap-[9px]"
           style={{

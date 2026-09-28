@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import RangeCalendar, {
   earliestDate,
 } from "../tailoredform/kaira/RangeCalendar";
 import { IconX } from "../tailoredform/kaira/icons";
+import { PaneLayerContext } from "../revamp/desktopItinerary/PaneModal";
 import { diffDays, fmtDayMon, fromYMD } from "../tailoredform/kaira/dateUtils";
 
 /**
@@ -20,6 +21,11 @@ import { diffDays, fmtDayMon, fromYMD } from "../tailoredform/kaira/dateUtils";
  * picker nested inside it was laid out against — and clipped by — the
  * Settings sheet instead of the viewport. That is what hid the month
  * navigation on phones.
+ *
+ * Inside a PaneModal (desktop trip settings) it portals into the modal's layer
+ * instead: that layer is the containing block for `position: fixed`, so the
+ * picker and its scrim cover and centre on the itinerary pane — as the
+ * Settings card does — rather than the whole window, and the chat stays clear.
  *
  * Everything picked here is a draft. Done commits it and is only enabled on a
  * complete range, so a half-picked or cleared calendar can never wipe the
@@ -39,6 +45,7 @@ const DateRangeSheet = ({
   busy = false,
   closeOnApply = true,
 }) => {
+  const paneLayer = useContext(PaneLayerContext);
   const earliest = earliestDate();
   // A range that has already started (the "your dates have passed" flow) is
   // not a valid answer, so the picker opens empty rather than pre-selecting it.
@@ -150,7 +157,7 @@ const DateRangeSheet = ({
         </div>
       </div>
     </div>,
-    document.body,
+    paneLayer || document.body,
   );
 };
 

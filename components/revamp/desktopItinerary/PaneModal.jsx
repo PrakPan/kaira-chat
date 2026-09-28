@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createContext, useState } from "react";
 import { createPortal } from "react-dom";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -16,17 +16,27 @@ import { createPortal } from "react-dom";
 //  Going — are `position: fixed; inset: 0` modals. The layer below carries a
 //  no-op transform so that IT is their containing block: they fill the pane
 //  and centre in it, their backdrop dims the pane, and the chat is left
-//  alone, the same as the card itself. (The date picker portals to <body> and
-//  is unaffected.) The CARD must not carry a transform of its own, or those
+//  alone, the same as the card itself. The date picker portals, so it can't
+//  lean on that; the layer is handed down through PaneLayerContext and the
+//  picker (settings/DateRangeSheet) portals into it rather than <body>, so it
+//  too centres on the pane instead of the whole window. The CARD must not carry a transform of its own, or those
 //  editors would be pinned to the card instead — hence flex centring rather
 //  than the prototype's `translate(-50%,-50%)`.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// The PaneModal layer a portalled child should mount into, or null outside
+// one (where it keeps portalling to <body>).
+export const PaneLayerContext = createContext(null);
+
 export default function PaneModal({ host, onHide, width = 440, zIndex = 1700, children }) {
+  const [layerEl, setLayerEl] = useState(null);
   const layer = (
     <div
+      ref={setLayerEl}
       className="pointer-events-auto absolute inset-0"
-      style={{ zIndex, transform: "translateZ(0)" }}
+      // A size container too, so the date picker can fold to one month when
+      // the pane is narrower than its two (styles/kaira-form.css).
+      style={{ zIndex, transform: "translateZ(0)", containerType: "inline-size", containerName: "ttw-pane" }}
     >
       <button
         type="button"
@@ -55,7 +65,7 @@ export default function PaneModal({ host, onHide, width = 440, zIndex = 1700, ch
             scrollbarWidth: "none",
           }}
         >
-          {children}
+          <PaneLayerContext.Provider value={layerEl}>{children}</PaneLayerContext.Provider>
         </div>
       </div>
     </div>
