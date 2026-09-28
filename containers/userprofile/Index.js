@@ -124,7 +124,7 @@ const UserDashboard = (props) => {
         <section className={styles.dashboardSection}>
           <header className={styles.dashboardHeader}>
             <h2 className={styles.dashboardTitle}>
-              My Trips
+              My <span className={styles.dashboardTitleSerif}>trips</span>
               {totalPlans ? (
                 <span className={styles.dashboardCount}>({totalPlans})</span>
               ) : null}

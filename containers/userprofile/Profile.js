@@ -1,11 +1,15 @@
-import Image from "next/image";
 import React, { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
-import styled from "styled-components";
-import { MdDone, MdEdit } from "react-icons/md";
-import { MdVerified } from "react-icons/md";
+import {
+  LuBadgeCheck,
+  LuCamera,
+  LuCheck,
+  LuMail,
+  LuMessageCircle,
+  LuPenSquare,
+  LuPhone,
+} from "react-icons/lu";
 import ImageLoader from "../../components/ImageLoader";
-import media from "../../components/media";
 import { EditInput } from "./EditProfile";
 import * as authaction from "../../store/actions/auth";
 import { userImageUploadInstance } from "../../services/user/edit";
@@ -15,105 +19,84 @@ import {
   getUserAvatarColor,
   getUserInitial,
 } from "../../components/bot-components/utils/avatarColor";
+import styles from "./Profile.module.scss";
 
-const Container = styled.div`
-  padding: 0.5rem;
-  width: 90%;
-  margin: auto;
-  border-radius: 5px;
-  background-color: #fafaf5;
-  @media screen and (min-width: 768px) {
-    width: 100%;
-  }
-`;
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 
-const OverviewContainer = styled.div`
-  @media screen and (min-width: 768px) {
-    display: grid;
-    grid-template-columns: 50% 50%;
-    width: 100%;
-  }
-`;
+// "+916388013634" → "+91 63880 13634"; anything else is shown as stored.
+const formatPhone = (phone) => {
+  const digits = (phone || "").replace(/\s/g, "");
+  return /^\+91\d{10}$/.test(digits)
+    ? `+91 ${digits.slice(3, 8)} ${digits.slice(8)}`
+    : phone;
+};
 
-const ImageNameContainer = styled.div`
-  padding: 2rem 0;
-  @media screen and (min-width: 768px) {
-    padding: 0;
-  }
-`;
+// Defined at module scope: created inside the component they would be new
+// types on every render, so React would remount their subtree — including an
+// open EditInput, which would lose the typed value and any pending OTP.
+const EditButton = ({ title, onClick, small }) => (
+  <button
+    type="button"
+    title={title}
+    aria-label={title}
+    onClick={(e) => {
+      e.stopPropagation();
+      onClick();
+    }}
+    className={`${styles.editButton} ${small ? styles.editButtonSmall : ""}`}
+  >
+    <span className={styles.editCircle}>
+      <LuPenSquare size={15} />
+    </span>
+  </button>
+);
 
-// Defined at module scope: created inside the component they were new types
-// on every render, so React remounted their subtree — including an open
-// EditInput, which lost the typed value and any pending OTP.
-const Name = styled.p`
-  font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
-  margin: 0 0 0 0;
-  font-weight: 700;
-  @media screen and (min-width: 768px) {
-    font-size: ${(props) => props.theme.fontsizes.desktop.text.two};
-    margin: 1rem;
-  }
-`;
+// Rendered twice per row: inline beside the value on wide desktop, and on its
+// own line underneath below 1100px (CSS picks which one shows).
+const UnverifiedCta = ({ onVerify, className }) => (
+  <span className={`${styles.verifyGroup} ${className}`}>
+    <span className={styles.unverified}>Not verified</span>
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onVerify();
+      }}
+      className={styles.verifyButton}
+    >
+      Verify
+    </button>
+  </span>
+);
 
-const DetailsContainer = styled.div`
-  text-align: center;
-  padding: 2rem 0;
-  @media screen and (min-width: 768px) {
-    text-align: left;
-  }
-`;
-
-const SectionHeading = styled.p`
-  font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
-  @media screen and (min-width: 768px) {
-    font-size: ${(props) => props.theme.fontsizes.desktop.text.one};
-  }
-`;
-
-const DetailHeading = styled.p`
-  font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  text-align: left;
-  @media screen and (min-width: 768px) {
-    font-size: ${(props) => props.theme.fontsizes.desktop.text.three};
-    text-align: left;
-    margin-bottom: 0.5rem;
-  }
-`;
-
-const DetailText = styled.p`
-  font-size: ${(props) => props.theme.fontsizes.mobile.text.three};
-  font-weight: 300;
-  color: #a0a0a0;
-  @media screen and (min-width: 768px) {
-    font-size: ${(props) => props.theme.fontsizes.desktop.text.three};
-    float: left;
-    display: inline;
-  }
-`;
+const VerifiedBadge = ({ title }) => (
+  <span className={styles.verified} title={title}>
+    <LuBadgeCheck size={15} />
+    Verified
+  </span>
+);
 
 const Profile = (props) => {
-  let isPageWide = media("(min-width: 768px)");
   const [editImage, setEditImage] = useState(false);
   const [editName, setEditName] = useState(false);
   const [editCounty, setEditCounry] = useState(false);
   const [editPhone, setEditPhone] = useState(false);
   const [editEmail, setEditEmail] = useState(false);
   const [whatsapp, setWhatsapp] = useState(props.whatsapp_opt_in);
-  const [emailVerifyHover, setEmailVerifyHover] = useState(false);
-  const [phoneVerifyHover, setPhoneVerifyHover] = useState(false);
   const [file, setFile] = useState(null);
-  const [fileSizeError, setFileSizeError] = useState(false);
+  const [photoError, setPhotoError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [flash, setFlash] = useState("");
   const fileInputRef = useRef();
   const imageEditRef = useRef();
-  const {trackUserAccountUpdate} = useAnalytics()
+  const flashTimer = useRef();
+  const { trackUserAccountUpdate } = useAnalytics();
+
+  const hasImage = !!props.image && props.image !== "null";
 
   // Logged in with no profile picture → colored letter avatar (matches the bot
   // Sidebar). The color is persisted per-user in localStorage so it never changes.
-  const showColorAvatar =
-    !!props.token && (!props.image || props.image === "null");
+  const showColorAvatar = !!props.token && !hasImage;
   const [avatarColor, setAvatarColor] = useState(null);
   useEffect(() => {
     setAvatarColor(showColorAvatar ? getUserAvatarColor(props.name) : null);
@@ -121,7 +104,14 @@ const Profile = (props) => {
 
   useEffect(() => {
     props.getCountryCodes();
+    return () => clearTimeout(flashTimer.current);
   }, []);
+
+  const showFlash = (message) => {
+    setFlash(message);
+    clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setFlash(""), 2600);
+  };
 
   // Mirror the stored value (auth hydrates after mount), but only PUT when the
   // user actually toggles. This used to fire on mount too, re-saving
@@ -137,25 +127,17 @@ const Profile = (props) => {
       { name: props.name, country: props.country, whatsapp_opt_in: next },
       trackUserAccountUpdate
     );
+    showFlash(next ? "WhatsApp on" : "WhatsApp off");
   };
 
   useEffect(() => {
     if (!file) return;
-    const maxSize = 5 * 1024 * 1024;
-    let timeOut;
-    if (file && file.size > maxSize) {
-      setFileSizeError(true);
-      timeOut = setTimeout(() => {
-        setFileSizeError(false);
-      }, 10000);
+    if (file.size > MAX_PHOTO_BYTES) {
+      setPhotoError("That photo is too big. Keep it under 5 megabytes.");
       return;
     }
 
     onFileUpload();
-
-    return () => {
-      clearTimeout(timeOut);
-    };
   }, [file]);
 
   useEffect(() => {
@@ -169,11 +151,17 @@ const Profile = (props) => {
   }, []);
 
   const onFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const picked = e.target.files && e.target.files[0];
+    // Reset so picking the same file again still fires onChange.
+    e.target.value = "";
+    if (!picked) return;
+    setPhotoError(null);
+    setFile(picked);
   };
 
   const onFileUpload = async (remove = false) => {
     setEditImage(false);
+    setPhotoError(null);
 
     if (remove) {
       setLoading(true);
@@ -193,21 +181,18 @@ const Profile = (props) => {
             user_image: null,
           });
           setLoading(false);
-          setEditImage(false);
+          showFlash("Photo removed");
         })
         .catch((err) => {
           setLoading(false);
-          setEditImage(false);
+          setPhotoError("Couldn't remove your photo. Try again.");
           console.log("[ERROR][EditProfile:onFileUpload]: ", err.message);
         });
 
       return;
     }
 
-    if (!file) {
-      setEditImage(false);
-      return;
-    }
+    if (!file) return;
 
     setLoading(true);
 
@@ -224,313 +209,320 @@ const Profile = (props) => {
       .then((response) => {
         props.setUserDetails(response.data);
         setLoading(false);
-        setEditImage(false);
+        showFlash("Photo updated");
       })
       .catch((err) => {
         setLoading(false);
-        setEditImage(false);
+        setPhotoError("Couldn't upload that photo. Try again.");
         console.log("[ERROR][EditProfile:onFileUpload]: ", err.message);
       });
   };
 
   const triggerFileInput = () => {
+    setEditImage(false);
     fileInputRef.current.click();
   };
 
+  // With a photo there's something to remove, so offer the menu; without one
+  // the only action is uploading, so go straight to the file picker.
+  const onPhotoButton = () => {
+    if (loading) return;
+    if (hasImage) setEditImage((prev) => !prev);
+    else triggerFileInput();
+  };
 
-  const userData={
-    name:props.name,
-    whatsapp_opt_in:props.whatsapp_opt_in,
-    country:props.country
-  }
+  const userData = {
+    name: props.name,
+    whatsapp_opt_in: props.whatsapp_opt_in,
+    country: props.country,
+  };
+
+  const hasCountry =
+    props.country && props.country !== "" && props.country !== "null";
+  const countryFlag = hasCountry ? props.CountryCodes?.[props.country]?.img : null;
 
   return (
-    <Container className="border-thin">
-      <OverviewContainer>
-        <ImageNameContainer className={`center-div`}>
-          <div className={`relative ${loading && "animate-pulse"}`}>
-            {showColorAvatar ? (
-              <div
-                style={{
-                  width: "10rem",
-                  height: "10rem",
-                  borderRadius: "50%",
-                  background: avatarColor || "#2563EB",
-                  color: "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: 700,
-                  fontSize: "4rem",
-                  textTransform: "uppercase",
-                  userSelect: "none",
-                }}
+    <section className={styles.card}>
+      <div className={styles.head}>
+        <div className={styles.headText}>
+          <span className={styles.eyebrow}>Account</span>
+          <h1 className={styles.title}>
+            Your <span className={styles.serif}>profile</span>
+          </h1>
+        </div>
+        {flash ? (
+          <span className={styles.flash} role="status">
+            ✓ {flash}
+          </span>
+        ) : null}
+      </div>
+
+      <div className={styles.identity}>
+        <div ref={imageEditRef} className={styles.avatarWrap}>
+          <div className={styles.avatarRing}>
+            <div
+              className={`${styles.avatar} ${loading ? "animate-pulse" : ""}`}
+            >
+              {showColorAvatar ? (
+                <div
+                  className={styles.avatarInitial}
+                  style={{ background: avatarColor || "#2563EB" }}
+                >
+                  {getUserInitial(props.name)}
+                </div>
+              ) : (
+                <ImageLoader
+                  borderRadius="50%"
+                  url={hasImage ? props.image : "media/icons/navigation/profile-user.png"}
+                  width="100%"
+                  height="100%"
+                  widthmobile="100%"
+                  heightmobile="100%"
+                  dimesions={{ width: 1600, height: 1600 }}
+                  dimensionsMobile={{ width: 1600, height: 1600 }}
+                  noPlaceholder={true}
+                />
+              )}
+              {loading ? <div className={styles.avatarBusy} /> : null}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onPhotoButton}
+            className={styles.photoButton}
+            aria-haspopup={hasImage ? "menu" : undefined}
+            aria-expanded={hasImage ? editImage : undefined}
+          >
+            <LuCamera size={14} />
+            Edit
+          </button>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={onFileChange}
+            className="hidden"
+          ></input>
+
+          {editImage && (
+            <div className={styles.photoMenu} role="menu">
+              <button
+                type="button"
+                role="menuitem"
+                onClick={triggerFileInput}
+                className={styles.menuItem}
               >
-                {getUserInitial(props.name)}
+                Upload new photo
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => onFileUpload(true)}
+                className={`${styles.menuItem} ${styles.menuItemDanger}`}
+              >
+                Remove photo
+              </button>
+            </div>
+          )}
+        </div>
+
+        {photoError ? (
+          <div className={styles.photoError}>{photoError}</div>
+        ) : null}
+
+        {editName ? (
+          <div className={styles.identityEditor}>
+            <EditInput
+              name="name"
+              type="text"
+              text={props.name}
+              closeEdit={setEditName}
+              onSaved={() => showFlash("Name saved")}
+              userData={userData}
+            />
+          </div>
+        ) : (
+          <div className={styles.nameLine}>
+            <p className={styles.name}>{props.name}</p>
+            <EditButton title="Edit name" onClick={() => setEditName(true)} />
+          </div>
+        )}
+
+        {editCounty ? (
+          <div className={styles.identityEditor}>
+            <EditInput
+              name="country"
+              type="text"
+              text={props.country ? props.country : ""}
+              closeEdit={setEditCounry}
+              onSaved={() => showFlash("Country saved")}
+              userData={userData}
+            />
+          </div>
+        ) : hasCountry ? (
+          <div className={styles.countryLine}>
+            {countryFlag ? (
+              <span className={styles.flag}>
+                <img src={countryFlag} alt="" />
+              </span>
+            ) : null}
+            <span className={styles.country}>{props.country}</span>
+            <EditButton
+              small
+              title="Edit country"
+              onClick={() => setEditCounry(true)}
+            />
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setEditCounry(true)}
+            className={styles.addLink}
+          >
+            Add your country
+          </button>
+        )}
+      </div>
+
+      <div className={styles.details}>
+        <div className={styles.row}>
+          <div className={styles.label}>
+            <LuPhone size={13} />
+            Contact number
+          </div>
+          <div className={styles.value}>
+            {editPhone ? (
+              <div className={styles.rowEditor}>
+                <EditInput
+                  name="phone"
+                  type="text"
+                  text={props.phone}
+                  closeEdit={setEditPhone}
+                  onSaved={() => showFlash("Number verified")}
+                  userData={userData}
+                />
               </div>
             ) : (
-              <ImageLoader
-                borderRadius="50%"
-                url={
-                  props.image !== "null" && props.image !== null
-                    ? props.image
-                    : "media/icons/navigation/profile-user.png"
-                }
-                width="10rem"
-                height="10rem"
-                dimesions={{ width: 1600, height: 1600 }}
-                dimensionsMobile={{ width: 1600, height: 1600 }}
-                noPlaceholder={true}
-              />
+              <>
+                <div className={styles.valueLine}>
+                  <span
+                    className={`${styles.valueText} ${
+                      props.phone ? "" : styles.valueEmpty
+                    }`}
+                  >
+                    {props.phone ? formatPhone(props.phone) : "Add your number"}
+                  </span>
+                  {props.is_phone_verified ? (
+                    <VerifiedBadge title="Verified" />
+                  ) : (
+                    <UnverifiedCta
+                      onVerify={() => setEditPhone(true)}
+                      className={styles.verifyInline}
+                    />
+                  )}
+                  <EditButton
+                    title="Change number"
+                    onClick={() => setEditPhone(true)}
+                  />
+                </div>
+                {!props.is_phone_verified ? (
+                  <UnverifiedCta
+                    onVerify={() => setEditPhone(true)}
+                    className={styles.verifyBelow}
+                  />
+                ) : null}
+              </>
             )}
-
-            <div
-              ref={imageEditRef}
-              className="absolute top-[70%] left-[75%] flex flex-col gap-1 w-full"
-            >
-              <div
-                onClick={() => setEditImage((prev) => !prev)}
-                className="w-fit py-1 px-2 bg-black cursor-pointer text-white text-xs border-2 border-gray-600 rounded-md flex flex-row gap-1 items-center"
-              >
-                <MdEdit /> Edit
-              </div>
-
-              {editImage && (
-                <div className="w-fit flex flex-col gap-1 py-2 text-sm text-white bg-black border-2 border-gray-600 rounded-md cursor-pointer">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    onChange={onFileChange}
-                    className="hidden"
-                  ></input>
-                  {fileSizeError && (
-                    <div className="w-full text-xs text-red-500 px-1 text-nowrap">
-                      File size exceeds 5MB!
-                    </div>
-                  )}
-                  <div
-                    onClick={triggerFileInput}
-                    className="cursor-pointer hover:bg-gray-700 py-1 px-3"
-                  >
-                    Upload a photo
-                  </div>
-                  <div
-                    onClick={() => onFileUpload(true)}
-                    className="cursor-pointer hover:bg-gray-700 py-1 px-3"
-                  >
-                    Remove photo
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
+        </div>
 
-          {editName ? (
-            <div className="w-full flex items-center justify-center py-[12px]">
-              <EditInput
-                name="name"
-                type="text"
-                text={props.name}
-                closeEdit={setEditName}
-                userData={userData}
-              />
-            </div>
-          ) : (
-            <div className="flex flex-row gap-2 items-center">
-              <Name className="">{props.name}</Name>
-              <MdEdit
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditName(true);
-                }}
-                className="text-xl cursor-pointer"
-              />
-            </div>
-          )}
-
-          {editCounty ? (
-            <div className="w-full flex items-center justify-center py-[12px]">
-              <EditInput
-                name="country"
-                type="text"
-                text={props.country ? props.country : ""}
-                closeEdit={setEditCounry}
-                userData={userData}
-              />
-            </div>
-          ) : props.country &&
-            props.country !== "" &&
-            props.country !== "null" ? (
-            <div className="flex flex-row items-center gap-2">
-              <Image
-                height="29"
-                width="29"
-                objectFit="cover"
-                style={{ display: props.CountryCodes ? "block" : "none" }}
-                src={
-                  props.CountryCodes
-                    ? props.CountryCodes[props.country]?.img
-                    : ""
-                }
-              ></Image>
-              {props.country}
-              <MdEdit
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditCounry(true);
-                }}
-                className="text-xl cursor-pointer"
-              />
-            </div>
-          ) : (
-            <div
-              onClick={() => setEditCounry(true)}
-              className="text-sm text-blue underline cursor-pointer"
-            >
-              Add your country
-            </div>
-          )}
-        </ImageNameContainer>
-
-        {!isPageWide ? <hr style={{ margin: "0" }} /> : null}
-
-        <DetailsContainer>
-          {isPageWide ? (
-            <SectionHeading
-              className=""
-              style={{ fontWeight: "700", marginBottom: "2rem" }}
-            >
-              Your Profile
-            </SectionHeading>
-          ) : null}
-
-          <DetailHeading className="">
-            <div>Contact Number</div>
-          </DetailHeading>
-
-          {editPhone ? (
-            <div className="w-full flex flex-row justify-start items-center gap-3 mb-4">
-              <EditInput
-                name="phone"
-                type="text"
-                text={props.phone}
-                closeEdit={setEditPhone}
-                userData={userData}
-              />
-            </div>
-          ) : (
-            <div className="flex flex-row justify-start items-center gap-3 mb-4">
-              <DetailText style={{ marginBottom: "0" }}>
-                {props.phone}
-              </DetailText>
-
-              <MdEdit
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditPhone(true);
-                }}
-                className="text-xl cursor-pointer"
-              />
-
-              {props.is_phone_verified ? (
-                <div
-                  onMouseOver={() => setPhoneVerifyHover(true)}
-                  onMouseOut={() => setPhoneVerifyHover(false)}
-                  className="relative group"
-                >
-                  {phoneVerifyHover && (
-                    <div className="absolute text-xs text-gray-600 right-[50%] translate-x-[50%] -top-4 transition-all">
-                      Verified
-                    </div>
-                  )}
-
-                  <MdVerified className="text-2xl text-green-500" />
-                </div>
-              ) : (
-                <div
-                  onClick={() => setEditPhone(true)}
-                  className="text-sm text-white cursor-pointer bg-red-500 px-2 py-1 rounded-md"
-                >
-                  Verify Now
-                </div>
-              )}
-            </div>
-          )}
-
-          <div className="flex flex-row items-center justify-start gap-3 mb-4">
-            <div
+        <div className={styles.row}>
+          <div className={`${styles.label} ${styles.labelDesktopOnly}`}>
+            <LuMessageCircle size={13} />
+            WhatsApp
+          </div>
+          <div className={styles.value}>
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={!!whatsapp}
               onClick={toggleWhatsapp}
-              className={`w-5 h-5 flex items-center justify-center rounded-md border-2 border-black cursor-pointer ${
-                whatsapp && "bg-black"
-              }`}
+              className={styles.checkbox}
             >
-              {whatsapp && <MdDone className="text-lg text-white" />}
-            </div>
-
-            <DetailHeading
-              className="text-xs w-fit"
-              style={{ marginBottom: "0", fontSize: "15px" }}
-            >
-              Receive booking updates on WhatsApp?
-            </DetailHeading>
+              <span
+                className={`${styles.checkboxBox} ${
+                  whatsapp ? styles.checkboxOn : ""
+                }`}
+              >
+                <LuCheck size={13} strokeWidth={3} />
+              </span>
+              <span>Receive booking updates on WhatsApp</span>
+            </button>
           </div>
+        </div>
 
-          <DetailHeading className="" style={{ clear: "both" }}>
-            <div>Email</div>
-          </DetailHeading>
-
-          {editEmail ? (
-            <div className="w-full flex items-start justify-center">
-              <EditInput
-                name="email"
-                type="email"
-                text={props.email}
-                closeEdit={setEditEmail}
-                userData={userData}
-              />
-            </div>
-          ) : (
-            <div className="flex flex-row gap-3 justify-start items-center">
-              <DetailText style={{ marginBottom: "0" }}>
-                {props.email}
-              </DetailText>
-
-              <MdEdit
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditEmail(true);
-                }}
-                className="text-xl cursor-pointer"
-              />
-
-              {props.is_email_verified ? (
-                <div
-                  onMouseOver={() => setEmailVerifyHover(true)}
-                  onMouseOut={() => setEmailVerifyHover(false)}
-                  className="relative group"
-                >
-                  {emailVerifyHover && (
-                    <div className="absolute text-xs text-nowrap text-gray-600 right-[50%] translate-x-[50%] -top-4 transition-all">
-                      Last Verified on{" "}
-                      {new Date(props.email_last_verified_on).toDateString()}
-                    </div>
+        <div className={styles.row}>
+          <div className={styles.label}>
+            <LuMail size={13} />
+            Email
+          </div>
+          <div className={styles.value}>
+            {editEmail ? (
+              <div className={styles.rowEditor}>
+                <EditInput
+                  name="email"
+                  type="email"
+                  text={props.email}
+                  closeEdit={setEditEmail}
+                  onSaved={() => showFlash("Email verified")}
+                  userData={userData}
+                />
+              </div>
+            ) : (
+              <>
+                <div className={styles.valueLine}>
+                  <span
+                    className={`${styles.valueText} ${
+                      props.email ? "" : styles.valueEmpty
+                    }`}
+                  >
+                    {props.email || "Add your email"}
+                  </span>
+                  {props.is_email_verified ? (
+                    <VerifiedBadge
+                      title={
+                        props.email_last_verified_on
+                          ? `Last verified on ${new Date(
+                              props.email_last_verified_on
+                            ).toDateString()}`
+                          : "Verified"
+                      }
+                    />
+                  ) : (
+                    <UnverifiedCta
+                      onVerify={() => setEditEmail(true)}
+                      className={styles.verifyInline}
+                    />
                   )}
-
-                  <MdVerified className="text-2xl text-green-500" />
+                  <EditButton
+                    title="Change email"
+                    onClick={() => setEditEmail(true)}
+                  />
                 </div>
-              ) : (
-                <div
-                  onClick={() => setEditEmail(true)}
-                  className="text-sm text-white cursor-pointer bg-red-500 px-2 py-1 rounded-md"
-                >
-                  Verify Now
-                </div>
-              )}
-            </div>
-          )}
-        </DetailsContainer>
-      </OverviewContainer>
-    </Container>
+                {!props.is_email_verified ? (
+                  <UnverifiedCta
+                    onVerify={() => setEditEmail(true)}
+                    className={styles.verifyBelow}
+                  />
+                ) : null}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 
@@ -553,9 +545,8 @@ const mapStateToPros = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onSetProfilePic: (image) => dispatch(authaction.uploadProfilePic(image,trackUserAccountUpdate)),
-    changeUserDetails: (payload,trackUserAccountUpdate) =>
-      dispatch(authaction.changeUserDetails(payload,trackUserAccountUpdate)),
+    changeUserDetails: (payload, trackUserAccountUpdate) =>
+      dispatch(authaction.changeUserDetails(payload, trackUserAccountUpdate)),
     setUserDetails: (payload) => dispatch(authaction.setUserDetails(payload)),
     getCountryCodes: () => dispatch(getCountryCodes()),
   };

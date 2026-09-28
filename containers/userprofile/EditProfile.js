@@ -1,13 +1,6 @@
-import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
-import styled from "styled-components";
-import { MdDone } from "react-icons/md";
-import OTPInput from "react-otp-input";
-import { BiError } from "react-icons/bi";
-import { FiChevronDown } from "react-icons/fi";
-import { LuImagePlus } from "react-icons/lu";
-import { RiArrowDropDownLine } from "react-icons/ri";
+import { LuChevronDown, LuImagePlus } from "react-icons/lu";
 import CountryCodeDropdown from "../../components/userauth/CountryDropdown";
 import * as authaction from "../../store/actions/auth";
 import axiosuserinstance, {
@@ -20,68 +13,11 @@ import {
   splitPhone,
   toNationalDigits,
 } from "../../utils/phone";
+import styles from "./Profile.module.scss";
 
 // Country preselected in the phone picker when the stored number can't be
 // parsed and the profile has no country.
 const DEFAULT_COUNTRY = "India";
-
-const CountryCodeContainer = styled.div`
-  position: relative;
-  width: 150px;
-  height: 3.1rem;
-  .CountryInput {
-    display: grid;
-    border: 2px solid #d0d5dd;
-    border-radius: 0.5rem;
-    grid-template-columns: 1fr 1fr 1fr 0.5fr;
-    padding-inline: 0.2rem;
-    gap: 0.4rem;
-    height: 100%;
-    paddding-left: 10%;
-  }
-  img {
-    margin-block: auto;
-  }
-  p {
-    margin: auto;
-  }
-  svg {
-    margin-block: auto;
-    font-size: 1.3rem;
-    margin-left: -5px;
-  }
-`;
-
-const CountryImg = styled(Image)`
-  height: 1.5rem;
-  alt: "";
-`;
-
-const OtpContainer = styled.div`
-  div {
-    width: 60%;
-    display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr 1fr !important;
-    gap: 0.8rem;
-  }
-  .otpBox {
-    width: 100% !important;
-    border: 1px solid #d0d5dd;
-    border-radius: 8px;
-    height: 3rem;
-    box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
-  }
-`;
-
-const ErrorText = styled.div`
-  color: red;
-  font-size: 13px;
-  margin-top: 5px;
-  margin-left: 5px;
-  height: 1rem;
-  display: flex;
-  align-items: center;
-`;
 
 const mapStateToProps = (state) => {
   return {
@@ -106,16 +42,28 @@ const extractUser = (res) =>
   res?.data?.data?.user ?? res?.data?.user ?? res?.data?.data ?? {};
 
 // First readable message from a DRF-style error body, for a given field.
+// Known backend messages, reworded for people (and so "OTP" never shows up
+// in all caps on screen).
+const FRIENDLY_ERRORS = {
+  "This phone number is associated with another account!":
+    "That number's already on another account. Try a different one.",
+  "Invalid otp provided.": "That code doesn't match. Check your messages and try again.",
+  "This email is associated with another account!":
+    "That email's already on another account. Try a different one.",
+  "Invalid OTP!": "That code doesn't match. Check your inbox and try again.",
+  "OTP not found!": "That code has expired. Send a new one.",
+};
+
 const apiError = (err, field) => {
   const body = err?.response?.data;
   const pick = (v) => (Array.isArray(v) ? v[0] : v);
-  return (
+  const message =
     pick(body?.[field]) ||
     pick(body?.errors?.[0]?.[field]) ||
     pick(body?.detail) ||
     pick(body?.message) ||
-    (err?.response ? null : "Network error, please try again")
-  );
+    (err?.response ? null : "Network error, please try again");
+  return FRIENDLY_ERRORS[message] || message;
 };
 
 export const EditInput = connect(
@@ -129,10 +77,12 @@ export const EditInput = connect(
     name,
     text,
     closeEdit,
+    onSaved,
     setUserDetails,
     userData,
   }) => {
     const isPhone = name === "phone";
+    const isContact = isPhone || name === "email";
     // Phone is edited as dial code (flag picker) + local digits. Parse the
     // stored number once, preferring the user's own country for shared codes.
     const initialPhone = isPhone
@@ -268,6 +218,7 @@ export const EditInput = connect(
           // Fall back to what we sent if the response omits the field.
           setUserDetails({ ...changes, ...pickProfileFields(user) });
           setLoading(false);
+          onSaved?.();
           closeEdit(false);
         })
         .catch((err) => {
@@ -294,7 +245,7 @@ export const EditInput = connect(
         })
         .catch((err) => {
           setLoading(false);
-          setError(apiError(err, "phone") || "Couldn't send OTP, try again");
+          setError(apiError(err, "phone") || "Couldn't send the code. Try again.");
         });
     };
 
@@ -314,7 +265,7 @@ export const EditInput = connect(
         })
         .catch((err) => {
           setLoading(false);
-          setError(apiError(err, "email") || "Couldn't send OTP, try again");
+          setError(apiError(err, "email") || "Couldn't send the code. Try again.");
         });
     };
 
@@ -323,136 +274,140 @@ export const EditInput = connect(
       setExtension(country);
     };
 
+    const primaryLabel = loading
+      ? isContact
+        ? "Sending…"
+        : "Saving…"
+      : isContact
+      ? "Send code"
+      : "Save";
+
+    // Keep the code step up while a resend is in flight (handlePhone/Email
+    // clear optSent first), so the row doesn't flash back to the input.
+    const showOtp = isContact && !!submitted && (optSent || loading);
+
     return (
-      <div
-        ref={ref}
-        className="w-full flex flex-col items-center justify-center gap-2"
-      >
-        <div
-          className={`w-full flex flex-row justify-start items-center gap-3 ${
-            name === "name" || name === "country"
-              ? "justify-center"
-              : "justify-start"
-          }`}
-        >
-          {isPhone && (
-            <div className="relative">
-              <div
-                className={`w-fit px-2 py-[0.64rem] flex flex-row gap-2 items-center border-2 border-[#d0d5dd] rounded-md cursor-pointer ${
-                  loading && "opacity-25"
-                }`}
-                onClick={() => !loading && setOpenCountryCodeOption(true)}
-              >
-                {CountryCodes?.[extension]?.img && (
-                  <CountryImg
-                    height="29"
-                    width="29"
-                    objectFit="cover"
-                    alt={extension}
-                    src={CountryCodes[extension].img}
-                  ></CountryImg>
-                )}
-                <span className="text-sm">{dialCode}</span>
-                <FiChevronDown />
-              </div>
-              {openCountryCodeOption && (
-                <div className="absolute top-[110%] left-0 z-[1999]">
-                  <CountryCodeDropdown
-                    onClose={() => setOpenCountryCodeOption(false)}
-                    CountryCodes={CountryCodes}
-                    handleExtensionChangeOption={handleExtensionChangeOption}
-                    setOpenCountryCodeOption={setOpenCountryCodeOption}
-                  />
+      <div ref={ref} className={styles.editor}>
+        {showOtp ? (
+          <OPTInput
+            name={name}
+            token={token}
+            phone={submitted}
+            email={submitted}
+            setUserDetails={setUserDetails}
+            closeEdit={closeEdit}
+            onSaved={onSaved}
+            onResend={handleSave}
+            onBack={resetPendingOtp}
+            resending={loading}
+          />
+        ) : (
+          <>
+            <div className={styles.editorRow}>
+              {isPhone && (
+                <div className="relative">
+                  <button
+                    type="button"
+                    disabled={loading}
+                    className={styles.dialCode}
+                    onClick={() => setOpenCountryCodeOption(true)}
+                  >
+                    {CountryCodes?.[extension]?.img && (
+                      <img alt={extension} src={CountryCodes[extension].img} />
+                    )}
+                    <span>{dialCode}</span>
+                    <LuChevronDown size={16} />
+                  </button>
+                  {openCountryCodeOption && (
+                    <div className={styles.popover}>
+                      <CountryCodeDropdown
+                        onClose={() => setOpenCountryCodeOption(false)}
+                        CountryCodes={CountryCodes}
+                        handleExtensionChangeOption={handleExtensionChangeOption}
+                        setOpenCountryCodeOption={setOpenCountryCodeOption}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          )}
 
-          <div className="w-[60%] flex flex-col relative">
-            <input
-              autoFocus
-              disabled={loading || name === "country"}
-              name={name}
-              type={isPhone ? "tel" : type}
-              inputMode={isPhone ? "tel" : undefined}
-              placeholder={isPhone ? getPhonePlaceholder(extension) : undefined}
-              value={value ?? ""}
-              onChange={(e) => onChangeValue(e)}
-              onKeyDown={(e) => handleEnterKey(e)}
-              className={`w-full border-2 border-[#d0d5dd] rounded-md px-2 py-[0.64rem] focus:outline-none ${
-                loading && "opacity-25"
-              }`}
-            ></input>
-            {name === "country" && (
-              // The input is disabled (pick-only), so let a click anywhere on
-              // it open the list rather than only the small arrow.
-              <div
-                className="absolute inset-0 cursor-pointer"
-                onClick={() => !loading && setOpenCountryMenu(true)}
-              />
-            )}
-            {name === "country" && (
-              <div className="absolute right-4 top-[50%] translate-y-[-50%] pointer-events-none">
-                <RiArrowDropDownLine className="text-[30px]"
-                />
-              </div>
-            )}
-
-            {error && (
-              <ErrorText className="absolute bottom-[-20px]">
-                <BiError style={{ fontSize: "1rem" }} />
-                <span style={{ marginLeft: "2px", marginTop: "2px" }}>
-                  {error}
-                </span>
-              </ErrorText>
-            )}
-
-            {name === "country" && openCountryMenu && (
-              <div className="absolute z-[1999] top-[110%] w-full h-[46vh]">
-                <CountryMenu
-                  setValue={(country) => {
-                    // Picking a country is the save — no extra ✓ press.
-                    setValue(country);
-                    if (country && country !== userData?.country) {
-                      handleProfilePut({ country });
-                    } else {
-                      closeEdit(false);
+              <div className={styles.editorField}>
+                {name === "country" ? (
+                  // Pick-only: the whole field opens the list, and picking a
+                  // country is the save.
+                  <button
+                    type="button"
+                    autoFocus
+                    disabled={loading}
+                    className={`${styles.input} ${styles.selectTrigger}`}
+                    onClick={() => setOpenCountryMenu(true)}
+                  >
+                    {CountryCodes?.[value]?.img && (
+                      <img alt="" src={CountryCodes[value].img} />
+                    )}
+                    <span>{value || "Pick your country"}</span>
+                  </button>
+                ) : (
+                  <input
+                    autoFocus
+                    disabled={loading}
+                    name={name}
+                    type={isPhone ? "tel" : type}
+                    inputMode={isPhone ? "tel" : undefined}
+                    placeholder={
+                      isPhone
+                        ? getPhonePlaceholder(extension)
+                        : name === "email"
+                        ? "you@example.com"
+                        : "Your full name"
                     }
-                  }}
-                  setOpenCountryMenu={setOpenCountryMenu}
-                  CountryCodes={CountryCodes}
-                />
+                    value={value ?? ""}
+                    onChange={(e) => onChangeValue(e)}
+                    onKeyDown={(e) => handleEnterKey(e)}
+                    className={styles.input}
+                  ></input>
+                )}
+                {name === "country" && (
+                  <LuChevronDown size={16} className={styles.selectChevron} />
+                )}
+
+                {name === "country" && openCountryMenu && (
+                  <CountryMenu
+                    setValue={(country) => {
+                      setValue(country);
+                      if (country && country !== userData?.country) {
+                        handleProfilePut({ country });
+                      } else {
+                        closeEdit(false);
+                      }
+                    }}
+                    setOpenCountryMenu={setOpenCountryMenu}
+                    CountryCodes={CountryCodes}
+                  />
+                )}
               </div>
-            )}
-          </div>
 
-          {loading ? (
-            <div className="w-6 h-6 rounded-full animate-spin border-t-2 border-black"></div>
-          ) : optSent ? (
-            <button
-              onClick={handleSave}
-              className="text-sm text-blue cursor-pointer underline"
-            >
-              Resend OTP
-            </button>
-          ) : (
-            <MdDone onClick={handleSave} className="text-2xl cursor-pointer" />
-          )}
-        </div>
+              <div className={styles.editorActions}>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={handleSave}
+                  className={styles.primaryButton}
+                >
+                  {primaryLabel}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => closeEdit(false)}
+                  className={styles.ghostButton}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
 
-        {optSent && submitted && (
-          <div className="flex flex-col gap-2">
-            <div className="text-gray-500">OTP has been sent to {submitted}</div>
-
-            <OPTInput
-              name={name}
-              token={token}
-              phone={submitted}
-              email={submitted}
-              setUserDetails={setUserDetails}
-              closeEdit={closeEdit}
-            />
-          </div>
+            {error && <div className={styles.editorError}>{error}</div>}
+          </>
         )}
       </div>
     );
@@ -477,25 +432,53 @@ const pickProfileFields = (user) =>
     return acc;
   }, {});
 
-const OPTInput = ({ name, token, phone, email, setUserDetails, closeEdit }) => {
+const OPTInput = ({
+  name,
+  token,
+  phone,
+  email,
+  setUserDetails,
+  closeEdit,
+  onSaved,
+  onResend,
+  onBack,
+  resending,
+}) => {
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // A full code submits on its own; the Verify button is there for anyone who
+  // expects to press something.
   useEffect(() => {
-    if (value.length === 4) {
-      switch (name) {
-        case "phone":
-          handlePhoneOPT({ data: { phone, otp: value } });
-          break;
-        case "email":
-          handleEmailOPT({ otp: value });
-          break;
-        default:
-          return;
-      }
-    }
+    if (value.length === 4) submit();
   }, [value]);
+
+  const submit = () => {
+    if (loading) return;
+    if (value.length < 4) {
+      setError("Enter the 4-digit code.");
+      return;
+    }
+    switch (name) {
+      case "phone":
+        handlePhoneOPT({ data: { phone, otp: value } });
+        break;
+      case "email":
+        handleEmailOPT({ otp: value });
+        break;
+      default:
+        return;
+    }
+  };
+
+  const onFail = (err) => {
+    setLoading(false);
+    setValue("");
+    setError(
+      apiError(err, "otp") || "That code doesn't match. Check it and try again."
+    );
+  };
 
   const handlePhoneOPT = ({ data }) => {
     setLoading(true);
@@ -513,12 +496,10 @@ const OPTInput = ({ name, token, phone, email, setUserDetails, closeEdit }) => {
           ...pickProfileFields(extractUser(res)),
         });
         setLoading(false);
+        onSaved?.();
         closeEdit(false);
       })
-      .catch((err) => {
-        setLoading(false);
-        setError(apiError(err, "otp") || "OTP is not valid");
-      });
+      .catch(onFail);
   };
 
   const handleEmailOPT = ({ otp }) => {
@@ -541,33 +522,75 @@ const OPTInput = ({ name, token, phone, email, setUserDetails, closeEdit }) => {
           ...pickProfileFields(extractUser(res)),
         });
         setLoading(false);
+        onSaved?.();
         closeEdit(false);
       })
-      .catch((err) => {
-        setLoading(false);
-        setError(apiError(err, "otp") || "OTP is not valid");
-      });
+      .catch(onFail);
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <OtpContainer className={`${loading && "opacity-25"}`}>
-        <OTPInput
+    <>
+      <div className={styles.editorNote}>
+        Code sent to <b>{name === "phone" ? phone : email}</b>
+      </div>
+      <div className={styles.editorRow}>
+        <input
+          autoFocus
+          disabled={loading}
           value={value}
-          onChange={(otp) => setValue(otp)}
-          numInputs={4}
-          inputType="tel"
-          inputStyle="otpBox"
-          renderInput={(props) => <input {...props} />}
+          onChange={(e) => {
+            setValue(e.target.value.replace(/\D/g, "").slice(0, 4));
+            setError(null);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              submit();
+            }
+          }}
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          placeholder="0000"
+          aria-label="Verification code"
+          className={styles.otpInput}
         />
-      </OtpContainer>
-      {error && (
-        <ErrorText>
-          <BiError style={{ fontSize: "1rem" }} />
-          <span style={{ marginLeft: "2px", marginTop: "2px" }}>{error}</span>
-        </ErrorText>
-      )}
-    </div>
+        <div className={styles.editorActions}>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={submit}
+            className={styles.primaryButton}
+          >
+            {loading ? "Checking…" : "Verify"}
+          </button>
+          <button
+            type="button"
+            onClick={() => closeEdit(false)}
+            className={styles.ghostButton}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+      {error && <div className={styles.editorError}>{error}</div>}
+      <div className={styles.editorLinks}>
+        <button
+          type="button"
+          disabled={resending || loading}
+          onClick={onResend}
+          className={styles.textLink}
+        >
+          {resending ? "Sending…" : "Resend"}
+        </button>
+        <button
+          type="button"
+          onClick={onBack}
+          className={`${styles.textLink} ${styles.textLinkMuted}`}
+        >
+          {name === "phone" ? "Different number" : "Different email"}
+        </button>
+      </div>
+    </>
   );
 };
 
@@ -592,49 +615,27 @@ const CountryMenu = ({ CountryCodes, setOpenCountryMenu, setValue }) => {
   useEffect(() => {
     let Options = [];
 
-    if (search) {
-      const results = searchCountries(search);
+    const option = (key, country) => (
+      <button
+        type="button"
+        className={styles.countryOption}
+        key={key}
+        onClick={() => {
+          setValue(country.value), setOpenCountryMenu(false);
+        }}
+      >
+        <img alt="" loading="lazy" src={country.img} />
+        <span>{country.value}</span>
+      </button>
+    );
 
-      for (const country of results) {
-        Options.push(
-          <div
-            className="flex flex-row gap-3 items-center p-2 cursor-pointer"
-            key={country.value}
-            value={country.value}
-            onClick={() => {
-              setValue(country.value), setOpenCountryMenu(false);
-            }}
-          >
-            <CountryImg
-              height="29"
-              width="29"
-              objectFit="cover"
-              src={country.img}
-            ></CountryImg>
-            <p className="m-0">{country.value}</p>
-          </div>
-        );
+    if (search) {
+      for (const country of searchCountries(search)) {
+        Options.push(option(country.value, country));
       }
     } else {
       for (const country in CountryCodes) {
-        Options.push(
-          <div
-            className="flex flex-row gap-3 items-center p-2 cursor-pointer"
-            key={country}
-            value={country}
-            onClick={() => {
-              setValue(country), setOpenCountryMenu(false);
-            }}
-          >
-            <CountryImg
-              height="29"
-              width="29"
-              objectFit="cover"
-              src={CountryCodes[country].img}
-            ></CountryImg>
-            <p className="m-0">{CountryCodes[country].value}</p>
-          </div>
-        );
+        Options.push(option(country, CountryCodes[country]));
       }
     }
 
@@ -658,17 +659,15 @@ const CountryMenu = ({ CountryCodes, setOpenCountryMenu, setValue }) => {
   }
 
   return (
-    <div
-      ref={ref}
-      className="z-[2999] bg-white w-full h-full border-2 rounded-md p-2 pt-0 overflow-auto"
-    >
-      <div className="sticky top-0 w-full bg-white p-2">
+    <div ref={ref} className={styles.countryMenu}>
+      <div className={styles.countryMenuSearch}>
         <input
+          autoFocus
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           type="text"
-          className="w-full p-2 border-2 rounded-lg focus:outline-none"
-          placeholder="Search"
+          className={styles.input}
+          placeholder="Search countries"
         ></input>
       </div>
       {countries}
