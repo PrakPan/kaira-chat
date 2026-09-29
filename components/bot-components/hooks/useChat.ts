@@ -65,6 +65,15 @@ export interface Message {
    *  collapsed "Thought for {reasoningDuration}s" label above the message. */
   reasoningDuration?: number;
   attachments?: MessageAttachment[];
+  /** For `type: "login_card"` only: the booking credit to show ("£16"), from
+   *  the `prompt_login` payload or the thread's route widget. */
+  loginOffer?: string;
+  /** For `type: "login_card"` only: currency to convert the default ₹5,000
+   *  credit into when chatkit quoted no offer (chatkit's, else ours). */
+  loginCurrency?: string;
+  /** For `type: "login_card"` only: country chatkit attached to `prompt_login`,
+   *  preferred over our own lookup for the phone-code preselect. */
+  loginLocation?: { country?: string; country_code?: string };
   /** Per-message sender identity from the thread-detail API (threads.get_by_id).
    *  `senderUserId` is the `user_id` that authored the message; `customerName`
    *  is the `customer_name` the API attaches to it. On reload these take
@@ -98,6 +107,8 @@ export interface UserLocationData {
   country: string;
   continent: string;
   source: string;
+  /** ISO code ("INR", "GBP") the backend prices P1 / P2 estimates in. */
+  currency?: string;
 }
 
 export interface ClientEffect {
@@ -304,7 +315,7 @@ function buildSubsequentMessageBody(
     type: "threads.add_user_message",
     params: { input: buildInput(text, opts.attachmentIds), thread_id: opts.threadId },
     model: opts.model,
-    // user_location: opts.userLocation,
+    user_location: opts.userLocation,
     domain_key: opts.domainKey,
     platform: getPlatform(),
     ...buildAuthFields(opts),
@@ -612,6 +623,7 @@ const FALLBACK_LOCATION: UserLocationData = {
   country: "India",
   continent: "Asia",
   source: "default",
+  currency: "INR",
 };
 
 // ─── Pure state-update helpers ────────────────────────────────────────────────
@@ -877,7 +889,7 @@ export function useChat({
         domain_key: domainKey,
         model,
         platform: getPlatform(),
-        // user_location: loc,
+        user_location: loc,
         ...buildAuthFields({
           authToken: authTokenRef.current,
           userId: userIdRef.current,

@@ -23,6 +23,13 @@ type BotLoginModalProps = {
   onSkipLogin?: () => void;
   zIndex?: number | string;
   hideloginclose?: boolean;
+  /** Booking credit exactly as the backend quoted it ("£16"). Omitted → the
+   *  offer chatkit last quoted on this device, else ₹5,000 converted into
+   *  `offerCurrency` (default: the visitor's site-wide currency). */
+  offerAmount?: string;
+  offerCurrency?: string;
+  /** Outranks the site-wide IP location for the phone country (see OtpCard). */
+  preferredLocation?: { country?: string; country_code?: string } | null;
 };
 
 const SHEET_ANIM_MS = 280;
@@ -689,6 +696,9 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
       itineraryId={props.itinary_id}
       onVerified={handleVerified}
       dropdownZIndex={Number(z) + 5}
+      offerAmount={props.offerAmount}
+      offerCurrency={props.offerCurrency}
+      preferredLocation={props.preferredLocation}
     />
   );
 

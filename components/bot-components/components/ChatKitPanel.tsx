@@ -51,7 +51,18 @@ import { updateIntakeForm } from "../../../store/actions/intakeForm";
 import { updatePricingForm } from "../../../store/actions/pricingForm";
 import IntakeFormCard from "./IntakeForm";
 import ThemeIntakeForm from "./ThemeIntakeForm/ThemeIntakeForm";
-import { WidgetThemeProvider, resolveSupplierHotelId } from "./WidgetRenderer";
+import {
+  WidgetThemeProvider,
+  resolveSupplierHotelId,
+  isRouteWidget,
+  readRouteMeta,
+  currencyCodeFor,
+  parseRouteMetaLines,
+  stripRouteMetaLines,
+  formatOfferAmount,
+  type RouteMeta,
+} from "./WidgetRenderer";
+import { rememberLoginOffer } from "../lib/loginOffer";
 import type {
   ThemeForm,
   ThemeFormSubmission,
@@ -391,49 +402,6 @@ export interface TravellerStoryIntro {
   prompt: string;
 }
 
-function useUserLocationData() {
-  const [userLocationData, setUserLocationData] =
-    useState<UserLocationData | null>(null);
-  const [isLoadingLocation, setIsLoadingLocation] = useState(true);
-
-  useEffect(() => {
-    const fetch_ = async () => {
-      try {
-        const cached = localStorage.getItem("userLocationData");
-        if (cached) {
-          setUserLocationData(JSON.parse(cached));
-          setIsLoadingLocation(false);
-          return;
-        }
-        const ipRes = await fetch("https://api.ipify.org?format=json");
-        const { ip } = await ipRes.json();
-        const locRes = await fetch(
-          `${MERCURY_HOST}/api/v1/geos/search/user_location/?ip=${ip}`,
-        );
-        const data: UserLocationData = await locRes.json();
-        localStorage.setItem("userLocationData", JSON.stringify(data));
-        setUserLocationData(data);
-      } catch {
-        setUserLocationData({
-          text: "Unknown Location",
-          place_id: "",
-          types: [],
-          lat: 0,
-          long: 0,
-          country: "",
-          continent: "",
-          source: "fallback",
-        });
-      } finally {
-        setIsLoadingLocation(false);
-      }
-    };
-    fetch_();
-  }, []);
-
-  return { userLocationData, isLoadingLocation };
-}
-
 // Message types the thread renders as cards of their own rather than through
 // MessageBubble. They carry no Kaira badge and interrupt her run.
 const CARD_MESSAGE_TYPES = new Set<Message["type"]>([
@@ -480,6 +448,55 @@ function clearStaleSessionStorage() {
 // `prompt_login` reasons meaning "the token you sent is no good" (as opposed to
 // "you're anonymous and this step needs an account").
 const REJECTED_TOKEN_REASONS = new Set(["invalid_token"]);
+
+// Booking credit for the `prompt_login` sign-in card ("£16"), in the thread's
+// currency. The effect's own `currency` / `offer_price` — as fields or as the
+// route widget's `key:value` lines inside its message — win over the latest
+// route widget in the thread. Without an `offer_price` the amount is left
+// undefined and OtpCard converts ₹5,000 into the returned currency — chatkit's
+// currency first, then the one we send it.
+function resolveLoginOffer(
+  data: Record<string, unknown> | undefined,
+  thread: Message[],
+  fallbackCurrency: string | undefined,
+): { amount?: string; currency: string } {
+  const meta: RouteMeta = {};
+  for (let i = thread.length - 1; i >= 0; i--) {
+    const w = thread[i].widgetItem?.widget;
+    if (w && isRouteWidget(w)) {
+      Object.assign(meta, readRouteMeta(w as any));
+      break;
+    }
+  }
+  if (typeof data?.message === "string") {
+    parseRouteMetaLines(data.message.split("\n"), meta);
+  }
+  if (typeof data?.currency === "string" && data.currency.trim()) {
+    meta.currency = currencyCodeFor(data.currency) ?? data.currency.trim().toUpperCase();
+  }
+  const offer = Number(data?.offer_price);
+  if (data?.offer_price != null && !isNaN(offer)) meta.offerPrice = offer;
+  const currency = meta.currency ?? fallbackCurrency ?? "INR";
+  const backendOffer = formatOfferAmount(meta.offerPrice, currency);
+  // Kept on the device so sign-in surfaces outside this thread quote it too.
+  rememberLoginOffer(backendOffer);
+  return { amount: backendOffer ?? undefined, currency };
+}
+
+// Country chatkit attached to `prompt_login` (flat or under `user_location`),
+// used to preselect the sign-in card's phone code ahead of our own lookup.
+function resolveLoginLocation(
+  data: Record<string, unknown> | undefined,
+): { country?: string; country_code?: string } | undefined {
+  const src = (
+    data?.user_location && typeof data.user_location === "object"
+      ? data.user_location
+      : data
+  ) as Record<string, unknown> | undefined;
+  const country = typeof src?.country === "string" ? src.country : undefined;
+  const code = typeof src?.country_code === "string" ? src.country_code : undefined;
+  return country || code ? { country, country_code: code } : undefined;
+}
 
 const Spinner =({ size = 16 }: { size?: number }) => (
   <svg
@@ -1978,8 +1995,42 @@ const sessionIdRef = useRef<string>((() => {
   );
 
   // ── Location ─────────────────────────────────────────────────────────────
-  const { userLocationData, isLoadingLocation } = useUserLocationData();
-  const locationReady = !isLoadingLocation;
+  // The site-wide location (services/userLocationBootstrap, run from _app:
+  // one IP lookup, cached 3 days, New Delhi on failure) is the only source.
+  // Chat used to run its own lookup cached forever under `userLocationData`,
+  // which drifted from the site — a device once seen in London kept telling
+  // chatkit GBP while the rest of the site said India/INR. Every /chatkit turn
+  // (P1 and P2) sends this as `user_location`, `currency` included.
+  const siteLocation = useSelector((s: any) => s.UserLocation?.location);
+  const userLocationData = useMemo<UserLocationData | null>(
+    () =>
+      siteLocation
+        ? {
+            text: siteLocation.text ?? "",
+            place_id: siteLocation.place_id ?? "",
+            types: siteLocation.types ?? [],
+            lat: siteLocation.lat ?? 0,
+            long: siteLocation.long ?? 0,
+            country: siteLocation.country ?? "",
+            continent: siteLocation.continent ?? "",
+            source: siteLocation.source ?? "site",
+            currency: siteLocation.currency || "INR",
+          }
+        : null,
+    [siteLocation],
+  );
+  // Drop the retired chat-only cache so it can't be mistaken for live data.
+  useEffect(() => {
+    try {
+      localStorage.removeItem("userLocationData");
+    } catch {
+      /* storage blocked — nothing to clean */
+    }
+  }, []);
+  // For handleEffect's `prompt_login` offer, whose memo doesn't track location.
+  const userCurrencyRef = useRef<string | undefined>(undefined);
+  userCurrencyRef.current = userLocationData?.currency;
+  const locationReady = !!userLocationData;
   const [entities, setEntities] = useState<Record<string, { name: string; type: string }>>({});
 
 
@@ -2841,9 +2892,15 @@ case "prompt_login": {
   // Optional lead-in line from the bot — rendered as a normal Kaira bubble
   // above the login card. Omitted entirely when the effect carries no message.
   const loginMessage =
-    typeof data.message === "string" ? data.message.trim() : "";
+    typeof data.message === "string" ? stripRouteMetaLines(data.message) : "";
   setMessages((prev) => {
     if (prev.some((m) => m.type === "login_card")) return prev;
+    const { amount: loginOffer, currency: loginCurrency } = resolveLoginOffer(
+      data,
+      prev,
+      userCurrencyRef.current,
+    );
+    const loginLocation = resolveLoginLocation(data);
     const base = Date.now();
     const additions: typeof prev = [];
     if (loginMessage) {
@@ -2861,6 +2918,9 @@ case "prompt_login": {
       content: "",
       timestamp: new Date(),
       type: "login_card",
+      loginOffer,
+      loginCurrency,
+      loginLocation,
     });
     return [...prev, ...additions];
   });
@@ -3594,7 +3654,12 @@ const handleLoginCardSkip = useCallback(() => {
       if (c) c.scrollTop = c.scrollHeight;
       return;
     }
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Scroll the messages list itself, never `scrollIntoView`: that also scrolls
+    // every overflow-hidden ancestor of the panel, and a card added after the
+    // stream ends (the `prompt_login` sign-in card) slid the whole chat column
+    // up, leaving the composer at the top over blank space.
+    const c = messagesScrollRef.current;
+    c?.scrollTo({ top: c.scrollHeight, behavior: "smooth" });
   }, [messages, isStreaming, armTopAnchor, sizeTopAnchor]);
 
   // Custom in-thread cards grow *after* they mount: the stepped status loader
@@ -4357,8 +4422,14 @@ useEffect(() => {
     const threadKey = restoredThread.id ?? sessionIdRef.current;
     const loginMessage =
       typeof lastEffect.data?.message === "string"
-        ? lastEffect.data.message.trim()
+        ? stripRouteMetaLines(lastEffect.data.message)
         : "";
+    const { amount: loginOffer, currency: loginCurrency } = resolveLoginOffer(
+      lastEffect.data,
+      restored,
+      userCurrencyRef.current,
+    );
+    const loginLocation = resolveLoginLocation(lastEffect.data);
     if (loginMessage) {
       restored.push({
         id: `login-msg-${threadKey}-${base}`,
@@ -4374,6 +4445,9 @@ useEffect(() => {
       content: "",
       timestamp: new Date(),
       type: "login_card",
+      loginOffer,
+      loginCurrency,
+      loginLocation,
     });
     loginFlowArmedRef.current = true;
     pendingRestoreResumeRef.current = true;
@@ -4863,7 +4937,7 @@ const handleShowLogin = useCallback(() => {
                 ? isStreamingDotsOnly
                   ? "thinking…"
                   : "typing…"
-                : isLoadingLocation
+                : !locationReady
                 ? "locating…"
                 : "online · ~2s reply"}
             </span>
@@ -5018,6 +5092,9 @@ const handleShowLogin = useCallback(() => {
                     onSkip={handleLoginCardSkip}
                     heading="Sign in to continue"
                     submitLabel="Send OTP"
+                    offerAmount={msg.loginOffer}
+                    offerCurrency={msg.loginCurrency}
+                    preferredLocation={msg.loginLocation ?? userLocationData}
                   />
                 );
               }

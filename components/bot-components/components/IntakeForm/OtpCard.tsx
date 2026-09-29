@@ -10,6 +10,22 @@ import { countryKeyFromLocation } from "../../../../services/userLocationBootstr
 import { useAnalytics } from "../../../../hooks/useAnalytics";
 import CountryCodeDropdown from "../../../userauth/CountryDropdown";
 import { getPhonePlaceholder } from "../../../../utils/phone";
+import { readSavedLoginOffer } from "../../lib/loginOffer";
+import { currencySymbols } from "../../../../data/currencySymbols";
+import {
+  loadInrRates,
+  readCachedInrRates,
+} from "../../../../services/exchangeRates";
+
+// The legacy sign-in credit, authored in INR.
+const DEFAULT_OFFER_INR = 5000;
+
+// "£52" / "AED 52" / "₹5,000".
+function formatCredit(amount: number, code: string): string {
+  const symbol = (currencySymbols as Record<string, string>)[code] ?? code;
+  const sep = /[A-Za-z]$/.test(symbol) ? `${symbol} ` : symbol;
+  return `${sep}${Math.round(amount).toLocaleString(code === "INR" ? "en-IN" : "en-US")}`;
+}
 
 interface OtpCardProps {
   /** Fired once after a successful verify (token present in auth state). */
@@ -49,6 +65,18 @@ interface OtpCardProps {
    *  a host that is itself a high-z overlay (BotLoginModal) must lift it above
    *  its own layer or the list opens behind the modal. */
   dropdownZIndex?: number;
+  /** Booking credit exactly as the backend quoted it ("£16"). Omitted → the
+   *  offer chatkit last quoted on this device, else ₹5,000 converted into
+   *  `offerCurrency`. */
+  offerAmount?: string;
+  /** Currency to convert the default ₹5,000 into when there's no quoted
+   *  offer. The chat passes the currency chatkit priced in; everywhere else it
+   *  defaults to the visitor's site-wide currency. */
+  offerCurrency?: string;
+  /** Location that outranks the site-wide IP one when preselecting the phone
+   *  country — the chat passes what it sends to chatkit. India when neither
+   *  maps to a dial code. */
+  preferredLocation?: { country?: string; country_code?: string } | null;
 }
 
 /**
@@ -68,6 +96,9 @@ const OtpCard: React.FC<OtpCardProps> = ({
   submitSlot = null,
   submitClassName,
   dropdownZIndex = 2000,
+  offerAmount,
+  offerCurrency,
+  preferredLocation = null,
 }) => {
   const dispatch = useDispatch();
   const {
@@ -116,6 +147,44 @@ const OtpCard: React.FC<OtpCardProps> = ({
   // Visitor's IP-resolved location (bootstrapped once in _app). Used to preselect
   // the country code so international users don't have to change it from India.
   const userLocation = useSelector((s: any) => s.UserLocation?.location);
+  // Read after mount so the first render matches whatever the server/static
+  // HTML had (no localStorage there).
+  const [savedOffer, setSavedOffer] = useState<string | null>(null);
+  useEffect(() => setSavedOffer(readSavedLoginOffer()), []);
+  // No quoted offer → ₹5,000 in the target currency, converted with the
+  // cached INR rate table (services/exchangeRates). The coupon stays hidden
+  // while the first-ever rate fetch is in flight, so it never flashes rupees
+  // and then swaps; if no rate can be had at all it shows the plain ₹5,000.
+  const creditCurrency = String(
+    offerCurrency || userLocation?.currency || "INR",
+  ).toUpperCase();
+  const needsRate = !offerAmount && !savedOffer && creditCurrency !== "INR";
+  const [rates, setRates] = useState<Record<string, number> | null>(null);
+  const [ratesSettled, setRatesSettled] = useState(false);
+  useEffect(() => {
+    if (!needsRate) return;
+    let cancelled = false;
+    const cached = readCachedInrRates();
+    if (cached) setRates(cached);
+    loadInrRates().then((fresh: Record<string, number> | null) => {
+      if (cancelled) return;
+      if (fresh) setRates(fresh);
+      setRatesSettled(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [needsRate]);
+  const rate = Number(rates?.[creditCurrency]);
+  const defaultCredit =
+    creditCurrency === "INR"
+      ? formatCredit(DEFAULT_OFFER_INR, "INR")
+      : rate > 0
+        ? formatCredit(DEFAULT_OFFER_INR * rate, creditCurrency)
+        : ratesSettled
+          ? formatCredit(DEFAULT_OFFER_INR, "INR")
+          : "";
+  const offerText = offerAmount || savedOffer || defaultCredit;
 
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
@@ -169,15 +238,18 @@ const OtpCard: React.FC<OtpCardProps> = ({
     });
   }, [itineraryId, trackUserLoginInitiated]);
 
-  // Preselect the country code from the visitor's IP location (resolved into
-  // redux by _app's bootstrap). Only applies until the user picks a country
+  // Preselect the country code from the host's `preferredLocation` (in chat:
+  // the location it sends chatkit), else the visitor's IP location (resolved
+  // into redux by _app's bootstrap). Only applies until the user picks a country
   // themselves, and only when the location maps to a known dial code — otherwise
   // the default India stays.
   useEffect(() => {
     if (countryTouchedRef.current) return;
-    const key = countryKeyFromLocation(userLocation, CountryCodes);
+    const key =
+      countryKeyFromLocation(preferredLocation, CountryCodes) ??
+      countryKeyFromLocation(userLocation, CountryCodes);
     if (key) setExtension(key);
-  }, [userLocation, CountryCodes]);
+  }, [preferredLocation, userLocation, CountryCodes]);
 
   // A failed verify re-enables a fresh submit of the same digits (e.g. after a
   // network blip) by clearing the dedup guard.
@@ -722,7 +794,9 @@ const OtpCard: React.FC<OtpCardProps> = ({
 
           {/* Coupon — navy island, yellow amount, ticket-notch cut-outs. The
               notches are card-cream circles half-clipped by overflow-hidden so
-              they read as bites out of the navy pill. */}
+              they read as bites out of the navy pill. Held back only while the
+              first exchange-rate fetch for a non-INR visitor is in flight. */}
+          {offerText && (
           <div
             className="relative flex items-center gap-[12px] mt-[18px] overflow-hidden rounded-[16px] px-[15px] py-[13px]"
             style={{ background: "#0f1a2e", color: "#FAFAF5" }}
@@ -778,7 +852,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
                   fontFamily: "'JetBrains Mono', ui-monospace, monospace",
                 }}
               >
-                ₹5,000 off
+                {offerText} off
               </span>
               <span
                 className="block text-[12px] mt-[2px] leading-[1.3]"
@@ -788,6 +862,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
               </span>
             </span>
           </div>
+          )}
 
           {/* Phone field — same dropdown + input + portal wiring, restyled to
               the mockup (separate country chip + white input). */}

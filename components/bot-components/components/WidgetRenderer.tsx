@@ -24,6 +24,7 @@ import { FaTaxi, FaWhatsapp } from "react-icons/fa";
 import useMediaQuery from "../../media";
 import BotLoginModal from "./BotLoginModal";
 import ChatDayWidget from "../../revamp/desktopItinerary/ChatDayWidget";
+import { rememberLoginOffer } from "../lib/loginOffer";
 import { getThemePalette } from "../../theme/cinematic/palettes";
 
 // ─── Widget environment context ───────────────────────────────────────────────
@@ -4139,6 +4140,8 @@ function BoxNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRender
 function TextNode({ node }: { node: WidgetNode }) {
   const { value, size = "md", weight = "normal", type } = node;
   const routeCtx = useContext(RouteItemContext);
+  // Route pricing meta ("currency:GBP", "offer_price:16") is data, not copy.
+  if (isRouteMetaText(value)) return null;
   const fsMap: Record<string, number> = { xs: 11, sm: 13, md: 14, lg: 16, xl: 19 };
   const fwMap: Record<string, number> = { normal: 400, medium: 500, semibold: 600, bold: 700 };
   const textEl = (
@@ -4564,6 +4567,118 @@ function findRouteDateText(node: WidgetNode): string {
   return ((hit?.value as string | undefined) ?? "").trim();
 }
 
+// Machine-readable `key:value` lines the backend tucks into the route cost box
+// as tertiary Texts ("currency:GBP", "min_budget:850", "max_budget:1250",
+// "offer_price:16"). They drive the cost card and are never shown verbatim.
+// Lenient on purpose — "offer price: €16", "Offer-Price: 16 EUR" and
+// "currency: €" all parse — because a value that fails to parse silently falls
+// back to a default, which is how a € card ended up quoting "₹5,000".
+const ROUTE_META_RE =
+  /^\s*(currency|min[\s_-]?budget|max[\s_-]?budget|offer[\s_-]?price)\s*[:=]\s*(.+?)\s*$/i;
+
+function isRouteMetaText(value: unknown): boolean {
+  return typeof value === "string" && ROUTE_META_RE.test(value);
+}
+
+export interface RouteMeta {
+  currency?: string;
+  minBudget?: number;
+  maxBudget?: number;
+  offerPrice?: number;
+}
+
+// Common glyphs pinned to the code people mean ("$" is USD, not AUD/CAD…);
+// anything else is looked up in reverse in the currencySymbols map.
+const SYMBOL_TO_CODE: Record<string, string> = {
+  "₹": "INR", "$": "USD", "€": "EUR", "£": "GBP", "¥": "JPY", "﷼": "IRR",
+};
+
+// "EUR" / "eur" / "€" / "€16" → "EUR". Undefined when nothing recognisable.
+export function currencyCodeFor(raw: string | undefined | null): string | undefined {
+  const v = String(raw ?? "").trim();
+  if (!v) return undefined;
+  const iso = v.match(/\b([A-Za-z]{3})\b/);
+  if (iso && (currencySymbols as Record<string, string>)[iso[1].toUpperCase()]) {
+    return iso[1].toUpperCase();
+  }
+  const glyph = v.replace(/[\d\s.,]+/g, "");
+  if (!glyph) return undefined;
+  if (SYMBOL_TO_CODE[glyph]) return SYMBOL_TO_CODE[glyph];
+  const hit = Object.entries(currencySymbols as Record<string, string>).find(
+    ([, sym]) => sym === glyph,
+  );
+  return hit?.[0];
+}
+
+// Fold `key:value` meta strings into a RouteMeta. Shared by the route widget
+// (one string per Text node) and the `prompt_login` effect (lines of its
+// message), so both read the payload the same way. A currency written into a
+// money value ("offer_price: €16") also counts as the currency.
+export function parseRouteMetaLines(lines: string[], into: RouteMeta = {}): RouteMeta {
+  const num = (v: string) => {
+    const m = v.replace(/,/g, "").match(/-?\d+(?:\.\d+)?/);
+    return m ? parseFloat(m[0]) : undefined;
+  };
+  for (const line of lines) {
+    const m = ROUTE_META_RE.exec(line ?? "");
+    if (!m) continue;
+    const key = m[1].toLowerCase().replace(/[\s-]/g, "_");
+    const value = m[2];
+    if (key === "currency") {
+      into.currency = currencyCodeFor(value) ?? value.toUpperCase();
+      continue;
+    }
+    if (key === "min_budget") into.minBudget = num(value);
+    else if (key === "max_budget") into.maxBudget = num(value);
+    else if (key === "offer_price") into.offerPrice = num(value);
+    if (!into.currency && /[^\d\s.,-]/.test(value)) {
+      const code = currencyCodeFor(value);
+      if (code) into.currency = code;
+    }
+  }
+  return into;
+}
+
+// Meta can arrive on any text-bearing node (Text, Caption, Markdown…).
+export function readRouteMeta(node: WidgetNode): RouteMeta {
+  const values: string[] = [];
+  const walk = (n: WidgetNode) => {
+    if (typeof n.value === "string") values.push(n.value);
+    for (const c of (n.children ?? []) as WidgetNode[]) walk(c);
+  };
+  walk(node);
+  return parseRouteMetaLines(values);
+}
+
+// Drop meta lines from a free-text message so they never reach a chat bubble.
+export function stripRouteMetaLines(text: string): string {
+  return text
+    .split("\n")
+    .filter((l) => !isRouteMetaText(l))
+    .join("\n")
+    .trim();
+}
+
+// "£16" / "AED 16" / "₹5,000" — the booking credit in the widget's currency.
+// Null when there's no positive offer to show.
+export function formatOfferAmount(offerPrice: number | undefined, currency: string): string | null {
+  if (offerPrice == null || !(offerPrice > 0)) return null;
+  const code = currency.toUpperCase();
+  const symbol = (currencySymbols as Record<string, string>)[code] ?? currency;
+  const sep = /[A-Za-z]$/.test(symbol) ? `${symbol} ` : symbol;
+  const indian = symbol === "₹" || code === "INR";
+  return `${sep}${Math.round(offerPrice).toLocaleString(indian ? "en-IN" : "en-US")}`;
+}
+
+// The legacy ₹5,000 credit — only for an INR card. In any other currency a
+// card without an `offer_price` shows no credit at all: never converted, and
+// never a rupee figure beside a € / £ price.
+export function defaultOfferIn(code: string | undefined): string | null {
+  return (code || "INR").toUpperCase() === "INR"
+    ? formatOfferAmount(5000, "INR")
+    : null;
+}
+
 // Pull the currency token the server sent with the cost — a symbol (₹ $ € £ ﷼ …)
 // or a 3-letter ISO code (USD / INR). Falls back to the passed default so the
 // pricing always shows *some* currency.
@@ -4825,12 +4940,13 @@ function RouteTimeline({ stops }: { stops: ParsedRouteStop[] }) {
 }
 
 // Three reassurance pointers shown beside the estimated cost. The last line
-// leads with the ₹5,000 booking credit to give the card a concrete incentive.
+// leads with the booking credit to give the card a concrete incentive — the
+// widget's `offer_price` in its own currency; omitted when there is none.
 const ROUTE_COST_POINTERS = [
   "Flights, stays, transfers included",
   "Nothing to pay now",
-  "₹5,000 off when you book",
 ];
+
 
 function RouteCostCheck() {
   return (
@@ -4858,7 +4974,15 @@ function RouteCostCheck() {
 
 // Estimated-cost card: the "EST / PERSON" amount on the left, a divider, and the
 // reassurance pointers on the right. Collapses to a stacked layout on phones.
-function RouteCostCard({ label, amount }: { label: string; amount: string }) {
+function RouteCostCard({
+  label,
+  amount,
+  offerLabel,
+}: {
+  label: string;
+  amount: string;
+  offerLabel: string | null;
+}) {
   return (
     <div
       className="flex gap-[14px] max-ph:flex-col max-ph:gap-[10px]"
@@ -4907,7 +5031,7 @@ function RouteCostCard({ label, amount }: { label: string; amount: string }) {
         className="list-none m-0 p-0 grid gap-[9px] max-ph:!flex-none max-ph:w-full"
         style={{ flex: "1 1 190px", minWidth: 0 }}
       >
-        {ROUTE_COST_POINTERS.map((p) => (
+        {[...ROUTE_COST_POINTERS, ...(offerLabel ? [offerLabel] : [])].map((p) => (
           <li
             key={p}
             className="flex gap-[7px] items-start"
@@ -5190,10 +5314,16 @@ function resolveCityCountry(itinerary: any, cityName: string): string {
 function RouteActionButtons({
   label,
   amount,
+  offerLabel,
+  offerAmount,
+  offerCurrency,
   onAction,
 }: {
   label: string;
   amount: string;
+  offerLabel: string | null;
+  offerAmount?: string;
+  offerCurrency?: string;
   onAction?: WidgetRendererProps["onAction"];
 }) {
   const token = useSelector((s: any) => s?.auth?.token);
@@ -5331,7 +5461,9 @@ function RouteActionButtons({
 
   return (
     <div style={{ marginTop: 14 }}>
-      {amount && <RouteCostCard label={label} amount={amount} />}
+      {amount && (
+        <RouteCostCard label={label} amount={amount} offerLabel={offerLabel} />
+      )}
 
       {/* Estimate caveat — the range shifts with travel dates and hotel tier. */}
       <div
@@ -5433,6 +5565,8 @@ function RouteActionButtons({
         zIndex={3300}
         title={loginConfig.title}
         itinary_id={itineraryId}
+        offerAmount={offerAmount}
+        offerCurrency={offerCurrency}
         onSuccess={() => {
           setShowLogin(false);
           promptToChat(loginConfig.prompt);
@@ -5481,10 +5615,30 @@ function RouteItineraryCard({
   );
   const stolen = useRouteStolenCount(statCities);
 
-  // Currency from the server's cost text (₹ / $ / ﷼ / USD …), falling back to
-  // the itinerary currency when the text carries none.
-  const symbol = extractCurrencySymbol(amount, fallbackSymbol);
-  const formattedAmount = formatRouteCost(amount, symbol);
+  // Structured `currency:` / `min_budget:` / `max_budget:` / `offer_price:`
+  // lines win when present; otherwise fall back to scraping the cost text
+  // (₹ / $ / ﷼ / USD …) and then the itinerary currency.
+  const meta = readRouteMeta(node);
+  const symbol = meta.currency
+    ? (currencySymbols as Record<string, string>)[meta.currency] ?? meta.currency
+    : extractCurrencySymbol(amount, fallbackSymbol);
+  const { minBudget, maxBudget } = meta;
+  const metaRange =
+    minBudget != null && maxBudget != null && maxBudget !== minBudget
+      ? `${minBudget} – ${maxBudget}`
+      : String(minBudget ?? maxBudget ?? "");
+  const formattedAmount = formatRouteCost(metaRange || amount, symbol);
+  // The card's currency as chatkit sent it: the `currency:` line, else the
+  // glyph on the cost text. Only an unrecognisable one falls back to INR.
+  const cardCurrency = meta.currency ?? currencyCodeFor(symbol) ?? "INR";
+  const backendOffer = formatOfferAmount(meta.offerPrice, cardCurrency);
+  // No `offer_price` → no credit line (₹5,000 only on an INR card).
+  const offerAmount = backendOffer ?? defaultOfferIn(cardCurrency);
+  const offerLabel = offerAmount ? `${offerAmount} off when you book` : null;
+  // Only a figure chatkit actually quoted is remembered for later sign-ins.
+  useEffect(() => {
+    rememberLoginOffer(backendOffer);
+  }, [backendOffer]);
   const dateLabel = findRouteDateText(node);
 
   return (
@@ -5519,6 +5673,12 @@ function RouteItineraryCard({
         <RouteActionButtons
           label={label}
           amount={formattedAmount}
+          offerLabel={offerLabel}
+          // The Confirm sign-in quotes the backend's offer, else converts the
+          // ₹5,000 credit into this card's currency — only the card's own
+          // line above is hidden when no `offer_price` came.
+          offerAmount={backendOffer ?? undefined}
+          offerCurrency={cardCurrency}
           onAction={onAction}
         />
       </div>

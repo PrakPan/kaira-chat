@@ -27,6 +27,12 @@ export const GOOGLE_ANALTICS_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALTICS_ID;
 
 export const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
+// exchangerate-api.com v6 key — converts the ₹5,000 sign-in credit into the
+// visitor's currency. Called client-side from services/exchangeRates.js, so it
+// ships in the bundle.
+export const EXCHANGE_RATE_API_KEY =
+  process.env.NEXT_PUBLIC_EXCHANGE_RATE_API_KEY;
+
 export const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 export const RECAPTCHA_SECRET_KEY =
