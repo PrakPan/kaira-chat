@@ -647,7 +647,7 @@ function DayCard({
             <span
               // The day title's face (Inter), at regular weight rather than the
               // design's italic serif — reads as plain text under the title.
-              className="block truncate font-inter text-[12.5px] font-[400] text-[#445069]"
+              className="block truncate font-inter text-[11.5px] font-[400] text-[#445069]"
               style={{ letterSpacing: "normal", lineHeight: 1.5 }}
             >
               {whisper}
