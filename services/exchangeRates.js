@@ -1,8 +1,9 @@
-import { EXCHANGE_RATE_API_KEY } from "./constants";
+import { MERCURY_HOST } from "./constants";
 
 // ── INR exchange rates ───────────────────────────────────────────────────────
 // Our fixed amounts (the ₹5,000 sign-in credit) are authored in INR; for a
-// visitor elsewhere they're shown converted. The `/latest/INR` table is kept in
+// visitor elsewhere they're shown converted. Mercury proxies exchangerate-api
+// (so no key ships in the bundle); the `/latest/inr/` table is kept in
 // localStorage for 24 hours from the moment it was fetched; the first call
 // after that fetches again. If that refetch fails, the old table is used for
 // this call only — its expiry is left in the past, so the next call retries.
@@ -36,19 +37,17 @@ export function readCachedInrRates() {
 /**
  * Fresh INR→X table. Resolves from cache when it hasn't expired, otherwise
  * fetches once (concurrent callers share the request). Falls back to whatever
- * stale table is cached — or null — when the key is missing or the call fails.
+ * stale table is cached — or null — when the call fails.
  */
 export function loadInrRates() {
   const cached = readStore();
   if (cached && Date.now() < cached.expiresAt) return Promise.resolve(cached.rates);
-  if (typeof window === "undefined" || !EXCHANGE_RATE_API_KEY) {
+  if (typeof window === "undefined") {
     return Promise.resolve(cached?.rates ?? null);
   }
   if (inFlight) return inFlight;
 
-  inFlight = fetch(
-    `https://v6.exchangerate-api.com/v6/${EXCHANGE_RATE_API_KEY}/latest/INR`,
-  )
+  inFlight = fetch(`${MERCURY_HOST}/api/v1/geos/exchange-rate/latest/inr/`)
     .then((res) => (res.ok ? res.json() : null))
     .then((data) => {
       const rates = data?.result === "success" ? data.conversion_rates : null;

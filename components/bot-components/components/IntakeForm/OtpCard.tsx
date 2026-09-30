@@ -20,7 +20,7 @@ import {
 // The legacy sign-in credit, authored in INR.
 const DEFAULT_OFFER_INR = 5000;
 
-// "£52" / "AED 52" / "₹5,000".
+// "£50" / "AED 220" / "₹5,000".
 function formatCredit(amount: number, code: string): string {
   const symbol = (currencySymbols as Record<string, string>)[code] ?? code;
   const sep = /[A-Za-z]$/.test(symbol) ? `${symbol} ` : symbol;
@@ -180,7 +180,11 @@ const OtpCard: React.FC<OtpCardProps> = ({
     creditCurrency === "INR"
       ? formatCredit(DEFAULT_OFFER_INR, "INR")
       : rate > 0
-        ? formatCredit(DEFAULT_OFFER_INR * rate, creditCurrency)
+        ? // Nearest 10 ("£50", not "£47") so it reads as a round offer.
+          formatCredit(
+            Math.round((DEFAULT_OFFER_INR * rate) / 10) * 10,
+            creditCurrency,
+          )
         : ratesSettled
           ? formatCredit(DEFAULT_OFFER_INR, "INR")
           : "";
