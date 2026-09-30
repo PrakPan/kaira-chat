@@ -11,30 +11,16 @@ import styles from "./KairaLovingSection.module.scss";
 
 const DEFAULT_QUOTE = (
   <>
-    &ldquo;September is one of those sweet spots.{" "}
-    <span className={styles.quoteHl}>
-      Japan is starting to ease into autumn
-    </span>
-    , while <span className={styles.quoteHl}>Bali is still sunny</span>, warm
-    and easy to explore. If I had ten days off right now, these are the two
+    &ldquo;October is when the weather starts working in your favour.{" "}
+    <span className={styles.quoteHl}>Bali is still sunny</span> and easy to
+    slow down in, while{" "}
+    <span className={styles.quoteHl}>Dubai is finally cooling down</span>{" "}
+    enough to enjoy outdoors. If I had a week off right now, these are the two
     trips I&apos;d pick.&rdquo;
   </>
 );
 
 const DEFAULT_PICKS = [
-  {
-    tag: "Kaira's pick · this month",
-    title: (
-      <>
-        Japan, before <span className="ttwSerif">autumn arrives</span>
-      </>
-    ),
-    blurb:
-      "Tokyo's neighbourhoods, Kyoto's temples, Hakone's hot springs and a slower side of Japan before the autumn crowds arrive. 9 days, around ₹1.6L per person.",
-    img: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=400&q=80&auto=format",
-    seed: "Japan before autumn, 9 days",
-    itinerary_id: "5d8f479d-ef11-4c42-bc0c-0a3ee207183e"
-  },
   {
     tag: "Kaira's pick · this month",
     title: (
@@ -47,6 +33,19 @@ const DEFAULT_PICKS = [
     img: "https://images.unsplash.com/photo-1573790387438-4da905039392?w=400&q=80&auto=format",
     seed: "Bali sunny and slow, 8 days",
     itinerary_id: "87337984-6e2a-4b87-8d52-7aa7b4753b5c"
+  },
+  {
+    tag: "Kaira's pick · this month",
+    title: (
+      <>
+        Dubai, <span className="ttwSerif">the city is cooling down</span>
+      </>
+    ),
+    blurb:
+      "Dubai's skyline, desert sunsets, late-night food spots and plenty of time by the water. October marks the start of the more comfortable season for exploring the city. 6 days, around ₹75K per person.",
+    img: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&q=80&auto=format",
+    seed: "Dubai as the city cools down, 6 days",
+    itinerary_id: "91388d5b-046b-48ce-a8ee-65135ac36085"
   },
 ];
 
