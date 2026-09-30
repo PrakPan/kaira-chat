@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { optimizedMediaUrl } from "../../../../lib/mediaImage";
 import { createPortal } from "react-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { ensureSession } from "../../../../store/actions/auth";
 import type { Message, ProgressStep, ThinkingTask } from "../../hooks/useChat";
 import { WidgetRenderer, isRouteWidget, isRichCardListWidget } from "../WidgetRenderer";
 import {
@@ -2218,6 +2219,7 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
   onCreateVersion,
   continued = false,
 }) => {
+  const dispatch = useDispatch();
   // Reactive auth + itinerary - re-renders on login/logout with no reload.
   const token = useSelector((state: any) => state?.auth?.token);
   const authId = useSelector((state: any) => state?.auth?.id);
@@ -2246,7 +2248,9 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
   if (!hasOwner || isOwn) return null;
 
   const handlePrimary = () => {
-    if (!loggedIn) {
+    // Re-checked at click time: `loggedIn` only knows a token exists, not
+    // whether it has expired. ensureSession clears an expired one.
+    if (!dispatch(ensureSession() as any)) {
       onRequestLogin?.();
       return;
     }

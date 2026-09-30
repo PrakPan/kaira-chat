@@ -101,6 +101,7 @@ import {
 } from "../../store/actions/intakeForm";
 import setItineraryDaybyDay from "../../store/actions/itineraryDaybyDay";
 import setItinerary from "../../store/actions/itinerary";
+import { authLogout, ensureSession } from "../../store/actions/auth";
 import setBreif from "../../store/actions/breif";
 import { setGalleryImages } from "../../store/actions/galleryImages";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore";
@@ -967,6 +968,9 @@ export default function BotApp({
   // Opened by the archive bar's "Get this trip!" — the same popup the archive
   // chat panel's clone card opens.
   const [showArchiveCloneModal, setShowArchiveCloneModal] = useState(false);
+  // Set when "Get this trip!" had to ask for sign-in first — or its clone call
+  // 401'd — so a successful login reopens the clone form.
+  const resumeArchiveCloneRef = useRef(false);
   // Mobile: the compact trip strip collapses the traveller/date/social meta
   // behind a chevron. Desktop always shows the full header.
   const [tripMetaOpen, setTripMetaOpen] = useState(false);
@@ -1194,6 +1198,11 @@ export default function BotApp({
       (response) => response,
       (error) => {
         if (error?.response?.status === 401) {
+          // The rejected token has to go before the sheet opens: OtpCard
+          // treats a token present at mount as a finished sign-in and closes
+          // itself, so an expired session only ever surfaced as a toast.
+          clearUserSession();
+          dispatch(authLogout());
           setShowApiLoginPrompt(true);
         }
         return Promise.reject(error);
@@ -4693,7 +4702,16 @@ Start Location: ${details.startLocation}`;
     // request. get_in_touch/ is an authenticated call against a live itinerary,
     // which an archived one isn't — cloning is the action that actually goes
     // somewhere from here.
-    onGetThisTrip: () => setShowArchiveCloneModal(true),
+    // Sign in first (expired counts as signed out); the clone form opens once
+    // the login prompt's onSuccess sees the pending flag.
+    onGetThisTrip: () => {
+      if (dispatch(ensureSession() as any)) {
+        setShowArchiveCloneModal(true);
+      } else {
+        resumeArchiveCloneRef.current = true;
+        setShowApiLoginPrompt(true);
+      }
+    },
     onGetInTouch: () => {
       if (!activeItineraryId) return;
       const token = localStorage.getItem("access_token");
@@ -6029,6 +6047,12 @@ Start Location: ${details.startLocation}`;
         show={showArchiveCloneModal}
         onHide={() => setShowArchiveCloneModal(false)}
         itineraryId={activeItineraryId || sessionId}
+        // The 401 interceptor above already clears the session and raises the
+        // login prompt; this only swaps the form out and queues its return.
+        onUnauthorized={() => {
+          setShowArchiveCloneModal(false);
+          resumeArchiveCloneRef.current = true;
+        }}
       />
 
       {showSettingsLoginPrompt && !authToken && (
@@ -6047,11 +6071,18 @@ Start Location: ${details.startLocation}`;
       {showApiLoginPrompt && (
         <BotLoginModal
           show={showApiLoginPrompt}
-          onhide={() => setShowApiLoginPrompt(false)}
+          onhide={() => {
+            resumeArchiveCloneRef.current = false;
+            setShowApiLoginPrompt(false);
+          }}
           zIndex={3300}
           message="Please login to continue"
           onSuccess={async () => {
             setShowApiLoginPrompt(false);
+            if (resumeArchiveCloneRef.current) {
+              resumeArchiveCloneRef.current = false;
+              setShowArchiveCloneModal(true);
+            }
           }}
         />
       )}

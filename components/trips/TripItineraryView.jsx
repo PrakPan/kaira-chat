@@ -28,6 +28,9 @@ import { useRouter } from "next/router";
 import DaybyDay from "../../containers/itinerary/DaybyDay";
 import Sidebar from "../bot-components/components/Sidebar";
 import CloneItineraryModal from "../bot-components/components/CloneItineraryModal";
+import BotLoginModal from "../bot-components/components/BotLoginModal";
+import { authLogout, ensureSession } from "../../store/actions/auth";
+import { clearUserSession } from "../../services/userSession";
 import { BottomCTABar } from "../bot-components/BotApp";
 import setItinerary from "../../store/actions/itinerary";
 import setItineraryDaybyDay from "../../store/actions/itineraryDaybyDay";
@@ -105,6 +108,28 @@ const TripItineraryView = ({
   // that forgets to wire a handler (which is what left "Get this trip!" doing
   // nothing) can't happen.
   const [showCloneModal, setShowCloneModal] = useState(false);
+
+  // Cloning needs a signed-in user. Chat and itinerary pages get their login
+  // prompt from BotApp's global 401 interceptor; this page doesn't mount
+  // BotApp, so it gates the CTA itself. Signed out → sign in first, then the
+  // clone form opens.
+  // ensureSession also treats an expired token as signed out.
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const openClone = () =>
+    dispatch(ensureSession())
+      ? setShowCloneModal(true)
+      : setShowLoginModal(true);
+
+  // A token the backend revoked before its expiry still passes the gate above,
+  // so the clone call 401s. Drop it before asking again: OtpCard treats a token
+  // already present at mount as a finished sign-in and would close the sheet
+  // immediately.
+  const handleUnauthorized = () => {
+    clearUserSession();
+    dispatch(authLogout());
+    setShowCloneModal(false);
+    setShowLoginModal(true);
+  };
 
   // Seeding the store is idempotent, so it can be expressed once and used both
   // during render (for the server HTML) and from an effect (see the cleanup
@@ -188,7 +213,21 @@ const TripItineraryView = ({
         show={showCloneModal}
         onHide={() => setShowCloneModal(false)}
         itineraryId={itinerary.id}
+        onUnauthorized={handleUnauthorized}
       />
+
+      {showLoginModal && (
+        <BotLoginModal
+          show={showLoginModal}
+          onhide={() => setShowLoginModal(false)}
+          onSuccess={() => {
+            setShowLoginModal(false);
+            setShowCloneModal(true);
+          }}
+          title="Sign in to get this trip"
+          itinary_id={itinerary.id}
+        />
+      )}
 
       {/* The pinned price bar shows at every width — phone, tablet and desktop —
           so "Get this trip!" stays in reach however far down the day-by-day the
@@ -267,7 +306,7 @@ const TripItineraryView = ({
                 {below}
               </Article>
 
-              <Side>{side?.({ onGetThisTrip: () => setShowCloneModal(true) })}</Side>
+              <Side>{side?.({ onGetThisTrip: openClone })}</Side>
             </Main>
           </Wrap>
 
@@ -289,7 +328,7 @@ const TripItineraryView = ({
             popupStyle={{}}
             onConfirm={() => {}}
             onViewCart={() => {}}
-            onGetThisTrip={() => setShowCloneModal(true)}
+            onGetThisTrip={openClone}
             barStyle={desktopBarStyle || undefined}
           />
 

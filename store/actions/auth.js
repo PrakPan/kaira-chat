@@ -187,6 +187,27 @@ export const checkAuthTimeout = (expirationTime) => {
   };
 };
 
+// Gate for actions that need a signed-in user (e.g. cloning an itinerary).
+// True when the store holds a token that hasn't passed its expirationDate —
+// the same test checkAuthState applies on load. A token that has expired is
+// cleared here, before the caller opens the login sheet: OtpCard treats a
+// token already present at mount as a finished sign-in and closes itself.
+//
+// A token the server has revoked early can't be seen from here; callers still
+// need to handle the 401 from the request itself.
+export const ensureSession = () => {
+  return (dispatch, getState) => {
+    if (!getState().auth?.token) return false;
+
+    const expirationDate = new Date(localStorage.getItem("expirationDate"));
+    if (!(expirationDate <= new Date())) return true;
+
+    clearUserSession();
+    dispatch(authLogout());
+    return false;
+  };
+};
+
 //Auth check status for checkAuthRedirect HOC
 export const authCheckCompleted = () => {
   return {

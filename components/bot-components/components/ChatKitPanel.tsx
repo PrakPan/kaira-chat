@@ -24,7 +24,7 @@ import useMediaQuery from "../../../hooks/useMedia";
 import { MERCURY_HOST, CHATKIT_HOST, CHATKIT_API_URL } from "../../../services/constants";
 
 import { openNotification } from "../../../store/actions/notification";
-import { authLogout } from "../../../store/actions/auth";
+import { authLogout, ensureSession } from "../../../store/actions/auth";
 import setItinerary, {
   deletePoiFromItinerary,
   deleteActivityFromItinerary,
@@ -5914,7 +5914,10 @@ const handleShowLogin = useCallback(() => {
                 : (!isLoggedIn && botMode === "p2") || isForeignItinerary
             }
             onAuthRequired={() => {
-              if (!isLoggedIn && botMode === "p2") {
+              // An expired token still reads as logged in via `isLoggedIn`;
+              // ensureSession clears it so it takes the login branch.
+              const hasSession = dispatch(ensureSession() as any);
+              if (!hasSession && botMode === "p2") {
                 setShowLoginModal(true);
               } else if (isForeignItinerary && botMode === "p2") {
                 // Foreign-itinerary block in P2: the user is logged in but

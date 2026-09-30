@@ -71,6 +71,10 @@ const CloneItinerary = ({
   prefillStartDetails = true,
   onSuccess,
   onCancel,
+  // Called instead of the error toast when the clone call 401s (signed out, or
+  // a token the backend no longer accepts). Pages inside BotApp don't need it —
+  // its axios interceptor already raises the login modal on any 401.
+  onUnauthorized = undefined,
 }) => {
   const dispatch = useDispatch();
   const itinerary = useSelector((state) => state.Itinerary);
@@ -357,6 +361,10 @@ const CloneItinerary = ({
       })
       .catch((err) => {
         console.log("error is:", err);
+        if (err?.response?.status === 401 && onUnauthorized) {
+          onUnauthorized();
+          return;
+        }
         dispatch(
           openNotification({
             type: "error",

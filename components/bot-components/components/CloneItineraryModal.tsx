@@ -23,12 +23,16 @@ interface CloneItineraryModalProps {
   onHide: () => void;
   /** Source itinerary for the clone. */
   itineraryId?: string;
+  /** The clone call 401'd. Only for callers outside BotApp, which has no
+   *  global 401 handler to raise the login modal for them. */
+  onUnauthorized?: () => void;
 }
 
 const CloneItineraryModal: React.FC<CloneItineraryModalProps> = ({
   show,
   onHide,
   itineraryId,
+  onUnauthorized,
 }) => {
   const isDesktopViewport = useMediaQuery("(min-width:767px)");
 
@@ -43,6 +47,7 @@ const CloneItineraryModal: React.FC<CloneItineraryModalProps> = ({
       // past and its start city is theirs. Both fields open empty here.
       prefillStartDetails={false}
       onCancel={onHide}
+      onUnauthorized={onUnauthorized}
     />
   );
 
