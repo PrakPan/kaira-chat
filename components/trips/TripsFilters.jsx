@@ -68,9 +68,12 @@ const Group = styled.div`
   flex-wrap: wrap;
 
   /* The label sits on its own line on a phone so the chips get the full width
-     rather than being squeezed into what's left beside it. */
+     rather than being squeezed into what's left beside it. nowrap matters:
+     in a wrapping column flexbox each line is as wide as its content, so the
+     chip row grew to its full length and got clipped instead of scrolling. */
   @media (max-width: 600px) {
     flex-direction: column;
+    flex-wrap: nowrap;
     align-items: stretch;
     gap: 7px;
   }
