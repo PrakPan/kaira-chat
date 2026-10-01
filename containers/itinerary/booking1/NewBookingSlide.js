@@ -6,10 +6,15 @@ import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
 import { connect, useDispatch, useSelector } from "react-redux";
 import * as orderaction from "../../../store/actions/order";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdOutlineHotel } from "react-icons/md";
 import { useRouter } from "next/router";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { formatCurrencyValue } from "../../../services/formatCurrencyValue";
+import {
+  getPayAtHotelTotal,
+  withPayAtHotelCondition,
+} from "../../../services/payAtHotel";
+import { isBookingPaid } from "../../../services/bookingStatus";
 import { getHumanDateWithYear } from "../../../services/getHumanDateWithYear";
 import urls from "../../../services/urls";
 import { ITINERARY_STATUSES, MERCURY_HOST } from "../../../services/constants";
@@ -1000,6 +1005,7 @@ export const PriceDetails = ({
 }) => {
   const Cart = useSelector((state) => state.Cart);
   const { currency } = useSelector((state) => state.currency);
+  const payAtHotelTotal = getPayAtHotelTotal(Cart);
 
   const numericItineraryCost =
     typeof itineraryCost === "string"
@@ -1160,7 +1166,9 @@ export const PriceDetails = ({
                     : "Total Amount"}
               </span>
               <span className="text-xs font-400 leading-sm text-text-spacegrey">
-                Inclusive of all taxes
+                {payAtHotelTotal > 0
+                  ? "Inclusive of all taxes, except those paid at the hotel"
+                  : "Inclusive of all taxes"}
               </span>
             </div>
             <span>
@@ -1172,6 +1180,41 @@ export const PriceDetails = ({
             </span>
           </div>
         </div>
+
+        {/* Supplier taxes the traveller pays at the hotel. Shown for
+            information only — never part of the total above. */}
+        {payAtHotelTotal > 0 && (
+          <div
+            className="flex items-start gap-2 mt-3 bg-[#FFF8EC]"
+            style={{
+              padding: "10px 12px",
+              border: "1px solid #F6E2BC",
+              borderLeft: "3px solid #E0A23B",
+              borderRadius: 8,
+            }}
+          >
+            <MdOutlineHotel
+              className="shrink-0 text-[#B7791F]"
+              size={18}
+              style={{ marginTop: 1 }}
+            />
+            <div className="flex flex-col flex-1 min-w-0">
+              <div className="flex justify-between items-baseline gap-2 text-sm font-500 leading-md text-[#7A4B00]">
+                <span>Pay at hotel</span>
+                <span className="whitespace-nowrap">
+                  {currencySymbols?.[currency]
+                    ? currencySymbols?.[currency]
+                    : "₹"}
+                  {formatCurrencyValue(payAtHotelTotal, currency)}
+                </span>
+              </div>
+              <span className="text-xs font-400 leading-sm text-[#8C6A3A]">
+                Local taxes & fees collected by the hotel at check-in. Not
+                included in the total above.
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1725,6 +1768,7 @@ export const ItineraryInclusions = ({
           pax: booking.pax,
           transfer_type: booking.transfer_type,
           booking_type: booking.booking_type,
+          pay_at_hotel_taxes_total: booking.pay_at_hotel_taxes_total,
         },
         status: booking.status,
         booking_type: type,
@@ -1889,6 +1933,16 @@ export const ItineraryInclusions = ({
                               PAID
                             </div>
                           )}
+                          {booking.status === "Confirmed" && (
+                            <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
+                              CONFIRMED
+                            </div>
+                          )}
+                          {booking.status === "Cancelled" && (
+                            <div className="inline-block bg-red-100 text-red-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
+                              CANCELLED
+                            </div>
+                          )}
 
                           <div className="flex flex-wrap items-center gap-2">
                             <div className="flex items-center gap-1">
@@ -1958,6 +2012,23 @@ export const ItineraryInclusions = ({
                               )
                             } */}
                           </div>
+
+                          {/* Hotel taxes not in the price — paid by the traveller at the hotel. */}
+                          {category == "Stays" &&
+                            !arePricesHidden &&
+                            booking.detail.pay_at_hotel_taxes_total > 0 && (
+                              <span className="block mt-1 text-xs font-400 leading-sm text-text-spacegrey">
+                                +{" "}
+                                {currencySymbols?.[currency]
+                                  ? currencySymbols?.[currency]
+                                  : "₹"}
+                                {formatCurrencyValue(
+                                  booking.detail.pay_at_hotel_taxes_total,
+                                  currency,
+                                )}{" "}
+                                taxes & fees to be paid by traveller at the hotel
+                              </span>
+                            )}
                         </div>
 
                         {/* Checkbox — a released itinerary is locked, so the
@@ -2007,7 +2078,10 @@ export const ItineraryInclusions = ({
                                     onChange={() =>
                                       onToggleInclusion(booking.id)
                                     }
-                                    disabled={booking.status === "Paid"}
+                                    disabled={
+                                      isBookingPaid(booking.status) ||
+                                      booking.status === "Cancelled"
+                                    }
                                     className="accent-primary-yellow cursor-pointer
                            disabled:cursor-not-allowed disabled:opacity-50
                            ttw-custom-greenCheckbox"
@@ -3351,7 +3425,7 @@ const Details = (props) => {
     Object.values(Cart.summary).forEach((category) => {
       if (category.bookings && category.bookings.length > 0) {
         category.bookings.forEach((booking) => {
-          if (booking.status !== "Paid") {
+          if (!isBookingPaid(booking.status)) {
             allPaid = false;
           }
         });
@@ -3368,7 +3442,7 @@ const Details = (props) => {
     Object.values(Cart.summary).forEach((category) => {
       if (category.bookings && category.bookings.length > 0) {
         category.bookings.forEach((booking) => {
-          if (booking.status == "Paid") {
+          if (isBookingPaid(booking.status)) {
             anyPaid = true;
           }
         });
@@ -4206,7 +4280,7 @@ const Details = (props) => {
                         Your Trip Will have
                       </div>
                       <div>
-                        {tripCondition.map((item, index) => (
+                        {withPayAtHotelCondition(tripCondition, Cart).map((item, index) => (
                           <div key={index} className="flex gap-md mb-md">
                             <img
                               src={item.icon}

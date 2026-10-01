@@ -47,6 +47,7 @@ const svgIcons = {
 }
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
+import { isBookingCancelled } from "../../../components/common/BookingCancelledBanner";
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -593,6 +594,11 @@ const HotelBooking = ({
                   <div className="flex flex-row justify-between items-center">
                     <div className={`text-md-lg leading-xl-sm font-600 mb-0`}>
                       {booking?.name}
+                      {isBookingCancelled(booking) && (
+                        <span className="ml-2 align-middle inline-block bg-red-100 text-red-700 text-xs font-semibold px-2 py-0.5 rounded">
+                          CANCELLED
+                        </span>
+                      )}
                     </div>
 
                     <div

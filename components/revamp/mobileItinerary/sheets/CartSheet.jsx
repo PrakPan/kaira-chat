@@ -16,6 +16,8 @@ import { removeCoupon } from "../../../../services/sales/itinerary/Purchase";
 import { updateCartPricing } from "../../../../services/sales/Bookings";
 import { currencySymbolFor } from "../../../../services/money";
 import { formatCurrencyValue } from "../../../../services/formatCurrencyValue";
+import { withPayAtHotelCondition } from "../../../../services/payAtHotel";
+import { isBookingPaid } from "../../../../services/bookingStatus";
 import {
   addAncillaryBooking,
   removeAncillaryBooking,
@@ -456,7 +458,7 @@ export default function CartSheet({
     // back here. The desktop cart separates them and so does this one.
     const datesPast = tripHasStarted(itinerary?.start_date);
     const anyPaid = Object.values(C.summary).some((g) =>
-      (g?.bookings || []).some((b) => b?.status === "Paid"),
+      (g?.bookings || []).some((b) => isBookingPaid(b?.status)),
     );
     // Nothing paid yet, so the dates are still the traveller's to move: every
     // pay CTA becomes Update Dates, because paying today's prices for a trip
@@ -1055,7 +1057,7 @@ export default function CartSheet({
               Your Trip Will have
             </div>
             <div>
-              {TRIP_CONDITIONS.map((item) => (
+              {withPayAtHotelCondition(TRIP_CONDITIONS, cart).map((item) => (
                 <div key={item.title} className="flex gap-md mb-md">
                   <img
                     src={item.icon}

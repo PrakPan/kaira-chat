@@ -28,6 +28,9 @@ import Drawer from "../../../ui/Drawer";
 import { Navigation } from "../../../NewNavigation";
 import ScrollableMenuTabs from "../../../ScrollableMenuTabs";
 import HotelPolicy from "../../HotelPolicy";
+import BookingCancelledBanner, {
+  isBookingCancelled,
+} from "../../../common/BookingCancelledBanner";
 
 const svgIcons = {
   "loaction": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 10 14" fill="none">
@@ -1192,6 +1195,9 @@ const HotelBookingDetails = (props) => {
 
                   <div>
                     <div id="section-1">
+                      {isBookingCancelled(data) && (
+                        <BookingCancelledBanner className="mt-lg mb-lg" />
+                      )}
                       {data?.hotel_details?.description ? (
                         <div className="flex flex-col gap-1">
                           <div

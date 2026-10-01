@@ -6,6 +6,9 @@ import { dateFormat } from "../../../../../helper/DateUtils";
 import { getHumanTime } from "../../../../../services/getHumanTime";
 import { MERCURY_HOST } from "../../../../../services/constants";
 import useBookingDetail from "./useBookingDetail";
+import BookingCancelledBanner, {
+  isBookingCancelled,
+} from "../../../../common/BookingCancelledBanner";
 import {
   Bullets,
   Card,
@@ -361,6 +364,10 @@ export default function StayDetail({ bookingId }) {
         full={photoKeys.map((key) => mediaUrl(key, 1280))}
         alt={hotel?.name}
       />
+
+      {isBookingCancelled(data) && (
+        <BookingCancelledBanner className="mx-4 mb-4" />
+      )}
 
       <FactChips
         className="px-4 pb-4"

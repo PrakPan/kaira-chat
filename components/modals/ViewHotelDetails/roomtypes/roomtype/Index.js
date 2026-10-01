@@ -262,6 +262,18 @@ const RoomType = (props) => {
           <div className="text-[#445069] text-sm-md font-400 leading-lg whitespace-nowrap">
             for {pax} people{roomCount > 1 ? ` · ${roomCount} rooms` : ''}
           </div>
+          {/* Hotel taxes not in the price — paid by the traveller at the hotel. */}
+          {props.data?.pay_at_hotel_taxes_total > 0 && (
+            <div
+              className="text-[#445069] text-xs font-400 leading-md"
+              title={(props.rates || [])
+                .flatMap((rate) => rate?.pay_at_hotel_taxes || [])
+                .map((tax) => `${tax.name}: ${tax.supplier_currency} ${tax.supplier_amount}`)
+                .join(", ")}
+            >
+              {`+ ${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.round(props.data.pay_at_hotel_taxes_total))} taxes & fees payable at the hotel
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-1 items-end shrink-0">
