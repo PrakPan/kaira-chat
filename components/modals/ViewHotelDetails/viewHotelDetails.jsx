@@ -16,6 +16,9 @@ import { updateAccommodationBooking } from "../../../services/bookings/UpdateBoo
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import SetRefetchAirportTransfers from "../../../store/actions/refetchAirportTransfers";
 import BackArrow from "../../ui/BackArrow";
+import SheetDrawerHeader, {
+  useIsDrawerSheet,
+} from "../../revamp/common/components/SheetDrawerHeader";
 import Image from "next/image";
 
 const ViewHotelDetails = (props) => {
@@ -24,6 +27,7 @@ const ViewHotelDetails = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const { drawer, booking_id, idx, city_id } = router.query;
+  const asSheet = useIsDrawerSheet();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
@@ -227,10 +231,19 @@ const ViewHotelDetails = (props) => {
     >
       {!loading ? (
         <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
+          {asSheet ? (
+            // Bleeds over the scroller's side padding to span the sheet.
+            <SheetDrawerHeader
+              title="Hotel Details"
+              onClose={(e) => props.onHide(e)}
+              className="-mx-6 max-ph:-mx-4"
+            />
+          ) : (
           <div className="py-4 bg-white z-[900] flex flex-row items-center gap-3 pb-2 sticky top-0">
             <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.onHide(e)} />
             <div className="ttw-type-h4 md:ttw-type-h3 font-600 text-[#0b1220]">Hotel Details</div>
           </div>
+          )}
           {!error ? (
             <div>
               {" "}
@@ -292,7 +305,14 @@ const ViewHotelDetails = (props) => {
           )}
         </div>
       ) : (
-        <Skeleton onHide={props.onHide} />
+        <>
+          {/* So the loading sheet can still be closed. */}
+          <SheetDrawerHeader
+            title="Hotel Details"
+            onClose={(e) => props.onHide(e)}
+          />
+          <Skeleton onHide={props.onHide} />
+        </>
       )}
     </Drawer>
   );

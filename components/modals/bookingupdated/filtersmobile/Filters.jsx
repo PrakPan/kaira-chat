@@ -7,8 +7,12 @@ import UserRatings from "./UserRatings";
 import Image from "next/image";
 import PriceRange from "./PriceRange";
 import StarCategory from "./StarCategory";
+import SheetDrawerHeader, {
+  useIsDrawerSheet,
+} from "../../../revamp/common/components/SheetDrawerHeader";
 
 export default function Filters(props) {
+  const asSheet = useIsDrawerSheet();
   const [selectedUserStar, setSelectedUserStar] = useState((props?.filters?.user_ratings?.length == 0 || !props?.filters?.user_ratings) ? [] : props?.filters?.user_ratings);
   const [selectedFacilities, setSelectedFacilities] = useState((props?.filters?.facilities?.length == 0 || !props?.filters?.facilities) ? [] : props?.filters?.facilities);
   const [selectedTags, setSelectedTags] = useState((props?.filters?.tags?.length == 0 || !props?.filters?.tags) ? [] : props?.filters?.tags);
@@ -48,12 +52,31 @@ export default function Filters(props) {
          the right side of it instead of covering the whole list. */
       width="25%"
       mobileWidth="100%"
-      bgColor="#fafaf5"
+      // White as a sheet, like every other sheet on the phone.
+      bgColor={asSheet ? "#ffffff" : "#fafaf5"}
       style={{ zIndex: props.zIndex ?? 1508 }}
       className="!overflow-y-hidden"
       onHide={() => props.setshowFilter(false)}
     >
       <div className="h-screen flex flex-col overflow-hidden">
+        {asSheet ? (
+          <SheetDrawerHeader
+            title="Filters"
+            onClose={() => props.setshowFilter(false)}
+            sticky={false}
+            right={
+              props?.isFilterChangesApplied ? (
+                <button
+                  className="self-center ttw-type-small font-500 underline text-[#CD2026]"
+                  onClick={removeAllFilter}
+                >
+                  Clear
+                </button>
+              ) : null
+            }
+          />
+        ) : (
+        <>
         {/* Header - sticky at top */}
         <div className="px-6 max-ph:px-4 py-4 bg-[#fafaf5] z-[900] sticky top-0 flex flex-col gap-3 pb-2 border-b border-[#ececec]">
           <Image
@@ -76,6 +99,8 @@ export default function Filters(props) {
             )}
           </div>
         </div>
+        </>
+        )}
 
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-scroll px-6 max-ph:px-4 py-6 pb-24 scrollbar-hide">
@@ -132,7 +157,6 @@ export default function Filters(props) {
               </>
             ) : null}
 
-            <hr className="border-t border-[#ececec] m-0" />
             
             {/* Add padding at bottom to prevent content from being hidden behind buttons */}
             <div className="h-4"></div>
@@ -140,16 +164,16 @@ export default function Filters(props) {
         </div>
 
         {/* Sticky footer buttons */}
-        <div className="sticky bottom-0 z-10 border-t border-[#ececec] bg-[#fafaf5] px-6 max-ph:px-4 py-4">
+        <div className={`sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 ${asSheet ? "bg-white" : "bg-[#fafaf5]"}`}>
           <div className="flex gap-3 items-center">
             <button
-              className="ttw-btn-secondary whitespace-nowrap ttw-type-body"
+              className="ttw-btn-neutral-pill flex-none"
               onClick={() => props.setshowFilter(false)}
             >
               Cancel
             </button>
             <button
-              className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+              className="ttw-btn-change-pill min-w-0 flex-1"
               onClick={handleApply}
             >
               Apply

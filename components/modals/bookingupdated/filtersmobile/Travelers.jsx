@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RiArrowDropDownLine, RiDeleteBin6Line } from "react-icons/ri";
 import Pax from "../../../tailoredform/slidetwo/pax/Pax";
+import { useIsDrawerSheet } from "../../../revamp/common/components/SheetDrawerHeader";
 
 const svgIcons = {
   'user': <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 18 13" fill="none">
@@ -17,6 +18,7 @@ const svgIcons = {
 }
 
 export default function Travelers(props) {
+  const asSheet = useIsDrawerSheet();
   const containerRef = useRef(null);
   const [travelers, setTravelers] = useState(
     props.filters.occupancies.reduce(
@@ -29,7 +31,12 @@ export default function Travelers(props) {
   const [open, setOpen] = useState(false);
   const [showError, setShowError] = useState(false);
 
+  // Not in a sheet: there the rooms editor is the Kaira sheet, portalled to
+  // <body> outside containerRef, so every tap inside it (Add room, the
+  // steppers) read as "outside" and closed it. It closes on its own ✕,
+  // Cancel and scrim instead.
   useEffect(() => {
+    if (asSheet) return undefined;
     const handleClickOutside = (event) => {
       if (
         containerRef.current &&
@@ -44,7 +51,7 @@ export default function Travelers(props) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [setOpen]);
+  }, [setOpen, asSheet]);
 
   useEffect(() => {
     let total = 0;
@@ -105,11 +112,7 @@ export default function Travelers(props) {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={`flex h-9 flex-row items-center gap-2 whitespace-nowrap rounded-full bg-white px-3.5 ttw-type-small text-[#0b1220] transition-shadow ${
-          open
-            ? "shadow-[0_0_0_1.5px_#0b1220]"
-            : "shadow-[0_1px_2px_rgba(11,18,32,0.09)] hover:shadow-[0_2px_7px_rgba(11,18,32,0.14)]"
-        }`}
+        className={`flex h-9 flex-row items-center gap-2 whitespace-nowrap rounded-full bg-white px-3.5 ttw-type-small text-[#0b1220] transition-shadow shadow-[0_1px_2px_rgba(11,18,32,0.09)] hover:shadow-[0_2px_7px_rgba(11,18,32,0.14)]`}
       >
         <span className="text-[#8a93a5]">{svgIcons.user}</span>
         <span className="font-500">
@@ -125,6 +128,10 @@ export default function Travelers(props) {
       {open && <Pax
         roomConfiguration={rooms}
         isOpenModal={open}
+        // On the phone itinerary, the trip settings' own rooms editor (the
+        // Kaira sheet). Not on desktop: that card mounts at z-60, under this
+        // drawer.
+        variant={asSheet ? "kaira" : undefined}
         hideOpenModel={() => setOpen(false)}
         setRoomConfiguration={(val) => handleModifySearch(val)}
       />

@@ -790,6 +790,31 @@ a.termsnavunderlinelink {
     cursor: not-allowed;
 }
 
+/* Neutral outlined pill — the "Cancel" beside a .ttw-btn-change-pill in a
+   sheet's bottom bar (the filters sheets), same geometry as the pair above. */
+.ttw-btn-neutral-pill {
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--font-family-montserrat);
+    border-radius: 9999px;
+    /* A bare "Cancel" sized from its label reads as an afterthought beside
+       the full-width Apply. */
+    min-width: 112px;
+    border: 1.5px solid #dcdfe5;
+    background-color: var(--color-pure-white);
+    color: #0b1220;
+    transition: border-color 0.2s ease;
+}
+
+.ttw-btn-neutral-pill:hover:not(:disabled) {
+    border-color: #0b1220;
+}
+
 /* Inside the two-button action bar the pills size from their content so the
    longer label decides its own width (BookingDetailActions uses flex-auto,
    whose flex-basis:auto would otherwise resolve to the width:100% above and
@@ -804,7 +829,8 @@ a.termsnavunderlinelink {
    horizontal scrollbar across the whole drawer. */
 @media screen and (max-width: 520px) {
     .ttw-btn-remove-pill,
-    .ttw-btn-change-pill {
+    .ttw-btn-change-pill,
+    .ttw-btn-neutral-pill {
         padding: 10px 12px;
         font-size: 12.5px;
         gap: 6px;

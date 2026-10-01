@@ -251,7 +251,7 @@ export default function Drawer(props) {
                {asSheet && (
                  <div
                    aria-hidden
-                   className="pointer-events-none absolute left-1/2 top-[7px] z-[1] h-[4px] w-[40px] -translate-x-1/2 rounded-full bg-[#dcdfe5]"
+                   className="pointer-events-none absolute left-1/2 top-[9px] z-[1] h-[4px] w-[40px] -translate-x-1/2 rounded-full bg-[#dcdfe5]"
                  />
                )}
                {props?.isCloseButtonEnable && <div className="flex w-full justify-end py-[16px] px-[10px]"> <button onClick={onCLose} className="ttw-btn-close" > Close <Image src={'/assets/icons/close.svg'} width={9} height={9} /> </button> </div>  }

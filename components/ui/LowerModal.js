@@ -45,7 +45,7 @@ const BottomModal = ({
             shifts; phones only, since a few callers show this on desktop. */}
         <div
           aria-hidden
-          className="ph-up:hidden pointer-events-none absolute left-1/2 top-[7px] z-[1] h-[4px] w-[40px] -translate-x-1/2 rounded-full bg-[#dcdfe5]"
+          className="ph-up:hidden pointer-events-none absolute left-1/2 top-[9px] z-[1] h-[4px] w-[40px] -translate-x-1/2 rounded-full bg-[#dcdfe5]"
         />
         {closeIcon && (
           <button

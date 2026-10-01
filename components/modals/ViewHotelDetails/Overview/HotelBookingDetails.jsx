@@ -382,17 +382,18 @@ const HotelBookingDetails = (props) => {
     </div>
   ) : null;
 
+  const hasStars =
+    !!props?.data?.star_category && props?.data?.star_category != "0";
+
   return (
     <Container>
-      {props?.data?.star_category &&  props?.data?.star_category != "0" ?
-        <>
-          <span className="bg-[#f4f3ec] text-[#445069] rounded-67br text-sm font-500 leading-lg px-md py-xs mb-md inline-block">
-            {props?.data?.star_category} Star Hotel
-          </span>
-        </> : null
-      }
+      {hasStars ? (
+        <span className="bg-[#f4f3ec] text-[#445069] rounded-67br text-sm font-500 leading-lg px-md py-xs mb-md inline-block max-ph:hidden">
+          {props?.data?.star_category} Star Hotel
+        </span>
+      ) : null}
       <FlexBox>
-        <div className="text-xl text-[#0b1220] font-600 leading-2xl">
+        <div className="text-xl text-[#0b1220] font-600 leading-2xl max-ph:text-[18px] max-ph:leading-[1.3] max-ph:pt-[12px]">
           {props?.data?.name}
         </div>
         {props.payment && props.token ? (
@@ -421,6 +422,13 @@ const HotelBookingDetails = (props) => {
           <></>
         )}
       </FlexBox>
+
+      {/* On the phone the chip follows the name rather than leading it. */}
+      {hasStars ? (
+        <span className="ph-up:hidden mt-[6px] inline-block bg-[#f4f3ec] text-[#445069] rounded-67br font-500 text-[11px] leading-[1.4] px-[10px] py-[3px]">
+          {props?.data?.star_category} Star Hotel
+        </span>
+      ) : null}
 
       <div className="flex gap-sm mt-sm">
         {
@@ -491,7 +499,7 @@ const HotelBookingDetails = (props) => {
                       />
 
                       {images[0]?.caption ? (
-                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                           {images[0]?.caption}
                         </div>
                       ) : null}
@@ -529,7 +537,7 @@ const HotelBookingDetails = (props) => {
                       />
 
                       {images[2]?.caption ? (
-                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                           {images[2]?.caption}
                         </div>
                       ) : null}
@@ -567,7 +575,7 @@ const HotelBookingDetails = (props) => {
                       />
 
                       {images[3]?.caption ? (
-                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                           {images[3]?.caption}
                         </div>
                       ) : null}
@@ -608,7 +616,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                      <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                         {images[0]?.caption}
                       </div>
                     ) : null}
@@ -646,7 +654,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[1]?.caption ? (
-                      <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                      <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                         {images[1]?.caption}
                       </div>
                     ) : null}
@@ -684,7 +692,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[2]?.caption ? (
-                      <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                      <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                         {images[2]?.caption}
                       </div>
                     ) : null}
@@ -725,7 +733,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                      <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                         {images[0]?.caption}
                       </div>
                     ) : null}
@@ -763,7 +771,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[1]?.caption ? (
-                      <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                      <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                         {images[1]?.caption}
                       </div>
                     ) : null}
@@ -802,7 +810,7 @@ const HotelBookingDetails = (props) => {
                   />
 
                   {images[0]?.caption ? (
-                    <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                    <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                       {images[0]?.caption}
                     </div>
                   ) : null}
@@ -867,7 +875,7 @@ const HotelBookingDetails = (props) => {
                       />
 
                       {images[0]?.caption ? (
-                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                           {images[0]?.caption}
                         </div>
                       ) : null}
@@ -905,7 +913,7 @@ const HotelBookingDetails = (props) => {
                       />
 
                       {images[1]?.caption ? (
-                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                           {images[1]?.caption}
                         </div>
                       ) : null}
@@ -943,7 +951,7 @@ const HotelBookingDetails = (props) => {
                       />
 
                       {images[2]?.caption ? (
-                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                           {images[2]?.caption}
                         </div>
                       ) : null}
@@ -984,7 +992,7 @@ const HotelBookingDetails = (props) => {
                       />
 
                       {images[0]?.caption ? (
-                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                           {images[0]?.caption}
                         </div>
                       ) : null}
@@ -1022,7 +1030,7 @@ const HotelBookingDetails = (props) => {
                       />
 
                       {images[1]?.caption ? (
-                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                           {images[1]?.caption}
                         </div>
                       ) : null}
@@ -1063,7 +1071,7 @@ const HotelBookingDetails = (props) => {
                       />
 
                       {images[0]?.caption ? (
-                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md whitespace-nowrap">
                           {images[0]?.caption}
                         </div>
                       ) : null}

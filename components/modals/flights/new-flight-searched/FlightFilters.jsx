@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 
 import Image from "next/image";
 import Drawer from "../../../ui/Drawer";
+import SheetDrawerHeader, {
+  useIsDrawerSheet,
+} from "../../../revamp/common/components/SheetDrawerHeader";
 import dayjs from "dayjs";
 
 export default function FlightFilters(props) {
+  const asSheet = useIsDrawerSheet();
   const [priceRange, setPriceRange] = useState([
     props.filters?.price_range?.[0] || 15600,
     props.filters?.price_range?.[1] || 80000
@@ -198,12 +202,31 @@ const handleApply = () => {
     backdrop
     width="50%"
     mobileWidth="100%"
-    bgColor="#fafaf5"
+    // White as a sheet, like every other sheet on the phone.
+    bgColor={asSheet ? "#ffffff" : "#fafaf5"}
     style={{ zIndex: props.zIndex ?? 1508 }}
     className="!overflow-y-hidden"
     onHide={() => props.setShowFilter(false)}
   >
     <div className="h-[100vh] flex flex-col">
+      {asSheet ? (
+        <SheetDrawerHeader
+          title="Filters"
+          onClose={() => props.setShowFilter(false)}
+          sticky={false}
+          right={
+            props?.isFilterChangesApplied ? (
+              <button
+                className="self-center ttw-type-small font-500 underline text-[#0b1220]"
+                onClick={removeAllFilter}
+              >
+                Clear
+              </button>
+            ) : null
+          }
+        />
+      ) : (
+      <>
       {/* Header - Fixed at top */}
       <div className="px-6 max-ph:px-4 py-4 bg-[#fafaf5] z-[900] sticky top-0">
         <div className="mb-4">
@@ -228,11 +251,14 @@ const handleApply = () => {
           )}
         </div>
       </div>
+      </>
+      )}
 
       {/* Scrollable content area */}
       <div className="flex-1 overflow-y-auto px-6 max-ph:px-4 py-4 scrollbar-hide">
         <div className="flex flex-col gap-6">
-          <hr className="m-zero" />
+          {/* The sheet header already draws this line. */}
+          {!asSheet && <hr className="m-zero" />}
 
           {/* Trip Type */}
           <div>
@@ -394,7 +420,6 @@ const handleApply = () => {
             ))}
           </div>
 
-          <hr className="m-zero" />
 
          
           <div className="h-4"></div>
@@ -402,13 +427,18 @@ const handleApply = () => {
       </div>
 
       {/* Sticky footer buttons */}
-      <div className="sticky bottom-0 z-10 border-t border-[#ececec] bg-[#fafaf5] px-6 max-ph:px-4 py-4">
-        <div className="flex gap-3 max-ph:flex-col">
-          <button className="ttw-btn-secondary whitespace-nowrap ttw-type-body" onClick={() => props.setShowFilter(false)}>
+      <div
+        className={`sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 pt-4 ${asSheet ? "bg-white" : "bg-[#fafaf5]"}`}
+        style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
+      >
+        {/* One row on every width: Cancel holds its own size, Apply takes
+            the rest. */}
+        <div className="flex items-stretch gap-3">
+          <button className="ttw-btn-neutral-pill flex-none" onClick={() => props.setShowFilter(false)}>
             Cancel
           </button>
           <button
-            className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+            className="ttw-btn-change-pill min-w-0 flex-1"
             onClick={handleApply}
           >
             Apply

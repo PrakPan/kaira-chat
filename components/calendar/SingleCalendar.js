@@ -20,6 +20,18 @@ import {
   isDateRangeEnd
 } from './utils';
 
+// The month arrows wear the same hairline ring as every round control on the
+// itinerary sheets (CloseButton): set inline, because the app's global button
+// CSS beats Tailwind's border/rounded classes and adds a drop shadow.
+const NAV_BUTTON_STYLE = {
+  border: "1px solid #dcdfe5",
+  borderRadius: 999,
+  background: "#ffffff",
+  boxShadow: "none",
+  padding: 0,
+  color: "#6b7280",
+};
+
 const AirbnbCalendarSingleMonth = (props) => {
   const today = new Date();
 
@@ -154,7 +166,8 @@ const AirbnbCalendarSingleMonth = (props) => {
               <button
                 onClick={() => navigateMonth(-1)}
                 aria-label="Previous month"
-                className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 active:scale-95 transition-all"
+                className="w-9 h-9 shrink-0 flex items-center justify-center active:scale-95 transition-transform"
+                style={NAV_BUTTON_STYLE}
               >
                 <FiChevronLeft size={18} />
               </button>
@@ -170,7 +183,8 @@ const AirbnbCalendarSingleMonth = (props) => {
           <button
             onClick={() => navigateMonth(1)}
             aria-label="Next month"
-            className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 active:scale-95 transition-all"
+            className="w-9 h-9 shrink-0 flex items-center justify-center active:scale-95 transition-transform"
+                style={NAV_BUTTON_STYLE}
           >
             <FiChevronRight size={18} />
           </button>

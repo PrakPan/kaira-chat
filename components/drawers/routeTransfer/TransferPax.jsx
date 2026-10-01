@@ -14,6 +14,9 @@ import {
   PassengerRow,
   Section,
 } from "../../tailoredform/slidetwo/EnterPassenger";
+import SheetDrawerHeader, {
+  useIsDrawerSheet,
+} from "../../revamp/common/components/SheetDrawerHeader";
 
 const DEFAULT_CHILD_AGE = 10;
 
@@ -29,6 +32,7 @@ const DEFAULT_CHILD_AGE = 10;
  */
 const TransferPax = ({ pax, setPax, combo = true, limit = null, disabled = false }) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
+  const asSheet = useIsDrawerSheet();
 
   const [isOpen, setIsOpen] = useState(false);
   const [adults, setAdults] = useState(pax?.adults || 1);
@@ -116,15 +120,9 @@ const TransferPax = ({ pax, setPax, combo = true, limit = null, disabled = false
     setIsOpen(false);
   };
 
-  const ModalBody = (
-    <div className="w-full flex flex-col justify-between items-center max-h-[80vh] md:max-h-[70vh] overflow-y-auto hide-scrollbar">
-      <HeaderRow className="!w-full">
-        <div className="Heading2SB">Travellers</div>
-        <div className="Body2R_14">
-          {total} {total > 1 ? "Travellers" : "Traveller"}
-        </div>
-      </HeaderRow>
-
+  // The Adults / Children / Infants rows, shared by both modal layouts.
+  const paxRows = (
+    <>
       <Section className="w-full">
         {/* Adults */}
         <PassengerRow className="!w-[100%]">
@@ -228,6 +226,45 @@ const TransferPax = ({ pax, setPax, combo = true, limit = null, disabled = false
           </PassengerRow>
         )}
       </Section>
+    </>
+  );
+
+  // Raised from a phone sheet (see ui/Drawer's DrawerSheetContext): the same
+  // chrome as every other sheet there — handle, title left, ✕ right — and the
+  // sheets' yellow pill in a bottom bar. Mirrors activityDetails/Pax.jsx.
+  const SheetBody = (
+    <div className="flex w-full flex-col">
+      <SheetDrawerHeader
+        title="Travellers"
+        subtitle={`${total} ${total > 1 ? "Travellers" : "Traveller"}`}
+        onClose={closeModal}
+        sticky={false}
+      />
+      {/* The last row's divider would sit right on the bar's own border. */}
+      <div className="max-h-[60vh] overflow-y-auto px-[14px] py-[14px] hide-scrollbar [&>div]:!mb-0 [&>div>*:last-child]:!mb-0 [&>div>*:last-child]:!border-b-0 [&>div>*:last-child]:!pb-0">
+        {paxRows}
+      </div>
+      <div
+        className="border-t border-[#e6e8ec] px-[14px] pt-[11px]"
+        style={{ paddingBottom: "calc(14px + env(safe-area-inset-bottom))" }}
+      >
+        <button type="button" className="ttw-btn-change-pill" onClick={handleApply}>
+          Apply
+        </button>
+      </div>
+    </div>
+  );
+
+  const ModalBody = (
+    <div className="w-full flex flex-col justify-between items-center max-h-[80vh] md:max-h-[70vh] overflow-y-auto hide-scrollbar">
+      <HeaderRow className="!w-full">
+        <div className="Heading2SB">Travellers</div>
+        <div className="Body2R_14">
+          {total} {total > 1 ? "Travellers" : "Traveller"}
+        </div>
+      </HeaderRow>
+
+      {paxRows}
 
       <div className="flex justify-end w-full gap-2">
         <ApplyButton className="w-1/2" onClick={handleApply}>
@@ -282,10 +319,12 @@ const TransferPax = ({ pax, setPax, combo = true, limit = null, disabled = false
           onHide={closeModal}
           width="100%"
           height="max-content"
-          paddingX="20px"
-          paddingY="20px"
+          closeIcon={!asSheet}
+          paddingX={asSheet ? "0px" : "20px"}
+          paddingY={asSheet ? "0px" : "20px"}
+          borderRadius={asSheet ? "20px 20px 0 0" : undefined}
         >
-          {ModalBody}
+          {asSheet ? SheetBody : ModalBody}
         </BottomModal>
       )}
     </div>

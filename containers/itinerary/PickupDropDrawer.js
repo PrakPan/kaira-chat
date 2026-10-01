@@ -14,6 +14,9 @@ import Drawer from "../../components/ui/Drawer";
 import SearchLoaderOverlay from "../../components/ui/SearchLoaderOverlay";
 import { FaCar } from "react-icons/fa";
 import BackArrow from "../../components/ui/BackArrow";
+import SheetDrawerHeader, {
+  useIsDrawerSheet,
+} from "../../components/revamp/common/components/SheetDrawerHeader";
 import Generalbutton from "../../components/ui/button/Generallinkbutton";
 import TaxiSearched from "../../components/modals/taxis/taxi-searched/Index";
 import { PulseLoader } from "react-spinners";
@@ -114,6 +117,7 @@ const PickupDropDrawer = ({
   destinationLong,
   doj
 }) => {
+  const asSheet = useIsDrawerSheet();
 
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -1277,12 +1281,21 @@ const getTitle = () => {
       <TaxiSelectionProvider value={taxiSelection}>
       <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
         {/* Header */}
+        {asSheet ? (
+          // Bleeds over the scroller's side padding to span the sheet.
+          <SheetDrawerHeader
+            title={getTitle()}
+            onClose={onClose}
+            className="-mx-6 max-ph:-mx-4 mb-4"
+          />
+        ) : (
         <div className="py-4 bg-[#fafafa] z-[900] flex flex-row items-center gap-3 pb-2 sticky top-0">
           <BackArrow handleClick={onClose} />
           <div className="ttw-type-h2 font-semibold text-[#0b1220] !text-[19px] max-ph:!text-[17px] leading-tight truncate min-w-0 flex-1">
             {getTitle()}
           </div>
         </div>
+        )}
 
         {/* Content */}
         <div className="flex-1 pb-24">

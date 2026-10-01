@@ -16,6 +16,7 @@ import TripHeader from "./TripHeader";
 import DesktopTripCard from "../desktopItinerary/DesktopTripCard";
 import useTripActions from "./useTripActions";
 import useBookingDrawers from "./useBookingDrawers";
+import { OPEN_BOOKING_DETAIL } from "./bookingDetailBridge";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  MobileItinerary — the whole trip on one scroll, on a phone.
@@ -204,6 +205,51 @@ export default function MobileItinerary({
         ? { onChange: () => rows.onChangeActivity(leg, day, item) }
         : undefined,
     );
+
+  // "View Detail" inside a booking flow (the Add Taxi drawer's booked pickup,
+  // drop or sightseeing car) — the same sheet, with the same descriptor, its
+  // row in the trip opens. See bookingDetailBridge.
+  //
+  // The flow's own change hands in `onChange`; the sheet then rises over the
+  // flow (1610 > its 1501) and Change drops back into it. `onLeave` closes the
+  // flow too when the sheet hands over to Kaira.
+  const openFromFlowRef = useRef(null);
+  openFromFlowRef.current = ({ bookingId, onChange, onLeave }) => {
+    const id = String(bookingId);
+    for (const leg of legs) {
+      const extra = (leg.extras || []).find((x) => String(x?.bookingId) === id);
+      if (extra) {
+        handleOpenExtra(leg, extra, {
+          onChange: onChange || (() => rows.onChangeTaxi(leg, extra)),
+          beforeAsk: onLeave,
+        });
+        return true;
+      }
+      const travel = [leg.inboundTravel, leg.outboundTravel].find(
+        (t) => t?.bookingId && String(t.bookingId) === id,
+      );
+      if (travel) {
+        handleOpenTravel(leg, travel, {
+          onChange:
+            onChange ||
+            (() =>
+              travel === leg.outboundTravel
+                ? rows.onChangeReturn(leg)
+                : rows.onChangeTravel(leg)),
+          beforeAsk: onLeave,
+        });
+        return true;
+      }
+    }
+    return false;
+  };
+  useEffect(() => {
+    const onRequest = (e) => {
+      if (openFromFlowRef.current?.(e.detail || {})) e.preventDefault();
+    };
+    window.addEventListener(OPEN_BOOKING_DETAIL, onRequest);
+    return () => window.removeEventListener(OPEN_BOOKING_DETAIL, onRequest);
+  }, []);
 
   const isDay = sheet?.type === "day";
   const isDetail = sheet?.type === "detail";
@@ -598,7 +644,11 @@ export default function MobileItinerary({
         onClose={closeDetail}
         detail={sheet?.detail}
         disabled={disabled}
-        onAskKaira={ask}
+        onAskKaira={(message, contextLabel) => {
+          // Opened from inside a booking flow: that flow goes too.
+          if (message) sheet?.detail?.beforeAsk?.();
+          ask(message, contextLabel);
+        }}
       />
 
       {/* The pickers useBookingDrawers renders itself (the visa / eSIM change),

@@ -88,6 +88,11 @@ import { useGenericAPIModal } from "../../modals/warning/Index";
 import { updateFlightBookingWarning } from "../../../services/bookings/UpdateBookings";
 import { getDateInfo } from "../../../utils/dateFormate";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { requestBookingDetail } from "../../revamp/mobileItinerary/bookingDetailBridge";
+import SheetDrawerHeader, {
+  SheetDrawerFrame,
+  useIsDrawerSheet,
+} from "../../revamp/common/components/SheetDrawerHeader";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { Link } from "react-scroll";
 import SkeletonCard from "../../ui/SkeletonCard";
@@ -388,6 +393,7 @@ const TransferEditDrawer = (props) => {
   } = props;
 
   const actualClose = useHandleClose();
+  const asSheet = useIsDrawerSheet();
   const dispatch = useDispatch();
   const router = useRouter();
   const {
@@ -1406,6 +1412,53 @@ const TransferEditDrawer = (props) => {
     }
   };
 
+  // Leaving the flow, from step 0's back arrow or the sheet's ✕.
+  const closeFlow = () => {
+    actualClose();
+    setCurrentStep(0);
+    setSkipFlightFetch(false);
+    setSkipTaxiFetch(false);
+    setIsRouteSelected(false);
+    setTransferType(
+      booking_type == "multicity"
+        ? TRANSFER_TYPES.MULTICITYROUNDTRIP.name
+        : TRANSFER_TYPES.ONEWAYTRIP.name,
+    );
+    setFlightResults([]);
+    setTaxiResults([]);
+  };
+
+  // The sheet header's wording — the desktop header row and the one-way
+  // heading below it, folded into a title and a subtitle.
+  const fromCity = city || mercuryTransfer?.source?.city_name;
+  const toCity = dcity || mercuryTransfer?.destination?.city_name;
+  const isOneWay = transferType === TRANSFER_TYPES.ONEWAYTRIP.name;
+  const stepName =
+    currentStep >= 1 && isOneWay
+      ? transfers?.[selectedTransferIndex]?.name
+      : null;
+  const sheetTitle =
+    stepName ||
+    (drawerType === "multicity" || booking_type === "multicity"
+      ? `Add Taxi in ${fromCity || ""}`.trim()
+      : isOneWay
+        ? `${props.addOrEdit === "transferAdd" ? "Add" : "Change"} Transfer`
+        : "Change Transfer");
+  const sheetSubtitle =
+    isOneWay && fromCity && toCity ? `${fromCity} → ${toCity}` : null;
+
+  const staffRouteLink =
+    email && email?.includes("tarzanway.com") && isOneWay ? (
+      <a
+        href={`${MERCURY_HOST}/admin/geos/route/search-route/?origin=${props?.origin || originCityId || mercuryTransfer?.source?.city}&destination=${props?.destination || destinationCityId || mercuryTransfer?.destination?.city}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="ml-auto ttw-type-body text-blue font-500"
+      >
+        + Modify from Backend (Staff)
+      </a>
+    ) : null;
+
   return (
     <Drawer
       show={showDrawer}
@@ -1433,6 +1486,22 @@ const TransferEditDrawer = (props) => {
         setSelectedCab(null);
       }}
     >
+      {/* Raised as a sheet (the phone itinerary), the flow takes the sheets'
+          header — handle, title, ✕ — and scrolls under it, rather than leading
+          with the desktop back arrow. */}
+      <SheetDrawerFrame
+        header={
+          <SheetDrawerHeader
+            title={sheetTitle}
+            subtitle={sheetSubtitle}
+            onClose={closeFlow}
+            sticky={false}
+            onBack={
+              currentStep >= 1 ? () => setCurrentStep(currentStep - 1) : undefined
+            }
+          />
+        }
+      >
       <div
         // The phone had no bottom padding at all — only the `md:` values below —
         // so the last result card ended flush against the bottom of the sheet,
@@ -1443,25 +1512,11 @@ const TransferEditDrawer = (props) => {
  : "md:pb-[30px]"
  } justify-start items-start mx-auto w-[100%] min-h-screen`}
       >
+        {!asSheet && (
         <div className="flex flex-row gap-2 w-full my-0 justify-between items-center">
           {currentStep === 0 ? (
             <>
-              <BackArrow
-                handleClick={() => {
-                  actualClose();
-                  setCurrentStep(0);
-                  setSkipFlightFetch(false);
-                  setSkipTaxiFetch(false);
-                  setIsRouteSelected(false);
-                  setTransferType(
-                    booking_type == "multicity"
-                      ? TRANSFER_TYPES.MULTICITYROUNDTRIP.name
-                      : TRANSFER_TYPES.ONEWAYTRIP.name,
-                  );
-                  setFlightResults([]);
-                  setTaxiResults([]);
-                }}
-              />
+              <BackArrow handleClick={closeFlow} />
 
               {transferType !== TRANSFER_TYPES.ONEWAYTRIP.name && (
                 <div className="flex-1 min-w-0 font-600 text-[#0b1220] text-[18px] max-ph:text-[15px] leading-tight truncate">
@@ -1471,16 +1526,7 @@ const TransferEditDrawer = (props) => {
                 </div>
               )}
 
-              {email && email?.includes('tarzanway.com') &&
-                transferType === TRANSFER_TYPES.ONEWAYTRIP.name && (
-                <a
-                  href={`${MERCURY_HOST}/admin/geos/route/search-route/?origin=${props?.origin || originCityId || mercuryTransfer?.source?.city}&destination=${props?.destination || destinationCityId || mercuryTransfer?.destination?.city}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-auto ttw-type-body text-blue font-500"
-                >
-                + Modify from Backend (Staff)
-              </a>)}
+              {staffRouteLink}
             </>
           ) : (
             <>
@@ -1506,10 +1552,17 @@ const TransferEditDrawer = (props) => {
             </>
           )}
         </div>
+        )}
         {currentStep === 0 && (
           <div className="w-full flex flex-col gap-md -mt-xs">
             <div>
-              {transferType === TRANSFER_TYPES.ONEWAYTRIP.name ? (
+              {/* In a sheet the header row is gone, so the staff link sits
+                  on its own line above the description. */}
+              {asSheet && staffRouteLink ? (
+                <div className="flex justify-end mb-xs">{staffRouteLink}</div>
+              ) : null}
+              {/* The sheet header already says this. */}
+              {transferType === TRANSFER_TYPES.ONEWAYTRIP.name && !asSheet ? (
                 <div className="ttw-type-h3 leading-2xl !text-[19px] max-ph:!text-[17px]">
                   {props.addOrEdit === "transferAdd" ? "Adding" : "Changing"}{" "}
                   transfer from {city || mercuryTransfer?.source?.city_name} to{" "}
@@ -1519,7 +1572,9 @@ const TransferEditDrawer = (props) => {
 
               <div
                 className={`text-[#445069] ttw-type-body-xl leading-lg-md ${
-                  transferType === TRANSFER_TYPES.ONEWAYTRIP.name ? "mt-xs" : ""
+                  transferType === TRANSFER_TYPES.ONEWAYTRIP.name && !asSheet
+                    ? "mt-xs"
+                    : ""
                 }`}
               >
                 {" "}
@@ -2336,6 +2391,16 @@ const TransferEditDrawer = (props) => {
                     <BookedSightseeingCard
                       booking={existingSightseeingBooking}
                       onClick={() => {
+                        // On the phone: the trip's own detail sheet, the
+                        // one this car's row opens. Its Change re-enters
+                        // this drawer in change mode.
+                        if (
+                          requestBookingDetail({
+                            bookingId: existingSightseeingBooking?.id,
+                            onLeave: actualClose,
+                          })
+                        )
+                          return;
                         const cityKey =
                           origin_itinerary_city_id ||
                           destination_itinerary_city_id;
@@ -2467,6 +2532,24 @@ const TransferEditDrawer = (props) => {
                             booking={existing}
                             isPickup={pk}
                             onViewDetail={() => {
+                              // On the phone: the trip's own detail sheet,
+                              // over this drawer; its Change is this card's.
+                              if (
+                                requestBookingDetail({
+                                  bookingId: existing?.id,
+                                  onChange: () => {
+                                    setAirportSearchType(pk ? "pickup" : "drop");
+                                    setAirportSearchTrips(
+                                      sugg?.data?.trips ||
+                                        existing?.transfer_details?.trips ||
+                                        null,
+                                    );
+                                    setAirportSearchBookingId(existing?.id || null);
+                                  },
+                                  onLeave: actualClose,
+                                })
+                              )
+                                return;
                               const cityKey =
                                 origin_itinerary_city_id ||
                                 destination_itinerary_city_id;
@@ -2645,6 +2728,7 @@ const TransferEditDrawer = (props) => {
             );
           })()}
       </div>
+      </SheetDrawerFrame>
 
       <PickupDropDrawer
         isOpen={!!airportSearchType}

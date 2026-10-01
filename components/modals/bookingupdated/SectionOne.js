@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { IoMdSearch, IoMdClose } from "react-icons/io";
 import Travelers from "./filtersmobile/Travelers";
+import SheetDrawerHeader, {
+  useIsDrawerSheet,
+} from "../../revamp/common/components/SheetDrawerHeader";
 
 const svgIcons = {
   filter: (
@@ -132,6 +135,7 @@ const Section = (props) => {
     filterChips,
   } = props;
 
+  const asSheet = useIsDrawerSheet();
   const sentinelRef = useRef(null);
   const sortRef = useRef(null);
   const [condensed, setCondensed] = useState(false);
@@ -204,6 +208,26 @@ const Section = (props) => {
         }`}
       >
         <div className="flex flex-col gap-[12px]">
+          {asSheet ? (
+            // Raised as a sheet: the sheets' header in place of the back
+            // arrow, spanning the bar's side padding.
+            <SheetDrawerHeader
+              title={`Stays in ${cityName}`}
+              subtitle={[
+                clickType == "Add" ? "Adding a stay" : "Changing your stay",
+                stayMeta?.range,
+                stayMeta?.nights
+                  ? `${stayMeta.nights} ${stayMeta.nights > 1 ? "nights" : "night"}`
+                  : null,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+              onClose={() => handleClose && handleClose()}
+              sticky={false}
+              className="-mx-6 max-ph:-mx-4 -mt-[12px]"
+            />
+          ) : (
+          <>
           {/* ── Title row ──────────────────────────────────────────────── */}
           <div className="flex flex-row items-center gap-[12px]">
             <button
@@ -262,6 +286,8 @@ const Section = (props) => {
               {stayMetaChip}
             </div>
           </div>
+          </>
+          )}
 
           {/* ── Search ─────────────────────────────────────────────────── */}
           <div className="flex flex-row items-center gap-2">
@@ -281,7 +307,7 @@ const Section = (props) => {
                   setSelectedHotelId && setSelectedHotelId(null);
                 }}
                 placeholder={`Search stays in ${cityName}`}
-                className="h-11 w-full rounded-full bg-white pl-11 pr-10 ttw-type-body text-[#0b1220] shadow-[0_1px_2px_rgba(11,18,32,0.09)] transition-shadow placeholder:text-[#9aa1b1] focus:shadow-[0_0_0_1.5px_#0b1220] focus:outline-none focus:ring-0"
+                className="h-11 w-full rounded-full bg-white pl-11 pr-10 ttw-type-body text-[#0b1220] shadow-[0_1px_2px_rgba(11,18,32,0.09)] transition-shadow placeholder:text-[#9aa1b1] focus:shadow-[0_0_0_1px_#dcdfe5,0_2px_7px_rgba(11,18,32,0.14)] focus:outline-none focus:ring-0 border-0"
               />
 
               {selectSearch && (
