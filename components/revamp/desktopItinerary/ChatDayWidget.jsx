@@ -2,25 +2,26 @@ import React, { useMemo } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 
 import buildTripViewModel from "../../../lib/tripViewModel";
-import { DayContent } from "../mobileItinerary/sheets/DaySheet";
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  ChatDayWidget — the desktop itinerary's full day, as a message in the chat.
+//  ChatDayWidget — the desktop itinerary's full day, as Kaira's reply in the chat.
 //
 //  "FULL DAY ›" on desktop doesn't open anything over the trip: it plays a
 //  short exchange into the chat (dayTurn below, ChatKitPanel's ChatLocalTurnFn)
-//  — the user asking about the day, Kaira answering in a line, and this, as a
-//  widget under her answer (a `TripDay` node, see WidgetRenderer), the way her
-//  hotel and activity lists arrive. None of it goes to the server.
+//  — the user asking about the day, and Kaira answering in text: a line on the
+//  day, its stops as points under MORNING / AFTERNOON / …, and a closing line.
+//  It's a `TripDay` widget node (see WidgetRenderer) only so it can stay live
+//  and tappable; it sits on the same paper bubble as her text and reads as one.
+//  None of it goes to the server.
 //
 //  The node carries only which day it is; the day itself is read from the trip
 //  as it is NOW, so a day Kaira changes a minute later is shown changed, not as
-//  it was when opened. (Her line above it is written once, when it's opened.)
+//  it was when opened.
 //
-//  The chat can't open the itinerary's drawers itself — they belong to the
-//  pane beside it — so a tap is announced as TRIP_DAY_ACTION: an item opens
-//  the same drawer the row in the trip would, and the add button asks Kaira
-//  through the itinerary's own funnel, as every other "ask Kaira" there does.
+//  Each stop's name is an annotation: the chat can't open the itinerary's
+//  drawers itself — they belong to the pane beside it — so a tap is announced
+//  as TRIP_DAY_ACTION, and the itinerary opens the same drawer its row would.
+//  A free-time idea has no drawer, so it isn't one (see isIdea).
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const TRIP_DAY_ACTION = "ttw:trip-day-action";
@@ -30,70 +31,74 @@ const announce = (detail) => {
 };
 
 // The chat's widget scope sets every font in it to Inter (`.kp-widget *`),
-// which would flatten the day number's serif and the mono meta lines. Scoped
-// one class deeper so it outranks that reset and nothing else.
-const FontScope = () => (
+// which would flatten the mono labels. Scoped one class deeper so it outranks
+// that reset and nothing else. Body text keeps the widget scope's chat type
+// (14.5px / 1.55, the same as `.chat-md`), so this reads as her text bubble.
+const DayReplyStyles = () => (
   <style
     dangerouslySetInnerHTML={{
       __html: `
-        .kp-widget .ttw-chat-day .ttw-type-serif {
-          font-family: 'Instrument Serif', serif;
-        }
-        .kp-widget .ttw-chat-day .font-mono {
+        .kp-widget .ttw-chat-day { padding: 0 3px; }
+        .kp-widget .ttw-chat-day p { margin: 0 0 8px; }
+        .kp-widget .ttw-chat-day p:last-child { margin-bottom: 0; }
+        .kp-widget .ttw-chat-day strong { font-weight: 700; color: #0b1220; }
+        .kp-widget .ttw-chat-day .tdr-mono {
           font-family: 'JetBrains Mono', ui-monospace, monospace;
         }
+        .kp-widget .ttw-chat-day .tdr-slot { margin: 10px 0 12px; }
+        .kp-widget .ttw-chat-day .tdr-slot + .tdr-slot { margin-top: 0; }
+        .kp-widget .ttw-chat-day .tdr-label {
+          display: flex; align-items: center; gap: 8px;
+          font-size: 10.5px; letter-spacing: 0.12em; color: #8a93a6;
+          margin-bottom: 4px;
+        }
+        .kp-widget .ttw-chat-day .tdr-label::after {
+          content: ""; flex: 1; border-top: 1px dashed #dcdcd2;
+        }
+        .kp-widget .ttw-chat-day ul { list-style: none; margin: 0; padding: 0; }
+        .kp-widget .ttw-chat-day li {
+          display: grid; grid-template-columns: 14px 1fr; gap: 6px;
+          margin-bottom: 6px;
+        }
+        .kp-widget .ttw-chat-day li:last-child { margin-bottom: 0; }
+        .kp-widget .ttw-chat-day li::before {
+          content: ""; width: 6px; height: 6px; border-radius: 50%;
+          background: #0b1220; margin: 9px 0 0 3px;
+        }
+        .kp-widget .ttw-chat-day .tdr-ann {
+          display: inline; padding: 0; margin: 0; border: 0; background: none;
+          box-shadow: none; font: inherit; font-weight: 600; color: #0b1220;
+          text-align: left; cursor: pointer; border-radius: 3px;
+          text-decoration: underline dotted #b8bdc9;
+          text-decoration-thickness: 1.5px; text-underline-offset: 3px;
+          transition: background-color 0.12s;
+        }
+        .kp-widget .ttw-chat-day .tdr-ann:hover,
+        .kp-widget .ttw-chat-day .tdr-ann:focus-visible {
+          background: #fdf9c4; text-decoration-color: #0b1220; outline: none;
+        }
+        .kp-widget .ttw-chat-day .tdr-meta {
+          margin-left: 6px; white-space: nowrap;
+          font-size: 11px; letter-spacing: 0.06em; color: #8a93a6;
+        }
+        .kp-widget .ttw-chat-day strong.tdr-idea-name { font-weight: 600; }
+        .kp-widget .ttw-chat-day .tdr-idea {
+          display: block; margin-top: 1px; font-size: 13px; color: #445069;
+        }
+        .kp-widget .ttw-chat-day .tdr-close { color: #445069; }
       `,
     }}
   />
 );
 
-// ── The exchange around it ───────────────────────────────────────────────────
+// ── Kaira's reply ────────────────────────────────────────────────────────────
 // Copy rules are the design's: no em-dashes, and Kaira talks like a person
 // who has read the day, not like a list of fields.
 
-const listOf = (parts) =>
-  parts.length <= 1
-    ? parts[0] || ""
-    : `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}`;
-
 // A meal reads as the meal it is at that hour.
-const MEAL = { Morning: "breakfast", Afternoon: "lunch", Evening: "dinner", Night: "dinner" };
-// Some stops are named as things to do ("Stroll the Sumida riverside"), and a
-// capital mid-sentence reads as a typo: "then Stroll the …". Those few leading
-// verbs go lower case; any other name keeps its own spelling.
-const LEADING_VERB = /^(Stroll|Walk|Wander|Browse|Explore|Visit|See|Watch|Take|Try|Enjoy|Shop|Hike|Cruise|Ride|Relax|Discover|Experience|Catch|Climb|Soak|Sample|Tour)\b/;
-const phrase = (item) =>
-  item.kind === "food"
-    ? `${MEAL[item.timeOfDay] || "a meal"} at ${item.name}`
-    : item.name.replace(LEADING_VERB, (verb) => verb.toLowerCase());
-const when = (timeOfDay) =>
-  !timeOfDay ? "" : timeOfDay === "Night" ? " at night" : ` in the ${timeOfDay.toLowerCase()}`;
-const capitalise = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+const MEAL = { Morning: "Breakfast", Afternoon: "Lunch", Evening: "Dinner", Night: "Dinner" };
 // Emoji (with their joiners and variation selectors) at either end of a title.
 const EDGE_EMOJI = /^[\p{Extended_Pictographic}\u200D\uFE0F\s]+|[\p{Extended_Pictographic}\u200D\uFE0F\s]+$/gu;
-
-/** The day's flow in one sentence: "Senso-ji in the afternoon, then …". */
-function flowOf(items) {
-  // Past a handful, a sentence naming every stop stops being readable.
-  if (items.length > 4) {
-    const first = items[0];
-    const last = items[items.length - 1];
-    return `${items.length} stops, from ${phrase(first)}${when(first.timeOfDay)} to ${phrase(last)}${when(last.timeOfDay)}.`;
-  }
-  // Neighbours at the same time of day share one clause.
-  const groups = [];
-  items.forEach((item) => {
-    const g = groups[groups.length - 1];
-    if (g && g.timeOfDay === item.timeOfDay) g.items.push(item);
-    else groups.push({ timeOfDay: item.timeOfDay, items: [item] });
-  });
-  const clauses = groups.map((g) => `${listOf(g.items.map(phrase))}${when(g.timeOfDay)}`);
-  const joined =
-    clauses.length === 1
-      ? clauses[0]
-      : `${clauses.slice(0, -1).join(", ")}, then ${clauses[clauses.length - 1]}`;
-  return `${capitalise(joined)}.`;
-}
 
 /** What's paid for, in a clause — or that nothing needs to be. */
 function bookingNote(items) {
@@ -107,39 +112,131 @@ function bookingNote(items) {
   return items.some((i) => i.kind === "activity") ? "" : "All free, no booking needed.";
 }
 
+/** Neighbouring stops at the same time of day share one labelled group. A
+ *  stop with no time gets a group with no label. */
+function slotsOf(items) {
+  const slots = [];
+  items.forEach((item) => {
+    const s = slots[slots.length - 1];
+    if (s && s.timeOfDay === item.timeOfDay) s.items.push(item);
+    else slots.push({ timeOfDay: item.timeOfDay || null, items: [item] });
+  });
+  return slots;
+}
+
+/** A free-time idea ("Wander the waterfront"): a `recommendation` element is
+ *  only words — no place, activity or restaurant behind it — so there's no
+ *  drawer to open and its name isn't an annotation. Kaira says what it is in
+ *  the text instead. Anything else no drawer answers for reads the same way. */
+const isIdea = (item) => item.elementType === "recommendation" || !item.detailId;
+
+/** The point's trailing mono note: "4H · 4.5★ · BOOKED". Time of day is the
+ *  group's label, so it isn't repeated here. */
+const noteOf = (item) =>
+  [
+    isIdea(item) ? "ON YOUR OWN" : null,
+    item.durationLabel,
+    item.rating ? `${item.rating}★` : null,
+    item.kind === "booked" ? "BOOKED" : null,
+  ]
+    .filter(Boolean)
+    .join(" · ")
+    .toUpperCase();
+
 /**
  * The local turn "FULL DAY ›" plays into the chat (ChatLocalTurnFn): the
- * user's question, Kaira's one-paragraph answer, and the day as a widget.
- * Keyed on the day, so opening it again moves it down rather than repeating.
+ * user's question, then Kaira's reply, which is all in the widget (DayReply)
+ * so it stays live. Keyed on the day, so opening it again moves it down
+ * rather than repeating.
  */
 export function dayTurn(leg, day) {
   const n = Number(day.dayNumber) || day.dayIndex + 1;
-  const items = day.items.filter((i) => i.name);
-
-  let reply;
-  if (!items.length) {
-    reply = day.isTravelDay
-      ? `Day ${n} is your travel day out of ${leg.city}, so I've kept it clear. If you have a few hours before you leave, I can fit something in.`
-      : `Day ${n} in ${leg.city} is wide open so far. Tell me what you're in the mood for, or tap below and I'll find something.`;
-  } else {
-    // The day's own title, minus the emoji it often leads with ("🏮 Gentle
-    // Asakusa Arrival"): in the card it's a marker, mid-sentence it's noise.
-    const title = (day.title || "").replace(EDGE_EMOJI, "").trim();
-    const head = title
-      ? `Here's Day ${n} in ${leg.city}, **${title}**.`
-      : `Here's Day ${n} in ${leg.city}.`;
-    reply = [
-      [head, flowOf(items), bookingNote(items)].filter(Boolean).join(" "),
-      "Tap any stop for the details, or tell me what you'd like to change.",
-    ].join("\n");
-  }
-
   return {
     prompt: `Help me plan Day ${n} in ${leg.city}`,
-    reply,
     widget: { type: "TripDay", legId: leg.id, dayKey: day.key },
     key: `day:${leg.id}:${day.key}`,
   };
+}
+
+function DayReply({ leg, day, onOpenItem }) {
+  const n = Number(day.dayNumber) || day.dayIndex + 1;
+  const items = day.items.filter((i) => i.name);
+
+  if (!items.length) {
+    return (
+      <p>
+        {day.isTravelDay
+          ? `Day ${n} is your travel day out of ${leg.city}, so I've kept it clear. If you have a few hours before you leave, I can fit something in.`
+          : `Day ${n} in ${leg.city} is wide open so far. Tell me what you're in the mood for and I'll find something.`}
+      </p>
+    );
+  }
+
+  // The day's own title, minus the emoji it often leads with ("🏮 Gentle
+  // Asakusa Arrival"): in the card it's a marker, mid-sentence it's noise.
+  const title = (day.title || "").replace(EDGE_EMOJI, "").trim();
+  const closing = [
+    bookingNote(items),
+    "Tap any stop for the details, or tell me what you'd like to change.",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <>
+      <p>
+        Here&apos;s Day {n} in {leg.city}
+        {title ? (
+          <>
+            , <strong>{title}</strong>.
+          </>
+        ) : (
+          "."
+        )}
+      </p>
+
+      {slotsOf(items).map((slot, si) => (
+        <div className="tdr-slot" key={`${slot.timeOfDay || "any"}-${si}`}>
+          {slot.timeOfDay ? (
+            <div className="tdr-label tdr-mono">{slot.timeOfDay.toUpperCase()}</div>
+          ) : null}
+          <ul>
+            {slot.items.map((item, idx) => {
+              const note = noteOf(item);
+              const meal = item.kind === "food" ? MEAL[item.timeOfDay] || "A meal" : null;
+              return (
+                <li key={item.id || `${item.name}-${idx}`}>
+                  <span>
+                    {meal ? `${meal} at ` : null}
+                    {isIdea(item) ? (
+                      <strong className="tdr-idea-name">{item.name}</strong>
+                    ) : (
+                      <button
+                        type="button"
+                        className="tdr-ann"
+                        onClick={() => onOpenItem(item)}
+                      >
+                        {item.name}
+                      </button>
+                    )}
+                    {note ? <span className="tdr-meta tdr-mono">{note}</span> : null}
+                    {isIdea(item) ? (
+                      <span className="tdr-idea">
+                        Free time, nothing to book. Go at your own pace, or ask me for
+                        specific spots and tips.
+                      </span>
+                    ) : null}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+
+      <p className="tdr-close">{closing}</p>
+    </>
+  );
 }
 
 export default function ChatDayWidget({ node }) {
@@ -159,33 +256,23 @@ export default function ChatDayWidget({ node }) {
 
   const leg = legs.find((l) => l.id === node?.legId) || null;
   const day = leg ? leg.days.find((d) => d.key === node?.dayKey) || null : null;
-  // As the trip's own CTAs: Kaira can't act while the trip reprices.
-  const busy = slices.ItineraryStatus?.pricing_status === "PENDING";
 
   return (
-    <div
-      className="ttw-chat-day font-inter leading-[normal]"
-      data-local-widget={node?.localId}
-    >
-      <FontScope />
+    <div className="ttw-chat-day" data-local-widget={node?.localId}>
+      <DayReplyStyles />
       {leg && day ? (
-        <DayContent
+        <DayReply
           key={day.key}
-          variant="inline"
           leg={leg}
           day={day}
-          disabled={busy}
           onOpenItem={(item) => announce({ action: "openItem", leg, day, item })}
-          onAskKaira={(message, contextLabel) =>
-            announce({ action: "askKaira", leg, day, message, contextLabel })
-          }
         />
       ) : (
         // The trip was rebuilt and this day went with it (dates moved, a city
         // dropped). The row in the itinerary is the way back in.
-        <div className="text-[13px] text-[#8a93a6]">
+        <p className="tdr-close">
           This day is no longer in the trip. Open it again from the itinerary.
-        </div>
+        </p>
       )}
     </div>
   );
