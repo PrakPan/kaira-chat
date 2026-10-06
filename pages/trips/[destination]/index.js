@@ -24,7 +24,9 @@ import { SITE_ORIGIN } from "../../../lib/seo/tripsIndexed";
 // pulls `fs` into the client bundle.
 // import { tripCard } from "../../../lib/seo/tripsCards";
 import { breadcrumbSchema } from "../../../lib/seo/tripsJsonLd";
-import { HUB_PAGES } from "../../../lib/seo/tripsHubs";
+// Commented out for the same reason: tripsHubs lazily requires tripsCache, and
+// webpack still bundles that require.
+// import { HUB_PAGES } from "../../../lib/seo/tripsHubs";
 import {
   destinationLabel,
   formatINR,
